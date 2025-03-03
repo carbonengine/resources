@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.16)
-project(project_name VERSION 1.0.0)
+cmake_minimum_required(VERSION 3.31)
+project(carbon-resources VERSION 1.0.0)
 
 if(NOT DEFINED ENV{CCP_EVE_PERFORCE_BRANCH_PATH})
     message(FATAL_ERROR "Missing required environment variable CCP_EVE_PERFORCE_BRANCH_PATH")
@@ -19,18 +19,79 @@ list(INSERT CMAKE_MODULE_PATH 0 ${BRANCH_ROOT_DIR}/cmake)
 include(cmake/CcpGlobalSettings.cmake)
 include(cmake/CcpTargetConfigurations.cmake)
 
-ccp_add_library(project_name SHARED)
+find_package(yaml-cpp CONFIG REQUIRED) ## Can it be in tools?
 
-get_target_property(_SOURCES project_name SOURCES)
+# Add subdirectory for resource tools static library
+add_subdirectory(tools)
+
+set(SRC_FILES
+    include/BinaryResource.h
+    include/BinaryResourceGroup.h
+    include/BundleResource.h
+    include/BundleResourceGroup.h
+    include/Exports.h
+    include/PatchResource.h
+    include/PatchResourceGroup.h
+    include/Resource.h
+    include/ResourceGroup.h
+    include/Enums.h
+    src/BinaryResource.cpp
+    src/BinaryResourceImpl.cpp
+    src/BinaryResourceImpl.h
+    src/BinaryResourceGroup.cpp
+    src/BinaryResourceGroupImpl.cpp
+    src/BinaryResourceGroupImpl.h
+    src/BundleResource.cpp
+    src/BundleResourceImpl.cpp
+    src/BundleResourceImpl.h
+    src/BundleResourceGroup.cpp
+    src/BundleResourceGroupImpl.cpp
+    src/BundleResourceGroupImpl.h
+    src/PatchResource.cpp
+    src/PatchResourceImpl.cpp
+    src/PatchResourceImpl.h
+    src/PatchResourceGroup.cpp
+    src/PatchResourceGroupImpl.cpp
+    src/PatchResourceGroupImpl.h
+    src/Resource.cpp
+    src/ResourceImpl.cpp
+    src/ResourceImpl.h
+    src/ResourceGroup.cpp
+    src/ResourceGroupImpl.cpp
+    src/ResourceGroupImpl.h
+)
+
+add_library(carbon-resources SHARED ${SRC_FILES})
+
+target_compile_definitions(carbon-resources PRIVATE EXPORT_LIBRARY)
+
+target_link_libraries(carbon-resources PRIVATE carbon-resources-tools yaml-cpp::yaml-cpp)
+
+#target_include_directories(carbon-resources PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+
+target_include_directories(carbon-resources
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+)
+
+get_target_property(_SOURCES carbon-resources SOURCES)
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
         PREFIX "Sources"
         FILES ${_SOURCES}
 )
 
-set_target_properties(project_name PROPERTIES OUTPUT_NAME "_project_name")
+set_target_properties(carbon-resources PROPERTIES OUTPUT_NAME "_carbon-resources")
+
+add_subdirectory(cli)
+
+enable_testing()
+
+add_subdirectory(tests)
+
 
 # Provide an install target if this is the top level project only
-if(CMAKE_PROJECT_NAME STREQUAL project_name)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # Determine if/when to generate/build documentation. The rules are as follows:
     # - If running locally - Build documentation is OFF by default
     # - If running on a build agent (TeamCity) - Build documentation is ON by default
@@ -81,7 +142,7 @@ if(CMAKE_PROJECT_NAME STREQUAL project_name)
         add_custom_target(Sphinx ALL
                 COMMAND ${CMAKE_COMMAND}
                 -E env
-                PYTHONPATH="$<TARGET_FILE_DIR:project_name>\;${CMAKE_SOURCE_DIR}/python"
+                PYTHONPATH="$<TARGET_FILE_DIR:carbon-resources>\;${CMAKE_SOURCE_DIR}/python"
                 BUILDFLAVOR=$<LOWER_CASE:$<CONFIG>>
                 ${CCP_PYTHON_INTERPRETER}
                 -m sphinx build -E -b html
@@ -100,16 +161,16 @@ if(CMAKE_PROJECT_NAME STREQUAL project_name)
     if(INSTALL_BIN_ONLY)
         # Install rule to ensure that our runtime files are in the expected, platform-specific folder
         install(
-                TARGETS project_name
-                EXPORT project_nameTarget
+                TARGETS carbon-resources
+                EXPORT carbon-resourcesTarget
                 CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
                 RUNTIME DESTINATION bin/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
         )
     else()
         # Install rule to ensure that our runtime and linker files are in the expected, platform-specific folders
         install(
-                TARGETS project_name
-                EXPORT project_nameTarget
+                TARGETS carbon-resources
+                EXPORT carbon-resourcesTarget
                 CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
                 LIBRARY DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
                 ARCHIVE DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
@@ -119,11 +180,26 @@ if(CMAKE_PROJECT_NAME STREQUAL project_name)
         install(DIRECTORY include DESTINATION . FILES_MATCHING PATTERN "*.h")
 
         install(
-                EXPORT project_nameTarget
-                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/project_name
-                FILE project_name.cmake)
+                EXPORT carbon-resourcesTarget
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/carbon-resources
+                FILE carbon-resources.cmake)
         install(
-                FILES project_nameConfig.cmake
-                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/project_name)
+                FILES carbon-resourcesConfig.cmake
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/carbon-resources)
     endif()
+
+    #if(WIN32)
+    #    add_custom_command(
+    #        TARGET carbon-resources POST_BUILD
+    #        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:carbon-resources> $<TARGET_FILE_DIR:carbon-resources>
+    #        COMMAND_EXPAND_LISTS
+    #    )
+    #elseif(APPLE)
+    #        add_custom_command(
+    #        TARGET carbon-resources POST_BUILD
+    #        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    #        $<TARGET_FILE_DIR:ccp::log>/libCcpLog.dylib $<TARGET_FILE_DIR:carbon-resources>
+    #        COMMAND_EXPAND_LISTS
+    #)
+    #endif()
 endif()

@@ -6,8 +6,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'project_name'
-copyright = '2024, CCP Games'
+project = 'carbon-resources'
+copyright = '2025, CCP Games'
 author = 'CCP Games'
 release = '0.1'
 
