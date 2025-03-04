@@ -23,13 +23,18 @@
 
 #include "ResourceImpl.h"
 
-class CarbonResources::BundleResource::BundleResourceImpl : public CarbonResources::Resource::ResourceImpl
+namespace CarbonResources
 {
-public:
-	BundleResourceImpl( const BundleResourceParams& params );
 
-    ~BundleResourceImpl();
+    class BundleResourceImpl : public ResourceImpl
+    {
+    public:
+	    BundleResourceImpl( const BundleResourceParams& params );
 
-};
+        ~BundleResourceImpl();
+
+    };
+
+}
 
 #endif // BundleResourceImpl_H

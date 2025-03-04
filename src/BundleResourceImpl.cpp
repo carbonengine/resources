@@ -7,13 +7,13 @@
 namespace CarbonResources
 {
 
-    BundleResource::BundleResourceImpl::BundleResourceImpl( const BundleResourceParams& params ):
+    BundleResourceImpl::BundleResourceImpl( const BundleResourceParams& params ):
       ResourceImpl(params)
     {
 
     }
 
-    BundleResource::BundleResourceImpl::~BundleResourceImpl()
+    BundleResourceImpl::~BundleResourceImpl()
     {
 
     }

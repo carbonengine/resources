@@ -23,19 +23,26 @@
 
 #include "ResourceImpl.h"
 
-class CarbonResources::BinaryResource::BinaryResourceImpl : public CarbonResources::Resource::ResourceImpl
+namespace CarbonResources
 {
-public:
-	BinaryResourceImpl( const BinaryResourceParams& params );
 
-    ~BinaryResourceImpl();
+    class BinaryResourceImpl : public ResourceImpl
+    {
+    public:
+	    BinaryResourceImpl( const BinaryResourceParams& params );
 
-    DocumentParameter<unsigned int> GetBinaryOperation() const;
+	    ~BinaryResourceImpl();
 
-private:
+	    DocumentParameter<unsigned int> GetBinaryOperation() const;
 
-    DocumentParameter<unsigned int> m_binaryOperation;
+	    virtual Result ImportFromYaml( YAML::Node& resource, const Version& documentVersion ) override;
 
-};
+	    virtual Result ExportToYaml( YAML::Emitter& out, const Version& documentVersion ) override;
+
+    private:
+	    DocumentParameter<unsigned int> m_binaryOperation = DocumentParameter<unsigned int>( { 0, 0, 0 }, "BinaryOperation" );
+    };
+
+}
 
 #endif // BinaryResourceImpl_H

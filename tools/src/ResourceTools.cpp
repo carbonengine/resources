@@ -2,6 +2,7 @@
 #include "ResourceTools.h"
 
 #include <sstream>
+#include <fstream>
 
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 #include <cryptopp/hex.h>
@@ -72,9 +73,30 @@ namespace ResourceTools
 	  return true;
   }
 
-  bool GetFileData(const std::string& path, std::string* data)
+  bool GetLocalFileData( const std::string& filepath, std::string& data )
   {
-	  return false;
+	  std::ifstream inputStream;
+
+	  inputStream.open( filepath, std::ios::in | std::ios::binary );
+
+	  if( !inputStream )
+	  {
+		  return false;
+	  }
+
+      inputStream.seekg( 0, std::ios::end );
+
+      size_t fileSize = inputStream.tellg();
+
+      inputStream.seekg( 0, std::ios::beg );
+
+      data.clear();
+
+      data.resize( fileSize );
+
+      inputStream.read( data.data(), fileSize );
+
+	  return true;
   }
 
   bool DownloadFile( const std::string& url, const std::string& outputPath )
@@ -95,6 +117,22 @@ namespace ResourceTools
   bool CreatePatch(const std::string& previousData, const std::string& latestData, std::string& outputPath)
   {
 	  return false;
+  }
+
+  bool SaveFile(const std::string path, const std::string& data)
+  {
+	  std::ofstream out( path );
+
+      if (!out)
+      {
+		  return false;
+      }
+
+      out << data;
+
+      out.close();
+
+	  return true;
   }
 
 }

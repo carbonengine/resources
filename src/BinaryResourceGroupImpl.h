@@ -23,26 +23,28 @@
 
 #include "ResourceGroupImpl.h"
 
-class CarbonResources::BinaryResourceGroup::BinaryResourceGroupImpl : public CarbonResources::BinaryResourceGroup::ResourceGroupImpl
+namespace CarbonResources
 {
-public:
+    class BinaryResourceGroupImpl : public ResourceGroupImpl
+    {
+    public:
+		BinaryResourceGroupImpl( const std::string& relativePath );
 
-	BinaryResourceGroupImpl( );
+	    ~BinaryResourceGroupImpl();
 
-    ~BinaryResourceGroupImpl();
+    private:
 
-private:
+	    virtual std::string Type() const override;
 
-    virtual std::string Type() const override;
+	    virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
 
-    virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
+	    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 
-    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
+	    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
 
-    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
+	    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSVFile( ResourceGroupImportFromFileParams& params ) override;
+    };
 
-    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSVFile( const ResourceGroupImportFromFileParams& params ) override;
-
-};
+}
 
 #endif // BinaryResourceGroupImpl_H

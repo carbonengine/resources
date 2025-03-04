@@ -28,16 +28,13 @@
 
 namespace CarbonResources
 {
+    class BinaryResourceGroupImpl;
 
     class API BinaryResourceGroup final: public ResourceGroup
     {
-
-    private:
-	    class BinaryResourceGroupImpl;
-
     public:
 
-	    BinaryResourceGroup();
+	    BinaryResourceGroup( const std::string& relativePath );
 
 	    ~BinaryResourceGroup();
 

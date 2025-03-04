@@ -28,6 +28,7 @@
 
 namespace CarbonResources
 {
+    // TODO This is not an enum, move it out of here
     struct Version
     {
 		bool operator>( Version value ) const
@@ -243,7 +244,10 @@ namespace CarbonResources
 	    MALFORMED_RESOURCE_INPUT,
 	    FILE_TYPE_MISMATCH,
 		DOCUMENT_VERSION_UNSUPPORTED,
-		REQUIRED_RESOURCE_PARAMETER_NOT_SET
+		REQUIRED_RESOURCE_PARAMETER_NOT_SET,
+		FAILED_TO_OPEN_LOCAL_FILE,
+        FAILED_TO_OPEN_REMOTE_FILE,
+		INVALID_FILENAME
     };
 
     static const Version S_LIBRARY_VERSION = { 1, 0, 0 };
@@ -256,6 +260,7 @@ namespace CarbonResources
 		{                                                    \
 			return Result::SUCCESS;                          \
 		}
+
 
 }
 

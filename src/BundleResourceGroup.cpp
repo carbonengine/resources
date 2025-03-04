@@ -4,8 +4,8 @@
 namespace CarbonResources
 {
 
-    BundleResourceGroup::BundleResourceGroup():
-		ResourceGroup( new BundleResourceGroupImpl()),
+    BundleResourceGroup::BundleResourceGroup( const std::string& relativePath ) :
+	    ResourceGroup( new BundleResourceGroupImpl( relativePath ) ),
 		m_impl( reinterpret_cast<BundleResourceGroupImpl*>( ResourceGroup::m_impl ) )
     {
 

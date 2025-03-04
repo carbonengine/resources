@@ -23,31 +23,36 @@
 
 #include "ResourceGroupImpl.h"
 
-class CarbonResources::PatchResourceGroup::PatchResourceGroupImpl : public CarbonResources::PatchResourceGroup::ResourceGroupImpl
+namespace CarbonResources
 {
-public:
 
-	PatchResourceGroupImpl( );
+    class PatchResourceGroupImpl : public ResourceGroupImpl
+    {
+    public:
 
-    ~PatchResourceGroupImpl();
+	    PatchResourceGroupImpl( const std::string& relativePath );
 
-	Result CreatePatch( const PatchCreateParams& params ) const;
+        ~PatchResourceGroupImpl();
 
-private:
+	    Result CreatePatch( const PatchCreateParams& params ) const;
 
-	virtual std::string Type() const override;
+        Result SetResourceGroupPath( const std::string& resourceGroupPath );
 
-    virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
+    private:
 
-    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
+	    virtual std::string Type() const override;
 
-    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
+        virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
 
-    
+        virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 
-protected:
+        virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
 
-    DocumentParameter<std::string> m_resourceGroupPathParameter = DocumentParameter<std::string>( { 0, 1, 0 }, "ResourceGroup" );
-};
+    protected:
+
+        DocumentParameter<std::string> m_resourceGroupPathParameter = DocumentParameter<std::string>( { 0, 1, 0 }, "ResourceGroup" );
+    };
+
+}
 
 #endif // PatchResourceGroupImpl_H

@@ -33,7 +33,7 @@ namespace ResourceTools
 
     bool GenerateFowlerNollVoChecksum( const std::string& input, std::string& checksum );
 
-    bool GetFileData( const std::string& path, std::string* data );
+    bool GetLocalFileData( const std::string& filepath, std::string& data );
 
     bool DownloadFile( const std::string& url, const std::string& outputPath );
 
@@ -42,6 +42,8 @@ namespace ResourceTools
     bool GZipUncompressData( const unsigned char* dataToUncompress, unsigned long dataToUncompressSize, unsigned char* uncompressedData, unsigned long& uncompressedDataSize );
 
     bool CreatePatch(const std::string& data1, const std::string& data2, std::string& outputPath);
+
+    bool SaveFile( const std::string path, const std::string& data);
 
 }
 

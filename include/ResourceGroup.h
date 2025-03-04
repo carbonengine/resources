@@ -24,6 +24,7 @@
 #include "Enums.h"
 #include <memory>
 #include <string>
+#include "Resource.h"
 
 namespace CarbonResources
 {
@@ -43,18 +44,21 @@ namespace CarbonResources
 
     struct API PatchCreateParams
 	{
+		ResourceSourceSettings resourceSourceSettings;
+
+		ResourceGroup* latestResourceGroup = nullptr;
+
 		ResourceGroup* previousResourceGroup = nullptr;
 
 		std::string outputDirectoryPath = "";
 
 		PatchResourceGroup* patchResourceGroup = nullptr;
-
-        std::string basePath = "";
+ 
 	};
 
     struct API ResourceGroupImportFromFileParams
 	{
-		std::string inputFilename = "";
+		ResourceGetDataParams dataParams;
 	};
 
     struct API ResourceGroupExportToFileParams
@@ -64,17 +68,17 @@ namespace CarbonResources
         Version outputDocumentVersion = S_DOCUMENT_VERSION;
 	};
 
+    class ResourceGroupImpl;
+
     class API ResourceGroup
     {
 	protected:
-		class ResourceGroupImpl;
-
         ResourceGroup( ResourceGroupImpl* impl );
 
 		ResourceGroupImpl* m_impl;
 
     public:
-	    ResourceGroup();
+	    ResourceGroup(const std::string& relativePath); // TODO should be an input struct
 
 	    virtual ~ResourceGroup();
 
@@ -82,10 +86,15 @@ namespace CarbonResources
 
         Result CreatePatch( const PatchCreateParams& params ) const;
 
-        Result ImportFromFile( const ResourceGroupImportFromFileParams& params ) const;
+        Result ImportFromFile( ResourceGroupImportFromFileParams& params ) const;
 
         Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
 
+    private:
+
+		Result AddResource( const Resource& resource );
+
+        friend class ResourceGroupImpl;
     };
 
 }

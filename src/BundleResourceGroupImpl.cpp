@@ -1,42 +1,54 @@
 #include "BundleResourceGroupImpl.h"
 
 #include "BundleResource.h"
+#include "BundleResourceImpl.h"
 
 #include <yaml-cpp/yaml.h>
 
 namespace CarbonResources
 {
 
-    BundleResourceGroup::BundleResourceGroupImpl::BundleResourceGroupImpl( )
+    BundleResourceGroupImpl::BundleResourceGroupImpl( const std::string& relativePath ):
+	    ResourceGroupImpl(relativePath)
     {
 
     }
 
-    BundleResourceGroup::BundleResourceGroupImpl::~BundleResourceGroupImpl()
+    BundleResourceGroupImpl::~BundleResourceGroupImpl()
     {
 
     }
 
-    std::string BundleResourceGroup::BundleResourceGroupImpl::Type() const
+    std::string BundleResourceGroupImpl::Type() const
 	{
 		return "BundleGroup";
 	}
 
-    Resource* BundleResourceGroup::BundleResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource )
+    Resource* BundleResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource )
 	{
-		CarbonResources::BundleResourceParams bundleResourceParams;
+		BundleResource* createdResource = new BundleResource( BundleResourceParams{} );
 
-		bundleResourceParams.ImportFromYaml( resource, m_versionParameter.GetValue() );
+		Result importFromYamlResult = createdResource->m_impl->ImportFromYaml( resource, m_versionParameter.GetValue() );
 
-		return new BundleResource( bundleResourceParams );
+		if( importFromYamlResult != Result::SUCCESS )
+		{
+			delete createdResource;
+			return nullptr;
+		}
+		else
+		{
+			return createdResource;
+		}
+
+		return nullptr;
 	}
 
-    Result BundleResourceGroup::BundleResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
+    Result BundleResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
     {
 		return Result::SUCCESS;
     }
 
-    Result BundleResourceGroup::BundleResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const
+    Result BundleResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const
     {
 		return Result::SUCCESS;
     }

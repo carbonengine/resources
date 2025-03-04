@@ -2,61 +2,8 @@
 
 #include "ResourceImpl.h"
 
-#include <yaml-cpp/yaml.h>
-
 namespace CarbonResources
 {
-
-
-
-    ResourceParams::ResourceParams()
-    {
-    }
-
-    Result ResourceParams::ImportFromYaml(YAML::Node& resource, const Version& documentVersion)
-    {
-        
-        if (relativePath.IsParameterExpectedInDocumentVersion(documentVersion))
-        {
-			//TODO handle failure
-			relativePath = resource[relativePath.GetTag()].as<std::string>();
-        }
-
-        if( location.IsParameterExpectedInDocumentVersion( documentVersion ) )
-		{
-			//TODO handle failure
-			location = resource[location.GetTag()].as<std::string>();
-		}
-
-        if( checksum.IsParameterExpectedInDocumentVersion( documentVersion ) )
-		{
-			//TODO handle failure
-			checksum = resource[checksum.GetTag()].as<std::string>();
-		}
-
-        if( uncompressedSize.IsParameterExpectedInDocumentVersion( documentVersion ) )
-		{
-			//TODO handle failure
-			uncompressedSize = resource[uncompressedSize.GetTag()].as<unsigned long>();
-		}
-
-        if( compressedSize.IsParameterExpectedInDocumentVersion( documentVersion ) )
-		{
-			//TODO handle failure
-			compressedSize = resource[compressedSize.GetTag()].as<unsigned long>();
-		}
-
-        // TODO this is an example of how this could be managed, nothing yet setup to formally test
-		BINARY_GUARD_RETURN( 1,1,0 );
-
-	    if( something.IsParameterExpectedInDocumentVersion( documentVersion ) )
-	    {
-			//TODO handle failure
-		    something = resource[something.GetTag()].as<unsigned long>();
-	    }
-
-	    return Result::SUCCESS;
-    }
 
     Resource::Resource( const ResourceParams& params ) :
 	    m_impl( new ResourceImpl(params) )
@@ -73,8 +20,9 @@ namespace CarbonResources
 		delete m_impl;
     }
 
-	Result Resource::ExportToYaml( YAML::Emitter& out, const Version& documentVersion )
+	Result Resource::Export( const Version& documentVersion )
     {
+		/*
 		DocumentParameter<std::string> relativePath = GetRelativePath();
 
         if (relativePath.IsParameterExpectedInDocumentVersion(documentVersion))
@@ -154,8 +102,10 @@ namespace CarbonResources
 			out << YAML::Key << something.GetTag();
 			out << YAML::Value << something.GetValue();
 		}
+        */
 
 	    return Result::SUCCESS;
+
     }
 
     /// @brief Returns relative path of a resource
@@ -163,9 +113,9 @@ namespace CarbonResources
     /// @param data_size size of data passed in
     /// @param checksum will contain the resulting checksum on success
     /// @return true on success, false on failure
-    DocumentParameter<std::string> Resource::GetRelativePath() const
+	std::string Resource::GetRelativePath() const
     {
-		return m_impl->GetResourceParams().relativePath;
+		return m_impl->GetRelativePath().GetValue().ToString();
     }
 
     /// @brief Returns cdn location of a resource
@@ -173,9 +123,9 @@ namespace CarbonResources
     /// @param data_size size of data passed in
     /// @param checksum will contain the resulting checksum on success
     /// @return true on success, false on failure
-    DocumentParameter<std::string> Resource::GetLocation() const
+    std::string Resource::GetLocation() const
     {
-		return m_impl->GetResourceParams().location;
+		return m_impl->GetLocation().GetValue();
     }
 
     /// @brief Returns data checksum of a resource
@@ -183,9 +133,9 @@ namespace CarbonResources
     /// @param data_size size of data passed in
     /// @param checksum will contain the resulting checksum on success
     /// @return true on success, false on failure
-    DocumentParameter<std::string> Resource::GetChecksum() const
+    std::string Resource::GetChecksum() const
     {
-		return m_impl->GetResourceParams().checksum;
+		return m_impl->GetChecksum().GetValue();
     }
 
     /// @brief Returns uncompressed size of resource
@@ -193,9 +143,9 @@ namespace CarbonResources
     /// @param data_size size of data passed in
     /// @param checksum will contain the resulting checksum on success
     /// @return true on success, false on failure
-    DocumentParameter<unsigned long> Resource::GetUncompressedSize() const
+    unsigned long Resource::GetUncompressedSize() const
     {
-		return m_impl->GetResourceParams().uncompressedSize;
+		return m_impl->GetUncompressedSize().GetValue();
     }
 
     /// @brief Returns compressed size of resource
@@ -203,21 +153,23 @@ namespace CarbonResources
     /// @param data_size size of data passed in
     /// @param checksum will contain the resulting checksum on success
     /// @return true on success, false on failure
-    DocumentParameter<unsigned long> Resource::GetCompressedSize() const
+    unsigned long Resource::GetCompressedSize() const
     {
-		return m_impl->GetResourceParams().compressedSize;
+		return m_impl->GetCompressedSize().GetValue();
     }
 
 
-
-    DocumentParameter<unsigned long> Resource::GetSomething() const
+    // TODO remove this something tag, it is just a thought exercise
+    unsigned long Resource::GetSomething() const
     {
-		return m_impl->GetResourceParams().something;
+		return m_impl->GetSomething().GetValue();
     }
 
-    Result Resource::GetData( const ResourceGetDataParams& params ) const
+    
+    Result Resource::GetData( ResourceGetDataParams& params ) const
     {
 		return m_impl->GetData( params );
     }
+    
 
 }

@@ -4,8 +4,8 @@
 namespace CarbonResources
 {
 
-    BinaryResourceGroup::BinaryResourceGroup():
-	    ResourceGroup( new BinaryResourceGroupImpl() ),
+    BinaryResourceGroup::BinaryResourceGroup( const std::string& relativePath ) :
+	    ResourceGroup( new BinaryResourceGroupImpl( relativePath ) ),
 	    m_impl(reinterpret_cast<BinaryResourceGroupImpl*>(ResourceGroup::m_impl))
     {
 

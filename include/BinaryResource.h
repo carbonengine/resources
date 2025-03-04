@@ -34,35 +34,29 @@ namespace YAML
 namespace CarbonResources
 {
 
-    class API BinaryResourceParams : public ResourceParams
+    struct API BinaryResourceParams : public ResourceParams
     {
-	public:
-        BinaryResourceParams();
 
-        virtual Result ImportFromYaml( YAML::Node& resource, const Version& documentVersion ) override; // TODO out of public API
-
-		DocumentParameter<unsigned int> binaryOperation = DocumentParameter<unsigned int>( { 0, 0, 0 }, "BinaryOperation" );
+        unsigned int binaryOperation = 0;
 
     };
 
+    class BinaryResourceImpl;
+	class BinaryResourceGroupImpl;
+
     class API BinaryResource final : public Resource
     {
-
-    private:
-	    class BinaryResourceImpl;
-
     public:
         BinaryResource( const BinaryResourceParams& params );
 
 	    ~BinaryResource();
 
-        virtual Result ExportToYaml( YAML::Emitter& out, const Version& documentVersion ) override; //TODO out of API
-
-        DocumentParameter<unsigned int> GetBinaryOperation() const;
+        unsigned int GetBinaryOperation() const;
 
     private:
 		BinaryResourceImpl* m_impl;
 
+        friend class BinaryResourceGroupImpl;
     };
 
 }

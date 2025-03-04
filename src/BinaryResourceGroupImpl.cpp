@@ -1,5 +1,6 @@
 #include "BinaryResourceGroupImpl.h"
 #include "BinaryResource.h"
+#include "BinaryResourceImpl.h"
 
 #include <yaml-cpp/yaml.h>
 #include <fstream>
@@ -7,51 +8,64 @@
 namespace CarbonResources
 {
 
-    BinaryResourceGroup::BinaryResourceGroupImpl::BinaryResourceGroupImpl( )
+    BinaryResourceGroupImpl::BinaryResourceGroupImpl( const std::string& relativePath ):
+	    ResourceGroupImpl(relativePath)
     {
 
     }
 
-    BinaryResourceGroup::BinaryResourceGroupImpl::~BinaryResourceGroupImpl()
+    BinaryResourceGroupImpl::~BinaryResourceGroupImpl()
     {
 
     }
 
-    std::string BinaryResourceGroup::BinaryResourceGroupImpl::Type() const
+    std::string BinaryResourceGroupImpl::Type() const
     {
         return "BinaryGroup";
     }
 
-    Resource* BinaryResourceGroup::BinaryResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource )
+    Resource* BinaryResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource )
 	{
-		CarbonResources::BinaryResourceParams binaryResourceParams;
+		BinaryResource* createdResource = new BinaryResource( BinaryResourceParams{} );
 
-		binaryResourceParams.ImportFromYaml( resource, m_versionParameter.GetValue() );
+        Result importFromYamlResult = createdResource->m_impl->ImportFromYaml( resource, m_versionParameter.GetValue() );
 
-		return new BinaryResource( binaryResourceParams );
+		if( importFromYamlResult != Result::SUCCESS )
+		{
+			delete createdResource;
+			return nullptr;
+		}
+		else
+		{
+			return createdResource;
+		}
+
+		return nullptr;
 	}
 
-    Result BinaryResourceGroup::BinaryResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
+    Result BinaryResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
     {
 		return Result::SUCCESS;
     }
 
-    Result BinaryResourceGroup::BinaryResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const
+    Result BinaryResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const
     {
         return Result::SUCCESS;
     }
 
-    Result BinaryResourceGroup::BinaryResourceGroupImpl::ImportFromCSVFile( const ResourceGroupImportFromFileParams& params )
+    Result BinaryResourceGroupImpl::ImportFromCSVFile( ResourceGroupImportFromFileParams& params )
 	{
-        // Note: code duplication with ResourceGroup deemed not important as this method is depricated and to be removed
-		std::ifstream inputStream;
+        // Note: code duplication with ResourceGroup deemed not that important as this method is depricated and to be removed
+		Result getDataResult = GetData( params.dataParams );
 
-		inputStream.open( params.inputFilename, std::ios::in );
-
-		if( !inputStream )
+		if( getDataResult != Result::SUCCESS )
 		{
 			return Result::FAILED_TO_OPEN_FILE;
 		}
+
+		std::stringstream inputStream;
+
+		inputStream << params.dataParams.data;
 
 		std::string stringIn;
 
@@ -116,10 +130,8 @@ namespace CarbonResources
 			CarbonResources::BinaryResource* binaryResource = new CarbonResources::BinaryResource( binaryResourceParams );
 
             m_resourcesParameter.PushBack( binaryResource );
-			//m_resources.push_back( binaryResource );
-		}
 
-		inputStream.close();
+		}
 
 		return Result::SUCCESS;
 	}

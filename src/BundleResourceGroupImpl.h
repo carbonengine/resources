@@ -23,24 +23,29 @@
 
 #include "ResourceGroupImpl.h"
 
-class CarbonResources::BundleResourceGroup::BundleResourceGroupImpl : public CarbonResources::BundleResourceGroup::ResourceGroupImpl
+namespace CarbonResources
 {
-public:
 
-	BundleResourceGroupImpl( );
+    class BundleResourceGroupImpl : public ResourceGroupImpl
+    {
+    public:
 
-    ~BundleResourceGroupImpl();
+	    BundleResourceGroupImpl( const std::string& relativePath );
 
-private:
+        ~BundleResourceGroupImpl();
 
-    virtual std::string Type() const override;
+    private:
 
-    virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
+        virtual std::string Type() const override;
 
-    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
+        virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
 
-    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
+        virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 
-};
+        virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
+
+    };
+
+}
 
 #endif // BundleResourceGroupImpl_H

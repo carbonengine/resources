@@ -4,18 +4,21 @@
 
 #include <ResourceTools.h>
 
+#include <ResourceGroup.h>
+
 namespace CarbonResources
 {
 
-    PatchResource::PatchResourceImpl::PatchResourceImpl( const PatchResourceParams& params ):
+    PatchResourceImpl::PatchResourceImpl( const PatchResourceParams& params ):
       ResourceImpl(params)
     {
 
     }
 
-    PatchResource::PatchResourceImpl::~PatchResourceImpl()
+    PatchResourceImpl::~PatchResourceImpl()
     {
 
     }
+
 
 }

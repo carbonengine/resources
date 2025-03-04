@@ -4,24 +4,61 @@
 
 #include <ResourceTools.h>
 
+#include <yaml-cpp/yaml.h>
+
 namespace CarbonResources
 {
 
-    BinaryResource::BinaryResourceImpl::BinaryResourceImpl( const BinaryResourceParams& params ):
-        ResourceImpl(params),
-	    m_binaryOperation(params.binaryOperation)
+    BinaryResourceImpl::BinaryResourceImpl( const BinaryResourceParams& params ):
+        ResourceImpl(params)
+    {
+		m_binaryOperation = params.binaryOperation;
+    }
+
+    BinaryResourceImpl::~BinaryResourceImpl()
     {
 
     }
 
-    BinaryResource::BinaryResourceImpl::~BinaryResourceImpl()
-    {
-
-    }
-
-    DocumentParameter<unsigned int> BinaryResource::BinaryResourceImpl::GetBinaryOperation() const
+    DocumentParameter<unsigned int> BinaryResourceImpl::GetBinaryOperation() const
 	{
 		return m_binaryOperation;
 	}
+
+    Result BinaryResourceImpl::ImportFromYaml( YAML::Node& resource, const Version& documentVersion )
+    {
+		if( m_binaryOperation.IsParameterExpectedInDocumentVersion( documentVersion ) )
+		{
+			//TODO handle failure
+			m_binaryOperation = resource[m_binaryOperation.GetTag()].as<unsigned long>();
+		}
+
+		return ResourceImpl::ImportFromYaml( resource, documentVersion );
+    }
+
+    Result BinaryResourceImpl::ExportToYaml( YAML::Emitter& out, const Version& documentVersion )
+    {
+		Result resourceExportResult = ResourceImpl::ExportToYaml( out, documentVersion );
+
+		if( resourceExportResult != Result::SUCCESS )
+		{
+			return resourceExportResult;
+		}
+
+        // Binary Operation
+		if( m_binaryOperation.IsParameterExpectedInDocumentVersion( documentVersion ) )
+		{
+			if( !m_binaryOperation.HasValue() )
+			{
+				return Result::REQUIRED_RESOURCE_PARAMETER_NOT_SET;
+			}
+
+			out << YAML::Key << m_binaryOperation.GetTag();
+			out << YAML::Value << m_binaryOperation.GetValue();
+		}
+
+		return Result::SUCCESS;
+    }
+    
 
 }

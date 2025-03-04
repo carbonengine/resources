@@ -1,37 +1,49 @@
 #include "PatchResourceGroupImpl.h"
 
 #include "PatchResource.h"
+#include "PatchResourceImpl.h"
 
 #include <yaml-cpp/yaml.h>
 
 namespace CarbonResources
 {
 
-    PatchResourceGroup::PatchResourceGroupImpl::PatchResourceGroupImpl( )
+    PatchResourceGroupImpl::PatchResourceGroupImpl( const std::string& relativePath ):
+	    ResourceGroupImpl(relativePath)
     {
 
     }
 
-    PatchResourceGroup::PatchResourceGroupImpl::~PatchResourceGroupImpl()
+    PatchResourceGroupImpl::~PatchResourceGroupImpl()
     {
 
     }
 
-    std::string PatchResourceGroup::PatchResourceGroupImpl::Type() const
+    std::string PatchResourceGroupImpl::Type() const
     {
 		return "PatchGroup";
     }
 
-	Resource* PatchResourceGroup::PatchResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource )
+	Resource* PatchResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource )
 	{
-		CarbonResources::PatchResourceParams patchResourceParams;
+		PatchResource* createdResource = new PatchResource( PatchResourceParams{} );
 
-		patchResourceParams.ImportFromYaml( resource, m_versionParameter.GetValue() );
+		Result importFromYamlResult = createdResource->m_impl->ImportFromYaml( resource, m_versionParameter.GetValue() );
 
-		return new PatchResource( patchResourceParams );
+		if( importFromYamlResult != Result::SUCCESS )
+		{
+			delete createdResource;
+			return nullptr;
+		}
+		else
+		{
+			return createdResource;
+		}
+
+		return nullptr;
 	}
 
-    Result PatchResourceGroup::PatchResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
+    Result PatchResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
     {
 		if( m_resourceGroupPathParameter.IsParameterExpectedInDocumentVersion( m_versionParameter.GetValue() ) )
 		{
@@ -41,13 +53,20 @@ namespace CarbonResources
 		return Result::SUCCESS;
     }
 
-    Result PatchResourceGroup::PatchResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const
+    Result PatchResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const
     {
         if (m_resourceGroupPathParameter.IsParameterExpectedInDocumentVersion(outputDocumentVersion))
         {
 			out << YAML::Key << m_resourceGroupPathParameter.GetTag();
 			out << YAML::Value << m_resourceGroupPathParameter.GetValue();
         }
+
+		return Result::SUCCESS;
+    }
+
+    Result PatchResourceGroupImpl::SetResourceGroupPath( const std::string& resourceGroupPath )
+    {
+		m_resourceGroupPathParameter = resourceGroupPath;
 
 		return Result::SUCCESS;
     }

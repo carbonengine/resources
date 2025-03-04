@@ -38,12 +38,11 @@ namespace CarbonResources
 
     };
 
+    class BundleResourceImpl;
+	class BundleResourceGroupImpl;
+
     class API BundleResource final : public Resource
     {
-
-    private:
-	    class BundleResourceImpl;
-
     public:
         BundleResource( const BundleResourceParams& params );
 
@@ -52,6 +51,7 @@ namespace CarbonResources
     private:
 		BundleResourceImpl* m_impl;
 
+		friend class BundleResourceGroupImpl;
     };
 
 }

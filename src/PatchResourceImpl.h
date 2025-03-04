@@ -23,13 +23,19 @@
 
 #include "ResourceImpl.h"
 
-class CarbonResources::PatchResource::PatchResourceImpl : public CarbonResources::Resource::ResourceImpl
+namespace CarbonResources
 {
-public:
-	PatchResourceImpl( const PatchResourceParams& params );
+    class ResourceGroup;
 
-    ~PatchResourceImpl();
+    class PatchResourceImpl : public ResourceImpl
+    {
+    public:
+	    PatchResourceImpl( const PatchResourceParams& params );
 
-};
+	    ~PatchResourceImpl();
+    };
+
+
+}
 
 #endif // PatchResourceImpl_H

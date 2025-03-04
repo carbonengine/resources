@@ -36,176 +36,74 @@ namespace YAML
 namespace CarbonResources
 {
     
-    
-    template <typename T>
-    class DocumentParameter
+    struct API ResourceParams
     {
-	public:
-        DocumentParameter(Version version, const std::string& tag):
-			m_version(version),
-			m_tag(tag)
-        {
-        }
+		std::string relativePath = "";
 
-        void operator=(T value)
-        {
-			m_value = value;
-        }
+		std::string location = "";
 
-        T GetValue() const
-        {
-			return m_value.value();
-        }
+		std::string checksum = "";
 
-        bool HasValue()
-        {
-			return m_value.has_value();
-        }
+		unsigned long compressedSize = 0;
 
-        Version GetVersionTag()
-        {
-			return m_version;
-        }
+		unsigned long uncompressedSize = 0;
 
-        bool IsParameterExpectedInDocumentVersion(Version documentVersion) const
-        {
-			return documentVersion >= m_version;
-        }
-
-        std::string GetTag( ) const
-        {
-			return m_tag;
-        }
-
-	protected:
-		Version m_version;
-		std::optional<T> m_value;
-		std::string m_tag;
+		unsigned long something = 0;
     };
 
-    template <typename T>
-	class DocumentParameterCollection : public DocumentParameter<std::vector<T>*>
-	{
-	public:
-		DocumentParameterCollection( Version version, const std::string& tag ) :
-			DocumentParameter<std::vector<T>*>( version, tag )
-		{
-			this->m_value = &m_collection;
-		}
-
-        void PushBack(T attribute)
-        {
-			m_collection.push_back( attribute );
-        }
-
-        void Remove( typename std::vector<T>::const_iterator attributeIterator )
-        {
-			m_collection.erase( attributeIterator );
-        }
-
-        typename std::vector<T>::iterator begin()
-		{
-			return m_collection.begin();
-		}
-
-        typename std::vector<T>::const_iterator begin() const
-		{
-			return m_collection.begin();
-		}
-
-        typename std::vector<T>::const_iterator cbegin()
-		{
-			return m_collection.begin();
-		}
-
-        typename std::vector<T>::iterator end()
-		{
-			return m_collection.end();
-		}
-
-        typename std::vector<T>::const_iterator end() const
-		{
-			return m_collection.end();
-		}
-
-        typename std::vector<T>::const_iterator cend()
-		{
-			return m_collection.end();
-		}
-
-	protected:
-
-        std::vector<T> m_collection;
-
-	};
-
-    class API ResourceParams
+    struct API ResourceSourceSettings
     {
-	public:
-		ResourceParams();
+		std::string developmentLocalBasePath = "";
 
-        virtual Result ImportFromYaml( YAML::Node& resource, const Version& documentVersion ); //TODO Get out of public api
+		std::string productionLocalBasePath = "";
 
-        // Parameters for document version 0.0.0
-        DocumentParameter<std::string> relativePath = DocumentParameter<std::string>( { 0, 0, 0 }, "RelativePath" );
-
-        DocumentParameter<std::string> location = DocumentParameter<std::string>( { 0, 0, 0 }, "Location" );
-
-        DocumentParameter<std::string> checksum = DocumentParameter<std::string>( { 0, 0, 0 }, "Checksum" );
-
-        DocumentParameter<unsigned long> compressedSize = DocumentParameter<unsigned long>( { 0, 0, 0 }, "CompressedSize" );
-
-        DocumentParameter<unsigned long> uncompressedSize = DocumentParameter<unsigned long>( { 0, 0, 0 }, "UncompressedSize" );
-
-        // TODO remove, just for thought exercise of how a parameter could be added which causes a binary missmatch and handling that
-        // See macro in cpp file
-        DocumentParameter<unsigned long> something = DocumentParameter<unsigned long>( { 0, 1, 0 }, "something" );
-
+		std::string productionRemoteBaseUrl = "";
     };
 
     struct API ResourceGetDataParams
 	{
-		std::string basePath = "";
+		ResourceSourceSettings resourceSourceSettings;
 
-        std::string* data;
+        std::string data;
 
 	};
+  
+    class ResourceImpl;
 
     class API Resource
     {
     protected:
-        class ResourceImpl;
-
         Resource( ResourceImpl* impl );
 
         ResourceImpl* m_impl;
 
     public:
-		Resource( const ResourceParams& params );
+		Resource( const ResourceParams& params );   // TODO this should not be possible publicly
 
 	    virtual ~Resource();
 
-        virtual Result ExportToYaml( YAML::Emitter& out, const Version& documentVersion );
+        virtual Result Export( const Version& documentVersion );    // TODO arguments should be a struct
 
         bool operator==( const Resource& other ) const
 		{
-			return GetRelativePath().GetValue() == other.GetRelativePath().GetValue();
+			return GetRelativePath() == other.GetRelativePath();
 		}
 
-        DocumentParameter<std::string> GetRelativePath() const;
+        std::string GetRelativePath() const; // TODO should return a base type, DocumentParameter is internal
 
-        DocumentParameter<std::string> GetLocation() const;
+        std::string GetLocation() const;
 
-        DocumentParameter<std::string> GetChecksum() const;
+        std::string GetChecksum() const;
 
-        DocumentParameter<unsigned long> GetUncompressedSize() const;
+        unsigned long GetUncompressedSize() const;
 
-        DocumentParameter<unsigned long> GetCompressedSize() const;
+        unsigned long GetCompressedSize() const;
 
-        DocumentParameter<unsigned long> GetSomething() const;
+        unsigned long GetSomething() const;
 
-		Result GetData( const ResourceGetDataParams& params ) const;
+		Result GetData( ResourceGetDataParams& params ) const;  //TODO remove from public API
 
+        friend class ResourceGroupImpl;
     };
 
 }

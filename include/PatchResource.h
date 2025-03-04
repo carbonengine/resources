@@ -37,13 +37,12 @@ namespace CarbonResources
         PatchResourceParams();
 
     };
+	
+    class PatchResourceImpl;
+	class PatchResourceGroupImpl;
 
     class API PatchResource final : public Resource
     {
-
-    private:
-	    class PatchResourceImpl;
-
     public:
         PatchResource( const PatchResourceParams& params );
 
@@ -52,6 +51,7 @@ namespace CarbonResources
     private:
 		PatchResourceImpl* m_impl;
 
+        friend class PatchResourceGroupImpl;
     };
 
 }

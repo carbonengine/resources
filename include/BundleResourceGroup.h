@@ -34,15 +34,13 @@ namespace CarbonResources
 	    std::string outputDirectoryPath = "";
     };
 
+    class BundleResourceGroupImpl;
+
     class API BundleResourceGroup final: public ResourceGroup
     {
-
-    private:
-	    class BundleResourceGroupImpl;
-
     public:
 
-	    BundleResourceGroup();
+	    BundleResourceGroup( const std::string& relativePath );
 
 	    ~BundleResourceGroup();
 

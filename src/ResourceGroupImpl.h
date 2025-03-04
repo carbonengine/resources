@@ -21,6 +21,7 @@
 
 #include "ResourceGroup.h"
 #include "Resource.h"
+#include "ResourceImpl.h"
 #include <vector>
 
 namespace YAML
@@ -29,46 +30,48 @@ namespace YAML
     class Node;
 }
 
-class CarbonResources::ResourceGroup::ResourceGroupImpl
+namespace CarbonResources
 {
-public:
 
-	ResourceGroupImpl();
+    class ResourceGroupImpl : public ResourceImpl
+    {
+    public:
+		ResourceGroupImpl( const std::string& relativePath );
 
-    ~ResourceGroupImpl();
+	    ~ResourceGroupImpl();
 
-    Result ImportFromFile( const ResourceGroupImportFromFileParams& params );
+	    Result ImportFromFile( ResourceGroupImportFromFileParams& params );
 
-    Result ExportToFile( const ResourceGroupExportToFileParams& params );
+	    Result ExportToFile( const ResourceGroupExportToFileParams& params );
 
-    Result CreatePatch( const PatchCreateParams& params ) const;
+	    Result CreatePatch( const PatchCreateParams& params ) const;
 
+	    Result AddResource( const Resource& resource );
 
-private:
+    private:
+	    virtual std::string Type() const;
 
-    virtual std::string Type() const;
+	    virtual Resource* CreateResourceFromYaml( YAML::Node& resource );   // TODO this function should match signature of others return Result etc
 
-    virtual Resource* CreateResourceFromYaml( YAML::Node& resource );
+	    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile );
 
-    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile );
+	    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const;
 
-    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const;
+	    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSVFile( ResourceGroupImportFromFileParams& params );
 
-    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSVFile( const ResourceGroupImportFromFileParams& params );
+	    Result ImportFromYamlFile( ResourceGroupImportFromFileParams& params );
 
-    Result ImportFromYamlFile( const ResourceGroupImportFromFileParams& params );
+	    Result ExportYamlToFile( const ResourceGroupExportToFileParams& params ) const;
 
-    Result ExportYamlToFile( const ResourceGroupExportToFileParams& params ) const;
+    protected:
+	    // Document Parameters
+	    DocumentParameter<Version> m_versionParameter = DocumentParameter<Version>( { 1, 0, 0 }, "Version" );
 
-protected:
+	    DocumentParameter<std::string> m_typeParameter = DocumentParameter<std::string>( { 1, 0, 0 }, "Type" );
 
-    // Document Parameters
-	DocumentParameter<Version> m_versionParameter = DocumentParameter<Version>( { 1, 0, 0 }, "Version" );
+	    DocumentParameterCollection<Resource*> m_resourcesParameter = DocumentParameterCollection<Resource*>( { 0, 0, 0 }, "Resources" );
+    };
 
-    DocumentParameter<std::string> m_typeParameter = DocumentParameter<std::string>( { 1, 0, 0 }, "Type" );
-
-    DocumentParameterCollection<Resource*> m_resourcesParameter = DocumentParameterCollection<Resource*>( { 0, 0, 0 }, "Resources" );
-
-};
+}
 
 #endif // ResourceGroupImpl_H

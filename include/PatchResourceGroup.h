@@ -38,18 +38,19 @@ namespace CarbonResources
 	    BundleResourceGroup* bundleResourceGroup = nullptr;
     };
 
+	class PatchResourceGroupImpl;
+
     class API PatchResourceGroup final: public ResourceGroup
     {
 
-    private:
-	    class PatchResourceGroupImpl;
-
     public:
-	    PatchResourceGroup();
+		PatchResourceGroup( const std::string& relativePath );
 
 	    ~PatchResourceGroup();
 
         Result Apply( const PatchApplyParams& params );
+
+        Result SetResourceGroupPath( const std::string& resourceGroupPath ); // TODO don't like this in public API
 
     private:
 
