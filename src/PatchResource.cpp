@@ -20,5 +20,12 @@ namespace CarbonResources
 
     }
 
+    Result PatchResource::GetPathPrefix( std::string& prefix ) const
+    {
+		prefix = "diff";
+
+		return Result::SUCCESS;
+    }
+
 
 }

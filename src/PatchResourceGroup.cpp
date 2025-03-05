@@ -11,14 +11,6 @@ namespace CarbonResources
         
     }
 
-    /*
-    PatchResourceGroup::PatchResourceGroup( const std::string& relativePath, const ResourceGroupImpl* resourceGroup ) :
-	    ResourceGroup( new PatchResourceGroupImpl( relativePath, resourceGroup ) ),
-	    m_impl( reinterpret_cast<PatchResourceGroupImpl*>( ResourceGroup::m_impl ) )
-    {
-    }
-    */
-
     PatchResourceGroup::~PatchResourceGroup()
     {
     }

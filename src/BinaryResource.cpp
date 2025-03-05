@@ -59,6 +59,13 @@ namespace CarbonResources
 
 		return Result::SUCCESS;
     }
+
+    Result BinaryResource::GetPathPrefix( std::string& prefix ) const
+    {
+		prefix = "app";
+
+		return Result::SUCCESS;
+    }
     
 
 }

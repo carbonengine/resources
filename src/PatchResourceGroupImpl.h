@@ -32,8 +32,6 @@ namespace CarbonResources
 
         PatchResourceGroupImpl( const std::string& relativePath );
 
-	    //PatchResourceGroupImpl( const std::string& relativePath, const ResourceGroupImpl* resourceGroup );
-
         Result SetResourceGroup( const ResourceGroupImpl* resourceGroup);
 
         ~PatchResourceGroupImpl();

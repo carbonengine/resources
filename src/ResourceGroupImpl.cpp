@@ -4,7 +4,8 @@
 #include <sstream>
 #include <yaml-cpp/yaml.h>
 #include <ResourceTools.h>
-#include <PatchResourceGroup.h>
+#include "PatchResource.h"
+#include "PatchResourceGroup.h"
 
 namespace CarbonResources
 {
@@ -25,7 +26,7 @@ namespace CarbonResources
     {
         // VERSION NEEDS TO BE CHECKED TO ENSURE ITS SUPPORTED ON IMPORT
 		
-        std::string filename = GetRelativePath().GetValue().filename;
+        std::string filename = GetRelativePath().filename;
 
         if( filename.find( ".txt" ) != std::string::npos )
         {
@@ -83,7 +84,11 @@ namespace CarbonResources
 				return Result::MALFORMED_RESOURCE_INPUT;
             }
 
-			resourceParams.relativePath = value;
+            RelativePath path;
+
+			path.FromString( value );
+
+			resourceParams.relativePath = path.filename;
 
 			if( !std::getline( ss, value, delimiter ) )
 			{
@@ -131,7 +136,7 @@ namespace CarbonResources
     {
 		ResourceParams resourceParams;
 
-        resourceParams.relativePath = resource->GetRelativePath().GetValue().ToString();
+        resourceParams.relativePath = resource->GetRelativePath().filename;
 
         resourceParams.location = resource->GetLocation().GetValue();
 
@@ -321,11 +326,9 @@ namespace CarbonResources
 
     Result ResourceGroupImpl::CreatePatch( PatchCreateParams& params ) const
     {
-		RelativePath p = GetRelativePath().GetValue();
+		std::string relativePath = GetRelativePath().filename;
 
-        RelativePath patchPath( "patch", p.filename );
-
-        params.patchResourceGroup->SetRelativePath( patchPath.ToString() );
+        params.patchResourceGroup->SetRelativePath( relativePath );
 
         params.patchResourceGroup->SetResourceGroup( this );
 
@@ -364,10 +367,7 @@ namespace CarbonResources
             }
 
             // Create a resource from patch data
-            // TODO prefixes for resource types should be formally defined somewhere
-			std::string patchResourceName = "patch:/" + resource->GetRelativePath().GetValue().filename;
-
-            Resource* patchResource = new Resource( { patchResourceName } );
+            PatchResource* patchResource = new PatchResource( { resource->GetRelativePath().filename } );
 			patchResource->SetParametersFromData( resourcePutDataParams.data );
 
             // Export patch file
@@ -416,6 +416,13 @@ namespace CarbonResources
         }
 
         return Result::SUCCESS;
+    }
+
+    Result ResourceGroupImpl::GetPathPrefix( std::string& prefix ) const
+    {
+		prefix = Type();
+
+		return Result::SUCCESS;
     }
 
    

@@ -7,7 +7,7 @@
 namespace CarbonResources
 {
 
-    BundleResourceGroupImpl::BundleResourceGroupImpl( const std::string& relativePath ):
+    BundleResourceGroupImpl::BundleResourceGroupImpl( const std::string& relativePath ) :
 	    ResourceGroupImpl(relativePath)
     {
 

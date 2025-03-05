@@ -7,7 +7,7 @@
 namespace CarbonResources
 {
 
-    BinaryResourceGroupImpl::BinaryResourceGroupImpl( const std::string& relativePath ):
+    BinaryResourceGroupImpl::BinaryResourceGroupImpl( const std::string& relativePath ) :
 	    ResourceGroupImpl(relativePath)
     {
 
@@ -85,7 +85,12 @@ namespace CarbonResources
 				return Result::MALFORMED_RESOURCE_INPUT;
 			}
 
-			binaryResourceParams.relativePath = value;
+            // Get the filename of the relative path
+            RelativePath relativePath;
+
+			relativePath.FromString( value );
+
+			binaryResourceParams.relativePath = relativePath.filename;
 
 			if( !std::getline( ss, value, delimiter ) )
 			{

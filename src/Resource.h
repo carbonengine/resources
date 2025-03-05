@@ -174,10 +174,12 @@ namespace CarbonResources
 
         }
 
+        /*
         RelativePath(std::string pathStr)
         {
 			FromString( pathStr );  //TODO this can fail
         }
+        */
 
         
         bool FromString(const std::string& pathStr)
@@ -219,7 +221,7 @@ namespace CarbonResources
 
     struct ResourceParams
 	{
-		RelativePath relativePath;
+		std::string relativePath;
 
 		std::string location = "";
 
@@ -243,9 +245,9 @@ namespace CarbonResources
 
 	    ~Resource();
 
-	    DocumentParameter<RelativePath> GetRelativePath() const;
+	    RelativePath GetRelativePath() const;
 
-	    void SetRelativePath( const RelativePath& relativePath );
+	    void SetRelativePath( const std::string& relativePath );
 
 	    DocumentParameter<std::string> GetLocation() const;
 
@@ -269,8 +271,10 @@ namespace CarbonResources
 
         bool operator==( const Resource* other ) const 
 		{
-			return ( GetRelativePath().GetValue().ToString() == other->GetRelativePath().GetValue().ToString() ) && ( GetChecksum().GetValue() == other->GetChecksum().GetValue() );    //TODO implement == ops on documentParameters
+			return ( GetRelativePath().ToString() == other->GetRelativePath().ToString() ) && ( GetChecksum().GetValue() == other->GetChecksum().GetValue() ); //TODO implement == ops on documentParameters
 		}
+
+        virtual Result GetPathPrefix( std::string& prefix ) const;
 
     private:
 	    Result GetDevelopmentLocalData( ResourceGetDataParams& params ) const;
@@ -286,7 +290,7 @@ namespace CarbonResources
     private:
 
         // Parameters for document version 0.0.0
-		DocumentParameter<RelativePath> m_relativePath = DocumentParameter<RelativePath>( { 0, 0, 0 }, "RelativePath" );
+		DocumentParameter<std::string> m_relativePath = DocumentParameter<std::string>( { 0, 0, 0 }, "RelativePath" );
 
 		DocumentParameter<std::string> m_location = DocumentParameter<std::string>( { 0, 0, 0 }, "Location" );
 

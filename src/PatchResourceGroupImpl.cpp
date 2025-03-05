@@ -6,7 +6,7 @@
 
 namespace CarbonResources
 {
-    PatchResourceGroupImpl::PatchResourceGroupImpl( const std::string& relativePath ):
+    PatchResourceGroupImpl::PatchResourceGroupImpl( const std::string& relativePath ) :
 	    ResourceGroupImpl(relativePath)
     {
 
@@ -14,10 +14,10 @@ namespace CarbonResources
 
     Result PatchResourceGroupImpl::SetResourceGroup( const ResourceGroupImpl* resourceGroup )
     {
-		// TODO this is all a bit scrappy
+		// TODO this is all a bit scrappy and this should be a ResourceGroup
 		ResourceParams resourceGroupParams;
 
-		resourceGroupParams.relativePath = resourceGroup->GetRelativePath().GetValue().ToString();
+		resourceGroupParams.relativePath = resourceGroup->GetRelativePath().filename;
 
 		resourceGroupParams.location = resourceGroup->GetLocation().GetValue();
 
@@ -34,32 +34,13 @@ namespace CarbonResources
         return Result::SUCCESS;
     }
 
-    /*
-    PatchResourceGroupImpl::PatchResourceGroupImpl( const std::string& relativePath, const ResourceGroupImpl* resourceGroup ) :
-	    ResourceGroupImpl(relativePath)
-    {
-        // TODO this is all a bit scrappy
-		ResourceParams resourceGroupParams;
-
-        resourceGroupParams.relativePath = resourceGroup->GetRelativePath().GetValue().ToString();
-
-        resourceGroupParams.location = resourceGroup->GetLocation().GetValue();
-
-        resourceGroupParams.checksum = resourceGroup->GetChecksum().GetValue();
-
-        resourceGroupParams.compressedSize = resourceGroup->GetCompressedSize().GetValue();
-
-        resourceGroupParams.uncompressedSize = resourceGroup->GetUncompressedSize().GetValue();
-
-        resourceGroupParams.something = resourceGroup->GetSomething().GetValue();
-
-		m_resourceGroupParameter = new Resource( resourceGroupParams );
-    }
-    */
 
     PatchResourceGroupImpl::~PatchResourceGroupImpl()
     {
-		delete m_resourceGroupParameter.GetValue();
+        if (m_resourceGroupParameter.HasValue())
+        {
+			delete m_resourceGroupParameter.GetValue();
+        }
     }
 
     std::string PatchResourceGroupImpl::Type() const

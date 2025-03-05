@@ -19,7 +19,7 @@ struct CarbonResourcesLibraryTest : public CarbonResourcesTestFixture{};
 // This is the only instance that exporting a file of a lower version results in a version bump
 TEST_F( CarbonResourcesLibraryTest, BinaryGroupImportExport_V_0_0_0_To_V_0_1_0 )
 {
-	CarbonResources::BinaryResourceGroup binaryResourceGroup("res:/binaryFileIndex_v0_0_0.txt");
+	CarbonResources::BinaryResourceGroup binaryResourceGroup("binaryFileIndex_v0_0_0.txt");
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
@@ -42,9 +42,7 @@ TEST_F( CarbonResourcesLibraryTest, BinaryGroupImportExport_V_0_0_0_To_V_0_1_0 )
 // Import a BinaryResourceGroup v0.1.0 and export it again checking input == output
 TEST_F( CarbonResourcesLibraryTest, BinaryGroupImportExport_V_0_1_0 )
 {
-	std::string prefix = "res:/";
-
-    std::string inputResName = prefix + "binaryFileIndex_v0_1_0.yaml";
+    std::string inputResName = "binaryFileIndex_v0_1_0.yaml";
 
 	CarbonResources::BinaryResourceGroup binaryResourceGroup( inputResName );
 
@@ -60,7 +58,7 @@ TEST_F( CarbonResourcesLibraryTest, BinaryGroupImportExport_V_0_1_0 )
 
 	binaryResourceGroup.ExportToFile( exportParams );
 
-    std::string inputFilename = importParams.dataParams.resourceSourceSettings.developmentLocalBasePath + inputResName.substr( prefix.size() );
+    std::string inputFilename = importParams.dataParams.resourceSourceSettings.developmentLocalBasePath + inputResName;
 
     //TODO reinstate
 	//EXPECT_TRUE( FilesMatch( inputFilename, exportParams.outputFilename ) );
@@ -71,7 +69,7 @@ TEST_F( CarbonResourcesLibraryTest, BinaryGroupImportExport_V_0_1_0 )
 // This is the only instance that exporting a file of a lower version results in a version bump
 TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportExport_V_0_0_0_To_V_0_1_0 )
 {
-	CarbonResources::ResourceGroup resourceGroup("res:/resFileIndex_v0_0_0.txt");
+	CarbonResources::ResourceGroup resourceGroup("resFileIndex_v0_0_0.txt");
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
@@ -135,9 +133,8 @@ TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportNonExistantFile )
 // Import a ResourceGroup v0.1.0 and export it again checking input == output
 TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportExport_V_0_1_0 )
 {
-	std::string prefix = "res:/";
 
-	std::string inputResName = prefix + "resFileIndex_v0_1_0.yaml";
+	std::string inputResName = "resFileIndex_v0_1_0.yaml";
 
 	CarbonResources::ResourceGroup resourceGroup( inputResName );
 
@@ -153,7 +150,7 @@ TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportExport_V_0_1_0 )
 
 	resourceGroup.ExportToFile( exportParams ); //TODO test the return values from these calls
 
-    std::string inputFilename = importParams.dataParams.resourceSourceSettings.developmentLocalBasePath + inputResName.substr( prefix.size() );
+    std::string inputFilename = importParams.dataParams.resourceSourceSettings.developmentLocalBasePath + inputResName;
 
     //TODO reinstate
     //EXPECT_TRUE( FilesMatch( inputFilename, exportParams.outputFilename ) );
@@ -180,7 +177,7 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
     // This whole process is WIP
 
     // Previous ResourceGroup
-	CarbonResources::ResourceGroup resourceGroupPrevious("res:/resfileindexShort_build1.txt");
+	CarbonResources::ResourceGroup resourceGroupPrevious("resfileindexShort_build1.txt");
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
@@ -190,7 +187,7 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
 
     // Latest ResourceGroup
-	CarbonResources::ResourceGroup resourceGroupLatest("res:/resfileindexShort_build2.txt");
+	CarbonResources::ResourceGroup resourceGroupLatest("resfileindexShort_build2.txt");
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsLatest;
 
@@ -200,7 +197,7 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
 
     // Create a subtraction between previous and latest ResourceGroups
-	CarbonResources::ResourceGroup resourceGroupSubtraction( "res:/resfileindex_previousBuild_latestBuild.txt" );
+	CarbonResources::ResourceGroup resourceGroupSubtraction( "resfileindex_previousBuild_latestBuild.txt" );
 
     CarbonResources::ResourceGroupSubtractionParams resourceGroupSubtractionParams;
 
@@ -220,7 +217,7 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
 
     // Create a patch from the subtraction index
-	CarbonResources::PatchResourceGroup patchResourceGroup( "bla:nothingTODO" );
+	CarbonResources::PatchResourceGroup patchResourceGroup( "nothingTODO" );
 
 	CarbonResources::PatchCreateParams patchCreateParams;
 

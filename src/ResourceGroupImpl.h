@@ -49,6 +49,8 @@ namespace CarbonResources
 
         Result Subtraction( ResourceGroupSubtractionParams& params ) const;
 
+        virtual Result GetPathPrefix( std::string& prefix ) const override;
+
     private:
 	    virtual std::string Type() const;
         

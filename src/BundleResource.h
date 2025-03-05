@@ -35,6 +35,8 @@ namespace CarbonResources
 
         ~BundleResource();
 
+        virtual Result GetPathPrefix( std::string& prefix ) const override;
+
     };
 
 }

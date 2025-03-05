@@ -35,12 +35,16 @@ namespace CarbonResources
 
     }
 
-    DocumentParameter<RelativePath> Resource::GetRelativePath() const
+    RelativePath Resource::GetRelativePath() const
     {
-		return m_relativePath;
+		std::string prefix;
+
+        GetPathPrefix( prefix );    // TODO deal with return
+
+		return RelativePath( prefix, m_relativePath.GetValue() );
     }
 
-    void Resource::SetRelativePath( const RelativePath& relativePath )
+    void Resource::SetRelativePath( const std::string& relativePath )
     {
 		m_relativePath = relativePath;
     }
@@ -116,7 +120,7 @@ namespace CarbonResources
 
 		ss << params.resourceDestinationSettings.developmentLocalBasePath;
 
-		ss << "/" << m_relativePath.GetValue().filename;
+		ss << "/" << m_relativePath.GetValue();
 
 		std::string path = ss.str();
 
@@ -201,7 +205,7 @@ namespace CarbonResources
 
 		ss << params.resourceSourceSettings.developmentLocalBasePath;
 
-		ss << m_relativePath.GetValue().filename;
+		ss << m_relativePath.GetValue();
 
 		std::string path = ss.str();
 
@@ -313,6 +317,13 @@ namespace CarbonResources
 		return Result::SUCCESS;
 	}
 
+    Result Resource::GetPathPrefix(std::string& prefix) const
+    {
+		prefix = "res";
+
+        return Result::SUCCESS;
+    }
+
     Result Resource::SetParametersFromData(const std::string& data)
     {
         std::string checksum;
@@ -324,7 +335,7 @@ namespace CarbonResources
 
         m_checksum = checksum;
 
-        std::string relativePath = m_relativePath.GetValue().ToString();
+        std::string relativePath = GetRelativePath().ToString();
 
         std::string relativePathChecksum = "";
         
@@ -369,7 +380,7 @@ namespace CarbonResources
 			}
 
 			out << YAML::Key << m_relativePath.GetTag();
-			out << YAML::Value << m_relativePath.GetValue().ToString();
+			out << YAML::Value << GetRelativePath().ToString();
 		}
 
         // Location

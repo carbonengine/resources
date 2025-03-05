@@ -18,4 +18,11 @@ namespace CarbonResources
 
     }
 
+    Result BundleResource::GetPathPrefix( std::string& prefix ) const
+    {
+		prefix = "chunk";
+
+        return Result::SUCCESS;
+    }
+
 }

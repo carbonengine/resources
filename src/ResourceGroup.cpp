@@ -11,7 +11,7 @@ namespace CarbonResources
     }
 
     ResourceGroup::ResourceGroup( const std::string& relativePath ) :
-	    m_impl( new ResourceGroupImpl( { relativePath } ) )
+		m_impl( new ResourceGroupImpl( { relativePath } ) )
     {
     }
 

@@ -36,6 +36,8 @@ namespace CarbonResources
 	    PatchResource( const PatchResourceParams& params );
 
 	    ~PatchResource();
+
+        virtual Result GetPathPrefix( std::string& prefix ) const override;
     };
 
 
