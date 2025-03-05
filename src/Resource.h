@@ -162,6 +162,11 @@ namespace CarbonResources
 
     struct RelativePath
     {
+        RelativePath()
+        {
+
+        }
+
         RelativePath(const std::string& inPrefix, const std::string& inFilename):
 			prefix(inPrefix),
 			filename(inFilename)
@@ -212,10 +217,9 @@ namespace CarbonResources
     };
 
 
-    // TODO now this is internal the types like relativePath can be strong custom types
     struct ResourceParams
 	{
-		std::string relativePath = "";
+		RelativePath relativePath;
 
 		std::string location = "";
 
@@ -229,6 +233,8 @@ namespace CarbonResources
 	};
 
     class ResourceGetDataParams;
+	class ResourcePutDataParams;
+
 
     class Resource
     {
@@ -253,6 +259,8 @@ namespace CarbonResources
 
 	    Result GetData( ResourceGetDataParams& params ) const;
 
+        Result PutData( ResourcePutDataParams& params ) const;
+
         virtual Result ImportFromYaml( YAML::Node& resource, const Version& documentVersion ); 
 
         virtual Result ExportToYaml( YAML::Emitter& out, const Version& documentVersion );
@@ -270,6 +278,10 @@ namespace CarbonResources
 	    Result GetProductionLocalData( ResourceGetDataParams& params ) const;
 
 	    Result GetProductionRemoteData( ResourceGetDataParams& params ) const;
+
+        Result PutDevelopmentLocalData( ResourcePutDataParams& params ) const;
+
+		Result PutProductionLocalData( ResourcePutDataParams& params ) const;
 
     private:
 

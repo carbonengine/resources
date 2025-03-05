@@ -57,6 +57,13 @@ namespace CarbonResources
 		std::string productionLocalBasePath = "";
 	};
 
+    struct API ResourcePutDataParams
+	{
+		ResourceDestinationSettings resourceDestinationSettings;
+
+		std::string data;
+	};
+
 	struct API ResourceGetDataParams
 	{
 		ResourceSourceSettings resourceSourceSettings;
@@ -66,7 +73,7 @@ namespace CarbonResources
 
     struct API PatchCreateParams
 	{
-		PatchResourceGroup* patchResourceGroup = nullptr;
+		PatchResourceGroup* patchResourceGroup;
 
 		ResourceSourceSettings resourceSourceSettingsFrom;
 
@@ -94,6 +101,7 @@ namespace CarbonResources
 		ResourceGroup* result = nullptr;
 	};
 
+    class Resource;
     class ResourceGroupImpl;
 
     class API ResourceGroup
@@ -102,6 +110,8 @@ namespace CarbonResources
         ResourceGroup( ResourceGroupImpl* impl );
 
 		ResourceGroupImpl* m_impl;
+
+        Result AddResource( Resource* r );
 
     public:
 	    ResourceGroup(const std::string& relativePath); // TODO should be an input struct

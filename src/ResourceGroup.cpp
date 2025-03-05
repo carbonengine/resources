@@ -75,12 +75,12 @@ namespace CarbonResources
 	    return m_impl->Subtraction( params );
     }
 
-    /*
+    
     // TODO get this out of public API
-    Result ResourceGroup::AddResource( Resource* r ) const
+    Result ResourceGroup::AddResource( Resource* r )
     {
 		return m_impl->AddResource( r );
     }
-    */
+    
 
 }

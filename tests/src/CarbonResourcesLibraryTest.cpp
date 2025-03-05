@@ -177,7 +177,6 @@ TEST_F( CarbonResourcesLibraryTest, ApplyPatch )
 }
 TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 {
-	GTEST_SKIP() << "Patch creation still being implemented";
     // This whole process is WIP
 
     // Previous ResourceGroup
@@ -221,6 +220,8 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
 
     // Create a patch from the subtraction index
+	CarbonResources::PatchResourceGroup patchResourceGroup( "bla:nothingTODO" );
+
 	CarbonResources::PatchCreateParams patchCreateParams;
 
     patchCreateParams.resourceSourceSettingsFrom.productionLocalBasePath = GetTestFileFileAbsolutePath( "/resourcesLocal" );
@@ -229,19 +230,17 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
     patchCreateParams.resourceDestinationSettings.productionLocalBasePath = "SharedCache";
 
+    patchCreateParams.patchResourceGroup = &patchResourceGroup;
+    
 	resourceGroupSubtraction.CreatePatch( patchCreateParams );
 
 
     // Save patch resource to respath
-	//CarbonResources::PatchResourceGroup patchResourceGroup( patchPath.ToString(), this );
+	CarbonResources::ResourceGroupExportToFileParams patchResourceGroupExportToFileParams;
 
-	//CarbonResources::ResourceGroupExportToFileParams patchResourceGroupExportToFileParams;
+	patchResourceGroupExportToFileParams.resourceDetinationSettings.developmentLocalBasePath = "resPath";
 
-	//patchResourceGroupExportToFileParams.resourceDetinationSettings.developmentLocalBasePath = "resPath";
-
-	//patchCreateParams.patchResourceGroup->ExportToFile( patchResourceGroupExportToFileParams );
-
-    // Who owns that memory then? This is not right TODO
+	patchCreateParams.patchResourceGroup->ExportToFile( patchResourceGroupExportToFileParams );
 
 
     // TODO run tests on patch create

@@ -6,7 +6,35 @@
 
 namespace CarbonResources
 {
+    PatchResourceGroupImpl::PatchResourceGroupImpl( const std::string& relativePath ):
+	    ResourceGroupImpl(relativePath)
+    {
 
+    }
+
+    Result PatchResourceGroupImpl::SetResourceGroup( const ResourceGroupImpl* resourceGroup )
+    {
+		// TODO this is all a bit scrappy
+		ResourceParams resourceGroupParams;
+
+		resourceGroupParams.relativePath = resourceGroup->GetRelativePath().GetValue().ToString();
+
+		resourceGroupParams.location = resourceGroup->GetLocation().GetValue();
+
+		resourceGroupParams.checksum = resourceGroup->GetChecksum().GetValue();
+
+		resourceGroupParams.compressedSize = resourceGroup->GetCompressedSize().GetValue();
+
+		resourceGroupParams.uncompressedSize = resourceGroup->GetUncompressedSize().GetValue();
+
+		resourceGroupParams.something = resourceGroup->GetSomething().GetValue();
+
+		m_resourceGroupParameter = new Resource( resourceGroupParams );
+
+        return Result::SUCCESS;
+    }
+
+    /*
     PatchResourceGroupImpl::PatchResourceGroupImpl( const std::string& relativePath, const ResourceGroupImpl* resourceGroup ) :
 	    ResourceGroupImpl(relativePath)
     {
@@ -27,6 +55,7 @@ namespace CarbonResources
 
 		m_resourceGroupParameter = new Resource( resourceGroupParams );
     }
+    */
 
     PatchResourceGroupImpl::~PatchResourceGroupImpl()
     {

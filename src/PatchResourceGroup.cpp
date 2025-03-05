@@ -4,11 +4,20 @@
 namespace CarbonResources
 {
 
+    PatchResourceGroup::PatchResourceGroup( const std::string& relativePath ):
+	    ResourceGroup(new PatchResourceGroupImpl(relativePath)),
+	    m_impl( reinterpret_cast<PatchResourceGroupImpl*>( ResourceGroup::m_impl ) )
+    {
+        
+    }
+
+    /*
     PatchResourceGroup::PatchResourceGroup( const std::string& relativePath, const ResourceGroupImpl* resourceGroup ) :
 	    ResourceGroup( new PatchResourceGroupImpl( relativePath, resourceGroup ) ),
 	    m_impl( reinterpret_cast<PatchResourceGroupImpl*>( ResourceGroup::m_impl ) )
     {
     }
+    */
 
     PatchResourceGroup::~PatchResourceGroup()
     {
@@ -24,4 +33,15 @@ namespace CarbonResources
 	    return Result::FAIL;
     }
 
+    // TODO can this come out of API?
+    void PatchResourceGroup::SetRelativePath( const std::string& relativePath )
+    {
+		m_impl->SetRelativePath( relativePath );
+    }
+
+    // TODO can this come out of API?
+    Result PatchResourceGroup::SetResourceGroup( const ResourceGroupImpl* resourceGroup )
+    {
+		return m_impl->SetResourceGroup( resourceGroup );
+    }
 }

@@ -248,17 +248,6 @@ namespace CarbonResources
     Result ResourceGroupImpl::ExportYamlToFile( const ResourceGroupExportToFileParams& params )
     {
 		
-		/*
-        std::ofstream outputStream;
-
-		outputStream.open( params.outputFilename, std::ios::out );
-
-        if( !outputStream )
-		{
-			return Result::FAILED_TO_OPEN_FILE;
-		}
-        */
-
         YAML::Emitter out;
 
         // Output header information
@@ -317,32 +306,18 @@ namespace CarbonResources
 
 		out << YAML::EndMap;
 
-        std::string data = out.c_str();
+        ResourcePutDataParams resourcePutDataParams;
 
-        //std::stringstream outputStream;
-
-        //outputStream << data;
-
-        //outputStream.close();
+        resourcePutDataParams.data = out.c_str();
 
         // Update parameters
-		SetParametersFromData( data );
+		SetParametersFromData( resourcePutDataParams.data );    // TODO return value
 
-        std::stringstream ss;
+        resourcePutDataParams.resourceDestinationSettings = params.resourceDetinationSettings;
 
-        ss << params.resourceDetinationSettings.productionLocalBasePath;
-		ss << "/";
-		ss << GetLocation().GetValue();
-
-        if (!ResourceTools::SaveFile(ss.str(), data))
-        {
-			return Result::FAILED_TO_SAVE_FILE;
-        }
-
-		return Result::SUCCESS;
+        return PutData( resourcePutDataParams );
+      
     }
-
-
 
     Result ResourceGroupImpl::CreatePatch( PatchCreateParams& params ) const
     {
@@ -350,9 +325,9 @@ namespace CarbonResources
 
         RelativePath patchPath( "patch", p.filename );
 
-        // TODO huge chance of mem leak
-        params.patchResourceGroup = new PatchResourceGroup( patchPath.ToString(), this );
-		//PatchResourceGroup patchResourceGroup( patchPath.ToString(), this );
+        params.patchResourceGroup->SetRelativePath( patchPath.ToString() );
+
+        params.patchResourceGroup->SetResourceGroup( this );
 
         for (Resource* resource : m_resourcesParameter)
         {
@@ -381,9 +356,9 @@ namespace CarbonResources
 			}
 
             // Create a patch from the data
-			std::string patchData = "";
+			ResourcePutDataParams resourcePutDataParams;
 
-            if (!ResourceTools::CreatePatch(resourceGetDataParamsFrom.data, resourceGetDataParamsTo.data, patchData))
+            if( !ResourceTools::CreatePatch( resourceGetDataParamsFrom.data, resourceGetDataParamsTo.data, resourcePutDataParams.data) )
             {
 				return Result::FAILED_TO_CREATE_PATCH;
             }
@@ -393,29 +368,23 @@ namespace CarbonResources
 			std::string patchResourceName = "patch:/" + resource->GetRelativePath().GetValue().filename;
 
             Resource* patchResource = new Resource( { patchResourceName } );
-			patchResource->SetParametersFromData( patchData );
+			patchResource->SetParametersFromData( resourcePutDataParams.data );
 
-            // Export file to filesystem
-			std::stringstream ss;
-			ss << params.resourceDestinationSettings.productionLocalBasePath;
-			ss << "/";
-			ss << patchResource->GetLocation().GetValue();
-			if( !ResourceTools::SaveFile( ss.str(), patchData ) )
+            // Export patch file
+            resourcePutDataParams.resourceDestinationSettings = params.resourceDestinationSettings;
+
+			Result putPatchDataResult = patchResource->PutData( resourcePutDataParams );
+
+            if (putPatchDataResult != Result::SUCCESS)
             {
-				return Result::FAILED_TO_SAVE_FILE;
+				return putPatchDataResult;
             }
 
             // Add the patch resource to the patchResourceGroup
-			//params.patchResourceGroup->AddResource( patchResource );    //TODO AddResource aint there any longer
+			params.patchResourceGroup->AddResource( patchResource );
         }
 
-        // Save the patchResourceGroup
-		//ResourceGroupExportToFileParams patchResourceGroupExportToFileParams;
-
-        //patchResourceGroupExportToFileParams.resourceDetinationSettings = params.resourceDestinationSettings;
-
-		//patchResourceGroup.ExportToFile( patchResourceGroupExportToFileParams );    //TODO this should not be here, should be an output parameter perhaps?
-
+ 
         return Result::SUCCESS;
     }
 
@@ -448,5 +417,7 @@ namespace CarbonResources
 
         return Result::SUCCESS;
     }
+
+   
 
 }

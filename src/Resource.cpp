@@ -69,7 +69,95 @@ namespace CarbonResources
     {
 		return m_something;
     }
+   
+    Result Resource::PutData( ResourcePutDataParams& params ) const
+    {
+		bool dataWasSavedSomewhere = false;
 
+		if( params.resourceDestinationSettings.developmentLocalBasePath != "" )
+        {
+			Result putDevelopmentLocalDataResult = PutDevelopmentLocalData( params );
+
+			if( putDevelopmentLocalDataResult != Result::SUCCESS )
+			{
+				return putDevelopmentLocalDataResult;
+			}
+
+            dataWasSavedSomewhere = true;
+        }
+		
+        
+        if (params.resourceDestinationSettings.productionLocalBasePath != "")
+        {
+			Result putProductionLocalDataResult = PutProductionLocalData( params );
+
+			if( putProductionLocalDataResult != Result::SUCCESS )
+			{
+				return putProductionLocalDataResult;
+			}
+
+            dataWasSavedSomewhere = true;
+        }
+        
+        if (dataWasSavedSomewhere)
+        {
+			return Result::SUCCESS;
+        }
+        else
+        {
+			return Result::FAILED_TO_SAVE_FILE;
+        }
+
+    }
+
+    Result Resource::PutDevelopmentLocalData( ResourcePutDataParams& params ) const
+    {
+        std::stringstream ss;
+
+		ss << params.resourceDestinationSettings.developmentLocalBasePath;
+
+		ss << "/" << m_relativePath.GetValue().filename;
+
+		std::string path = ss.str();
+
+        bool res = ResourceTools::SaveFile( path, params.data );
+
+        if (res)
+        {
+			return Result::SUCCESS;
+        }
+        else
+        {
+			return Result::FAILED_TO_SAVE_FILE;
+        }
+
+    }
+
+    Result Resource::PutProductionLocalData( ResourcePutDataParams& params ) const
+    {
+        // Construct path
+		std::stringstream ss;
+
+		ss << params.resourceDestinationSettings.productionLocalBasePath;
+		//TODO manage paths much better
+		ss << "/" << m_location.GetValue();
+
+		std::string path = ss.str();
+
+        bool res = ResourceTools::SaveFile( path, params.data );
+
+		if( res )
+		{
+			return Result::SUCCESS;
+		}
+		else
+		{
+			return Result::FAILED_TO_SAVE_FILE;
+		}
+
+    }
+
+    // TODO what if many options are filled out for source?
     Result Resource::GetData( ResourceGetDataParams& params ) const
     {
         // Get file from development local
