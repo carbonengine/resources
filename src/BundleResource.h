@@ -1,7 +1,7 @@
 /* 
 	*************************************************************************
 
-	BundleResourceImpl.h
+	BundleResource.h
 
 	Author:    James Hawk
 	Created:   Feb. 2025
@@ -16,25 +16,27 @@
 	*************************************************************************
 */
 #pragma once
-#ifndef BundleResourceImpl_H
-#define BundleResourceImpl_H
+#ifndef BundleResource_H
+#define BundleResource_H
 
-#include "BundleResource.h"
-
-#include "ResourceImpl.h"
+#include "Resource.h"
 
 namespace CarbonResources
 {
+    struct BundleResourceParams : public ResourceParams
+    {
 
-    class BundleResourceImpl : public ResourceImpl
+    };
+
+    class BundleResource : public Resource
     {
     public:
-	    BundleResourceImpl( const BundleResourceParams& params );
+	    BundleResource( const BundleResourceParams& params );
 
-        ~BundleResourceImpl();
+        ~BundleResource();
 
     };
 
 }
 
-#endif // BundleResourceImpl_H
+#endif // BundleResource_H

@@ -45,6 +45,7 @@ namespace CarbonResources
     {
 
     public:
+
 		PatchResourceGroup( const std::string& relativePath, const ResourceGroupImpl* resourceGroup );   //TODO struct input and I think there is no reason to ever have this exposed, creating this is internal
 
 	    ~PatchResourceGroup();

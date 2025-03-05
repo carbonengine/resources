@@ -1,7 +1,7 @@
 /* 
 	*************************************************************************
 
-	ResourceImpl.h
+	Resource.h
 
 	Author:    James Hawk
 	Created:   Feb. 2025
@@ -16,15 +16,24 @@
 	*************************************************************************
 */
 #pragma once
-#ifndef ResourceImpl_H
-#define ResourceImpl_H
+#ifndef Resource_H
+#define Resource_H
 
-#include "Resource.h"
 #include <string>
 #include <sstream>
+#include <optional>
+#include <vector>
+#include "Enums.h"
+
+namespace YAML
+{
+    class Emitter;
+    class Node;
+}
 
 namespace CarbonResources
 {
+    
 
     template <typename T>
     class DocumentParameter
@@ -202,12 +211,31 @@ namespace CarbonResources
 	    std::string filename = "";
     };
 
-    class ResourceImpl
+
+    // TODO now this is internal the types like relativePath can be strong custom types
+    struct ResourceParams
+	{
+		std::string relativePath = "";
+
+		std::string location = "";
+
+		std::string checksum = "";
+
+		unsigned long compressedSize = 0;
+
+		unsigned long uncompressedSize = 0;
+
+		unsigned long something = 0;
+	};
+
+    class ResourceGetDataParams;
+
+    class Resource
     {
     public:
-	    ResourceImpl( const ResourceParams& params );
+	    Resource( const ResourceParams& params );
 
-	    ~ResourceImpl();
+	    ~Resource();
 
 	    DocumentParameter<RelativePath> GetRelativePath() const;
 
@@ -230,6 +258,11 @@ namespace CarbonResources
         virtual Result ExportToYaml( YAML::Emitter& out, const Version& documentVersion );
 
         Result SetParametersFromData( const std::string& data );
+
+        bool operator==( const Resource* other ) const 
+		{
+			return ( GetRelativePath().GetValue().ToString() == other->GetRelativePath().GetValue().ToString() ) && ( GetChecksum().GetValue() == other->GetChecksum().GetValue() );    //TODO implement == ops on documentParameters
+		}
 
     private:
 	    Result GetDevelopmentLocalData( ResourceGetDataParams& params ) const;
@@ -257,4 +290,4 @@ namespace CarbonResources
     };
 
 }
-#endif // ResourceImpl_H
+#endif // Resource_H

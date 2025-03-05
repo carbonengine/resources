@@ -1,27 +1,21 @@
 #include "BundleResource.h"
 
-#include "BundleResourceImpl.h"
+#include <sstream>
 
-#include <yaml-cpp/yaml.h>
+#include <ResourceTools.h>
 
 namespace CarbonResources
 {
-    BundleResourceParams::BundleResourceParams() :
-	    ResourceParams()
-    {
-    }
 
-
-    BundleResource::BundleResource( const BundleResourceParams& params ) :
-		Resource( new BundleResourceImpl( params ) ),
-		m_impl( reinterpret_cast<BundleResourceImpl*>( Resource::m_impl ) )
+    BundleResource::BundleResource( const BundleResourceParams& params ):
+      Resource(params)
     {
 
     }
 
-    BundleResource::~BundleResource( )
+    BundleResource::~BundleResource()
     {
-		
+
     }
-	
+
 }

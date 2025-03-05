@@ -1,7 +1,6 @@
 #include "BundleResourceGroupImpl.h"
 
 #include "BundleResource.h"
-#include "BundleResourceImpl.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -28,7 +27,7 @@ namespace CarbonResources
 	{
 		BundleResource* createdResource = new BundleResource( BundleResourceParams{} );
 
-		Result importFromYamlResult = createdResource->m_impl->ImportFromYaml( resource, m_versionParameter.GetValue() );
+		Result importFromYamlResult = createdResource->ImportFromYaml( resource, m_versionParameter.GetValue() );
 
 		if( importFromYamlResult != Result::SUCCESS )
 		{

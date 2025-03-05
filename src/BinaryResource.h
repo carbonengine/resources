@@ -1,7 +1,7 @@
 /* 
 	*************************************************************************
 
-	BinaryResourceImpl.h
+	BinaryResource.h
 
 	Author:    James Hawk
 	Created:   Feb. 2025
@@ -16,22 +16,26 @@
 	*************************************************************************
 */
 #pragma once
-#ifndef BinaryResourceImpl_H
-#define BinaryResourceImpl_H
+#ifndef BinaryResource_H
+#define BinaryResource_H
 
-#include "BinaryResource.h"
-
-#include "ResourceImpl.h"
+#include "Resource.h"
 
 namespace CarbonResources
 {
+    struct BinaryResourceParams : public ResourceParams
+    {
 
-    class BinaryResourceImpl : public ResourceImpl
+	    unsigned int binaryOperation = 0;
+
+    };
+
+    class BinaryResource : public Resource
     {
     public:
-	    BinaryResourceImpl( const BinaryResourceParams& params );
+	    BinaryResource( const BinaryResourceParams& params );
 
-	    ~BinaryResourceImpl();
+	    ~BinaryResource();
 
 	    DocumentParameter<unsigned int> GetBinaryOperation() const;
 
@@ -45,4 +49,4 @@ namespace CarbonResources
 
 }
 
-#endif // BinaryResourceImpl_H
+#endif // BinaryResource_H

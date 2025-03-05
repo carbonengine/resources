@@ -1,30 +1,64 @@
 #include "BinaryResource.h"
 
-#include "BinaryResourceImpl.h"
+#include <sstream>
+
+#include <ResourceTools.h>
+
+#include <yaml-cpp/yaml.h>
 
 namespace CarbonResources
 {
-    
-    BinaryResource::BinaryResource( const BinaryResourceParams& params ) :
-		Resource( new BinaryResourceImpl(params) ),
-		m_impl( reinterpret_cast<BinaryResourceImpl*>( Resource::m_impl ) )
+
+    BinaryResource::BinaryResource( const BinaryResourceParams& params ):
+        Resource(params)
+    {
+		m_binaryOperation = params.binaryOperation;
+    }
+
+    BinaryResource::~BinaryResource()
     {
 
     }
 
-    BinaryResource::~BinaryResource( )
-    {
-		
-    }
-
-    /// @brief Returns binary operation a resource
-	/// @param data data which the checksum will be based on
-	/// @param data_size size of data passed in
-	/// @param checksum will contain the resulting checksum on success
-	/// @return true on success, false on failure
-	unsigned int BinaryResource::GetBinaryOperation() const
+    DocumentParameter<unsigned int> BinaryResource::GetBinaryOperation() const
 	{
-		return m_impl->GetBinaryOperation().GetValue();
+		return m_binaryOperation;
 	}
-	
+
+    Result BinaryResource::ImportFromYaml( YAML::Node& resource, const Version& documentVersion )
+    {
+		if( m_binaryOperation.IsParameterExpectedInDocumentVersion( documentVersion ) )
+		{
+			//TODO handle failure
+			m_binaryOperation = resource[m_binaryOperation.GetTag()].as<unsigned long>();
+		}
+
+		return Resource::ImportFromYaml( resource, documentVersion );
+    }
+
+    Result BinaryResource::ExportToYaml( YAML::Emitter& out, const Version& documentVersion )
+    {
+		Result resourceExportResult = Resource::ExportToYaml( out, documentVersion );
+
+		if( resourceExportResult != Result::SUCCESS )
+		{
+			return resourceExportResult;
+		}
+
+        // Binary Operation
+		if( m_binaryOperation.IsParameterExpectedInDocumentVersion( documentVersion ) )
+		{
+			if( !m_binaryOperation.HasValue() )
+			{
+				return Result::REQUIRED_RESOURCE_PARAMETER_NOT_SET;
+			}
+
+			out << YAML::Key << m_binaryOperation.GetTag();
+			out << YAML::Value << m_binaryOperation.GetValue();
+		}
+
+		return Result::SUCCESS;
+    }
+    
+
 }

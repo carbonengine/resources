@@ -1,19 +1,17 @@
 #include "ResourceGroupImpl.h"
-#include "Resource.h"
 
 #include <fstream>
 #include <sstream>
 #include <yaml-cpp/yaml.h>
 #include <ResourceTools.h>
 #include <PatchResourceGroup.h>
-#include <PatchResource.h>
 
 namespace CarbonResources
 {
     
 
     ResourceGroupImpl::ResourceGroupImpl( const std::string& relativePath ) :
-	    ResourceImpl( ResourceParams{ relativePath } )
+	    Resource( ResourceParams{ relativePath } )
     {
 		m_versionParameter = S_DOCUMENT_VERSION;
     }
@@ -133,18 +131,18 @@ namespace CarbonResources
     {
 		ResourceParams resourceParams;
 
-        resourceParams.relativePath = resource->GetRelativePath();
+        resourceParams.relativePath = resource->GetRelativePath().GetValue().ToString();
 
-        resourceParams.location = resource->GetLocation();
+        resourceParams.location = resource->GetLocation().GetValue();
 
-        resourceParams.checksum = resource->GetChecksum();
+        resourceParams.checksum = resource->GetChecksum().GetValue();
 
-        resourceParams.compressedSize = resource->GetCompressedSize();
+        resourceParams.compressedSize = resource->GetCompressedSize().GetValue();
 
-        resourceParams.uncompressedSize = resource->GetUncompressedSize();
+        resourceParams.uncompressedSize = resource->GetUncompressedSize().GetValue();
 
         //This would need guarding against for binary compatability thought exercise TODO
-        resourceParams.something = resource->GetSomething();
+        resourceParams.something = resource->GetSomething().GetValue();
 
 		Resource* createdResource = new Resource( resourceParams );
 
@@ -157,7 +155,7 @@ namespace CarbonResources
 	{
 		Resource* createdResource = new Resource( ResourceParams{} );
 
-		Result importFromYamlResult = createdResource->m_impl->ImportFromYaml( resource, m_versionParameter.GetValue() );
+		Result importFromYamlResult = createdResource->ImportFromYaml( resource, m_versionParameter.GetValue() );
 
         if( importFromYamlResult != Result::SUCCESS )
 		{
@@ -304,7 +302,7 @@ namespace CarbonResources
         {
 			out << YAML::BeginMap;
 
-			Result resourceExportResult = r->m_impl->ExportToYaml( out, sanitisedOutputDocumentVersion );
+			Result resourceExportResult = r->ExportToYaml( out, sanitisedOutputDocumentVersion );
 
             if( resourceExportResult != Result::SUCCESS )
 			{
@@ -346,13 +344,15 @@ namespace CarbonResources
 
 
 
-    Result ResourceGroupImpl::CreatePatch( const PatchCreateParams& params ) const
+    Result ResourceGroupImpl::CreatePatch( PatchCreateParams& params ) const
     {
 		RelativePath p = GetRelativePath().GetValue();
 
         RelativePath patchPath( "patch", p.filename );
 
-		PatchResourceGroup patchResourceGroup( patchPath.ToString(), this );
+        // TODO huge chance of mem leak
+        params.patchResourceGroup = new PatchResourceGroup( patchPath.ToString(), this );
+		//PatchResourceGroup patchResourceGroup( patchPath.ToString(), this );
 
         for (Resource* resource : m_resourcesParameter)
         {
@@ -390,33 +390,33 @@ namespace CarbonResources
 
             // Create a resource from patch data
             // TODO prefixes for resource types should be formally defined somewhere
-			std::string patchResourceName = "patch:/" + resource->m_impl->GetRelativePath().GetValue().filename;
+			std::string patchResourceName = "patch:/" + resource->GetRelativePath().GetValue().filename;
 
             Resource* patchResource = new Resource( { patchResourceName } );
-			patchResource->m_impl->SetParametersFromData( patchData );
+			patchResource->SetParametersFromData( patchData );
 
             // Export file to filesystem
 			std::stringstream ss;
 			ss << params.resourceDestinationSettings.productionLocalBasePath;
 			ss << "/";
-			ss << patchResource->GetLocation();
+			ss << patchResource->GetLocation().GetValue();
 			if( !ResourceTools::SaveFile( ss.str(), patchData ) )
             {
 				return Result::FAILED_TO_SAVE_FILE;
             }
 
             // Add the patch resource to the patchResourceGroup
-			patchResourceGroup.AddResource( patchResource );
+			//params.patchResourceGroup->AddResource( patchResource );    //TODO AddResource aint there any longer
         }
 
         // Save the patchResourceGroup
-		ResourceGroupExportToFileParams patchResourceGroupExportToFileParams;
+		//ResourceGroupExportToFileParams patchResourceGroupExportToFileParams;
 
-        patchResourceGroupExportToFileParams.resourceDetinationSettings = params.resourceDestinationSettings;
+        //patchResourceGroupExportToFileParams.resourceDetinationSettings = params.resourceDestinationSettings;
 
-		patchResourceGroup.ExportToFile( patchResourceGroupExportToFileParams );
+		//patchResourceGroup.ExportToFile( patchResourceGroupExportToFileParams );    //TODO this should not be here, should be an output parameter perhaps?
 
-        return Result::FAIL;
+        return Result::SUCCESS;
     }
 
 

@@ -21,7 +21,6 @@
 
 #include "ResourceGroup.h"
 #include "Resource.h"
-#include "ResourceImpl.h"
 #include <vector>
 
 namespace YAML
@@ -32,8 +31,8 @@ namespace YAML
 
 namespace CarbonResources
 {
-
-    class ResourceGroupImpl : public ResourceImpl
+    
+    class ResourceGroupImpl : public Resource
     {
     public:
 		ResourceGroupImpl( const std::string& relativePath );
@@ -44,7 +43,7 @@ namespace CarbonResources
 
 	    Result ExportToFile( const ResourceGroupExportToFileParams& params );
 
-	    Result CreatePatch( const PatchCreateParams& params ) const;
+	    Result CreatePatch( PatchCreateParams& params ) const;
 
 	    Result AddResource( Resource* resource );
 

@@ -25,37 +25,29 @@ find_package(yaml-cpp CONFIG REQUIRED) ## Can it be in tools?
 add_subdirectory(tools)
 
 set(SRC_FILES
-    include/BinaryResource.h
     include/BinaryResourceGroup.h
-    include/BundleResource.h
     include/BundleResourceGroup.h
     include/Exports.h
-    include/PatchResource.h
     include/PatchResourceGroup.h
-    include/Resource.h
     include/ResourceGroup.h
     include/Enums.h
     src/BinaryResource.cpp
-    src/BinaryResourceImpl.cpp
-    src/BinaryResourceImpl.h
+    src/BinaryResource.h
     src/BinaryResourceGroup.cpp
     src/BinaryResourceGroupImpl.cpp
     src/BinaryResourceGroupImpl.h
     src/BundleResource.cpp
-    src/BundleResourceImpl.cpp
-    src/BundleResourceImpl.h
+    src/BundleResource.h
     src/BundleResourceGroup.cpp
     src/BundleResourceGroupImpl.cpp
     src/BundleResourceGroupImpl.h
     src/PatchResource.cpp
-    src/PatchResourceImpl.cpp
-    src/PatchResourceImpl.h
+    src/PatchResource.h
     src/PatchResourceGroup.cpp
     src/PatchResourceGroupImpl.cpp
     src/PatchResourceGroupImpl.h
     src/Resource.cpp
-    src/ResourceImpl.cpp
-    src/ResourceImpl.h
+    src/Resource.h
     src/ResourceGroup.cpp
     src/ResourceGroupImpl.cpp
     src/ResourceGroupImpl.h

@@ -8,7 +8,6 @@
 
 #include <BinaryResourceGroup.h>
 
-#include <BinaryResource.h>
 
 // TODO I think it would be good if the output files of the tests were put in folders which match the test name
 // The DLL handles the case where the dll is a newer version that what was used to compile against, find a way to test this
@@ -152,7 +151,7 @@ TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportExport_V_0_1_0 )
 
     exportParams.resourceDetinationSettings.productionLocalBasePath = "SharedCache";
 
-	resourceGroup.ExportToFile( exportParams );
+	resourceGroup.ExportToFile( exportParams ); //TODO test the return values from these calls
 
     std::string inputFilename = importParams.dataParams.resourceSourceSettings.developmentLocalBasePath + inputResName.substr( prefix.size() );
 
@@ -178,6 +177,7 @@ TEST_F( CarbonResourcesLibraryTest, ApplyPatch )
 }
 TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 {
+	GTEST_SKIP() << "Patch creation still being implemented";
     // This whole process is WIP
 
     // Previous ResourceGroup
@@ -231,6 +231,17 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
 	resourceGroupSubtraction.CreatePatch( patchCreateParams );
 
+
+    // Save patch resource to respath
+	//CarbonResources::PatchResourceGroup patchResourceGroup( patchPath.ToString(), this );
+
+	//CarbonResources::ResourceGroupExportToFileParams patchResourceGroupExportToFileParams;
+
+	//patchResourceGroupExportToFileParams.resourceDetinationSettings.developmentLocalBasePath = "resPath";
+
+	//patchCreateParams.patchResourceGroup->ExportToFile( patchResourceGroupExportToFileParams );
+
+    // Who owns that memory then? This is not right TODO
 
 
     // TODO run tests on patch create

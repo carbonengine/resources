@@ -1,6 +1,5 @@
 #include "BinaryResourceGroupImpl.h"
 #include "BinaryResource.h"
-#include "BinaryResourceImpl.h"
 
 #include <yaml-cpp/yaml.h>
 #include <fstream>
@@ -28,7 +27,7 @@ namespace CarbonResources
 	{
 		BinaryResource* createdResource = new BinaryResource( BinaryResourceParams{} );
 
-        Result importFromYamlResult = createdResource->m_impl->ImportFromYaml( resource, m_versionParameter.GetValue() );
+        Result importFromYamlResult = createdResource->ImportFromYaml( resource, m_versionParameter.GetValue() );
 
 		if( importFromYamlResult != Result::SUCCESS )
 		{

@@ -1,7 +1,6 @@
 #include "PatchResourceGroupImpl.h"
 
 #include "PatchResource.h"
-#include "PatchResourceImpl.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -43,7 +42,7 @@ namespace CarbonResources
 	{
 		PatchResource* createdResource = new PatchResource( PatchResourceParams{} );
 
-		Result importFromYamlResult = createdResource->m_impl->ImportFromYaml( resource, m_versionParameter.GetValue() );
+		Result importFromYamlResult = createdResource->ImportFromYaml( resource, m_versionParameter.GetValue() );
 
 		if( importFromYamlResult != Result::SUCCESS )
 		{
@@ -78,7 +77,7 @@ namespace CarbonResources
 
 			out << YAML::Value << YAML::BeginMap;
 
-			m_resourceGroupParameter.GetValue()->m_impl->ExportToYaml( out, outputDocumentVersion );
+			m_resourceGroupParameter.GetValue()->ExportToYaml( out, outputDocumentVersion );
 
 			out << YAML::EndMap;
 

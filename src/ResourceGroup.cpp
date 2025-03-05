@@ -37,7 +37,7 @@ namespace CarbonResources
     /// @param checksum will contain the resulting checksum on success
     /// @return true on success, false on failure
     /// @note will relinquish ownership of patch resource group
-    Result ResourceGroup::CreatePatch( const PatchCreateParams& params ) const
+    Result ResourceGroup::CreatePatch( PatchCreateParams& params ) const
     {
 	    return m_impl->CreatePatch( params );
     }
@@ -75,10 +75,12 @@ namespace CarbonResources
 	    return m_impl->Subtraction( params );
     }
 
+    /*
     // TODO get this out of public API
     Result ResourceGroup::AddResource( Resource* r ) const
     {
 		return m_impl->AddResource( r );
     }
+    */
 
 }

@@ -24,7 +24,6 @@
 #include "Enums.h"
 #include <memory>
 #include <string>
-#include "Resource.h"
 
 namespace CarbonResources
 {
@@ -42,8 +41,33 @@ namespace CarbonResources
         BundleResourceGroup* bundleResourceGroup = nullptr;
     };
 
+    struct API ResourceSourceSettings
+	{
+		std::string developmentLocalBasePath = "";
+
+		std::string productionLocalBasePath = "";
+
+		std::string productionRemoteBaseUrl = "";
+	};
+
+	struct API ResourceDestinationSettings
+	{
+		std::string developmentLocalBasePath = ""; // TODO needs to be supported and also needs a rename, it's not just developmentLocal now
+
+		std::string productionLocalBasePath = "";
+	};
+
+	struct API ResourceGetDataParams
+	{
+		ResourceSourceSettings resourceSourceSettings;
+
+		std::string data;
+	};
+
     struct API PatchCreateParams
 	{
+		PatchResourceGroup* patchResourceGroup = nullptr;
+
 		ResourceSourceSettings resourceSourceSettingsFrom;
 
 		ResourceSourceSettings resourceSourceSettingsTo;
@@ -86,15 +110,13 @@ namespace CarbonResources
 
         Result CreateBundle( const BundleCreateParams& params ) const;
 
-        Result CreatePatch( const PatchCreateParams& params ) const;
+        Result CreatePatch( PatchCreateParams& params ) const;
 
         Result ImportFromFile( ResourceGroupImportFromFileParams& params ) const;
 
         Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
 
         Result Subtraction( ResourceGroupSubtractionParams& params ) const; // TODO not too thrilled about this being in public API
-
-        Result AddResource( Resource* r ) const;
 
         friend class ResourceGroupImpl;
     };

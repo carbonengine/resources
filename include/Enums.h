@@ -29,6 +29,7 @@
 namespace CarbonResources
 {
     // TODO This is not an enum, move it out of here
+    // It also shouldn't be in the API
     struct Version
     {
 		bool operator>( Version value ) const
