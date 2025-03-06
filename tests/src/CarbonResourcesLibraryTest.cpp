@@ -23,17 +23,17 @@ TEST_F( CarbonResourcesLibraryTest, BinaryGroupImportExport_V_0_0_0_To_V_0_1_0 )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "/Indicies/" );
+    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );
 
-	binaryResourceGroup.ImportFromFile( importParams );
+	EXPECT_EQ(binaryResourceGroup.ImportFromFile( importParams ),CarbonResources::Result::SUCCESS);
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
     exportParams.resourceDetinationSettings.productionLocalBasePath = "SharedCache";
 
-	binaryResourceGroup.ExportToFile( exportParams );
+	EXPECT_EQ(binaryResourceGroup.ExportToFile( exportParams ),CarbonResources::Result::SUCCESS);
 
-    std::string goldStandardFilename = GetTestFileFileAbsolutePath( "/Indicies/binaryFileIndex_v0_1_0.yaml" );
+    std::filesystem::path goldStandardFilename = GetTestFileFileAbsolutePath( "Indicies/binaryFileIndex_v0_1_0.yaml" );
 
     //TODO reinstate
 	//EXPECT_TRUE( FilesMatch( exportParams.outputFilename, exportParams.outputFilename ) );
@@ -48,17 +48,17 @@ TEST_F( CarbonResourcesLibraryTest, BinaryGroupImportExport_V_0_1_0 )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "/Indicies/" );
+    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );
 
-	binaryResourceGroup.ImportFromFile( importParams );
+	EXPECT_EQ(binaryResourceGroup.ImportFromFile( importParams ),CarbonResources::Result::SUCCESS);
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
     exportParams.resourceDetinationSettings.productionLocalBasePath = "SharedCache";
 
-	binaryResourceGroup.ExportToFile( exportParams );
+	EXPECT_EQ(binaryResourceGroup.ExportToFile( exportParams ),CarbonResources::Result::SUCCESS);
 
-    std::string inputFilename = importParams.dataParams.resourceSourceSettings.developmentLocalBasePath + inputResName;
+    std::filesystem::path inputFilename = importParams.dataParams.resourceSourceSettings.developmentLocalBasePath / inputResName;
 
     //TODO reinstate
 	//EXPECT_TRUE( FilesMatch( inputFilename, exportParams.outputFilename ) );
@@ -73,17 +73,17 @@ TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportExport_V_0_0_0_To_V_0_1_0
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "/Indicies/" );
+    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );
 
-	resourceGroup.ImportFromFile( importParams );
+	EXPECT_EQ(resourceGroup.ImportFromFile( importParams ),CarbonResources::Result::SUCCESS);
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
     exportParams.resourceDetinationSettings.productionLocalBasePath = "SharedCache";
 
-	resourceGroup.ExportToFile( exportParams );
+	EXPECT_EQ(resourceGroup.ExportToFile( exportParams ),CarbonResources::Result::SUCCESS);
 
-    std::string goldStandardFilename = GetTestFileFileAbsolutePath( "/Indicies/resFileIndex_v0_1_0.yaml" );
+    std::filesystem::path goldStandardFilename = GetTestFileFileAbsolutePath( "Indicies/resFileIndex_v0_1_0.yaml" );
 
     //TODO reinstate
 	//EXPECT_TRUE( FilesMatch( exportParams.outputFilename, goldStandardFilename ) );
@@ -140,17 +140,17 @@ TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportExport_V_0_1_0 )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "/Indicies/" );
+    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );
 
-	resourceGroup.ImportFromFile( importParams );
+	EXPECT_EQ(resourceGroup.ImportFromFile( importParams ),CarbonResources::Result::SUCCESS);
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
     exportParams.resourceDetinationSettings.productionLocalBasePath = "SharedCache";
 
-	resourceGroup.ExportToFile( exportParams ); //TODO test the return values from these calls
+	EXPECT_EQ(resourceGroup.ExportToFile( exportParams ),CarbonResources::Result::SUCCESS);
 
-    std::string inputFilename = importParams.dataParams.resourceSourceSettings.developmentLocalBasePath + inputResName;
+    std::filesystem::path inputFilename = importParams.dataParams.resourceSourceSettings.developmentLocalBasePath / inputResName;
 
     //TODO reinstate
     //EXPECT_TRUE( FilesMatch( inputFilename, exportParams.outputFilename ) );
@@ -181,9 +181,9 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
-    importParamsPrevious.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "/Indicies/" );
+    importParamsPrevious.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );
 
-	resourceGroupPrevious.ImportFromFile( importParamsPrevious );
+	EXPECT_EQ(resourceGroupPrevious.ImportFromFile( importParamsPrevious ),CarbonResources::Result::SUCCESS);
 
 
     // Latest ResourceGroup
@@ -191,9 +191,9 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsLatest;
 
-    importParamsLatest.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "/Indicies/" );    //TODO deal with file paths better using filesystem things
+    importParamsLatest.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );    //TODO deal with file paths better using filesystem things
 
-	resourceGroupLatest.ImportFromFile( importParamsLatest );
+	EXPECT_EQ(resourceGroupLatest.ImportFromFile( importParamsLatest ),CarbonResources::Result::SUCCESS);
 
 
 
@@ -202,9 +202,9 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
     patchCreateParams.resourceGroupPatchRelativePath = "resfileindex_previousBuild_latestBuild.yaml";
 
-    patchCreateParams.resourceSourceSettingsFrom.productionLocalBasePath = GetTestFileFileAbsolutePath( "/resourcesLocal" );
+    patchCreateParams.resourceSourceSettingsFrom.productionLocalBasePath = GetTestFileFileAbsolutePath( "resourcesLocal" );
 
-    patchCreateParams.resourceSourceSettingsTo.productionLocalBasePath = GetTestFileFileAbsolutePath( "/resourcesRemote" );
+    patchCreateParams.resourceSourceSettingsTo.productionLocalBasePath = GetTestFileFileAbsolutePath( "resourcesRemote" );
 
     patchCreateParams.resourcePatchBinaryDestinationSettings.productionLocalBasePath = "SharedCache";
 
@@ -212,7 +212,7 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
     patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
     
-	resourceGroupLatest.CreatePatch( patchCreateParams );
+	EXPECT_EQ(resourceGroupLatest.CreatePatch( patchCreateParams ),CarbonResources::Result::SUCCESS);
 
 
     // TODO run tests on patch create

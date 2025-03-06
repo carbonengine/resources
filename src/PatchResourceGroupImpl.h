@@ -30,7 +30,7 @@ namespace CarbonResources
     {
     public:
 
-        PatchResourceGroupImpl( const std::string& relativePath );
+        PatchResourceGroupImpl( const std::filesystem::path& relativePath );
 
         Result SetResourceGroup( ResourceGroupImpl* resourceGroup);
 

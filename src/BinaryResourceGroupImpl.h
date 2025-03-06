@@ -28,7 +28,7 @@ namespace CarbonResources
     class BinaryResourceGroupImpl : public ResourceGroupImpl
     {
     public:
-		BinaryResourceGroupImpl( const std::string& relativePath );
+		BinaryResourceGroupImpl( const std::filesystem::path& relativePath );
 
 	    ~BinaryResourceGroupImpl();
 

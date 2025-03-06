@@ -3,7 +3,6 @@
 
 #include <sstream>
 #include <fstream>
-#include <filesystem>
 
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 #include <cryptopp/hex.h>
@@ -74,7 +73,7 @@ namespace ResourceTools
 	  return true;
   }
 
-  bool GetLocalFileData( const std::string& filepath, std::string& data )
+  bool GetLocalFileData( const std::filesystem::path& filepath, std::string& data )
   {
 	  std::ifstream inputStream;
 
@@ -129,12 +128,10 @@ namespace ResourceTools
 	  return true;
   }
 
-  bool SaveFile( const std::string path, const std::string& data )
+  bool SaveFile( const std::filesystem::path& path, const std::string& data )
   {
 	  // Creates directories if required
-	  std::string directoryStr = path.substr( 0, path.find_last_of( "/" ) );
-
-	  std::filesystem::path directory( directoryStr );
+      std::filesystem::path directory = path.parent_path();
 
       if (!std::filesystem::exists(directory))
       {

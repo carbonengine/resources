@@ -13,7 +13,7 @@ namespace CarbonResources
 {
     
 
-    ResourceGroupImpl::ResourceGroupImpl( const std::string& relativePath ) :
+    ResourceGroupImpl::ResourceGroupImpl( const std::filesystem::path& relativePath ) :
 	    Resource( ResourceParams{ relativePath } )
     {
 		m_versionParameter = S_DOCUMENT_VERSION;
@@ -29,18 +29,19 @@ namespace CarbonResources
     Result ResourceGroupImpl::ImportFromFile( ResourceGroupImportFromFileParams& params )
     {
         // VERSION NEEDS TO BE CHECKED TO ENSURE ITS SUPPORTED ON IMPORT
-		
-        std::string filename = GetRelativePath();
+        std::filesystem::path filename = GetRelativePath();
 
-        if( filename.find( ".txt" ) != std::string::npos )
+        std::string extension = filename.extension().string();
+        
+        if( extension == ".txt" )
         {
 			return ImportFromCSVFile( params );
         }
-		else if( filename.find( ".yml" ) != std::string::npos )
+		else if( extension == ".yml" )
         {
 			return ImportFromYamlFile( params );
         }
-		else if( filename.find( ".yaml" ) != std::string::npos )
+		else if( extension == ".yaml" )
 		{
 			return ImportFromYamlFile( params );
 		}
@@ -335,8 +336,6 @@ namespace CarbonResources
         {
 			return Result::PATCH_RESOURCE_LIST_MISSMATCH;
         }
-      
-		std::string relativePath = GetRelativePath();
 
         PatchResourceGroup patchResourceGroup( params.resourceGroupPatchRelativePath );
 

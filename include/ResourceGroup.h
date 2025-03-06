@@ -24,6 +24,7 @@
 #include "Enums.h"
 #include <memory>
 #include <string>
+#include <filesystem>
 
 namespace CarbonResources
 {
@@ -34,27 +35,27 @@ namespace CarbonResources
 
     struct API BundleCreateParams
     {
-        std::string resourceInputPath = "";
+        std::filesystem::path resourceInputPath = "";
 
-        std::string chunkOutputPath = "";
+        std::filesystem::path chunkOutputPath = "";
 
         BundleResourceGroup* bundleResourceGroup = nullptr;
     };
 
     struct API ResourceSourceSettings
 	{
-		std::string developmentLocalBasePath = "";
+		std::filesystem::path developmentLocalBasePath = "";
 
-		std::string productionLocalBasePath = "";
+		std::filesystem::path productionLocalBasePath = "";
 
 		std::string productionRemoteBaseUrl = "";
 	};
 
 	struct API ResourceDestinationSettings
 	{
-		std::string developmentLocalBasePath = ""; // TODO needs to be supported and also needs a rename, it's not just developmentLocal now
+		std::filesystem::path developmentLocalBasePath = ""; // TODO rename, it's not just developmentLocal now
 
-		std::string productionLocalBasePath = "";
+		std::filesystem::path productionLocalBasePath = "";
 	};
 
     struct API ResourcePutDataParams
@@ -75,7 +76,7 @@ namespace CarbonResources
 	{
 		ResourceGroup* previousResourceGroup;
 
-        std::string resourceGroupPatchRelativePath;
+        std::filesystem::path resourceGroupPatchRelativePath;
 
 		ResourceSourceSettings resourceSourceSettingsFrom;
 
@@ -118,7 +119,7 @@ namespace CarbonResources
         Result AddResource( Resource* r );
 
     public:
-	    ResourceGroup(const std::string& relativePath); // TODO should be an input struct
+	    ResourceGroup(const std::filesystem::path& relativePath); // TODO should be an input struct
 
 	    virtual ~ResourceGroup();
 

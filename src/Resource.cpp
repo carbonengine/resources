@@ -11,7 +11,7 @@
 namespace CarbonResources
 {
     // TODO split this into own file
-    Result Location::SetFromRelativePathAndDataChecksum(const std::string& resourceType, const std::string& relativePath, const std::string& dataChecksum)
+    Result Location::SetFromRelativePathAndDataChecksum(const std::string& resourceType, const std::filesystem::path& relativePath, const std::string& dataChecksum)
     {
 		std::string relativePathChecksum = "";
 
@@ -70,12 +70,12 @@ namespace CarbonResources
 
     }
 
-    std::string Resource::GetRelativePath() const
+    std::filesystem::path Resource::GetRelativePath() const
     {
 		return m_relativePath.GetValue();
     }
 
-    void Resource::SetRelativePath( const std::string& relativePath )
+    void Resource::SetRelativePath( const std::filesystem::path& relativePath )
     {
 		m_relativePath = relativePath;
     }
@@ -152,13 +152,7 @@ namespace CarbonResources
 
     Result Resource::PutDevelopmentLocalData( ResourcePutDataParams& params ) const
     {
-        std::stringstream ss;
-
-		ss << params.resourceDestinationSettings.developmentLocalBasePath;
-
-		ss << "/" << m_relativePath.GetValue();
-
-		std::string path = ss.str();
+		std::filesystem::path path = params.resourceDestinationSettings.developmentLocalBasePath / m_relativePath.GetValue();
 
         bool res = ResourceTools::SaveFile( path, params.data );
 
@@ -176,15 +170,9 @@ namespace CarbonResources
     Result Resource::PutProductionLocalData( ResourcePutDataParams& params ) const
     {
         // Construct path
-		std::stringstream ss;
+		std::filesystem::path dataPath = params.resourceDestinationSettings.productionLocalBasePath / m_location.GetValue().ToString();
 
-		ss << params.resourceDestinationSettings.productionLocalBasePath;
-		//TODO manage paths much better
-		ss << "/" << m_location.GetValue().ToString();
-
-		std::string path = ss.str();
-
-        bool res = ResourceTools::SaveFile( path, params.data );
+        bool res = ResourceTools::SaveFile( dataPath, params.data );
 
 		if( res )
 		{
@@ -235,17 +223,9 @@ namespace CarbonResources
 			return Result::FAIL;
         }
 
-        // TODO break out as to reduce duplication from production local
-		// Construct path
-		std::stringstream ss;
+        std::filesystem::path dataPath = params.resourceSourceSettings.developmentLocalBasePath / m_relativePath.GetValue();
 
-		ss << params.resourceSourceSettings.developmentLocalBasePath;
-
-		ss << m_relativePath.GetValue();
-
-		std::string path = ss.str();
-
-		bool res = ResourceTools::GetLocalFileData( path, params.data );
+		bool res = ResourceTools::GetLocalFileData( dataPath, params.data );
 
 		if( res )
 		{
@@ -266,13 +246,7 @@ namespace CarbonResources
 		}
 
         // Construct path
-		std::stringstream ss;
-
-		ss << params.resourceSourceSettings.productionLocalBasePath;
-        //TODO manage paths much better
-		ss << "/" << m_location.GetValue().ToString();
-
-		std::string path = ss.str();
+        std::filesystem::path path = params.resourceSourceSettings.productionLocalBasePath / m_location.GetValue().ToString();
 
 		bool res = ResourceTools::GetLocalFileData( path, params.data );
 
@@ -407,8 +381,11 @@ namespace CarbonResources
 				return Result::REQUIRED_RESOURCE_PARAMETER_NOT_SET;
 			}
 
+            std::string relativePathStr = GetRelativePath().string();
+			std::replace( relativePathStr.begin(), relativePathStr.end(), '\\', '/' );
+
 			out << YAML::Key << m_relativePath.GetTag();
-			out << YAML::Value << GetRelativePath();
+			out << YAML::Value << relativePathStr;
 		}
 
         // Type

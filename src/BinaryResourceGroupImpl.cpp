@@ -7,7 +7,7 @@
 namespace CarbonResources
 {
 
-    BinaryResourceGroupImpl::BinaryResourceGroupImpl( const std::string& relativePath ) :
+    BinaryResourceGroupImpl::BinaryResourceGroupImpl( const std::filesystem::path& relativePath ) :
 	    ResourceGroupImpl(relativePath)
     {
 		m_type = TypeId();

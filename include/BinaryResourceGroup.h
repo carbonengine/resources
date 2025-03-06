@@ -25,6 +25,7 @@
 #include "Enums.h"
 #include <memory>
 #include <string>
+#include <filesystem>
 
 namespace CarbonResources
 {
@@ -34,7 +35,7 @@ namespace CarbonResources
     {
     public:
 
-	    BinaryResourceGroup( const std::string& relativePath );
+	    BinaryResourceGroup( const std::filesystem::path& relativePath );
 
 	    ~BinaryResourceGroup();
 

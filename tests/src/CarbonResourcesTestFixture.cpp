@@ -38,7 +38,7 @@ bool CarbonResourcesTestFixture::PatchIsValid()
 	return false;
 }
 
-bool CarbonResourcesTestFixture::FilesMatch( const std::string& file1Path, const std::string& file2Path )
+bool CarbonResourcesTestFixture::FilesMatch( const std::filesystem::path& file1Path, const std::filesystem::path& file2Path )
 {
     // Open files generate data checksums and compare
 
@@ -91,11 +91,9 @@ bool CarbonResourcesTestFixture::FilesMatch( const std::string& file1Path, const
     
 }
 
-std::string CarbonResourcesTestFixture::GetTestFileFileAbsolutePath( const std::string& relativePath )
+std::filesystem::path CarbonResourcesTestFixture::GetTestFileFileAbsolutePath( const std::filesystem::path& relativePath )
 {
-	std::stringstream ss;
+    std::filesystem::path basePath( TEST_DATA_BASE_PATH );
 
-    ss << TEST_DATA_BASE_PATH << relativePath;
-
-    return ss.str();
+    return basePath / relativePath;
 }

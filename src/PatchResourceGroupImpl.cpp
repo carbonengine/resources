@@ -8,7 +8,7 @@
 
 namespace CarbonResources
 {
-    PatchResourceGroupImpl::PatchResourceGroupImpl( const std::string& relativePath ) :
+    PatchResourceGroupImpl::PatchResourceGroupImpl( const std::filesystem::path& relativePath ) :
 	    ResourceGroupImpl(relativePath)
     {
 		m_type = TypeId();

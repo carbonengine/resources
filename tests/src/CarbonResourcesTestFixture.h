@@ -25,6 +25,8 @@
 
 #include "Paths.h"
 
+#include <filesystem>
+
 struct CarbonResourcesTestFixture : public ::testing::Test
 {
 	void SetUp();
@@ -35,9 +37,9 @@ struct CarbonResourcesTestFixture : public ::testing::Test
 
     bool PatchIsValid();
 
-    std::string GetTestFileFileAbsolutePath( const std::string& relativePath );
+    std::filesystem::path GetTestFileFileAbsolutePath( const std::filesystem::path& relativePath );
 
-    bool FilesMatch( const std::string& file1Path, const std::string& file2Path );
+    bool FilesMatch( const std::filesystem::path& file1Path, const std::filesystem::path& file2Path );
 };
 
 #endif // CarbonResourcesTestFixture_H

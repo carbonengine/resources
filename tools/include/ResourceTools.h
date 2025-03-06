@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <string>
+#include <filesystem>
 
 namespace ResourceTools
 {
@@ -33,7 +34,7 @@ namespace ResourceTools
 
     bool GenerateFowlerNollVoChecksum( const std::string& input, std::string& checksum );
 
-    bool GetLocalFileData( const std::string& filepath, std::string& data );
+    bool GetLocalFileData( const std::filesystem::path& filepath, std::string& data );
 
     bool DownloadFile( const std::string& url, const std::string& outputPath );
 
@@ -43,7 +44,7 @@ namespace ResourceTools
 
     bool CreatePatch(const std::string& data1, const std::string& data2, std::string& patchData);
 
-    bool SaveFile( const std::string path, const std::string& data);
+    bool SaveFile( const std::filesystem::path& path, const std::string& data);
 
 }
 

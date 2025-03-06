@@ -10,7 +10,7 @@ namespace CarbonResources
     {
     }
 
-    ResourceGroup::ResourceGroup( const std::string& relativePath ) :
+    ResourceGroup::ResourceGroup( const std::filesystem::path& relativePath ) :
 		m_impl( new ResourceGroupImpl( { relativePath } ) )
     {
     }

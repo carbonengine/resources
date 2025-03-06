@@ -25,15 +25,16 @@
 #include "Enums.h"
 #include <memory>
 #include <string>
+#include <filesystem>
 
 namespace CarbonResources
 {
 
     struct API PatchApplyParams final
     {
-	    std::string resourceInputPath = "";
+	    std::filesystem::path resourceInputPath = "";
 
-	    std::string chunkOutputPath = "";
+	    std::filesystem::path chunkOutputPath = "";
 
 	    BundleResourceGroup* bundleResourceGroup = nullptr;
     };
@@ -45,7 +46,7 @@ namespace CarbonResources
     {
 
     public:
-		PatchResourceGroup( const std::string& relativePath );  // TODO struct input
+		PatchResourceGroup( const std::filesystem::path& relativePath );  // TODO struct input
 
 	    ~PatchResourceGroup();
 

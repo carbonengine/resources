@@ -4,7 +4,7 @@
 namespace CarbonResources
 {
 
-    PatchResourceGroup::PatchResourceGroup( const std::string& relativePath ):
+    PatchResourceGroup::PatchResourceGroup( const std::filesystem::path& relativePath ):
 	    ResourceGroup(new PatchResourceGroupImpl(relativePath)),
 	    m_impl( reinterpret_cast<PatchResourceGroupImpl*>( ResourceGroup::m_impl ) )
     {

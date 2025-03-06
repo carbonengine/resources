@@ -36,7 +36,7 @@ namespace CarbonResources
     class ResourceGroupImpl : public Resource
     {
     public:
-		ResourceGroupImpl( const std::string& relativePath );
+		ResourceGroupImpl( const std::filesystem::path& relativePath );
 
 	    ~ResourceGroupImpl();
 

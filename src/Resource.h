@@ -23,6 +23,7 @@
 #include <sstream>
 #include <optional>
 #include <vector>
+#include <filesystem>
 #include "Enums.h"
 
 namespace YAML
@@ -160,60 +161,6 @@ namespace CarbonResources
 	    std::vector<T> m_collection;
     };
 
-    
-    /*
-    struct RelativePath
-    {
-        RelativePath()
-        {
-
-        }
-
-        RelativePath(const std::string& inPrefix, const std::string& inFilename):
-			prefix(inPrefix),
-			filename(inFilename)
-        {
-
-        }
-
-        
-        bool FromString(const std::string& pathStr)
-        {
-			
-			size_t separatorPosition = pathStr.find( ":/" );    //TODO internalise the :/, don't require external API users just to get it right
-
-            if (separatorPosition == std::string::npos)
-            {
-				return false;
-            }
-
-            prefix = pathStr.substr( 0, separatorPosition );
-
-            filename = pathStr.substr( separatorPosition + 2 );
-            
-			return true;
-        }
-        
-
-	    bool operator==( const RelativePath& other ) const
-	    {
-		    return ( prefix == other.prefix ) && ( filename == other.filename );
-	    }
-
-        std::string ToString() const
-        {
-			std::stringstream ss;
-
-            ss << prefix << ":/" << filename;
-
-            return ss.str();
-        }
-
-	    std::string prefix = "";
-	    std::string filename = "";
-    };
-    */
-
     class Location
 	{
 	public:
@@ -226,7 +173,7 @@ namespace CarbonResources
 		{
 		}
 
-		Result SetFromRelativePathAndDataChecksum( const std::string& resourceType, const std::string& relativePath, const std::string& dataChecksum );
+		Result SetFromRelativePathAndDataChecksum( const std::string& resourceType, const std::filesystem::path& relativePath, const std::string& dataChecksum );
 
         std::string ToString()
         {
@@ -241,7 +188,7 @@ namespace CarbonResources
 
     struct ResourceParams
 	{
-		std::string relativePath;
+		std::filesystem::path relativePath;
 
 		std::string location = "";
 
@@ -265,9 +212,9 @@ namespace CarbonResources
 
 	    ~Resource();
 
-	    std::string GetRelativePath() const;
+	    std::filesystem::path GetRelativePath() const;
 
-	    void SetRelativePath( const std::string& relativePath );
+	    void SetRelativePath( const std::filesystem::path& relativePath );
 
 	    std::string GetLocation() const;
 
@@ -312,7 +259,7 @@ namespace CarbonResources
     protected:
 
         // Parameters for document version 0.0.0
-		DocumentParameter<std::string> m_relativePath = DocumentParameter<std::string>( { 0, 0, 0 }, "RelativePath" );
+		DocumentParameter<std::filesystem::path> m_relativePath = DocumentParameter<std::filesystem::path>( { 0, 0, 0 }, "RelativePath" );
 
 		DocumentParameter<Location> m_location = DocumentParameter<Location>( { 0, 0, 0 }, "Location" );
 

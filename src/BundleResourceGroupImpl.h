@@ -30,7 +30,7 @@ namespace CarbonResources
     {
     public:
 
-	    BundleResourceGroupImpl( const std::string& relativePath );
+	    BundleResourceGroupImpl( const std::filesystem::path& relativePath );
 
         ~BundleResourceGroupImpl();
 

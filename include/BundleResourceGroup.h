@@ -31,7 +31,7 @@ namespace CarbonResources
 
     struct API BundleUnpackParams final
     {
-	    std::string outputDirectoryPath = "";
+	    std::filesystem::path outputDirectoryPath = "";
     };
 
     class BundleResourceGroupImpl;
@@ -40,7 +40,7 @@ namespace CarbonResources
     {
     public:
 
-	    BundleResourceGroup( const std::string& relativePath );
+	    BundleResourceGroup( const std::filesystem::path& relativePath );
 
 	    ~BundleResourceGroup();
 
