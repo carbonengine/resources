@@ -31,7 +31,8 @@ namespace YAML
 
 namespace CarbonResources
 {
-    
+    class Resource;
+
     class ResourceGroupImpl : public Resource
     {
     public:
@@ -49,10 +50,10 @@ namespace CarbonResources
 
         Result Subtraction( ResourceGroupSubtractionParams& params ) const;
 
-        virtual Result GetPathPrefix( std::string& prefix ) const override;
+        static std::string TypeId();
 
     private:
-	    virtual std::string Type() const;
+	    
         
         virtual Resource* CreateResourceFromResource( Resource* resource ) const; // TODO this function should match signature of others return Result etc
 
@@ -71,8 +72,6 @@ namespace CarbonResources
     protected:
 	    // Document Parameters
 	    DocumentParameter<Version> m_versionParameter = DocumentParameter<Version>( { 1, 0, 0 }, "Version" );
-
-	    DocumentParameter<std::string> m_typeParameter = DocumentParameter<std::string>( { 1, 0, 0 }, "Type" );
 
 	    DocumentParameterCollection<Resource*> m_resourcesParameter = DocumentParameterCollection<Resource*>( { 0, 0, 0 }, "Resources" );
     };

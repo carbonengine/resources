@@ -4,6 +4,8 @@
 #include <sstream>
 #include <yaml-cpp/yaml.h>
 #include <ResourceTools.h>
+#include "Resource.h"
+#include "BinaryResource.h"
 #include "PatchResource.h"
 #include "PatchResourceGroup.h"
 
@@ -15,6 +17,8 @@ namespace CarbonResources
 	    Resource( ResourceParams{ relativePath } )
     {
 		m_versionParameter = S_DOCUMENT_VERSION;
+
+		m_type = TypeId();
     }
 
     ResourceGroupImpl::~ResourceGroupImpl()
@@ -26,7 +30,7 @@ namespace CarbonResources
     {
         // VERSION NEEDS TO BE CHECKED TO ENSURE ITS SUPPORTED ON IMPORT
 		
-        std::string filename = GetRelativePath().filename;
+        std::string filename = GetRelativePath();
 
         if( filename.find( ".txt" ) != std::string::npos )
         {
@@ -84,11 +88,12 @@ namespace CarbonResources
 				return Result::MALFORMED_RESOURCE_INPUT;
             }
 
-            RelativePath path;
+            // Split filename and prefix
+			std::string resourcePrefixDelimiter = ":/";
+			std::string filename = value.substr( value.find(resourcePrefixDelimiter) + resourcePrefixDelimiter.size() );
+			std::string resourceType = value.substr( 0, value.find( ":" ) );
 
-			path.FromString( value );
-
-			resourceParams.relativePath = path.filename;
+			resourceParams.relativePath = filename;
 
 			if( !std::getline( ss, value, delimiter ) )
 			{
@@ -136,9 +141,9 @@ namespace CarbonResources
     {
 		ResourceParams resourceParams;
 
-        resourceParams.relativePath = resource->GetRelativePath().filename;
+        resourceParams.relativePath = resource->GetRelativePath();
 
-        resourceParams.location = resource->GetLocation().GetValue();
+        resourceParams.location = resource->GetLocation();
 
         resourceParams.checksum = resource->GetChecksum().GetValue();
 
@@ -204,9 +209,9 @@ namespace CarbonResources
 			version = S_DOCUMENT_VERSION;
         }
 
-        m_typeParameter = resourceGroupFile[m_typeParameter.GetTag()].as<std::string>();
+        m_type = resourceGroupFile[m_type.GetTag()].as<std::string>();
 
-		if( m_typeParameter.GetValue() != Type() )
+		if( m_type.GetValue() != TypeId() )
 		{
 			return Result::FILE_TYPE_MISMATCH;
 		}
@@ -235,7 +240,7 @@ namespace CarbonResources
 		return Result::SUCCESS;
     }
 
-    std::string ResourceGroupImpl::Type() const
+    std::string ResourceGroupImpl::TypeId() 
     {
 		return "ResourceGroup";
     }
@@ -277,8 +282,8 @@ namespace CarbonResources
 	    out << YAML::Key << m_versionParameter.GetTag();
 		out << YAML::Value << sanitisedOutputDocumentVersion.ToString(); 
 
-        out << YAML::Key << m_typeParameter.GetTag();
-		out << YAML::Value << Type();
+        out << YAML::Key << m_type.GetTag();
+		out << YAML::Value << m_type.GetValue();
 
         Result res = ExportGroupSpecialisedYaml( out, sanitisedOutputDocumentVersion );
 
@@ -326,13 +331,34 @@ namespace CarbonResources
 
     Result ResourceGroupImpl::CreatePatch( PatchCreateParams& params ) const
     {
-		std::string relativePath = GetRelativePath().filename;
+        if (params.previousResourceGroup->m_impl->GetType() != GetType())
+        {
+			return Result::PATCH_RESOURCE_LIST_MISSMATCH;
+        }
+      
+		std::string relativePath = GetRelativePath();
 
-        params.patchResourceGroup->SetRelativePath( relativePath );
+        PatchResourceGroup patchResourceGroup( params.resourceGroupPatchRelativePath );
 
-        params.patchResourceGroup->SetResourceGroup( this );
+        // Subtraction //TODO this needs to match the format of the original input resource lists
+        // Put in place when there is a factory
+		ResourceGroup resourceGroupSubtraction( params.resourceGroupPatchRelativePath );
 
-        for (Resource* resource : m_resourcesParameter)
+        ResourceGroupSubtractionParams resourceGroupSubtractionParams;
+
+		resourceGroupSubtractionParams.subtractResourceGroup = params.previousResourceGroup;
+
+		resourceGroupSubtractionParams.result = &resourceGroupSubtraction;
+
+        Result subtractionResult = Subtraction( resourceGroupSubtractionParams );
+
+        if (subtractionResult != Result::SUCCESS)
+        {
+			return subtractionResult;
+        }
+
+
+        for( Resource* resource : resourceGroupSubtraction.m_impl->m_resourcesParameter )
         {
             // Get resource data from
 			ResourceGetDataParams resourceGetDataParamsFrom;
@@ -367,11 +393,11 @@ namespace CarbonResources
             }
 
             // Create a resource from patch data
-            PatchResource* patchResource = new PatchResource( { resource->GetRelativePath().filename } );
+            PatchResource* patchResource = new PatchResource( { resource->GetRelativePath() } );
 			patchResource->SetParametersFromData( resourcePutDataParams.data );
 
             // Export patch file
-            resourcePutDataParams.resourceDestinationSettings = params.resourceDestinationSettings;
+            resourcePutDataParams.resourceDestinationSettings = params.resourcePatchBinaryDestinationSettings;
 
 			Result putPatchDataResult = patchResource->PutData( resourcePutDataParams );
 
@@ -381,8 +407,31 @@ namespace CarbonResources
             }
 
             // Add the patch resource to the patchResourceGroup
-			params.patchResourceGroup->AddResource( patchResource );
+			patchResourceGroup.AddResource( patchResource );
         }
+
+
+        // Export the subtraction ResourceGroup
+		ResourceGroupExportToFileParams subtractionResourceGroupExportToFileParams;
+
+		// TODO the path specified was for the binary patches, but this is actually a list so it's a bit missleading
+		subtractionResourceGroupExportToFileParams.resourceDetinationSettings = params.resourcePatchBinaryDestinationSettings;    
+
+        resourceGroupSubtraction.ExportToFile( subtractionResourceGroupExportToFileParams );
+
+
+        // Export the patchGroup
+        ResourceGroupExportToFileParams patchResourceGroupExportToFileParams;
+
+        patchResourceGroupExportToFileParams.resourceDetinationSettings = params.resourcePatchResourceGroupDestinationSettings;
+
+
+        // TODO perhaps there is a better way that this
+		patchResourceGroup.SetResourceGroup( resourceGroupSubtraction.m_impl );
+
+        patchResourceGroup.ExportToFile( patchResourceGroupExportToFileParams );
+
+        patchResourceGroup.SetResourceGroup( nullptr );
 
  
         return Result::SUCCESS;
@@ -418,13 +467,5 @@ namespace CarbonResources
         return Result::SUCCESS;
     }
 
-    Result ResourceGroupImpl::GetPathPrefix( std::string& prefix ) const
-    {
-		prefix = Type();
-
-		return Result::SUCCESS;
-    }
-
-   
 
 }

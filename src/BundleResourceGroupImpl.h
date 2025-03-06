@@ -36,7 +36,7 @@ namespace CarbonResources
 
     private:
 
-        virtual std::string Type() const override;
+        static std::string TypeId();
 
         virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
 

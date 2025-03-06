@@ -4,32 +4,21 @@
 
 #include <yaml-cpp/yaml.h>
 
+#include <ResourceTools.h>
+
 namespace CarbonResources
 {
     PatchResourceGroupImpl::PatchResourceGroupImpl( const std::string& relativePath ) :
 	    ResourceGroupImpl(relativePath)
     {
-
+		m_type = TypeId();
     }
 
-    Result PatchResourceGroupImpl::SetResourceGroup( const ResourceGroupImpl* resourceGroup )
+    Result PatchResourceGroupImpl::SetResourceGroup( ResourceGroupImpl* resourceGroup )
     {
-		// TODO this is all a bit scrappy and this should be a ResourceGroup
-		ResourceParams resourceGroupParams;
-
-		resourceGroupParams.relativePath = resourceGroup->GetRelativePath().filename;
-
-		resourceGroupParams.location = resourceGroup->GetLocation().GetValue();
-
-		resourceGroupParams.checksum = resourceGroup->GetChecksum().GetValue();
-
-		resourceGroupParams.compressedSize = resourceGroup->GetCompressedSize().GetValue();
-
-		resourceGroupParams.uncompressedSize = resourceGroup->GetUncompressedSize().GetValue();
-
-		resourceGroupParams.something = resourceGroup->GetSomething().GetValue();
-
-		m_resourceGroupParameter = new Resource( resourceGroupParams );
+        // The memory for this is owned externally
+        // So far one needs to be careful that this memory is not lost while this object
+		m_resourceGroupParameter = resourceGroup;
 
         return Result::SUCCESS;
     }
@@ -37,13 +26,10 @@ namespace CarbonResources
 
     PatchResourceGroupImpl::~PatchResourceGroupImpl()
     {
-        if (m_resourceGroupParameter.HasValue())
-        {
-			delete m_resourceGroupParameter.GetValue();
-        }
+        
     }
 
-    std::string PatchResourceGroupImpl::Type() const
+    std::string PatchResourceGroupImpl::TypeId()
     {
 		return "PatchGroup";
     }

@@ -51,9 +51,7 @@ namespace CarbonResources
 
         Result Apply( const PatchApplyParams& params );
 
-		void SetRelativePath( const std::string& relativePath );    // TODO get out of public API
-
-        Result SetResourceGroup( const ResourceGroupImpl* resourceGroup );  // TODO get out of public API
+        Result SetResourceGroup( ResourceGroupImpl* resourceGroup );  // TODO get out of public API!!
 
     private:
 

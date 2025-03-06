@@ -32,13 +32,13 @@ namespace CarbonResources
 
         PatchResourceGroupImpl( const std::string& relativePath );
 
-        Result SetResourceGroup( const ResourceGroupImpl* resourceGroup);
+        Result SetResourceGroup( ResourceGroupImpl* resourceGroup);
 
         ~PatchResourceGroupImpl();
 
     private:
 
-	    virtual std::string Type() const override;
+	    static std::string TypeId();
 
         virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
 

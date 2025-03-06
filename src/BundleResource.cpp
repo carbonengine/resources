@@ -10,7 +10,7 @@ namespace CarbonResources
     BundleResource::BundleResource( const BundleResourceParams& params ):
       Resource(params)
     {
-
+		m_type = TypeId();
     }
 
     BundleResource::~BundleResource()
@@ -18,11 +18,9 @@ namespace CarbonResources
 
     }
 
-    Result BundleResource::GetPathPrefix( std::string& prefix ) const
+    std::string BundleResource::TypeId( )
     {
-		prefix = "chunk";
-
-        return Result::SUCCESS;
+		return "BinaryChunk";
     }
 
 }

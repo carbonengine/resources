@@ -55,7 +55,7 @@ namespace CarbonResources
 		    return m_value.value();
 	    }
 
-	    bool HasValue()
+	    bool HasValue() const
 	    {
 		    return m_value.has_value();
 	    }
@@ -160,6 +160,8 @@ namespace CarbonResources
 	    std::vector<T> m_collection;
     };
 
+    
+    /*
     struct RelativePath
     {
         RelativePath()
@@ -173,13 +175,6 @@ namespace CarbonResources
         {
 
         }
-
-        /*
-        RelativePath(std::string pathStr)
-        {
-			FromString( pathStr );  //TODO this can fail
-        }
-        */
 
         
         bool FromString(const std::string& pathStr)
@@ -205,7 +200,7 @@ namespace CarbonResources
 		    return ( prefix == other.prefix ) && ( filename == other.filename );
 	    }
 
-        std::string ToString()
+        std::string ToString() const
         {
 			std::stringstream ss;
 
@@ -217,6 +212,31 @@ namespace CarbonResources
 	    std::string prefix = "";
 	    std::string filename = "";
     };
+    */
+
+    class Location
+	{
+	public:
+		Location()
+		{
+		}
+
+		Location( const std::string inLocation ) :
+			location( inLocation )
+		{
+		}
+
+		Result SetFromRelativePathAndDataChecksum( const std::string& resourceType, const std::string& relativePath, const std::string& dataChecksum );
+
+        std::string ToString()
+        {
+			return location;
+        }
+
+	private:
+
+		std::string location = "";
+	};
 
 
     struct ResourceParams
@@ -245,11 +265,13 @@ namespace CarbonResources
 
 	    ~Resource();
 
-	    RelativePath GetRelativePath() const;
+	    std::string GetRelativePath() const;
 
 	    void SetRelativePath( const std::string& relativePath );
 
-	    DocumentParameter<std::string> GetLocation() const;
+	    std::string GetLocation() const;
+
+        std::string GetType() const;
 
 	    DocumentParameter<std::string> GetChecksum() const;
 
@@ -271,10 +293,10 @@ namespace CarbonResources
 
         bool operator==( const Resource* other ) const 
 		{
-			return ( GetRelativePath().ToString() == other->GetRelativePath().ToString() ) && ( GetChecksum().GetValue() == other->GetChecksum().GetValue() ); //TODO implement == ops on documentParameters
+			return ( GetRelativePath() == other->GetRelativePath() ) && ( GetChecksum().GetValue() == other->GetChecksum().GetValue() ); //TODO implement == ops on documentParameters
 		}
 
-        virtual Result GetPathPrefix( std::string& prefix ) const;
+        static std::string TypeId();
 
     private:
 	    Result GetDevelopmentLocalData( ResourceGetDataParams& params ) const;
@@ -287,12 +309,14 @@ namespace CarbonResources
 
 		Result PutProductionLocalData( ResourcePutDataParams& params ) const;
 
-    private:
+    protected:
 
         // Parameters for document version 0.0.0
 		DocumentParameter<std::string> m_relativePath = DocumentParameter<std::string>( { 0, 0, 0 }, "RelativePath" );
 
-		DocumentParameter<std::string> m_location = DocumentParameter<std::string>( { 0, 0, 0 }, "Location" );
+		DocumentParameter<Location> m_location = DocumentParameter<Location>( { 0, 0, 0 }, "Location" );
+
+        DocumentParameter<std::string> m_type = DocumentParameter<std::string>( { 0, 0, 0 }, "Type" );
 
 		DocumentParameter<std::string> m_checksum = DocumentParameter<std::string>( { 0, 0, 0 }, "Checksum" );
 

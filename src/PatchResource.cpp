@@ -12,7 +12,7 @@ namespace CarbonResources
     PatchResource::PatchResource( const PatchResourceParams& params ):
       Resource(params)
     {
-
+		m_type = TypeId();
     }
 
     PatchResource::~PatchResource()
@@ -20,11 +20,9 @@ namespace CarbonResources
 
     }
 
-    Result PatchResource::GetPathPrefix( std::string& prefix ) const
+    std::string PatchResource::TypeId( )
     {
-		prefix = "diff";
-
-		return Result::SUCCESS;
+		return "BinaryPatch";
     }
 
 

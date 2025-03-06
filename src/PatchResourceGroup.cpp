@@ -26,13 +26,7 @@ namespace CarbonResources
     }
 
     // TODO can this come out of API?
-    void PatchResourceGroup::SetRelativePath( const std::string& relativePath )
-    {
-		m_impl->SetRelativePath( relativePath );
-    }
-
-    // TODO can this come out of API?
-    Result PatchResourceGroup::SetResourceGroup( const ResourceGroupImpl* resourceGroup )
+    Result PatchResourceGroup::SetResourceGroup( ResourceGroupImpl* resourceGroup )
     {
 		return m_impl->SetResourceGroup( resourceGroup );
     }

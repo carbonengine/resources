@@ -43,7 +43,7 @@ namespace CarbonResources
 
 	    virtual Result ExportToYaml( YAML::Emitter& out, const Version& documentVersion ) override;
 
-        virtual Result GetPathPrefix( std::string& prefix ) const override;
+        static std::string TypeId();
 
     private:
 	    DocumentParameter<unsigned int> m_binaryOperation = DocumentParameter<unsigned int>( { 0, 0, 0 }, "BinaryOperation" );

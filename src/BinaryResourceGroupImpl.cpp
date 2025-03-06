@@ -10,7 +10,7 @@ namespace CarbonResources
     BinaryResourceGroupImpl::BinaryResourceGroupImpl( const std::string& relativePath ) :
 	    ResourceGroupImpl(relativePath)
     {
-
+		m_type = TypeId();
     }
 
     BinaryResourceGroupImpl::~BinaryResourceGroupImpl()
@@ -18,7 +18,7 @@ namespace CarbonResources
 
     }
 
-    std::string BinaryResourceGroupImpl::Type() const
+    std::string BinaryResourceGroupImpl::TypeId()
     {
         return "BinaryGroup";
     }
@@ -85,12 +85,12 @@ namespace CarbonResources
 				return Result::MALFORMED_RESOURCE_INPUT;
 			}
 
-            // Get the filename of the relative path
-            RelativePath relativePath;
+           // Split filename and prefix
+			std::string resourcePrefixDelimiter = ":/";
+			std::string filename = value.substr( value.find( resourcePrefixDelimiter ) + resourcePrefixDelimiter.size() );
+			std::string resourceType = value.substr( 0, value.find( ":" ) );
 
-			relativePath.FromString( value );
-
-			binaryResourceParams.relativePath = relativePath.filename;
+			binaryResourceParams.relativePath = filename;
 
 			if( !std::getline( ss, value, delimiter ) )
 			{

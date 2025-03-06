@@ -10,12 +10,47 @@
 
 namespace CarbonResources
 {
+    // TODO split this into own file
+    Result Location::SetFromRelativePathAndDataChecksum(const std::string& resourceType, const std::string& relativePath, const std::string& dataChecksum)
+    {
+		std::string relativePathChecksum = "";
+
+        std::stringstream ss;
+
+        // By concatenating the type with the path files with the same relativePath can exist on the CDN
+        ss << resourceType;
+
+        ss << ":/";
+
+        ss << relativePath;
+
+		std::string relativePathWithPrefix = ss.str();
+
+		if( !ResourceTools::GenerateFowlerNollVoChecksum( relativePathWithPrefix, relativePathChecksum ) )
+		{
+			return Result::FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUM;
+		}
+
+		std::stringstream ss2;// TODO naming and pull out of here
+		ss2 << relativePathChecksum.substr( 0, 2 );
+		ss2 << "/";
+		ss2 << relativePathChecksum;
+		ss2 << "_";
+		ss2 << dataChecksum;
+
+		location = ss2.str();
+
+		return Result::SUCCESS;
+    }
+
 
     Resource::Resource( const ResourceParams& params )
     {
 		m_relativePath = params.relativePath;
 
 		m_location = params.location;
+
+        m_type = TypeId();
 		
 		m_checksum = params.checksum;
 
@@ -35,13 +70,9 @@ namespace CarbonResources
 
     }
 
-    RelativePath Resource::GetRelativePath() const
+    std::string Resource::GetRelativePath() const
     {
-		std::string prefix;
-
-        GetPathPrefix( prefix );    // TODO deal with return
-
-		return RelativePath( prefix, m_relativePath.GetValue() );
+		return m_relativePath.GetValue();
     }
 
     void Resource::SetRelativePath( const std::string& relativePath )
@@ -49,9 +80,14 @@ namespace CarbonResources
 		m_relativePath = relativePath;
     }
 
-    DocumentParameter<std::string> Resource::GetLocation() const
+    std::string Resource::GetLocation() const
     {
-		return m_location;
+		return m_location.GetValue().ToString();
+    }
+
+    std::string Resource::GetType() const
+    {
+		return m_type.GetValue();
     }
 
     DocumentParameter<std::string> Resource::GetChecksum() const
@@ -144,7 +180,7 @@ namespace CarbonResources
 
 		ss << params.resourceDestinationSettings.productionLocalBasePath;
 		//TODO manage paths much better
-		ss << "/" << m_location.GetValue();
+		ss << "/" << m_location.GetValue().ToString();
 
 		std::string path = ss.str();
 
@@ -234,7 +270,7 @@ namespace CarbonResources
 
 		ss << params.resourceSourceSettings.productionLocalBasePath;
         //TODO manage paths much better
-		ss << "/" << m_location.GetValue();
+		ss << "/" << m_location.GetValue().ToString();
 
 		std::string path = ss.str();
 
@@ -287,6 +323,12 @@ namespace CarbonResources
 			m_location = resource[m_location.GetTag()].as<std::string>();
 		}
 
+        if( m_type.IsParameterExpectedInDocumentVersion( documentVersion ) )
+		{
+			//TODO handle failure
+			m_type = resource[m_type.GetTag()].as<std::string>();
+		}
+
 		if( m_checksum.IsParameterExpectedInDocumentVersion( documentVersion ) )
 		{
 			//TODO handle failure
@@ -317,11 +359,9 @@ namespace CarbonResources
 		return Result::SUCCESS;
 	}
 
-    Result Resource::GetPathPrefix(std::string& prefix) const
+    std::string Resource::TypeId()
     {
-		prefix = "res";
-
-        return Result::SUCCESS;
+		return "Resource";
     }
 
     Result Resource::SetParametersFromData(const std::string& data)
@@ -335,23 +375,11 @@ namespace CarbonResources
 
         m_checksum = checksum;
 
-        std::string relativePath = GetRelativePath().ToString();
+        Location l;
 
-        std::string relativePathChecksum = "";
-        
-        if (!ResourceTools::GenerateFowlerNollVoChecksum(relativePath, relativePathChecksum))
-        {
-			return Result::FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUM;
-        }
+		l.SetFromRelativePathAndDataChecksum( GetType(), GetRelativePath(), checksum );
 
-        // TODO formalise location internally more to strengthen
-        std::stringstream ss;
-		ss << relativePathChecksum.substr( 0, 2 );
-		ss << "/";
-		ss << relativePathChecksum;
-		ss << "_";
-		ss << checksum;
-		m_location = ss.str();
+		m_location = l;
 
         std::string compressedData = "";
 
@@ -380,7 +408,19 @@ namespace CarbonResources
 			}
 
 			out << YAML::Key << m_relativePath.GetTag();
-			out << YAML::Value << GetRelativePath().ToString();
+			out << YAML::Value << GetRelativePath();
+		}
+
+        // Type
+		if( m_type.IsParameterExpectedInDocumentVersion( documentVersion ) )
+		{
+			if( !m_type.HasValue() )
+			{
+				return Result::REQUIRED_RESOURCE_PARAMETER_NOT_SET;
+			}
+
+			out << YAML::Key << m_type.GetTag();
+			out << YAML::Value << GetType();
 		}
 
         // Location
@@ -392,7 +432,7 @@ namespace CarbonResources
 			}
 
 			out << YAML::Key << m_location.GetTag();
-			out << YAML::Value << m_location.GetValue();
+			out << YAML::Value << m_location.GetValue().ToString();
 		}
 
 		// Checksum

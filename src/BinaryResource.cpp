@@ -13,6 +13,8 @@ namespace CarbonResources
         Resource(params)
     {
 		m_binaryOperation = params.binaryOperation;
+
+        m_type = TypeId();
     }
 
     BinaryResource::~BinaryResource()
@@ -60,11 +62,9 @@ namespace CarbonResources
 		return Result::SUCCESS;
     }
 
-    Result BinaryResource::GetPathPrefix( std::string& prefix ) const
+    std::string BinaryResource::TypeId( )
     {
-		prefix = "app";
-
-		return Result::SUCCESS;
+		return "Binary";
     }
     
 

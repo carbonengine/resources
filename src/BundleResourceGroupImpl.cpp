@@ -10,7 +10,7 @@ namespace CarbonResources
     BundleResourceGroupImpl::BundleResourceGroupImpl( const std::string& relativePath ) :
 	    ResourceGroupImpl(relativePath)
     {
-
+		m_type = TypeId();
     }
 
     BundleResourceGroupImpl::~BundleResourceGroupImpl()
@@ -18,7 +18,7 @@ namespace CarbonResources
 
     }
 
-    std::string BundleResourceGroupImpl::Type() const
+    std::string BundleResourceGroupImpl::TypeId()
 	{
 		return "BundleGroup";
 	}

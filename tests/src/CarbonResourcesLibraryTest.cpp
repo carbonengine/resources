@@ -196,48 +196,23 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 	resourceGroupLatest.ImportFromFile( importParamsLatest );
 
 
-    // Create a subtraction between previous and latest ResourceGroups
-	CarbonResources::ResourceGroup resourceGroupSubtraction( "resfileindex_previousBuild_latestBuild.txt" );
-
-    CarbonResources::ResourceGroupSubtractionParams resourceGroupSubtractionParams;
-
-    resourceGroupSubtractionParams.subtractResourceGroup = &resourceGroupPrevious;
-
-    resourceGroupSubtractionParams.result = &resourceGroupSubtraction;
-
-    resourceGroupLatest.Subtraction( resourceGroupSubtractionParams );
-
-
-    // Save the subtraction index
-	CarbonResources::ResourceGroupExportToFileParams exportParams;
-
-    exportParams.resourceDetinationSettings.productionLocalBasePath = "SharedCache";
-
-	resourceGroupSubtraction.ExportToFile( exportParams );
-
 
     // Create a patch from the subtraction index
-	CarbonResources::PatchResourceGroup patchResourceGroup( "nothingTODO" );
-
 	CarbonResources::PatchCreateParams patchCreateParams;
+
+    patchCreateParams.resourceGroupPatchRelativePath = "resfileindex_previousBuild_latestBuild.yaml";
 
     patchCreateParams.resourceSourceSettingsFrom.productionLocalBasePath = GetTestFileFileAbsolutePath( "/resourcesLocal" );
 
     patchCreateParams.resourceSourceSettingsTo.productionLocalBasePath = GetTestFileFileAbsolutePath( "/resourcesRemote" );
 
-    patchCreateParams.resourceDestinationSettings.productionLocalBasePath = "SharedCache";
+    patchCreateParams.resourcePatchBinaryDestinationSettings.productionLocalBasePath = "SharedCache";
 
-    patchCreateParams.patchResourceGroup = &patchResourceGroup;
+    patchCreateParams.resourcePatchResourceGroupDestinationSettings.developmentLocalBasePath = "resPath";
+
+    patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
     
-	resourceGroupSubtraction.CreatePatch( patchCreateParams );
-
-
-    // Save patch resource to respath
-	CarbonResources::ResourceGroupExportToFileParams patchResourceGroupExportToFileParams;
-
-	patchResourceGroupExportToFileParams.resourceDetinationSettings.developmentLocalBasePath = "resPath";
-
-	patchCreateParams.patchResourceGroup->ExportToFile( patchResourceGroupExportToFileParams );
+	resourceGroupLatest.CreatePatch( patchCreateParams );
 
 
     // TODO run tests on patch create

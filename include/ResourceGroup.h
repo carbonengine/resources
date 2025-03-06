@@ -73,13 +73,17 @@ namespace CarbonResources
 
     struct API PatchCreateParams
 	{
-		PatchResourceGroup* patchResourceGroup;
+		ResourceGroup* previousResourceGroup;
+
+        std::string resourceGroupPatchRelativePath;
 
 		ResourceSourceSettings resourceSourceSettingsFrom;
 
 		ResourceSourceSettings resourceSourceSettingsTo;
 
-        ResourceDestinationSettings resourceDestinationSettings;
+        ResourceDestinationSettings resourcePatchBinaryDestinationSettings;
+
+        ResourceDestinationSettings resourcePatchResourceGroupDestinationSettings;
 	};
 
     struct API ResourceGroupImportFromFileParams
