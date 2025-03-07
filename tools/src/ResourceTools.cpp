@@ -158,6 +158,7 @@ size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, voi
 	  curl_easy_setopt( s_curlHandle, CURLOPT_FAILONERROR, 1 );
 	  curl_easy_setopt( s_curlHandle, CURLOPT_WRITEDATA, &out );
 	  curl_easy_setopt( s_curlHandle, CURLOPT_WRITEFUNCTION, WriteToFileStreamCallback );
+  	  curl_easy_setopt( s_curlHandle, CURLOPT_ACCEPT_ENCODING, "gzip" );
 	  CURLcode cc = curl_easy_perform( s_curlHandle );
 	  return cc == CURLE_OK;
   }

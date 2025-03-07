@@ -57,6 +57,10 @@ TEST( ResourceToolsTest, DownloadFile )
 	EXPECT_TRUE( success );
 
 	// Verify downloaded file contents.
+	// Note that in this example we are not downloading from an actual web server
+	// In production, the web server would return a reply with `Content-Encoding`: `gzip`
+	// which would cause curl to automatically unzip the thing for us, but in order to
+	// keep the test small and isolated we do not exercise this functionality.
 	std::string checksum;
 	ResourceTools::GenerateMd5Checksum( downloadedData, checksum );
 	EXPECT_STREQ( checksum.c_str(), "6ccf6b7e2e263646f5a78e77b9ba3168" );
