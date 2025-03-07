@@ -30,6 +30,15 @@ namespace ResourceTools
     // TODO expect all these signatures to move around, just made off the top of my head so far
     // Not settled on correct approach to manage data etc
 
+	// Initialize CURL.
+	// Should be called once at program startup, but if you are initializing
+	// from a Windows DLL you should not initialize it from DllMain or a static initializer
+	// because Windows holds the loader lock during that time and it could cause a deadlock.
+	// See: https://curl.se/libcurl/c/curl_global_init.html
+	bool Initialize();
+
+	bool ShutDown();  // Shut down CURL.
+
     bool GenerateMd5Checksum( const std::string& data, std::string& checksum );
 
     bool GenerateFowlerNollVoChecksum( const std::string& input, std::string& checksum );
