@@ -45,7 +45,7 @@ namespace ResourceTools
 
     bool GetLocalFileData( const std::filesystem::path& filepath, std::string& data );
 
-    bool DownloadFile( const std::string& url, const std::string& outputPath );
+    bool DownloadFile( const std::string& url, const std::filesystem::path& outputPath );
 
     bool GZipCompressData( const std::string& dataToCompress, std::string& compressedData );
 

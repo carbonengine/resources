@@ -135,15 +135,14 @@ size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, voi
   	return realSize;
   }
 
-  bool DownloadFile( const std::string& url, const std::string& outputPath )
+  bool DownloadFile( const std::string& url, const std::filesystem::path& outputPath )
   {
 	  if( std::filesystem::exists( outputPath ) )
 	  {
 		  // Let's not overwrite an existing file.
 		  return false;
 	  }
-	  std::filesystem::path output( outputPath );
-	  std::filesystem::path parent = output.parent_path();
+	  std::filesystem::path parent = outputPath.parent_path();
 	  if( !std::filesystem::exists( parent ) && !std::filesystem::create_directories( parent ) )
 	  {
 		  // Failed to create directory to place the downloaded file in.
