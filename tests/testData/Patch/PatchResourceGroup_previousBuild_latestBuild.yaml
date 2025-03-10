@@ -1,0 +1,16 @@
+Version: 0.1.0
+Type: PatchGroup
+ResourceGroupResource:
+  RelativePath: ResourceGroup_previousBuild_latestBuild.yaml
+  Type: ResourceGroup
+  Location: 20/20b667e334ee0bf1_574ad965d73f344f020e35a7dcde6944
+  Checksum: 574ad965d73f344f020e35a7dcde6944
+  UncompressedSize: 480
+  CompressedSize: 480
+Resources:
+  - RelativePath: intromovie.txt
+    Type: BinaryPatch
+    Location: 46/46884ac8611b6ae1_ef79b20bb734c26461eed45e45e0fa80
+    Checksum: ef79b20bb734c26461eed45e45e0fa80
+    UncompressedSize: 3338
+    CompressedSize: 3338

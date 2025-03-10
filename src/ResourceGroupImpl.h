@@ -20,7 +20,7 @@
 #define ResourceGroupImpl_H
 
 #include "ResourceGroup.h"
-#include "Resource.h"
+#include "ResourceInfo/ResourceInfo.h"
 #include <vector>
 
 namespace YAML
@@ -31,49 +31,76 @@ namespace YAML
 
 namespace CarbonResources
 {
-    class Resource;
 
-    class ResourceGroupImpl : public Resource
+    struct ResourceGroupSubtractionParams
+    {
+	    ResourceGroupImpl* subtractResourceGroup = nullptr;
+
+	    ResourceGroupImpl* result1 = nullptr;
+
+	    ResourceGroupImpl* result2 = nullptr;
+    };
+
+    enum class DocumentType
+    {
+        CSV,
+        YAML
+    };
+
+
+    class ResourceGroupImpl
     {
     public:
-		ResourceGroupImpl( const std::filesystem::path& relativePath );
+		ResourceGroupImpl();
 
 	    ~ResourceGroupImpl();
 
 	    Result ImportFromFile( ResourceGroupImportFromFileParams& params );
 
-	    Result ExportToFile( const ResourceGroupExportToFileParams& params );
+        Result ImportFromData( const std::string& data, DocumentType documentType = DocumentType::YAML );
+
+	    Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
+
+        Result ExportToData( std::string& data, Version outputDocumentVersion = S_DOCUMENT_VERSION ) const;
 
 	    Result CreatePatch( PatchCreateParams& params ) const;
 
-	    Result AddResource( Resource* resource );
+	    Result AddResource( ResourceInfo* resource );
 
-        Result Subtraction( ResourceGroupSubtractionParams& params ) const;
+        Result Diff( ResourceGroupSubtractionParams& params ) const;
+        
+        virtual std::string GetType() const;
 
         static std::string TypeId();
+
+    protected:
+
+        virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut );
 
     private:
 	    
         
-        virtual Resource* CreateResourceFromResource( Resource* resource ) const; // TODO this function should match signature of others return Result etc
+        virtual ResourceInfo* CreateResourceFromResource( ResourceInfo* resource ) const; // TODO this function should match signature of others return Result etc
 
-	    virtual Resource* CreateResourceFromYaml( YAML::Node& resource );   // TODO this function should match signature of others return Result etc
+	    
 
 	    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile );
 
 	    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const;
 
-	    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSVFile( ResourceGroupImportFromFileParams& params );
+	    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSV( const std::string& data );
 
-	    Result ImportFromYamlFile( ResourceGroupImportFromFileParams& params );
+	    Result ImportFromYaml( const std::string& data );
 
-	    Result ExportYamlToFile( const ResourceGroupExportToFileParams& params );
+	    Result ExportYaml( const Version& outputDocumentVersion, std::string& data ) const;
 
-    protected:
+    public: // TODO not thrilled by this is there a better way?
 	    // Document Parameters
 	    DocumentParameter<Version> m_versionParameter = DocumentParameter<Version>( { 1, 0, 0 }, "Version" );
 
-	    DocumentParameterCollection<Resource*> m_resourcesParameter = DocumentParameterCollection<Resource*>( { 0, 0, 0 }, "Resources" );
+        DocumentParameter<std::string> m_type = DocumentParameter<std::string>( { 1, 0, 0 }, "Type" );
+
+	    DocumentParameterCollection<ResourceInfo*> m_resourcesParameter = DocumentParameterCollection<ResourceInfo*>( { 0, 0, 0 }, "Resources" );
     };
 
 }

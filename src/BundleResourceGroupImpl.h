@@ -23,6 +23,8 @@
 
 #include "ResourceGroupImpl.h"
 
+#include "ResourceInfo/BundleResourceInfo.h"
+
 namespace CarbonResources
 {
 
@@ -30,15 +32,17 @@ namespace CarbonResources
     {
     public:
 
-	    BundleResourceGroupImpl( const std::filesystem::path& relativePath );
+	    BundleResourceGroupImpl( );
 
         ~BundleResourceGroupImpl();
 
-    private:
+        virtual std::string GetType() const override;
 
         static std::string TypeId();
 
-        virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
+    private:
+
+        virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut ) override;
 
         virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 

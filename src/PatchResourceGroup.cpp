@@ -4,8 +4,8 @@
 namespace CarbonResources
 {
 
-    PatchResourceGroup::PatchResourceGroup( const std::filesystem::path& relativePath ):
-	    ResourceGroup(new PatchResourceGroupImpl(relativePath)),
+    PatchResourceGroup::PatchResourceGroup( ):
+	    ResourceGroup(new PatchResourceGroupImpl()),
 	    m_impl( reinterpret_cast<PatchResourceGroupImpl*>( ResourceGroup::m_impl ) )
     {
         
@@ -22,12 +22,7 @@ namespace CarbonResources
     /// @return true on success, false on failure
     Result PatchResourceGroup::Apply( const PatchApplyParams& params )
     {
-	    return Result::FAIL;
+		return m_impl->Apply( params );
     }
 
-    // TODO can this come out of API?
-    Result PatchResourceGroup::SetResourceGroup( ResourceGroupImpl* resourceGroup )
-    {
-		return m_impl->SetResourceGroup( resourceGroup );
-    }
 }

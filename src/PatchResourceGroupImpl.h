@@ -23,6 +23,10 @@
 
 #include "ResourceGroupImpl.h"
 
+#include "ResourceInfo/ResourceGroupInfo.h"
+
+#include "ResourceInfo/PatchResourceInfo.h"
+
 namespace CarbonResources
 {
 
@@ -30,17 +34,23 @@ namespace CarbonResources
     {
     public:
 
-        PatchResourceGroupImpl( const std::filesystem::path& relativePath );
+        PatchResourceGroupImpl( );
 
-        Result SetResourceGroup( ResourceGroupImpl* resourceGroup);
+        Result SetResourceGroup( const ResourceGroupInfo& resourceGroup);
 
         ~PatchResourceGroupImpl();
 
+        Result Apply( const PatchApplyParams& params );
+
+        virtual std::string GetType() const override;
+
+        static std::string TypeId();
+
     private:
 
-	    static std::string TypeId();
+	    
 
-        virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
+        virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut ) override;
 
         virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 
@@ -48,7 +58,7 @@ namespace CarbonResources
 
     protected:
 
-        DocumentParameter<Resource*> m_resourceGroupParameter = DocumentParameter<Resource*>( { 0, 1, 0 }, "ResourceGroupResource" );
+        DocumentParameter<ResourceGroupInfo*> m_resourceGroupParameter = DocumentParameter<ResourceGroupInfo*>( { 0, 1, 0 }, "ResourceGroupResource" );
     };
 
 }

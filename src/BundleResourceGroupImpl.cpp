@@ -1,14 +1,14 @@
 #include "BundleResourceGroupImpl.h"
 
-#include "BundleResource.h"
+//#include "BundleResource.h"
 
 #include <yaml-cpp/yaml.h>
 
 namespace CarbonResources
 {
 
-    BundleResourceGroupImpl::BundleResourceGroupImpl( const std::filesystem::path& relativePath ) :
-	    ResourceGroupImpl(relativePath)
+    BundleResourceGroupImpl::BundleResourceGroupImpl( ) :
+	    ResourceGroupImpl()
     {
 		m_type = TypeId();
     }
@@ -18,28 +18,35 @@ namespace CarbonResources
 
     }
 
+    std::string BundleResourceGroupImpl::GetType() const
+	{
+		return TypeId();
+	}
+
     std::string BundleResourceGroupImpl::TypeId()
 	{
 		return "BundleGroup";
 	}
 
-    Resource* BundleResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource )
+    Result BundleResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut )
 	{
-		BundleResource* createdResource = new BundleResource( BundleResourceParams{} );
+		BundleResourceInfo* bundleResourceInfo = new BundleResourceInfo( BundleResourceInfoParams{} );
 
-		Result importFromYamlResult = createdResource->ImportFromYaml( resource, m_versionParameter.GetValue() );
+		Result importFromYamlResult = bundleResourceInfo->ImportFromYaml( resource, m_versionParameter.GetValue() );
 
 		if( importFromYamlResult != Result::SUCCESS )
 		{
-			delete createdResource;
-			return nullptr;
+			delete bundleResourceInfo;
+
+			return importFromYamlResult;
 		}
 		else
 		{
-			return createdResource;
+			resourceOut = bundleResourceInfo;
+
+			return Result::SUCCESS;
 		}
 
-		return nullptr;
 	}
 
     Result BundleResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )

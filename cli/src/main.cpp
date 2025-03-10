@@ -5,6 +5,7 @@
 #include <BundleResourceGroup.h>
 #include <PatchResourceGroup.h>
 #include <argparse/argparse.hpp>
+#include <BinaryResourceGroup.h>
 
 
 bool CreateBundle( const std::string& inputResourceListPath )
@@ -18,12 +19,40 @@ bool CreatePatch( const std::string& inputResourceListPath )
     return false;
 }
 
+void RunAbiTest()
+{
+	CarbonResources::BinaryResourceGroup binaryResourceGroup;
+
+    CarbonResources::ThisIsAnExampleTodoRemove params;
+
+    params.a = 5;
+
+    params.b = 10;
+
+    params.c = 20;
+
+    binaryResourceGroup.SomethingThatUsesTestStruct( params );
+}
+
 int main( int argc, char** argv )
 {
 
     // Create CLI parser
 	argparse::ArgumentParser cli( "carbon-resources", CarbonResources::S_LIBRARY_VERSION.ToString() );
 	
+
+    // A Test
+	std::string abi_test = "abi-test";
+
+    argparse::ArgumentParser abi_test_cli( abi_test );
+
+    abi_test_cli.add_description( "Sandbox" );
+
+
+
+
+
+
 
 
     // Bundle
@@ -57,6 +86,7 @@ int main( int argc, char** argv )
     // Add subparsers
     cli.add_subparser( create_bundle_cli );
 	cli.add_subparser( create_patch_cli );
+	cli.add_subparser( abi_test_cli );
 
     // No arguments passed
     if (argc == 1)
@@ -101,6 +131,11 @@ int main( int argc, char** argv )
 
 		result = CreatePatch( resourceListPath );
     }
+	else if( cli.is_subcommand_used( abi_test_cli ) )
+	{
+		RunAbiTest();
+	}
+
     else
     {
 		std::cerr << cli;

@@ -96,6 +96,8 @@ namespace ResourceTools
 
       inputStream.read( data.data(), fileSize );
 
+      inputStream.close();
+
 	  return true;
   }
 
@@ -118,6 +120,14 @@ namespace ResourceTools
 	  uncompressedData = dataToUncompress;
 
 	  return true;
+  }
+
+  bool ApplyPatch(const std::string& data, const std::string& patchData, std::string& out)
+  {
+	// TODO implement patch application
+	  out = patchData;
+
+      return true;
   }
 
   bool CreatePatch(const std::string& previousData, const std::string& latestData, std::string& patchData)

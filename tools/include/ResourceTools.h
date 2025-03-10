@@ -42,6 +42,8 @@ namespace ResourceTools
 
     bool GZipUncompressData( const std::string& dataToUncompress, std::string& uncompressedData );
 
+    bool ApplyPatch( const std::string& data, const std::string& patchData, std::string& out );
+
     bool CreatePatch(const std::string& data1, const std::string& data2, std::string& patchData);
 
     bool SaveFile( const std::filesystem::path& path, const std::string& data);

@@ -10,8 +10,8 @@ namespace CarbonResources
     {
     }
 
-    ResourceGroup::ResourceGroup( const std::filesystem::path& relativePath ) :
-		m_impl( new ResourceGroupImpl( { relativePath } ) )
+    ResourceGroup::ResourceGroup(  ) :
+		m_impl( new ResourceGroupImpl( ) )
     {
     }
 
@@ -63,24 +63,5 @@ namespace CarbonResources
     {
 	    return m_impl->ExportToFile( params );
     }
-
-    /// @brief Return a subtraction
-    /// @param data data which the checksum will be based on
-    /// @param data_size size of data passed in
-    /// @param checksum will contain the resulting checksum on success
-    /// @return true on success, false on failure
-    /// @note will relinquish ownership of patch resource group
-    Result ResourceGroup::Subtraction( ResourceGroupSubtractionParams& params ) const
-    {
-	    return m_impl->Subtraction( params );
-    }
-
-    
-    // TODO get this out of public API
-    Result ResourceGroup::AddResource( Resource* r )
-    {
-		return m_impl->AddResource( r );
-    }
-    
 
 }

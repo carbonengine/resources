@@ -11,6 +11,8 @@
 
 // TODO I think it would be good if the output files of the tests were put in folders which match the test name
 // The DLL handles the case where the dll is a newer version that what was used to compile against, find a way to test this
+// Tests need to cover all bad parameter entry input
+// eg. not providing the correct parameters, or passing bad paths etc
 
 struct CarbonResourcesLibraryTest : public CarbonResourcesTestFixture{};
 
@@ -19,49 +21,45 @@ struct CarbonResourcesLibraryTest : public CarbonResourcesTestFixture{};
 // This is the only instance that exporting a file of a lower version results in a version bump
 TEST_F( CarbonResourcesLibraryTest, BinaryGroupImportExport_V_0_0_0_To_V_0_1_0 )
 {
-	CarbonResources::BinaryResourceGroup binaryResourceGroup("binaryFileIndex_v0_0_0.txt");
+
+	CarbonResources::BinaryResourceGroup binaryResourceGroup;
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );
+    importParams.filename = GetTestFileFileAbsolutePath( "Indicies/binaryFileIndex_v0_0_0.txt" );
 
 	EXPECT_EQ(binaryResourceGroup.ImportFromFile( importParams ),CarbonResources::Result::SUCCESS);
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-    exportParams.resourceDetinationSettings.productionLocalBasePath = "SharedCache";
+    exportParams.filename = "resPath/BinaryResourceGroup_v0_1_0.yaml";
 
 	EXPECT_EQ(binaryResourceGroup.ExportToFile( exportParams ),CarbonResources::Result::SUCCESS);
 
-    std::filesystem::path goldStandardFilename = GetTestFileFileAbsolutePath( "Indicies/binaryFileIndex_v0_1_0.yaml" );
+    std::filesystem::path goldStandardFilename = GetTestFileFileAbsolutePath( "Indicies/BinaryResourceGroup_v0_1_0.yaml" );
 
     //TODO reinstate
-	//EXPECT_TRUE( FilesMatch( exportParams.outputFilename, exportParams.outputFilename ) );
+	EXPECT_TRUE( FilesMatch( exportParams.filename, goldStandardFilename ) );
 }
 
 // Import a BinaryResourceGroup v0.1.0 and export it again checking input == output
 TEST_F( CarbonResourcesLibraryTest, BinaryGroupImportExport_V_0_1_0 )
 {
-    std::string inputResName = "binaryFileIndex_v0_1_0.yaml";
-
-	CarbonResources::BinaryResourceGroup binaryResourceGroup( inputResName );
+	CarbonResources::BinaryResourceGroup binaryResourceGroup;
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );
+    importParams.filename = GetTestFileFileAbsolutePath( "Indicies/BinaryResourceGroup_v0_1_0.yaml" );
 
 	EXPECT_EQ(binaryResourceGroup.ImportFromFile( importParams ),CarbonResources::Result::SUCCESS);
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-    exportParams.resourceDetinationSettings.productionLocalBasePath = "SharedCache";
+    exportParams.filename = "resPath/BinaryResourceGroup_v0_1_0.yaml";
 
 	EXPECT_EQ(binaryResourceGroup.ExportToFile( exportParams ),CarbonResources::Result::SUCCESS);
 
-    std::filesystem::path inputFilename = importParams.dataParams.resourceSourceSettings.developmentLocalBasePath / inputResName;
-
-    //TODO reinstate
-	//EXPECT_TRUE( FilesMatch( inputFilename, exportParams.outputFilename ) );
+	EXPECT_TRUE( FilesMatch( importParams.filename, exportParams.filename ) );
 }
 
 // Import ResourceGroup V0.0.0 
@@ -69,24 +67,23 @@ TEST_F( CarbonResourcesLibraryTest, BinaryGroupImportExport_V_0_1_0 )
 // This is the only instance that exporting a file of a lower version results in a version bump
 TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportExport_V_0_0_0_To_V_0_1_0 )
 {
-	CarbonResources::ResourceGroup resourceGroup("resFileIndex_v0_0_0.txt");
+	CarbonResources::ResourceGroup resourceGroup;
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );
+    importParams.filename = GetTestFileFileAbsolutePath( "Indicies/resFileIndex_v0_0_0.txt" );
 
 	EXPECT_EQ(resourceGroup.ImportFromFile( importParams ),CarbonResources::Result::SUCCESS);
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-    exportParams.resourceDetinationSettings.productionLocalBasePath = "SharedCache";
+    exportParams.filename = "resPath/ResourceGroup_v0_1_0.yaml";
 
 	EXPECT_EQ(resourceGroup.ExportToFile( exportParams ),CarbonResources::Result::SUCCESS);
 
-    std::filesystem::path goldStandardFilename = GetTestFileFileAbsolutePath( "Indicies/resFileIndex_v0_1_0.yaml" );
+    std::filesystem::path goldStandardFilename = GetTestFileFileAbsolutePath( "Indicies/ResourceGroup_v0_1_0.yaml" );
 
-    //TODO reinstate
-	//EXPECT_TRUE( FilesMatch( exportParams.outputFilename, goldStandardFilename ) );
+	EXPECT_TRUE( FilesMatch( exportParams.filename, goldStandardFilename ) );
 }
 
 // Import a ResourceGroup with missing parameters that are expected for the version provided
@@ -134,26 +131,21 @@ TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportNonExistantFile )
 TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportExport_V_0_1_0 )
 {
 
-	std::string inputResName = "resFileIndex_v0_1_0.yaml";
-
-	CarbonResources::ResourceGroup resourceGroup( inputResName );
+	CarbonResources::ResourceGroup resourceGroup;
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );
+    importParams.filename = GetTestFileFileAbsolutePath( "Indicies/ResourceGroup_v0_1_0.yaml" );
 
 	EXPECT_EQ(resourceGroup.ImportFromFile( importParams ),CarbonResources::Result::SUCCESS);
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-    exportParams.resourceDetinationSettings.productionLocalBasePath = "SharedCache";
+    exportParams.filename = "resPath/ResourceGroup_v0_1_0.yaml";
 
 	EXPECT_EQ(resourceGroup.ExportToFile( exportParams ),CarbonResources::Result::SUCCESS);
 
-    std::filesystem::path inputFilename = importParams.dataParams.resourceSourceSettings.developmentLocalBasePath / inputResName;
-
-    //TODO reinstate
-    //EXPECT_TRUE( FilesMatch( inputFilename, exportParams.outputFilename ) );
+	EXPECT_TRUE( FilesMatch( importParams.filename, exportParams.filename ) );
 }
 
 TEST_F( CarbonResourcesLibraryTest, UnpackBundle )
@@ -169,29 +161,49 @@ TEST_F( CarbonResourcesLibraryTest, CreateBundle )
 
 TEST_F( CarbonResourcesLibraryTest, ApplyPatch )
 {
-	// Not yet implemented
-	EXPECT_TRUE( false );
+	// Load the patch file
+	CarbonResources::PatchResourceGroup patchResourceGroup;
+
+    CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
+
+    importParamsPrevious.filename = GetTestFileFileAbsolutePath( "Patch/PatchResourceGroup_previousBuild_latestBuild.yaml" );
+
+	EXPECT_EQ( patchResourceGroup.ImportFromFile( importParamsPrevious ), CarbonResources::Result::SUCCESS );
+
+
+    // Apply the patch
+	CarbonResources::PatchApplyParams patchApplyParams;
+
+    patchApplyParams.patchBinarySourceSettings.productionLocalBasePath = GetTestFileFileAbsolutePath( "Patch/LocalRemote/" );
+
+    patchApplyParams.resourcesToPatchSourceSettings.productionLocalBasePath = GetTestFileFileAbsolutePath( "Patch/Local/" );
+
+    patchApplyParams.resourcesToPatchDestinationSettings.productionLocalBasePath = "ApplyPatchOut";
+
+    EXPECT_EQ(patchResourceGroup.Apply( patchApplyParams ),CarbonResources::Result::SUCCESS);
+
+    // TODO test the output of the applied patches
+
 }
+
 TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 {
-    // This whole process is WIP
-
     // Previous ResourceGroup
-	CarbonResources::ResourceGroup resourceGroupPrevious("resfileindexShort_build1.txt");
+	CarbonResources::ResourceGroup resourceGroupPrevious;
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
-    importParamsPrevious.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );
+    importParamsPrevious.filename = GetTestFileFileAbsolutePath( "Patch/resfileindexShort_build_previous.txt" );
 
 	EXPECT_EQ(resourceGroupPrevious.ImportFromFile( importParamsPrevious ),CarbonResources::Result::SUCCESS);
 
 
     // Latest ResourceGroup
-	CarbonResources::ResourceGroup resourceGroupLatest("resfileindexShort_build2.txt");
+	CarbonResources::ResourceGroup resourceGroupLatest;
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsLatest;
 
-    importParamsLatest.dataParams.resourceSourceSettings.developmentLocalBasePath = GetTestFileFileAbsolutePath( "Indicies/" );    //TODO deal with file paths better using filesystem things
+    importParamsLatest.filename = GetTestFileFileAbsolutePath( "Patch/resfileindexShort_build_next.txt" );
 
 	EXPECT_EQ(resourceGroupLatest.ImportFromFile( importParamsLatest ),CarbonResources::Result::SUCCESS);
 
@@ -200,7 +212,9 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
     // Create a patch from the subtraction index
 	CarbonResources::PatchCreateParams patchCreateParams;
 
-    patchCreateParams.resourceGroupPatchRelativePath = "resfileindex_previousBuild_latestBuild.yaml";
+    patchCreateParams.resourceGroupRelativePath = "ResourceGroup_previousBuild_latestBuild.yaml";
+
+    patchCreateParams.resourceGroupPatchRelativePath = "PatchResourceGroup_previousBuild_latestBuild.yaml";
 
     patchCreateParams.resourceSourceSettingsFrom.productionLocalBasePath = GetTestFileFileAbsolutePath( "resourcesLocal" );
 

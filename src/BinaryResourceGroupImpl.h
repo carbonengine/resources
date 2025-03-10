@@ -23,26 +23,75 @@
 
 #include "ResourceGroupImpl.h"
 
+#include "ResourceInfo/BinaryResourceInfo.h"
+
+#include <optional>
+
+#include <iostream>
+
 namespace CarbonResources
 {
+    namespace Internal
+    {
+#define OPTIONAL_LOAD( structName, fromStruct, member )           \
+		if( offsetof( struct structName, member ) < fromStruct.size ) \
+		{                                                             \
+			member = fromStruct.member;                                                    \
+		}
+
+	    struct ThisIsAnExampleTodoRemove
+	    {
+            ThisIsAnExampleTodoRemove(const CarbonResources::ThisIsAnExampleTodoRemove& apiStruct)
+            {
+				a = apiStruct.a;
+
+                b = apiStruct.b;
+
+                OPTIONAL_LOAD( ThisIsAnExampleTodoRemove, apiStruct, c );
+                
+                /*
+                if (offsetof(struct ThisIsAnExampleTodoRemove, c) < apiStruct.size)
+                {
+					c = apiStruct.c;
+                }
+                */
+				
+            }
+
+            unsigned int unused=0;
+
+		    int a;
+
+		    int b;
+
+		    int c = 404;
+	    };
+    }
+    
+    class BinaryResourceInfo;
+
     class BinaryResourceGroupImpl : public ResourceGroupImpl
     {
     public:
-		BinaryResourceGroupImpl( const std::filesystem::path& relativePath );
+		BinaryResourceGroupImpl( );
 
 	    ~BinaryResourceGroupImpl();
 
+        void SomethingThatUsesTestStruct( const Internal::ThisIsAnExampleTodoRemove& args );
+
+        virtual std::string GetType() const override;
+
+        static std::string TypeId();
+
     private:
 
-	    static std::string TypeId();
-
-	    virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
+	    virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut ) override;
 
 	    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 
 	    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
 
-	    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSVFile( ResourceGroupImportFromFileParams& params ) override;
+	    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSV( const std::string& data ) override;
     };
 
 }

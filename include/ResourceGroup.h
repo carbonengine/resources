@@ -58,23 +58,11 @@ namespace CarbonResources
 		std::filesystem::path productionLocalBasePath = "";
 	};
 
-    struct API ResourcePutDataParams
-	{
-		ResourceDestinationSettings resourceDestinationSettings;
-
-		std::string data;
-	};
-
-	struct API ResourceGetDataParams
-	{
-		ResourceSourceSettings resourceSourceSettings;
-
-		std::string data;
-	};
-
     struct API PatchCreateParams
 	{
 		ResourceGroup* previousResourceGroup;
+
+        std::filesystem::path resourceGroupRelativePath;
 
         std::filesystem::path resourceGroupPatchRelativePath;
 
@@ -89,26 +77,19 @@ namespace CarbonResources
 
     struct API ResourceGroupImportFromFileParams
 	{
-		ResourceGetDataParams dataParams;
+		std::filesystem::path filename;
 	};
 
     struct API ResourceGroupExportToFileParams
 	{
-		ResourceDestinationSettings resourceDetinationSettings;
+		std::filesystem::path filename;
 
         Version outputDocumentVersion = S_DOCUMENT_VERSION;
 	};
 
-    struct API ResourceGroupSubtractionParams
-	{
-		ResourceGroup* subtractResourceGroup = nullptr;
+    class ResourceGroupImpl;    // TODO remove these from public API
 
-		ResourceGroup* result = nullptr;
-	};
-
-    class Resource;
-    class ResourceGroupImpl;
-
+    // TODO lock down things like copy constructors for these public classes
     class API ResourceGroup
     {
 	protected:
@@ -116,10 +97,8 @@ namespace CarbonResources
 
 		ResourceGroupImpl* m_impl;
 
-        Result AddResource( Resource* r );
-
     public:
-	    ResourceGroup(const std::filesystem::path& relativePath); // TODO should be an input struct
+	    ResourceGroup();
 
 	    virtual ~ResourceGroup();
 
@@ -130,8 +109,6 @@ namespace CarbonResources
         Result ImportFromFile( ResourceGroupImportFromFileParams& params ) const;
 
         Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
-
-        Result Subtraction( ResourceGroupSubtractionParams& params ) const; // TODO not too thrilled about this being in public API
 
         friend class ResourceGroupImpl;
     };
