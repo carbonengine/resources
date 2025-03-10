@@ -2,6 +2,7 @@
 #include <BundleResourceGroup.h>
 #include <PatchResourceGroup.h>
 #include <ResourceTools.h>
+#include <filesystem>
 
 #include <gtest/gtest.h>
 
@@ -27,13 +28,43 @@ TEST( ResourceToolsTest, FowlerNollVoChecksumGeneration )
 
 TEST( ResourceToolsTest, DownloadFile )
 {
-	std::string url = "SomeUrl";
-	std::string outputPath = "SomePath";
+	const char* FOLDER_NAME = "a9";
+	const char* FILE_NAME = "a9d1721dd5cc6d54_e6bbb2df307e5a9527159a4c971034b5";
 
-	EXPECT_TRUE( ResourceTools::DownloadFile( url, outputPath ) );
+	const char* testDataPathStr = std::getenv( "TEST_DATA_PATH" );
+	ASSERT_TRUE( testDataPathStr );
+	std::filesystem::path testDataPath(testDataPathStr);
+	ResourceTools::Initialize();
 
-    // TODO check file exists and is correct using data checksum
+	std::filesystem::path sourcePath = testDataPath / "resourcesLocal" / FOLDER_NAME / FILE_NAME;
+	std::string sourcePathString(sourcePath.string());
+	std::string url = "file://" + sourcePathString;
+	std::filesystem::path outputPath = std::filesystem::temp_directory_path() / FOLDER_NAME / FILE_NAME;
+	std::string outputPathString = outputPath.string();
 
+	if( std::filesystem::exists( outputPath ) )
+	{
+		// Nuke any potentially pre-existing file.
+		std::filesystem::remove( outputPath );
+	}
+	EXPECT_FALSE( std::filesystem::exists( outputPath ) );
+	EXPECT_TRUE( ResourceTools::DownloadFile( url, outputPathString ) );
+	EXPECT_TRUE( std::filesystem::exists( outputPath ) );
+
+	// Check if download succeeds.
+	std::string downloadedData;
+	bool success = ResourceTools::GetLocalFileData( outputPathString, downloadedData );
+	EXPECT_TRUE( success );
+
+	// Verify downloaded file contents.
+	// Note that in this example we are not downloading from an actual web server
+	// In production, the web server would return a reply with `Content-Encoding`: `gzip`
+	// which would cause curl to automatically unzip the thing for us, but in order to
+	// keep the test small and isolated we do not exercise this functionality.
+	std::string checksum;
+	ResourceTools::GenerateMd5Checksum( downloadedData, checksum );
+	EXPECT_STREQ( checksum.c_str(), "6ccf6b7e2e263646f5a78e77b9ba3168" );
+	ResourceTools::ShutDown();
 }
 
 TEST( ResourceToolsTest, GZipCompressData )

@@ -73,4 +73,10 @@ elseif(APPLE)
 #)
 endif()
 
-gtest_discover_tests(carbon-resources-test capiTests)
+cmake_path(SET TEST_DATA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/testData)
+
+gtest_discover_tests(
+        carbon-resources-test capiTests
+        PROPERTIES
+            ENVIRONMENT "TEST_DATA_PATH=${TEST_DATA_PATH}"
+)
