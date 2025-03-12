@@ -1,14 +1,17 @@
 #include "BinaryResourceGroupImpl.h"
-#include "BinaryResource.h"
+//#include "BinaryResource.h"
+#include "ResourceInfo/ResourceGroupInfo.h"
 
 #include <yaml-cpp/yaml.h>
 #include <fstream>
+#include <iostream>
+#include <ResourceTools.h>
 
 namespace CarbonResources
 {
 
-    BinaryResourceGroupImpl::BinaryResourceGroupImpl( const std::filesystem::path& relativePath ) :
-	    ResourceGroupImpl(relativePath)
+    BinaryResourceGroupImpl::BinaryResourceGroupImpl( ) :
+	    ResourceGroupImpl()
     {
 		m_type = TypeId();
     }
@@ -18,28 +21,34 @@ namespace CarbonResources
 
     }
 
+    std::string BinaryResourceGroupImpl::GetType() const
+	{
+		return TypeId();
+	}
+
     std::string BinaryResourceGroupImpl::TypeId()
     {
         return "BinaryGroup";
     }
 
-    Resource* BinaryResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource )
+    Result BinaryResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut )
 	{
-		BinaryResource* createdResource = new BinaryResource( BinaryResourceParams{} );
+		BinaryResourceInfo* binaryResource = new BinaryResourceInfo( BinaryResourceInfoParams{} );
 
-        Result importFromYamlResult = createdResource->ImportFromYaml( resource, m_versionParameter.GetValue() );
+        Result importFromYamlResult = binaryResource->ImportFromYaml( resource, m_versionParameter.GetValue() );
 
 		if( importFromYamlResult != Result::SUCCESS )
 		{
-			delete createdResource;
-			return nullptr;
+			delete binaryResource;
+
+			return importFromYamlResult;
 		}
 		else
 		{
-			return createdResource;
-		}
+			resourceOut = binaryResource;
 
-		return nullptr;
+			return Result::SUCCESS;
+		}
 	}
 
     Result BinaryResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
@@ -52,19 +61,11 @@ namespace CarbonResources
         return Result::SUCCESS;
     }
 
-    Result BinaryResourceGroupImpl::ImportFromCSVFile( ResourceGroupImportFromFileParams& params )
+    Result BinaryResourceGroupImpl::ImportFromCSV( const std::string& data )
 	{
-        // Note: code duplication with ResourceGroup deemed not that important as this method is depricated and to be removed
-		Result getDataResult = GetData( params.dataParams );
-
-		if( getDataResult != Result::SUCCESS )
-		{
-			return Result::FAILED_TO_OPEN_FILE;
-		}
-
 		std::stringstream inputStream;
 
-		inputStream << params.dataParams.data;
+		inputStream << data;
 
 		std::string stringIn;
 
@@ -72,13 +73,18 @@ namespace CarbonResources
 		{
 			std::getline( inputStream, stringIn );
 
+            if( stringIn == "" )
+			{
+				continue;
+			}
+
 			std::stringstream ss( stringIn );
 
 			std::string value;
 
 			char delimiter = ',';
 
-			CarbonResources::BinaryResourceParams binaryResourceParams;
+			CarbonResources::BinaryResourceInfoParams binaryResourceParams;
 
 			if( !std::getline( ss, value, delimiter ) )
 			{
@@ -131,7 +137,7 @@ namespace CarbonResources
 			m_versionParameter = Version{ 0, 0, 0 };
 
 			// Create aBinary Resource
-			CarbonResources::BinaryResource* binaryResource = new CarbonResources::BinaryResource( binaryResourceParams );
+			BinaryResourceInfo* binaryResource = new BinaryResourceInfo( binaryResourceParams );
 
             m_resourcesParameter.PushBack( binaryResource );
 
@@ -139,5 +145,25 @@ namespace CarbonResources
 
 		return Result::SUCCESS;
 	}
+
+    void BinaryResourceGroupImpl::SomethingThatUsesTestStruct( const Internal::ThisIsAnExampleTodoRemove& args )
+    {
+		std::cout << "VALUE OF C:" << args.c << std::endl;
+
+		/*
+        // At this point we are internal, we can use any arguments we want but they may not exist
+        if (args.c.has_value())
+        {
+			std::cout << "C_HAS_A_VALUE:" << args.c.value() << std::endl;
+
+        }
+        else
+        {
+			std::cout << "C_HAS_NO_VALUE" << std::endl;
+        }
+        */
+		
+    }
+    
 
 }

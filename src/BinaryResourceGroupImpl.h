@@ -23,26 +23,65 @@
 
 #include "ResourceGroupImpl.h"
 
+#include "ResourceInfo/BinaryResourceInfo.h"
+
+#include <optional>
+
+#include <iostream>
+
+#include "Macros.h"
+
 namespace CarbonResources
 {
+    namespace Internal
+    {
+	    struct ThisIsAnExampleTodoRemove
+	    {
+            ThisIsAnExampleTodoRemove(const CarbonResources::ThisIsAnExampleTodoRemove& apiStruct)
+            {
+				ATTEMPT_LOAD_MEMBER( ThisIsAnExampleTodoRemove, apiStruct, a );
+
+                ATTEMPT_LOAD_MEMBER( ThisIsAnExampleTodoRemove, apiStruct, b );
+
+                ATTEMPT_LOAD_MEMBER( ThisIsAnExampleTodoRemove, apiStruct, c );	
+
+            }
+
+            unsigned int unused=0;
+
+		    int a = 1;
+
+		    int b = 2;
+
+		    int c = 404;
+
+	    };
+    }
+    
+    class BinaryResourceInfo;
+
     class BinaryResourceGroupImpl : public ResourceGroupImpl
     {
     public:
-		BinaryResourceGroupImpl( const std::filesystem::path& relativePath );
+		BinaryResourceGroupImpl( );
 
 	    ~BinaryResourceGroupImpl();
 
+        void SomethingThatUsesTestStruct( const Internal::ThisIsAnExampleTodoRemove& args );
+
+        virtual std::string GetType() const override;
+
+        static std::string TypeId();
+
     private:
 
-	    static std::string TypeId();
-
-	    virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
+	    virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut ) override;
 
 	    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 
 	    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
 
-	    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSVFile( ResourceGroupImportFromFileParams& params ) override;
+	    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSV( const std::string& data ) override;
     };
 
 }

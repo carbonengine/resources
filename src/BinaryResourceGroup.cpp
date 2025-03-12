@@ -1,11 +1,13 @@
 #include "BinaryResourceGroup.h"
 #include "BinaryResourceGroupImpl.h"
 
+#include <iostream>
+
 namespace CarbonResources
 {
 
-    BinaryResourceGroup::BinaryResourceGroup( const std::filesystem::path& relativePath ) :
-	    ResourceGroup( new BinaryResourceGroupImpl( relativePath ) ),
+    BinaryResourceGroup::BinaryResourceGroup( ) :
+	    ResourceGroup( new BinaryResourceGroupImpl( ) ),
 	    m_impl(reinterpret_cast<BinaryResourceGroupImpl*>(ResourceGroup::m_impl))
     {
 
@@ -16,5 +18,9 @@ namespace CarbonResources
 
     }
 
+    void BinaryResourceGroup::SomethingThatUsesTestStruct( const ThisIsAnExampleTodoRemove& args )
+    {
+		m_impl->SomethingThatUsesTestStruct( Internal::ThisIsAnExampleTodoRemove( args ) );
+    }
 
 }

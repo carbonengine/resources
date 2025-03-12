@@ -31,26 +31,37 @@ set(SRC_FILES
     include/PatchResourceGroup.h
     include/ResourceGroup.h
     include/Enums.h
-    src/BinaryResource.cpp
-    src/BinaryResource.h
+    
     src/BinaryResourceGroup.cpp
     src/BinaryResourceGroupImpl.cpp
     src/BinaryResourceGroupImpl.h
-    src/BundleResource.cpp
-    src/BundleResource.h
     src/BundleResourceGroup.cpp
     src/BundleResourceGroupImpl.cpp
     src/BundleResourceGroupImpl.h
-    src/PatchResource.cpp
-    src/PatchResource.h
     src/PatchResourceGroup.cpp
     src/PatchResourceGroupImpl.cpp
     src/PatchResourceGroupImpl.h
-    src/Resource.cpp
-    src/Resource.h
     src/ResourceGroup.cpp
     src/ResourceGroupImpl.cpp
     src/ResourceGroupImpl.h
+    src/Macros.h
+    
+    src/ResourceInfo/BinaryResourceInfo.cpp
+    src/ResourceInfo/BinaryResourceInfo.h
+    src/ResourceInfo/BundleResourceInfo.cpp
+    src/ResourceInfo/BundleResourceInfo.h
+    src/ResourceInfo/PatchResourceInfo.cpp
+    src/ResourceInfo/PatchResourceInfo.h
+    src/ResourceInfo/ResourceInfo.cpp
+    src/ResourceInfo/ResourceInfo.h
+    src/ResourceInfo/ResourceGroupInfo.h
+    src/ResourceInfo/ResourceGroupInfo.cpp
+    src/ResourceInfo/BinaryResourceGroupInfo.h
+    src/ResourceInfo/BinaryResourceGroupInfo.cpp
+    src/ResourceInfo/PatchResourceGroupInfo.h
+    src/ResourceInfo/PatchResourceGroupInfo.cpp
+    src/ResourceInfo/BundleResourceGroupInfo.h
+    src/ResourceInfo/BundleResourceGroupInfo.cpp
 )
 
 add_library(carbon-resources SHARED ${SRC_FILES})

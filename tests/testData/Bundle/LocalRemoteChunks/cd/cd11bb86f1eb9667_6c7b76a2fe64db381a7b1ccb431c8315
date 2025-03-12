@@ -1,0 +1,21 @@
+Version: 0.1.0
+Type: ResourceGroup
+Resources:
+  - RelativePath: intromovie.txt
+    Type: Resource
+    Location: a9/a9d1721dd5cc6d54_4d7a8d216f4c8c5c6379476c0668fe84
+    Checksum: 4d7a8d216f4c8c5c6379476c0668fe84
+    UncompressedSize: 9745
+    CompressedSize: 3338
+  - RelativePath: videocardcategories.yaml
+    Type: Resource
+    Location: ab/ab5cde4fbbf82fb6_6a9d6d4c6015616877b77865209c5064
+    Checksum: 6a9d6d4c6015616877b77865209c5064
+    UncompressedSize: 33591
+    CompressedSize: 5076
+  - RelativePath: testresource2.txt
+    Type: Resource
+    Location: e9/e9f7b62a4b490c58_271c8036e4eae5515053e924a0a39e0f
+    Checksum: 271c8036e4eae5515053e924a0a39e0f
+    UncompressedSize: 29
+    CompressedSize: 97

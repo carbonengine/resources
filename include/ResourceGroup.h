@@ -32,49 +32,60 @@ namespace CarbonResources
     class PatchResourceGroup;
     class BundleResourceGroup;
 	enum class Result;
-
-    struct API BundleCreateParams
+    
+    enum class ResourceSourceType
     {
-        std::filesystem::path resourceInputPath = "";
-
-        std::filesystem::path chunkOutputPath = "";
-
-        BundleResourceGroup* bundleResourceGroup = nullptr;
+        LOCAL_RELATIVE,
+        LOCAL_CDN,
+        REMOTE_CDN,
     };
 
     struct API ResourceSourceSettings
 	{
-		std::filesystem::path developmentLocalBasePath = "";
+		unsigned int size = sizeof( ResourceSourceSettings );
 
-		std::filesystem::path productionLocalBasePath = "";
+		ResourceSourceType sourceType = ResourceSourceType::LOCAL_CDN;
 
-		std::string productionRemoteBaseUrl = "";
+        std::filesystem::path basePath = "";
+	};
+
+    enum class ResourceDestinationType
+	{
+		LOCAL_RELATIVE,
+		LOCAL_CDN,
 	};
 
 	struct API ResourceDestinationSettings
 	{
-		std::filesystem::path developmentLocalBasePath = ""; // TODO rename, it's not just developmentLocal now
+		unsigned int size = sizeof( ResourceDestinationSettings );
 
-		std::filesystem::path productionLocalBasePath = "";
+		ResourceDestinationType destinationType = ResourceDestinationType::LOCAL_CDN;
+
+        std::filesystem::path basePath = "";
 	};
 
-    struct API ResourcePutDataParams
-	{
-		ResourceDestinationSettings resourceDestinationSettings;
-
-		std::string data;
-	};
-
-	struct API ResourceGetDataParams
+    struct API BundleCreateParams
 	{
 		ResourceSourceSettings resourceSourceSettings;
 
-		std::string data;
+        ResourceDestinationSettings chunkDestinationSettings;
+
+        std::filesystem::path resourceGroupRelativePath;
+
+		std::filesystem::path resourceGroupBundleRelativePath;
+
+        unsigned long chunkSize = 10000000;
+
+        ResourceDestinationSettings resourceBundleResourceGroupDestinationSettings;
 	};
 
     struct API PatchCreateParams
 	{
-		ResourceGroup* previousResourceGroup;
+		unsigned int size = sizeof( PatchCreateParams );
+
+		ResourceGroup* previousResourceGroup = nullptr;
+
+        std::filesystem::path resourceGroupRelativePath;
 
         std::filesystem::path resourceGroupPatchRelativePath;
 
@@ -89,26 +100,19 @@ namespace CarbonResources
 
     struct API ResourceGroupImportFromFileParams
 	{
-		ResourceGetDataParams dataParams;
+		std::filesystem::path filename;
 	};
 
     struct API ResourceGroupExportToFileParams
 	{
-		ResourceDestinationSettings resourceDetinationSettings;
+		std::filesystem::path filename;
 
         Version outputDocumentVersion = S_DOCUMENT_VERSION;
 	};
 
-    struct API ResourceGroupSubtractionParams
-	{
-		ResourceGroup* subtractResourceGroup = nullptr;
+    class ResourceGroupImpl;    // TODO remove these from public API
 
-		ResourceGroup* result = nullptr;
-	};
-
-    class Resource;
-    class ResourceGroupImpl;
-
+    // TODO lock down things like copy constructors for these public classes
     class API ResourceGroup
     {
 	protected:
@@ -116,22 +120,18 @@ namespace CarbonResources
 
 		ResourceGroupImpl* m_impl;
 
-        Result AddResource( Resource* r );
-
     public:
-	    ResourceGroup(const std::filesystem::path& relativePath); // TODO should be an input struct
+	    ResourceGroup();
 
 	    virtual ~ResourceGroup();
 
         Result CreateBundle( const BundleCreateParams& params ) const;
 
-        Result CreatePatch( PatchCreateParams& params ) const;
+        Result CreatePatch( const PatchCreateParams& params ) const;
 
-        Result ImportFromFile( ResourceGroupImportFromFileParams& params ) const;
+        Result ImportFromFile( const ResourceGroupImportFromFileParams& params ) const;
 
         Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
-
-        Result Subtraction( ResourceGroupSubtractionParams& params ) const; // TODO not too thrilled about this being in public API
 
         friend class ResourceGroupImpl;
     };

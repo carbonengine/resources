@@ -123,6 +123,8 @@ namespace ResourceTools
 
       inputStream.read( data.data(), fileSize );
 
+      inputStream.close();
+
 	  return true;
   }
 
@@ -237,6 +239,14 @@ size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, voi
 	  return inflateEnd( &strm ) == Z_OK;
   }
 
+  bool ApplyPatch(const std::string& data, const std::string& patchData, std::string& out)
+  {
+	// TODO implement patch application
+	  out = patchData;
+
+      return true;
+  }
+
   bool CreatePatch(const std::string& previousData, const std::string& latestData, std::string& patchData)
   {
       // TODO implement patching
@@ -260,7 +270,7 @@ size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, voi
 		  return false;
 	  }
 
-	  std::ofstream out( path );
+	  std::ofstream out( path, std::ios::binary );
 
       if (!out)
       {
@@ -273,5 +283,102 @@ size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, voi
 
 	  return true;
   }
+
+
+
+
+
+
+
+  ChunkStream::ChunkStream( unsigned long chunkSize ) :
+	  m_chunkSize(chunkSize)
+  {
+
+  }
+
+  ChunkStream ::~ChunkStream()
+  {
+
+  }
+
+  bool ChunkStream::operator<<( const std::string& data )
+  {
+      m_cache.append( data );
+
+	  return true;
+  }
+
+  bool ChunkStream::operator>>( GetChunk& data )
+  {
+	  size_t cacheSize = m_cache.size();
+
+      if (cacheSize == 0)
+      {
+          // No data in cache
+		  return false;
+      }
+
+      if (data.clearCache)
+      {
+          // Clear the cache to destination
+		  std::string& dataRef = *data.data;
+
+          dataRef.resize( m_cache.size() );
+
+          dataRef = m_cache;
+
+          m_cache = "";
+
+          return true;
+      }
+
+      if (m_cache.size() < m_chunkSize)
+      {
+          // Not enough data to create chunk
+		  return false;
+      }
+      else
+      {
+          // Copy chunk amount out of cache
+		  std::string& dataRef = *data.data;
+
+          dataRef = m_cache.substr( 0, m_chunkSize );
+
+		  m_cache.erase( 0, m_chunkSize );
+      }
+
+
+
+  }
+
+  bool ChunkStream::operator >> ( GetFile& file )
+  {
+	  size_t cacheSize = m_cache.size();
+
+      if (cacheSize == 0)
+      {
+          // No data in cache
+		  return false;
+      }
+
+      if (cacheSize < file.fileSize)
+      {
+          // Not enough data to create file
+		  return false;
+      }
+      else
+      {
+          // Copy resource amount of cache
+		  std::string& dataRef = *file.data;
+
+		  dataRef = m_cache.substr( 0, file.fileSize );
+
+		  m_cache.erase( 0, file.fileSize );
+      }
+
+
+  }
+
+
 
 }

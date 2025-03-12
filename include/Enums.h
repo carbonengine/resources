@@ -24,14 +24,24 @@
 #include <string>
 #include <sstream>
 
-#define ApiExport __declspec( dllexport )
-
 namespace CarbonResources
 {
     // TODO This is not an enum, move it out of here
     // It also shouldn't be in the API
     struct Version
     {
+		Version() 
+		{
+		}
+
+        Version(unsigned int majorIn, unsigned int minorIn, unsigned int patchIn):
+			major(majorIn),
+			minor(minorIn),
+			patch(patchIn)
+        {
+
+        }
+
 		bool operator>( Version value ) const
 		{
 			if( major > value.major )
@@ -254,20 +264,21 @@ namespace CarbonResources
 		FAILED_TO_GENERATE_CHECKSUM,
 		FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUM,
 		FAILED_TO_COMPRESS_DATA,
-		PATCH_RESOURCE_LIST_MISSMATCH
+		PATCH_RESOURCE_LIST_MISSMATCH,
+		DESTINATION_RESOURCE_NOT_IN_PATCH_RESOURCE_GROUP,
+		FAILED_TO_APPLY_PATCH,
+		UNEXPECTED_PATCH_CHECKSUM_RESULT,
+		UNEXPECTED_PATCH_DIFF_ENCOUNTERED,
+		FILE_NOT_FOUND,
+		FAILED_TO_RETRIEVE_CHUNK_DATA,
+		RESOURCE_VALUE_NOT_SET,
+		UNEXPECTED_END_OF_CHUNKS,
+		UNEXPECTED_CHUNK_CHECKSUM_RESULT
     };
 
     static const Version S_LIBRARY_VERSION = { 1, 0, 0 };
 
     static const Version S_DOCUMENT_VERSION = { 0, 1, 0 };
-
-    #define BINARY_GUARD_RETURN( v_major, v_minor, v_patch ) \
-		const Version v = { v_major, v_minor, v_patch };     \
-		if( S_LIBRARY_VERSION < v )                          \
-		{                                                    \
-			return Result::SUCCESS;                          \
-		}
-
 
 }
 

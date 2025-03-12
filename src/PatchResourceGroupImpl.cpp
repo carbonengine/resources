@@ -1,6 +1,6 @@
 #include "PatchResourceGroupImpl.h"
 
-#include "PatchResource.h"
+//#include "PatchResource.h"
 
 #include <yaml-cpp/yaml.h>
 
@@ -8,49 +8,55 @@
 
 namespace CarbonResources
 {
-    PatchResourceGroupImpl::PatchResourceGroupImpl( const std::filesystem::path& relativePath ) :
-	    ResourceGroupImpl(relativePath)
+    PatchResourceGroupImpl::PatchResourceGroupImpl( ) :
+	    ResourceGroupImpl()
     {
+		m_resourceGroupParameter = new ResourceGroupInfo({});
+
 		m_type = TypeId();
     }
 
-    Result PatchResourceGroupImpl::SetResourceGroup( ResourceGroupImpl* resourceGroup )
+    Result PatchResourceGroupImpl::SetResourceGroup( const ResourceGroupInfo& resourceGroup )
     {
-        // The memory for this is owned externally
-        // So far one needs to be careful that this memory is not lost while this object
-		m_resourceGroupParameter = resourceGroup;
-
-        return Result::SUCCESS;
+        // Creates a deep copy
+		return m_resourceGroupParameter.GetValue()->SetParametersFromResource( &resourceGroup );
     }
 
 
     PatchResourceGroupImpl::~PatchResourceGroupImpl()
     {
-        
+		delete m_resourceGroupParameter.GetValue();
     }
+
+    std::string PatchResourceGroupImpl::GetType() const
+	{
+		return TypeId();
+	}
 
     std::string PatchResourceGroupImpl::TypeId()
     {
 		return "PatchGroup";
     }
 
-	Resource* PatchResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource )
+	Result PatchResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut )
 	{
-		PatchResource* createdResource = new PatchResource( PatchResourceParams{} );
+		PatchResourceInfo* patchResource = new PatchResourceInfo( PatchResourceInfoParams{} );
 
-		Result importFromYamlResult = createdResource->ImportFromYaml( resource, m_versionParameter.GetValue() );
+		Result importFromYamlResult = patchResource->ImportFromYaml( resource, m_versionParameter.GetValue() );
 
 		if( importFromYamlResult != Result::SUCCESS )
 		{
-			delete createdResource;
-			return nullptr;
+			delete patchResource;
+
+			return importFromYamlResult;
 		}
 		else
 		{
-			return createdResource;
+			resourceOut = patchResource;
+
+			return Result::SUCCESS;
 		}
 
-		return nullptr;
 	}
 
     Result PatchResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
@@ -59,7 +65,18 @@ namespace CarbonResources
 		{
 			YAML::Node resourceGroupNode = resourceGroupFile[m_resourceGroupParameter.GetTag()];
 
-			m_resourceGroupParameter = CreateResourceFromYaml( resourceGroupNode );
+            ResourceInfo* resource = nullptr;
+
+            Result createResourceFromYaml = ResourceGroupImpl::CreateResourceFromYaml( resourceGroupNode, resource );
+
+            if (createResourceFromYaml != Result::SUCCESS)
+            {
+				return createResourceFromYaml;
+            }
+
+            //TODO ensure that resource is of base type ResourceGroup
+
+			m_resourceGroupParameter = reinterpret_cast<ResourceGroupInfo*>( resource );
 		}
 
 		return Result::SUCCESS;
@@ -80,6 +97,178 @@ namespace CarbonResources
         }
 
 		return Result::SUCCESS;
+    }
+
+    Result PatchResourceGroupImpl::Apply( const PatchApplyParams& params )
+    {
+		ResourceGroupInfo* resourceGroupResource = m_resourceGroupParameter.GetValue();
+
+        
+        // Load the resourceGroup from the resourceGroupResource
+		std::string resourceGroupData;
+
+        ResourceGetDataParams resourceGroupDataParams;
+
+        resourceGroupDataParams.resourceSourceSettings = params.patchBinarySourceSettings;
+
+        resourceGroupDataParams.data = &resourceGroupData;
+
+        Result resourceGroupGetDataResult = m_resourceGroupParameter.GetValue()->GetData( resourceGroupDataParams );
+
+        if (resourceGroupGetDataResult != Result::SUCCESS)
+        {
+			return resourceGroupGetDataResult;
+        }
+
+        ResourceGroupImpl resourceGroup;
+
+
+
+        Result resourceGroupImportFromDataResult = resourceGroup.ImportFromData( resourceGroupData );
+
+        if( resourceGroupImportFromDataResult != Result::SUCCESS )
+        {
+			return resourceGroupImportFromDataResult;
+        }
+
+        
+
+        for( ResourceInfo* resource : resourceGroup.m_resourcesParameter )
+        {
+            // See if there is a patch available for resource
+			auto patchIter = m_resourcesParameter.Find( resource );
+
+			if( patchIter != m_resourcesParameter.end() )
+			{
+				ResourceInfo* patch = ( *patchIter );
+
+				// Patch found, Retreive and apply
+				std::string patchData;
+
+				ResourceGetDataParams patchGetDataParams;
+
+				patchGetDataParams.resourceSourceSettings = params.patchBinarySourceSettings;
+
+                patchGetDataParams.data = &patchData;
+
+                Result getPatchDataResult = patch->GetData( patchGetDataParams );
+
+				if( getPatchDataResult != Result::SUCCESS )
+				{
+					return getPatchDataResult;
+				}
+
+                // Get previous data
+				std::string previousResourceData;
+
+				ResourceGetDataParams resourceGetDataParams;
+
+				resourceGetDataParams.resourceSourceSettings = params.resourcesToPatchSourceSettings;
+
+                resourceGetDataParams.data = &previousResourceData;
+
+				Result resourceGetDataResult = resource->GetData( resourceGetDataParams );
+
+				if( resourceGetDataResult != Result::SUCCESS )
+				{
+					return resourceGetDataResult;
+				}
+
+                // Apply the patch to the previous data
+				std::string patchedResourceData;
+
+				if( !ResourceTools::ApplyPatch( previousResourceData, patchData, patchedResourceData ) )
+				{
+					return Result::FAILED_TO_APPLY_PATCH;
+				}
+
+                // Validate patched data matches expected
+				std::string patchedFileChecksum;
+
+				if( !ResourceTools::GenerateMd5Checksum( patchedResourceData, patchedFileChecksum ) )
+				{
+					return Result::FAILED_TO_GENERATE_CHECKSUM;
+				}
+
+                std::string destinationExpectedChecksum;
+
+                Result getChecksumResult = resource->GetChecksum( destinationExpectedChecksum );
+
+                if (getChecksumResult != Result::SUCCESS)
+                {
+					return getChecksumResult;
+                }
+
+				if( patchedFileChecksum != destinationExpectedChecksum )
+				{
+					return Result::UNEXPECTED_PATCH_CHECKSUM_RESULT;
+				}
+
+                // Put the file in the destination specified
+				std::filesystem::path resourceRelativePath;
+
+                Result getResourceRelativePath = resource->GetRelativePath( resourceRelativePath );
+
+                if (getResourceRelativePath != Result::SUCCESS)
+                {
+					return getResourceRelativePath;
+                }
+
+				ResourceInfo patchedResource( { resourceRelativePath } );
+				patchedResource.SetParametersFromData( patchedResourceData );
+
+				// Export patch file
+				ResourcePutDataParams patchedResourceResourcePutDataParams;
+
+				patchedResourceResourcePutDataParams.resourceDestinationSettings = params.resourcesToPatchDestinationSettings;
+
+                patchedResourceResourcePutDataParams.data = &patchedResourceData;
+
+				Result putResourceDataResult = patchedResource.PutData( patchedResourceResourcePutDataParams );
+
+				if( putResourceDataResult != Result::SUCCESS )
+				{
+					return putResourceDataResult;
+				}
+
+			}
+            else
+            {
+                // No Patch found, indicates this is just a new file
+                // Just download file directly
+				std::string resourceData;
+
+				ResourceGetDataParams resourceGetDataParams;
+
+                resourceGetDataParams.resourceSourceSettings = params.patchBinarySourceSettings;
+
+                resourceGetDataParams.data = &resourceData;
+
+				Result resourceGetDataResult = resource->GetData( resourceGetDataParams );
+
+                if (resourceGetDataResult != Result::SUCCESS)
+                {
+					return resourceGetDataResult;
+                }
+
+                ResourcePutDataParams resourcePutDataParams;
+
+                resourcePutDataParams.resourceDestinationSettings = params.resourcesToPatchDestinationSettings;
+
+                resourcePutDataParams.data = &resourceData; 
+
+                Result resourcePutDataResult = resource->PutData( resourcePutDataParams );
+
+                if (resourcePutDataResult != Result::SUCCESS)
+                {
+					return resourcePutDataResult;
+                }
+            }
+        }
+
+        return Result::SUCCESS;
+
+
     }
 
 }

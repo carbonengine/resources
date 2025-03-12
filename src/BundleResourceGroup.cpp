@@ -4,8 +4,8 @@
 namespace CarbonResources
 {
 
-    BundleResourceGroup::BundleResourceGroup( const std::filesystem::path& relativePath ) :
-	    ResourceGroup( new BundleResourceGroupImpl( relativePath )),
+    BundleResourceGroup::BundleResourceGroup(  ) :
+	    ResourceGroup( new BundleResourceGroupImpl( )),
 		m_impl( reinterpret_cast<BundleResourceGroupImpl*>( ResourceGroup::m_impl ) )
     {
 
@@ -23,7 +23,7 @@ namespace CarbonResources
 	/// @return true on success, false on failure
 	Result BundleResourceGroup::Unpack( const BundleUnpackParams& params )
     {
-		return Result::FAIL;
+		return m_impl->Unpack(params);
     }
 
 }

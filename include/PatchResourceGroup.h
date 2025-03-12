@@ -32,27 +32,24 @@ namespace CarbonResources
 
     struct API PatchApplyParams final
     {
-	    std::filesystem::path resourceInputPath = "";
+		ResourceSourceSettings patchBinarySourceSettings;
 
-	    std::filesystem::path chunkOutputPath = "";
+        ResourceSourceSettings resourcesToPatchSourceSettings;
 
-	    BundleResourceGroup* bundleResourceGroup = nullptr;
+        ResourceDestinationSettings resourcesToPatchDestinationSettings;
     };
 
 	class PatchResourceGroupImpl;
-	class ResourceGroupImpl;
 
     class API PatchResourceGroup final: public ResourceGroup
     {
 
     public:
-		PatchResourceGroup( const std::filesystem::path& relativePath );  // TODO struct input
+		PatchResourceGroup( );
 
 	    ~PatchResourceGroup();
 
         Result Apply( const PatchApplyParams& params );
-
-        Result SetResourceGroup( ResourceGroupImpl* resourceGroup );  // TODO get out of public API!!
 
     private:
 

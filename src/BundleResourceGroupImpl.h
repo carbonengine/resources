@@ -23,6 +23,10 @@
 
 #include "ResourceGroupImpl.h"
 
+#include "ResourceInfo/BundleResourceInfo.h"
+
+#include "ResourceInfo/PatchResourceInfo.h"
+
 namespace CarbonResources
 {
 
@@ -30,19 +34,33 @@ namespace CarbonResources
     {
     public:
 
-	    BundleResourceGroupImpl( const std::filesystem::path& relativePath );
+	    BundleResourceGroupImpl();
 
         ~BundleResourceGroupImpl();
 
-    private:
+        Result SetResourceGroup( const ResourceGroupInfo& resourceGroup );
+
+        Result Unpack( const BundleUnpackParams& params );
+
+        virtual std::string GetType() const override;
 
         static std::string TypeId();
 
-        virtual Resource* CreateResourceFromYaml( YAML::Node& resource ) override;
+        void SetChunkSize( unsigned long size );
+
+    private:
+
+        virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut ) override;
 
         virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 
         virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
+
+    protected:
+
+        DocumentParameter<unsigned long> m_chunkSize = DocumentParameter<unsigned long>( { 0, 1, 0 }, "ChunkSize" );
+
+		DocumentParameter<ResourceGroupInfo*> m_resourceGroupParameter = DocumentParameter<ResourceGroupInfo*>( { 0, 1, 0 }, "ResourceGroupResource" );
 
     };
 
