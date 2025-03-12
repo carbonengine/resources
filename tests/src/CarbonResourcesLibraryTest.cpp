@@ -167,7 +167,7 @@ TEST_F( CarbonResourcesLibraryTest, UnpackBundle )
 
 	bundleUnpackParams.chunkSourceSettings.basePath = GetTestFileFileAbsolutePath( "Bundle/LocalRemoteChunks/" );
 
-	bundleUnpackParams.resourceDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+	bundleUnpackParams.resourceDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
 
 	bundleUnpackParams.resourceDestinationSettings.basePath = "ApplyPatchOut/";
 
@@ -196,9 +196,9 @@ TEST_F( CarbonResourcesLibraryTest, CreateBundle )
 
 	bundleCreateParams.resourceGroupBundleRelativePath = "BundleResourceGroup.yaml";
 
-	bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
+	bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-    bundleCreateParams.resourceSourceSettings.basePath = GetTestFileFileAbsolutePath( "Bundle/LocalRemote/" );
+    bundleCreateParams.resourceSourceSettings.basePath = GetTestFileFileAbsolutePath( "Bundle/Res/" );
 
     bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
 

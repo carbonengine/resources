@@ -1,0 +1,64 @@
+s were the Amarr
+0:1.8 - 0:2.64
+"G_EI_09_01"
+
+SUBTITLE
+# a monotheistic race fervently committed to their faith
+0:5.58 - 0:3.08
+"G_EI_09_02"
+
+SUBTITLE
+# They reinvented space flight and soon discovered they were not alone
+0:10.44 - 0:3.8
+"G_EI_09_03"
+
+
+
+SEGMENT
+2:58.34 - 0:14.8
+"Minmatar(Scene 10)"
+
+TRANSFORM
+0:0.0 - 0:18.8
+"Scene 10"
+
+AUDIO
+0:1.0 - 0:15.23
+"res:/sound/music/intro/10_01.ogg"
+
+SUBTITLE
+# The Amarrians encountered the Minmatar race
+0:1.05 - 0:2.23
+"G_EI_10_01"
+
+SUBTITLE
+# dismissing them as primitive barbarians destined for a life of slavery
+0:3.78 - 0:3.98
+"G_EI_10_02"
+
+SUBTITLE
+# Moving quickly to subjugate them
+0:9.19 - 0:1.76
+"G_EI_10_03"
+
+SUBTITLE
+# they launched a merciless crusade against the Minmatar worlds
+0:11.29 - 0:3.02
+"G_EI_10_04"
+
+
+
+SEGMENT
+3:13.14 - 0:15.04
+"Gallente(Scene 11)"
+
+TRANSFORM
+0:0.0 - 0:19.04
+"Scene 11"
+
+AUDIO
+0:1.75 - 0:14.25
+"res:/sound/music/intro/11_01.ogg"
+
+SUBTITLE
+# At the s

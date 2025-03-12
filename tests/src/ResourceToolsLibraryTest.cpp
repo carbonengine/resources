@@ -329,3 +329,28 @@ TEST_F( ResourceToolsTest, ResourceChunking )
 
 
 }
+
+
+TEST_F( ResourceToolsTest, GZipUncompressTestFile )
+{
+
+    std::filesystem::path resourcePath = GetTestFileFileAbsolutePath( "CompressedFiles/ab5cde4fbbf82fb6_6a9d6d4c6015616877b77865209c5064" );
+
+    std::string resourceData;
+
+    EXPECT_TRUE( ResourceTools::GetLocalFileData( resourcePath, resourceData ) );
+
+    std::string uncompressedData;
+
+    EXPECT_TRUE( ResourceTools::GZipUncompressData( resourceData, uncompressedData ) );
+
+    // Calculate the checksum to check it
+	std::string checksum;
+
+    EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( uncompressedData, checksum ) );
+
+    // Save the file
+	std::filesystem::path resourcePathDest = "GZipOut/ab/ab5cde4fbbf82fb6_6a9d6d4c6015616877b77865209c5064";
+
+	EXPECT_TRUE( ResourceTools::SaveFile( resourcePathDest, uncompressedData ) );
+}

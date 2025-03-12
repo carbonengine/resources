@@ -1,0 +1,49 @@
+
+# Prosperity and the pursuit of wealth govern the mission of mankind
+0:8.72 - 0:3.65
+"G_EI_14_02"
+
+
+
+
+SEGMENT
+4:19.4 - 0:29.07
+"Finale(Scene 15)"
+
+TRANSFORM
+0:0.0 - 0:29.07
+"Scene 15"
+
+AUDIO
+0:3.85 - 0:18.75
+"res:/sound/music/intro/15_01.ogg"
+
+SUBTITLE
+# We have a destiny to meet...
+0:3.85 - 0:1.43
+"G_EI_15_01"
+
+SUBTITLE
+# and the courage of our pilots will show us the path
+0:6.18 - 0:2.58
+"G_EI_15_02"
+
+SUBTITLE
+# On the strength of your wings the fate of empires
+0:10.62 - 0:2.66
+"G_EI_15_03"
+
+SUBTITLE
+and the hopes of worlds will be decided
+0:13.27 - 0:2.4
+"G_EI_15_04"
+
+SUBTITLE
+# Take control of the destiny that is rightfully yours
+0:16.75 - 0:4.394
+"G_EI_15_05"
+
+A_CHANGE_MADE_FOR_PATCHING# Format for the file is:
+# - [[vendor ID, device ID], class, comments]
+# where class is either high, medium or low; comments are ignored by the client.
+# Order or records is not important for the client, but let's keep it sorted for the sake of human 
