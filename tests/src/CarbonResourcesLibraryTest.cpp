@@ -232,16 +232,19 @@ TEST_F( CarbonResourcesLibraryTest, ApplyPatch )
     // Apply the patch
 	CarbonResources::PatchApplyParams patchApplyParams;
 
+    patchApplyParams.newBuildResourcesSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	patchApplyParams.newBuildResourcesSourceSettings.basePath = GetTestFileFileAbsolutePath( "Patch/NextBuildResources/" );
 
     patchApplyParams.patchBinarySourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
 
-    patchApplyParams.patchBinarySourceSettings.basePath = GetTestFileFileAbsolutePath( "Patch/LocalRemote/" );
+    patchApplyParams.patchBinarySourceSettings.basePath = GetTestFileFileAbsolutePath( "Patch/LocalCDNPatches/" );
 
-    patchApplyParams.resourcesToPatchSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
+    patchApplyParams.resourcesToPatchSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-    patchApplyParams.resourcesToPatchSourceSettings.basePath = GetTestFileFileAbsolutePath( "Patch/Local/" );
+    patchApplyParams.resourcesToPatchSourceSettings.basePath = GetTestFileFileAbsolutePath( "Patch/PreviousBuildResources/" );
 
-    patchApplyParams.resourcesToPatchDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+    patchApplyParams.resourcesToPatchDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
 
     patchApplyParams.resourcesToPatchDestinationSettings.basePath = "ApplyPatchOut";
 
@@ -281,13 +284,13 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
     patchCreateParams.resourceGroupPatchRelativePath = "PatchResourceGroup_previousBuild_latestBuild.yaml";
 
-    patchCreateParams.resourceSourceSettingsFrom.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
+    patchCreateParams.resourceSourceSettingsFrom.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-    patchCreateParams.resourceSourceSettingsFrom.basePath = GetTestFileFileAbsolutePath( "resourcesLocal" );
+    patchCreateParams.resourceSourceSettingsFrom.basePath = GetTestFileFileAbsolutePath( "Patch/PreviousBuildResources" );
 
-    patchCreateParams.resourceSourceSettingsTo.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
+    patchCreateParams.resourceSourceSettingsTo.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-    patchCreateParams.resourceSourceSettingsTo.basePath = GetTestFileFileAbsolutePath( "resourcesRemote" );
+    patchCreateParams.resourceSourceSettingsTo.basePath = GetTestFileFileAbsolutePath( "Patch/NextBuildResources" );
 
     patchCreateParams.resourcePatchBinaryDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
 

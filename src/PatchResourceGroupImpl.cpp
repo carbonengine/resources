@@ -240,7 +240,7 @@ namespace CarbonResources
 
 				ResourceGetDataParams resourceGetDataParams;
 
-                resourceGetDataParams.resourceSourceSettings = params.patchBinarySourceSettings;
+                resourceGetDataParams.resourceSourceSettings = params.newBuildResourcesSourceSettings;
 
                 resourceGetDataParams.data = &resourceData;
 

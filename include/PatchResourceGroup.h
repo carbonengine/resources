@@ -32,6 +32,8 @@ namespace CarbonResources
 
     struct API PatchApplyParams final
     {
+		ResourceSourceSettings newBuildResourcesSourceSettings;
+
 		ResourceSourceSettings patchBinarySourceSettings;
 
         ResourceSourceSettings resourcesToPatchSourceSettings;
