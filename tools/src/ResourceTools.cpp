@@ -207,7 +207,7 @@ size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, voi
 		  strm.next_out = out;
 		  strm.avail_out = CHUNK;
 		  ret = inflate( &strm, Z_NO_FLUSH );
-		  uncompressedData.append( std::string( reinterpret_cast<const char*>( out ), strm.total_out ) );
+		  uncompressedData.append( std::string( reinterpret_cast<const char*>( out ), strm.total_out - uncompressedData.size() ) );
 	  } while( ret == Z_OK );
 
 	  if( ret != Z_STREAM_END )
