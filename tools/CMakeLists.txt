@@ -6,8 +6,21 @@ find_package(CURL CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
 
 set(SRC_FILES
+    include/BundleStreamIn.h
+    include/BundleStreamOut.h
+    include/FileDataStreamIn.h
+    include/FileDataStreamOut.h
+    include/Md5ChecksumStream.h
     include/ResourceTools.h
+    include/ScopedFile.h
+    
+    src/BundleStreamIn.cpp
+    src/BundleStreamOut.cpp
+    src/FileDataStreamIn.cpp
+    src/FileDataStreamOut.cpp
+    src/Md5ChecksumStream.cpp
     src/ResourceTools.cpp
+    src/ScopedFile.cpp
 )
 
 add_library(carbon-resources-tools STATIC ${SRC_FILES})

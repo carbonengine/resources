@@ -40,6 +40,8 @@ namespace CarbonResources
 
         Result SetResourceGroup( const ResourceGroupInfo& resourceGroup );
 
+        void SetMaxInputChunkSize( unsigned long maxInputChunkSize );
+
         Result Apply( const PatchApplyParams& params );
 
         virtual std::string GetType() const override;
@@ -56,7 +58,11 @@ namespace CarbonResources
 
         virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
 
+        Result GetTargetResourcePatches( const ResourceInfo* targetResource, std::vector<const PatchResourceInfo*>& patches ) const;
+
     protected:
+
+        DocumentParameter<unsigned long> m_maxInputChunkSize = DocumentParameter<unsigned long>( { 0, 1, 0 }, "MaxInputChunkSize" );
 
         DocumentParameter<ResourceGroupInfo*> m_resourceGroupParameter = DocumentParameter<ResourceGroupInfo*>( { 0, 1, 0 }, "ResourceGroupResource" );
     };

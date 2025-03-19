@@ -39,6 +39,8 @@ namespace CarbonResources
         ResourceSourceSettings resourcesToPatchSourceSettings;
 
         ResourceDestinationSettings resourcesToPatchDestinationSettings;
+
+        std::filesystem::path temporaryFilePath = "tempFile.resource";
     };
 
 	class PatchResourceGroupImpl;

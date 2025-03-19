@@ -1,15 +1,12 @@
 
 #include "ResourceTools.h"
 
-#include <sstream>
-#include <fstream>
-
 #include <curl/curl.h>
-#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
-#include <cryptopp/hex.h>
-#include <cryptopp/md5.h>
-#include <cryptopp/files.h>
 #include <zlib.h>
+
+#include "Md5ChecksumStream.h"
+#include "FileDataStreamIn.h"
+#include "FileDataStreamOut.h"
 
 static CURL* s_curlHandle{nullptr};
 
@@ -39,33 +36,23 @@ namespace ResourceTools
   	return true;
   }
 
+
+
   bool GenerateMd5Checksum( const std::string& data, std::string& checksum )
   {
-	  // Generate an md5 checksum
-	  std::stringstream ss;
+	  Md5ChecksumStream md5ChecksumStream;
 
-	  CryptoPP::HexEncoder encoder( new CryptoPP::FileSink( ss ), false );
+      md5ChecksumStream << data;
 
-	  std::string digest;
+      if (md5ChecksumStream.FinishAndRetrieve(checksum))
+      {
+		  return true;
+      }
+      else
+      {
+		  return false;
+      }
 
-	  CryptoPP::Weak1::MD5 hash;
-
-	  hash.Update( (const CryptoPP::byte*)data.data(), data.size() );
-
-	  digest.resize( hash.DigestSize() );
-
-	  hash.Final( (CryptoPP::byte*)&digest[0] );
-
-	  CryptoPP::StringSource( digest, true, new CryptoPP::Redirector( encoder ) );
-
-	  checksum = ss.str();
-
-	  while( checksum.size() < 32 )
-	  {
-		  checksum = "0" + checksum;
-	  }
-
-	  return true;
   }
 
   bool GenerateFowlerNollVoChecksum(const std::string& input, std::string& checksum)
@@ -102,30 +89,23 @@ namespace ResourceTools
 
   bool GetLocalFileData( const std::filesystem::path& filepath, std::string& data )
   {
-	  std::ifstream inputStream;
 
-	  inputStream.open( filepath, std::ios::in | std::ios::binary );
+      FileDataStreamIn fileDataStreamIn;
 
-	  if( !inputStream )
-	  {
+      if (!fileDataStreamIn.StartRead(filepath))
+      {
 		  return false;
-	  }
+      }
 
-      inputStream.seekg( 0, std::ios::end );
+      if (!(fileDataStreamIn >> data))
+      {
+		  return false;
+      }
+      else
+      {
+		  return true;
+      }
 
-      size_t fileSize = inputStream.tellg();
-
-      inputStream.seekg( 0, std::ios::beg );
-
-      data.clear();
-
-      data.resize( fileSize );
-
-      inputStream.read( data.data(), fileSize );
-
-      inputStream.close();
-
-	  return true;
   }
 
 size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, void* context )
@@ -257,128 +237,23 @@ size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, voi
 
   bool SaveFile( const std::filesystem::path& path, const std::string& data )
   {
-	  // Creates directories if required
-      std::filesystem::path directory = path.parent_path();
+	  FileDataStreamOut fileDataStreamOut;
 
-      if (!std::filesystem::exists(directory))
-      {
-		  std::filesystem::create_directories( directory );
-      }
-
-      if( !std::filesystem::exists( directory ) )
-	  {
-		  return false;
-	  }
-
-	  std::ofstream out( path, std::ios::binary );
-
-      if (!out)
+      if (!fileDataStreamOut.StartWrite(path))
       {
 		  return false;
       }
 
-      out << data;
-
-      out.close();
-
-	  return true;
-  }
-
-
-
-
-
-
-
-  ChunkStream::ChunkStream( unsigned long chunkSize ) :
-	  m_chunkSize(chunkSize)
-  {
-
-  }
-
-  ChunkStream ::~ChunkStream()
-  {
-
-  }
-
-  bool ChunkStream::operator<<( const std::string& data )
-  {
-      m_cache.append( data );
-
-	  return true;
-  }
-
-  bool ChunkStream::operator>>( GetChunk& data )
-  {
-	  size_t cacheSize = m_cache.size();
-
-      if (cacheSize == 0)
+      if (!(fileDataStreamOut << data))
       {
-          // No data in cache
-		  return false;
-      }
-
-      if (data.clearCache)
-      {
-          // Clear the cache to destination
-		  std::string& dataRef = *data.data;
-
-          dataRef.resize( m_cache.size() );
-
-          dataRef = m_cache;
-
-          m_cache = "";
-
-          return true;
-      }
-
-      if (m_cache.size() < m_chunkSize)
-      {
-          // Not enough data to create chunk
 		  return false;
       }
       else
       {
-          // Copy chunk amount out of cache
-		  std::string& dataRef = *data.data;
-
-          dataRef = m_cache.substr( 0, m_chunkSize );
-
-		  m_cache.erase( 0, m_chunkSize );
+		  return true;
       }
-
-
 
   }
-
-  bool ChunkStream::operator >> ( GetFile& file )
-  {
-	  size_t cacheSize = m_cache.size();
-
-      if (cacheSize == 0)
-      {
-          // No data in cache
-		  return false;
-      }
-
-      if (cacheSize < file.fileSize)
-      {
-          // Not enough data to create file
-		  return false;
-      }
-      else
-      {
-          // Copy resource amount of cache
-		  std::string& dataRef = *file.data;
-
-		  dataRef = m_cache.substr( 0, file.fileSize );
-
-		  m_cache.erase( 0, file.fileSize );
-      }
-
-
-  }
-
 
 
 }

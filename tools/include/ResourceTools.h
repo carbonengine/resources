@@ -23,6 +23,21 @@
 #include <memory>
 #include <string>
 #include <filesystem>
+#include <fstream>
+#include <sstream>
+
+namespace CryptoPP
+{
+    class HexEncoder;
+
+    namespace Weak1
+    {
+	    class MD5;
+    }
+}
+
+
+    //CryptoPP::HexEncoder
 
 namespace ResourceTools
 {
@@ -56,49 +71,6 @@ namespace ResourceTools
     bool CreatePatch(const std::string& data1, const std::string& data2, std::string& patchData);
 
     bool SaveFile( const std::filesystem::path& path, const std::string& data);
-
-
-    // TODO Not sure where this should live
-
-    struct GetChunk
-	{
-		std::string* data = nullptr;
-
-        bool clearCache = false;
-	};
-
-    struct GetFile
-    {
-		unsigned long fileSize = 0;
-
-        std::string* data = nullptr;
-    };
-
-    class ChunkStream
-    {
-	public:
-		ChunkStream( unsigned long chunkSize);
-
-		~ChunkStream();
-
-        bool operator<<( const std::string& data ); 
-
-        // Outputs chunks
-		bool operator>>( GetChunk& data );
-
-        // Outputs files
-        bool operator>>( GetFile& file );
-
-    private:
-
-		unsigned long m_chunkSize;
-
-        std::string m_cache;
-
-    };
-
-
-
 
     
 }

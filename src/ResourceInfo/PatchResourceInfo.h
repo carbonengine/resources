@@ -25,7 +25,9 @@ namespace CarbonResources
 {
     struct PatchResourceInfoParams : public ResourceGroupInfoParams
     {
-    
+		std::filesystem::path targetResourceRelativePath = "NOT_SET";
+
+        unsigned long dataOffset = 0;
     };
 
     class ResourceGroup;
@@ -38,6 +40,20 @@ namespace CarbonResources
 	    ~PatchResourceInfo();
 
         static std::string TypeId( );
+
+        Result GetTargetResourceRelativePath( std::filesystem::path& targetResourceRelativePath ) const;
+
+        Result GetDataOffset( unsigned long& dataoffset ) const;
+
+		virtual Result ImportFromYaml( YAML::Node& resource, const Version& documentVersion ) override;
+
+		virtual Result ExportToYaml( YAML::Emitter& out, const Version& documentVersion ) override;
+
+    private:
+
+        DocumentParameter<unsigned long> m_dataOffset = DocumentParameter<unsigned long>( { 0, 0, 0 }, "DataOffset" );
+
+		DocumentParameter<std::filesystem::path> m_targetResourceRelativepath = DocumentParameter<std::filesystem::path>( { 0, 0, 0 }, "TargetResourceRelativePath" );
     };
 
 

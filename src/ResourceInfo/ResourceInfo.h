@@ -27,6 +27,13 @@
 #include "Enums.h"
 #include "ResourceGroup.h"
 
+namespace ResourceTools
+{
+    class FileDataStreamIn;
+    class FileDataStreamOut;
+}
+
+
 namespace YAML
 {
     class Emitter;
@@ -233,11 +240,26 @@ namespace CarbonResources
 		unsigned long something = 0;
 	};
 
+    struct ResourceGetDataStreamParams
+	{
+		ResourceSourceSettings resourceSourceSettings;
+
+		ResourceTools::FileDataStreamIn* dataStream = nullptr;
+
+	};
+
     struct ResourceGetDataParams
 	{
 		ResourceSourceSettings resourceSourceSettings;
 
 		std::string* data = nullptr;
+	};
+
+    struct ResourcePutDataStreamParams
+	{
+		ResourceDestinationSettings resourceDestinationSettings;
+
+		ResourceTools::FileDataStreamOut* dataStream = nullptr;
 	};
 
     struct ResourcePutDataParams
@@ -275,7 +297,11 @@ namespace CarbonResources
 
 	    Result GetSomething(unsigned long& something) const;
 
+        Result GetDataStream( ResourceGetDataStreamParams& params ) const;
+
 	    Result GetData( ResourceGetDataParams& params ) const;
+
+        Result PutDataStream( ResourcePutDataStreamParams& params ) const;
 
         Result PutData( ResourcePutDataParams& params ) const;
 
@@ -310,9 +336,19 @@ namespace CarbonResources
 
 	    Result GetDataRemoteCdn( ResourceGetDataParams& params ) const;
 
+        Result GetDataStreamLocalRelative( ResourceGetDataStreamParams& params ) const;
+
+		Result GetDataStreamLocalCdn( ResourceGetDataStreamParams& params ) const;
+
+		Result GetDataStreamRemoteCdn( ResourceGetDataStreamParams& params ) const;
+
         Result PutDataLocalRelative( ResourcePutDataParams& params ) const;
 
 		Result PutDataLocalCdn( ResourcePutDataParams& params ) const;
+
+        Result PutDataStreamLocalRelative( ResourcePutDataStreamParams& params ) const;
+
+		Result PutDataStreamLocalCdn( ResourcePutDataStreamParams& params ) const;
 
     protected:
 

@@ -4,6 +4,10 @@
 
 #include <ResourceTools.h>
 
+#include <FileDataStreamIn.h>
+
+#include <FileDataStreamOut.h>
+
 #include <yaml-cpp/yaml.h>
 
 #include "..\ResourceGroupImpl.h"
@@ -168,6 +172,32 @@ namespace CarbonResources
 			return Result::SUCCESS;
 		}
     }
+
+    Result ResourceInfo::PutDataStream( ResourcePutDataStreamParams& params ) const
+    {
+		if( !params.dataStream )
+		{
+			return Result::FAILED_TO_SAVE_FILE;
+		}
+
+        switch( params.resourceDestinationSettings.destinationType )
+		{
+		case ResourceDestinationType::LOCAL_RELATIVE:
+
+			return PutDataStreamLocalRelative( params );
+
+			break;
+
+		case ResourceDestinationType::LOCAL_CDN:
+
+			return PutDataStreamLocalCdn( params );
+
+			break;
+
+		default:
+			return Result::FAILED_TO_SAVE_FILE;
+		}
+    }
    
     Result ResourceInfo::PutData( ResourcePutDataParams& params ) const
     {
@@ -236,10 +266,79 @@ namespace CarbonResources
 
     }
 
-    // TODO what if many options are filled out for source?
-    // TODO optionally run a validation on the data against checksum
+    Result ResourceInfo::PutDataStreamLocalRelative( ResourcePutDataStreamParams& params ) const
+    {
+		std::filesystem::path path = params.resourceDestinationSettings.basePath / m_relativePath.GetValue();
+
+        bool res = params.dataStream->StartWrite( path );
+
+		if( res )
+		{
+			return Result::SUCCESS;
+		}
+		else
+		{
+			return Result::FAILED_TO_SAVE_FILE;
+		}
+    }
+
+    Result ResourceInfo::PutDataStreamLocalCdn( ResourcePutDataStreamParams& params ) const
+    {
+		// Construct path
+		std::filesystem::path dataPath = params.resourceDestinationSettings.basePath / m_location.GetValue().ToString();
+
+		bool res = params.dataStream->StartWrite( dataPath );
+
+		if( res )
+		{
+			return Result::SUCCESS;
+		}
+		else
+		{
+			return Result::FAILED_TO_SAVE_FILE;
+		}
+    }
+
+
+    Result ResourceInfo::GetDataStream( ResourceGetDataStreamParams& params ) const
+    {
+		if( !params.dataStream )
+		{
+			return Result::FAILED_TO_OPEN_FILE;
+		}
+
+		switch( params.resourceSourceSettings.sourceType )
+		{
+		case ResourceSourceType::LOCAL_RELATIVE:
+
+			return GetDataStreamLocalRelative( params );
+
+			break;
+
+		case ResourceSourceType::LOCAL_CDN:
+
+			return GetDataStreamLocalCdn( params );
+
+			break;
+
+		case ResourceSourceType::REMOTE_CDN:
+
+			return GetDataStreamRemoteCdn( params );
+
+			break;
+
+		default:
+			return Result::FAILED_TO_OPEN_FILE;
+		}
+    }
+
 	Result ResourceInfo::GetData( ResourceGetDataParams& params ) const
     {
+        if (!params.data)
+        {
+			return Result::FAILED_TO_OPEN_FILE;
+        }
+
         switch (params.resourceSourceSettings.sourceType)
         {
 		case ResourceSourceType::LOCAL_RELATIVE:
@@ -319,6 +418,45 @@ namespace CarbonResources
 			return GetDataLocalCdn( params );
         }
 
+    }
+
+    Result ResourceInfo::GetDataStreamLocalRelative( ResourceGetDataStreamParams& params ) const
+    {
+		std::filesystem::path dataPath = params.resourceSourceSettings.basePath / m_relativePath.GetValue();
+
+		bool res = params.dataStream->StartRead( dataPath );
+
+		if( res )
+		{
+			return Result::SUCCESS;
+		}
+		else
+		{
+			return Result::FAILED_TO_OPEN_LOCAL_FILE_STREAM;
+		}
+    }
+
+    Result ResourceInfo::GetDataStreamLocalCdn( ResourceGetDataStreamParams& params ) const
+    {
+		// Construct path
+		std::filesystem::path path = params.resourceSourceSettings.basePath / m_location.GetValue().ToString();
+
+		bool res = params.dataStream->StartRead( path );
+
+		if( res )
+		{
+			return Result::SUCCESS;
+		}
+		else
+		{
+			return Result::FAILED_TO_OPEN_LOCAL_FILE_STREAM;
+		}
+    }
+
+    Result ResourceInfo::GetDataStreamRemoteCdn( ResourceGetDataStreamParams& params ) const
+    {
+        // TODO streaming from download needs work
+		return Result::FAIL;
     }
 
     Result ResourceInfo::ImportFromYaml( YAML::Node& resource, const Version& documentVersion )

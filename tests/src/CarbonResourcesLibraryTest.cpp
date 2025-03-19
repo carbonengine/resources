@@ -169,7 +169,7 @@ TEST_F( CarbonResourcesLibraryTest, UnpackBundle )
 
 	bundleUnpackParams.resourceDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
 
-	bundleUnpackParams.resourceDestinationSettings.basePath = "ApplyPatchOut/";
+	bundleUnpackParams.resourceDestinationSettings.basePath = "UnpackBundleOut/";
 
 	EXPECT_EQ( bundleResourceGroup.Unpack( bundleUnpackParams ), CarbonResources::Result::SUCCESS );
 
@@ -248,6 +248,8 @@ TEST_F( CarbonResourcesLibraryTest, ApplyPatch )
 
     patchApplyParams.resourcesToPatchDestinationSettings.basePath = "ApplyPatchOut";
 
+    patchApplyParams.temporaryFilePath = "tempFile.resource";
+
     EXPECT_EQ(patchResourceGroup.Apply( patchApplyParams ),CarbonResources::Result::SUCCESS);
 
     // TODO test the output of the applied patches
@@ -300,11 +302,111 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
     patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath = "resPath";
 
+    patchCreateParams.patchFileRelativePathPrefix = "Patches/Patch1";
+
     patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
+
+    patchCreateParams.maxInputFileSize = 100000000;
     
 	EXPECT_EQ(resourceGroupLatest.CreatePatch( patchCreateParams ),CarbonResources::Result::SUCCESS);
 
 
     // TODO run tests on patch create
     
+}
+
+TEST_F( CarbonResourcesLibraryTest, ApplyPatchWithChunking )
+{
+	// Load the patch file
+	CarbonResources::PatchResourceGroup patchResourceGroup;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
+
+	importParamsPrevious.filename = GetTestFileFileAbsolutePath( "PatchWithInputChunk/PatchResourceGroup_previousBuild_latestBuild.yaml" );
+
+	EXPECT_EQ( patchResourceGroup.ImportFromFile( importParamsPrevious ), CarbonResources::Result::SUCCESS );
+
+
+	// Apply the patch
+	CarbonResources::PatchApplyParams patchApplyParams;
+
+	patchApplyParams.newBuildResourcesSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	patchApplyParams.newBuildResourcesSourceSettings.basePath = GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/" );
+
+	patchApplyParams.patchBinarySourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
+
+	patchApplyParams.patchBinarySourceSettings.basePath = GetTestFileFileAbsolutePath( "PatchWithInputChunk/LocalCDNPatches/" );
+
+	patchApplyParams.resourcesToPatchSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	patchApplyParams.resourcesToPatchSourceSettings.basePath = GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/" );
+
+	patchApplyParams.resourcesToPatchDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	patchApplyParams.resourcesToPatchDestinationSettings.basePath = "ApplyPatchOut";
+
+	patchApplyParams.temporaryFilePath = "tempFile.resource";
+
+	EXPECT_EQ( patchResourceGroup.Apply( patchApplyParams ), CarbonResources::Result::SUCCESS );
+
+	// TODO test the output of the applied patches
+}
+
+TEST_F( CarbonResourcesLibraryTest, CreatePatchWithChunking )
+{
+	// Previous ResourceGroup
+	CarbonResources::ResourceGroup resourceGroupPrevious;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
+
+	importParamsPrevious.filename = GetTestFileFileAbsolutePath( "Patch/resfileindexShort_build_previous.txt" );
+
+	EXPECT_EQ( resourceGroupPrevious.ImportFromFile( importParamsPrevious ), CarbonResources::Result::SUCCESS );
+
+
+	// Latest ResourceGroup
+	CarbonResources::ResourceGroup resourceGroupLatest;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParamsLatest;
+
+	importParamsLatest.filename = GetTestFileFileAbsolutePath( "Patch/resfileindexShort_build_next.txt" );
+
+	EXPECT_EQ( resourceGroupLatest.ImportFromFile( importParamsLatest ), CarbonResources::Result::SUCCESS );
+
+
+
+	// Create a patch from the subtraction index
+	CarbonResources::PatchCreateParams patchCreateParams;
+
+	patchCreateParams.resourceGroupRelativePath = "ResourceGroup_previousBuild_latestBuild.yaml";
+
+	patchCreateParams.resourceGroupPatchRelativePath = "PatchResourceGroup_previousBuild_latestBuild.yaml";
+
+	patchCreateParams.resourceSourceSettingsFrom.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	patchCreateParams.resourceSourceSettingsFrom.basePath = GetTestFileFileAbsolutePath( "Patch/PreviousBuildResources" );
+
+	patchCreateParams.resourceSourceSettingsTo.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	patchCreateParams.resourceSourceSettingsTo.basePath = GetTestFileFileAbsolutePath( "Patch/NextBuildResources" );
+
+	patchCreateParams.resourcePatchBinaryDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+
+	patchCreateParams.resourcePatchBinaryDestinationSettings.basePath = "SharedCache";
+
+	patchCreateParams.resourcePatchResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath = "resPath";
+
+	patchCreateParams.patchFileRelativePathPrefix = "Patches/Patch1";
+
+	patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
+
+	patchCreateParams.maxInputFileSize = 5000;
+
+	EXPECT_EQ( resourceGroupLatest.CreatePatch( patchCreateParams ), CarbonResources::Result::SUCCESS );
+
+
+	// TODO run tests on patch create
 }

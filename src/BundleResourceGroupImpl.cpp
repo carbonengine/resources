@@ -1,10 +1,14 @@
 #include "BundleResourceGroupImpl.h"
 
-//#include "BundleResource.h"
-
 #include <yaml-cpp/yaml.h>
 
 #include <ResourceTools.h>
+
+#include <BundleStreamIn.h>
+
+#include <FileDataStreamOut.h>
+
+#include <Md5ChecksumStream.h>
 
 namespace CarbonResources
 {
@@ -65,9 +69,8 @@ namespace CarbonResources
 			return resourceGroupImportFromDataResult;
 		}
 
-
         // Create stream
-		ResourceTools::ChunkStream chunkStream(m_chunkSize.GetValue());
+		ResourceTools::BundleStreamIn bundleStream(m_chunkSize.GetValue());
 
         auto chunkIterator = m_resourcesParameter.begin();
 
@@ -75,59 +78,113 @@ namespace CarbonResources
         for( ResourceInfo* resource : resourceGroup.m_resourcesParameter )
 		{
 
-            // Add chunks to chunkStream until enough have been reconstituted to produce resource
-			std::string resourceData;
+            unsigned long resourceFileUncompressedSize;
 
-			ResourceTools::GetFile resourceFile;
-
-            resourceFile.data = &resourceData;
-
-            Result getUncompressedDataSizeResult = resource->GetUncompressedSize( resourceFile.fileSize );
+            Result getUncompressedDataSizeResult = resource->GetUncompressedSize( resourceFileUncompressedSize );
 
             if (getUncompressedDataSizeResult != Result::SUCCESS)
             {
 				return getUncompressedDataSizeResult;
             }
 
-            while( !( chunkStream >> resourceFile ) )
+
+            ResourceTools::FileDataStreamOut resourceDataStreamOut;
+
+            ResourcePutDataStreamParams resourcePutDataStreamParams;
+
+            resourcePutDataStreamParams.resourceDestinationSettings = params.resourceDestinationSettings;
+
+            resourcePutDataStreamParams.dataStream = &resourceDataStreamOut;
+
+            Result resourcePutDataStreamResult = resource->PutDataStream( resourcePutDataStreamParams );
+
+            if (resourcePutDataStreamResult != Result::SUCCESS)
             {
-                if (chunkIterator == m_resourcesParameter.end())
+				return resourcePutDataStreamResult;
+            }
+
+			ResourceTools::GetFile file;
+
+            file.fileSize = resourceFileUncompressedSize;
+
+            // Calculate checksum while processing chunks
+			ResourceTools::Md5ChecksumStream resourceChecksumStream;
+
+            while( resourceDataStreamOut.GetFileSize() < resourceFileUncompressedSize )
+            {
+                if (chunkIterator != m_resourcesParameter.end())
                 {
-					return Result::UNEXPECTED_END_OF_CHUNKS;
+					ResourceInfo* chunk = ( *chunkIterator );
+
+					// Get chunk data
+					std::string chunkData;
+
+					ResourceGetDataParams resourceGetDataParams;
+
+					resourceGetDataParams.resourceSourceSettings = params.chunkSourceSettings;
+
+					resourceGetDataParams.data = &chunkData;
+
+					Result getChunkDataResult = chunk->GetData( resourceGetDataParams );
+
+					if( getChunkDataResult != Result::SUCCESS )
+					{
+						return getChunkDataResult;
+					}
+
+					// Add to chunk stream
+					if( !( bundleStream << chunkData ) )
+					{
+						return Result::FAIL;    //TODO make more descriptive
+					}
+                }
+                else
+                {
+                    if (bundleStream.GetCacheSize() == 0)
+                    {
+						return Result::UNEXPECTED_END_OF_CHUNKS;
+                    }
                 }
 
-				ResourceInfo* chunk = ( *chunkIterator );
+				
+                std::string resourceChunkData;
 
-                // Get chunk data
-				std::string chunkData;
+                file.data = &resourceChunkData;
+             
+                // Retreive chunk from stream
+                // This ensures that we only get the data expected
+                // for this resource, extra is cached for next resource
+                if (!(bundleStream >> file))
+                {
+					return Result::FAILED_TO_RETRIEVE_CHUNK_DATA;
+                }
 
-				ResourceGetDataParams resourceGetDataParams;
+                if( !( resourceChecksumStream << resourceChunkData ) )
+                {
+					return Result::FAILED_TO_GENERATE_CHECKSUM;
+                }
 
-				resourceGetDataParams.resourceSourceSettings = params.chunkSourceSettings;
+                if( !( resourceDataStreamOut << resourceChunkData ) )
+                {
+					return Result::FAILED_TO_SAVE_TO_STREAM;
+                }
 
-				resourceGetDataParams.data = &chunkData;
-
-				Result getChunkDataResult = chunk->GetData( resourceGetDataParams );
-
-				if( getChunkDataResult != Result::SUCCESS )
+                if( chunkIterator != m_resourcesParameter.end() )
 				{
-					return getChunkDataResult;
+					chunkIterator++;
 				}
-
-                chunkStream << chunkData;
-
-                chunkIterator++;
             }
 
             // Validate the resource data
             // TODO: perhaps make this optional
 			std::string recreatedResourceChecksum;
 
-            if( !ResourceTools::GenerateMd5Checksum( resourceData, recreatedResourceChecksum ) )
+            if (!resourceChecksumStream.FinishAndRetrieve(recreatedResourceChecksum))
             {
 				return Result::FAILED_TO_GENERATE_CHECKSUM;
             }
 
+           
             std::string resourceChecksum;
 
             Result getChecksumResult = resource->GetChecksum( resourceChecksum );
@@ -142,6 +199,7 @@ namespace CarbonResources
 				return Result::UNEXPECTED_CHUNK_CHECKSUM_RESULT;
             }
 
+            /*
 			// Export data
 			ResourcePutDataParams resourcePutDataParams;
 
@@ -155,6 +213,7 @@ namespace CarbonResources
 			{
 				return putResourceDataResult;
 			}
+            */
 
 		}
 

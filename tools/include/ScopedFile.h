@@ -1,0 +1,40 @@
+/* 
+	*************************************************************************
+
+	ScopedFile.h
+
+	Author:    James Hawk
+	Created:   march. 2025
+	Project:   Resources
+
+	Description:   
+
+	  
+
+	(c) CCP 2025
+
+	*************************************************************************
+*/
+
+#pragma once
+#ifndef ScopedFile_H
+#define ScopedFile_H
+
+#include <filesystem>
+
+
+namespace ResourceTools
+{
+    class ScopedFile
+	{
+	public:
+		ScopedFile( std::filesystem::path location );
+
+		~ScopedFile();
+
+	private:
+		std::filesystem::path m_location;
+	}; 
+}
+
+#endif // ScopedFile_H

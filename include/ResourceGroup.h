@@ -76,6 +76,8 @@ namespace CarbonResources
 
         unsigned long chunkSize = 10000000;
 
+        unsigned long fileReadChunkSize = 10000000;
+
         ResourceDestinationSettings resourceBundleResourceGroupDestinationSettings;
 	};
 
@@ -83,11 +85,15 @@ namespace CarbonResources
 	{
 		unsigned int size = sizeof( PatchCreateParams );
 
+        unsigned long maxInputFileSize = -1;
+
 		ResourceGroup* previousResourceGroup = nullptr;
 
         std::filesystem::path resourceGroupRelativePath;
 
         std::filesystem::path resourceGroupPatchRelativePath;
+
+        std::filesystem::path patchFileRelativePathPrefix;
 
 		ResourceSourceSettings resourceSourceSettingsFrom;
 
