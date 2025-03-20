@@ -139,7 +139,12 @@ namespace CarbonResources
 			// Create aBinary Resource
 			BinaryResourceInfo* binaryResource = new BinaryResourceInfo( binaryResourceParams );
 
-            m_resourcesParameter.PushBack( binaryResource );
+            Result addResourceResult = AddResource( binaryResource );
+
+			if( addResourceResult != Result::SUCCESS )
+			{
+				return addResourceResult;
+			}
 
 		}
 

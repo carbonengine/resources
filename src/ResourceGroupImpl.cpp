@@ -22,6 +22,12 @@ namespace CarbonResources
 		m_versionParameter = S_DOCUMENT_VERSION;
 
 		m_type = TypeId();
+
+        m_numberOfResources = 0;
+
+        m_totalResourcesSizeCompressed = 0;
+
+        m_totalResourcesSizeUncompressed = 0;
     }
 
     ResourceGroupImpl::~ResourceGroupImpl()
@@ -183,7 +189,12 @@ namespace CarbonResources
 			// Create a Resource
 			ResourceInfo* resource = new ResourceInfo( resourceParams );
 
-            m_resourcesParameter.PushBack( resource );
+            Result addResourceResult = AddResource( resource );
+
+            if (addResourceResult != Result::SUCCESS)
+            {
+				return addResourceResult;
+            }
 		}
 
 		return Result::SUCCESS;
@@ -332,7 +343,12 @@ namespace CarbonResources
 				return createResourceFromYamlResult;
             }
 
-            m_resourcesParameter.PushBack( resource );
+            Result addResourceResult = AddResource( resource );
+
+			if( addResourceResult != Result::SUCCESS )
+			{
+				return addResourceResult;
+			}
 
         }
 
@@ -388,6 +404,15 @@ namespace CarbonResources
 
         out << YAML::Key << m_type.GetTag();
 		out << YAML::Value << m_type.GetValue();
+
+        out << YAML::Key << m_numberOfResources.GetTag();
+		out << YAML::Value << m_numberOfResources.GetValue();
+
+        out << YAML::Key << m_totalResourcesSizeCompressed.GetTag();
+		out << YAML::Value << m_totalResourcesSizeCompressed.GetValue();
+
+        out << YAML::Key << m_totalResourcesSizeUncompressed.GetTag();
+		out << YAML::Value << m_totalResourcesSizeUncompressed.GetValue();
 
         Result res = ExportGroupSpecialisedYaml( out, sanitisedOutputDocumentVersion );
 
@@ -912,6 +937,30 @@ namespace CarbonResources
     Result ResourceGroupImpl::AddResource( ResourceInfo* resource )
     {
 		m_resourcesParameter.PushBack( resource );
+
+        m_numberOfResources = m_numberOfResources.GetValue() + 1;
+
+        unsigned long resourceUncompressedSize;
+            
+        Result resourceGetUncompressedSizeResult = resource->GetUncompressedSize( resourceUncompressedSize );
+
+        if( resourceGetUncompressedSizeResult != Result::SUCCESS )
+        {
+			return resourceGetUncompressedSizeResult;
+        }
+
+        m_totalResourcesSizeUncompressed = m_totalResourcesSizeUncompressed.GetValue() + resourceUncompressedSize;
+
+        unsigned long resourceCompressedSize;
+
+		Result resourceGetCompressedSizeResult = resource->GetCompressedSize( resourceCompressedSize );
+
+		if( resourceGetCompressedSizeResult != Result::SUCCESS )
+		{
+			return resourceGetCompressedSizeResult;
+		}
+
+		m_totalResourcesSizeCompressed = m_totalResourcesSizeCompressed.GetValue() + resourceCompressedSize;
 
 		return Result::SUCCESS;
     }

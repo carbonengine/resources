@@ -1,5 +1,8 @@
 Version: 0.0.0
 Type: BinaryGroup
+NumberOfResources: 186
+TotalResourcesSizeCompressed: 87937695
+TotalResourcesSizeUnCompressed: 205555880
 Resources:
   - RelativePath: bin64/GFSDK_Aftermath_Lib.x64.dll
     Type: Binary

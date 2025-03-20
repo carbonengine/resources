@@ -106,6 +106,12 @@ namespace CarbonResources
 
         DocumentParameter<std::string> m_type = DocumentParameter<std::string>( { 1, 0, 0 }, "Type" );
 
+        DocumentParameter<unsigned long> m_numberOfResources = DocumentParameter<unsigned long>( { 1, 0, 0 }, "NumberOfResources" );
+
+        DocumentParameter<unsigned long> m_totalResourcesSizeCompressed = DocumentParameter<unsigned long>( { 1, 0, 0 }, "TotalResourcesSizeCompressed" );
+
+        DocumentParameter<unsigned long> m_totalResourcesSizeUncompressed = DocumentParameter<unsigned long>( { 1, 0, 0 }, "TotalResourcesSizeUnCompressed" );
+
 	    DocumentParameterCollection<ResourceInfo*> m_resourcesParameter = DocumentParameterCollection<ResourceInfo*>( { 0, 0, 0 }, "Resources" );
     };
 
