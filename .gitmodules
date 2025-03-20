@@ -1,3 +1,0 @@
-[submodule "carbon-vcpkg"]
-	path = carbon-vcpkg
-	url = git@github.com:ccpgames/carbon-vcpkg.git
