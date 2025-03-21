@@ -10,6 +10,7 @@
 #include "ResourceInfo/BundleResourceGroupInfo.h"
 #include "ResourceInfo/ResourceGroupInfo.h"
 #include "ResourceInfo/PatchResourceInfo.h"
+#include "Patching.h"
 #include "PatchResourceGroupImpl.h"
 #include "BundleResourceGroupImpl.h"
 

@@ -65,4 +65,19 @@ namespace ResourceTools
 
   }
 
+  unsigned long BundleStreamOut::GetChunkSize() const
+  {
+	  return m_chunkSize;
+  }
+
+  bool BundleStreamOut::ReadBytes( size_t n, std::string& out )
+  {
+	  if( m_cache.size() < n )
+	  {
+		  return false;
+	  }
+  	  out = m_cache.substr( 0, n );
+  	  m_cache.erase( 0, n );
+  }
+
 }

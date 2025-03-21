@@ -37,13 +37,13 @@ namespace CryptoPP
 }
 
 
-    //CryptoPP::HexEncoder
-
 namespace ResourceTools
 {
 
     // TODO expect all these signatures to move around, just made off the top of my head so far
     // Not settled on correct approach to manage data etc
+
+	class BundleStreamOut;
 
 	// Initialize CURL.
 	// Should be called once at program startup, but if you are initializing
@@ -66,13 +66,7 @@ namespace ResourceTools
 
     bool GZipUncompressData( const std::string& dataToUncompress, std::string& uncompressedData );
 
-    bool ApplyPatch( const std::string& data, const std::string& patchData, std::string& out );
-
-    bool CreatePatch(const std::string& data1, const std::string& data2, std::string& patchData);
-
-    bool SaveFile( const std::filesystem::path& path, const std::string& data);
-
-    
+    bool SaveFile( const std::filesystem::path& path, const std::string& data );
 }
 
 #endif // ResourceTools_H

@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "CarbonResourcesTestFixture.h"
+#include "Patching.h"
 
 struct ResourceToolsTest : public CarbonResourcesTestFixture
 {
@@ -358,4 +359,106 @@ TEST_F( ResourceToolsTest, GZipUncompressTestFile )
 	std::filesystem::path resourcePathDest = "GZipOut/ab/ab5cde4fbbf82fb6_6a9d6d4c6015616877b77865209c5064";
 
 	EXPECT_TRUE( ResourceTools::SaveFile( resourcePathDest, uncompressedData ) );
+}
+
+TEST_F( ResourceToolsTest, CreateApplyPatch )
+{
+	std::string before = "acbd";
+	std::string after = "abcd";
+	std::string patch = "";
+
+	// Create a patch containing the difference between before and after.
+	ASSERT_TRUE( ResourceTools::CreatePatch( before, after, patch ) );
+
+	std::string patched = "";
+	// Apply the patch to before
+	ASSERT_TRUE(  ResourceTools::ApplyPatch( before, patch, patched ) );
+
+	// After patching before, it should be exactly the same as after.
+	ASSERT_EQ( patched, after );
+
+}
+
+TEST_F( ResourceToolsTest, CreateApplyPatchFile )
+{
+	const char* testDataPathStr = std::getenv( "TEST_DATA_PATH" );
+	ASSERT_TRUE( testDataPathStr );
+	std::filesystem::path testDataPath(testDataPathStr);
+	ResourceTools::Initialize();
+
+	std::filesystem::path before_src = testDataPath / "Patch" / "PreviousBuildResources" / "introMovie.txt";
+	std::filesystem::path after_src = testDataPath / "Patch" / "NextBuildResources" / "introMovie.txt";
+
+	std::filesystem::path patch = std::filesystem::temp_directory_path() / "CarbonResources" / "introMovie.patch";
+	std::filesystem::path before = std::filesystem::temp_directory_path() / "CarbonResources" /  "introMovie.txt";
+
+	std::filesystem::remove( before );
+	std::filesystem::remove( patch );
+	std::filesystem::copy_file( before_src, before );
+
+	// Create a patch containing the difference between before and after.
+	ASSERT_TRUE( ResourceTools::CreatePatchFile( before_src, after_src, patch ) );
+
+	std::string patched = "";
+	// Apply the patch to before
+	ASSERT_TRUE(  ResourceTools::ApplyPatchFile( before, patch ) );
+
+	std::string beforeChecksum;
+	std::string beforeData;
+	ResourceTools::GetLocalFileData( before, beforeData );
+	EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( beforeData, beforeChecksum ) );
+
+	std::string afterChecksum;
+	std::string afterData;
+	ResourceTools::GetLocalFileData( after_src, afterData );
+	EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( afterData, afterChecksum ) );
+
+	// After patching before, it should be exactly the same as after.
+	ASSERT_EQ( beforeChecksum, afterChecksum );
+}
+
+TEST_F( ResourceToolsTest, ApplyPatchFileChunked )
+{
+	const char* testDataPathStr = std::getenv( "TEST_DATA_PATH" );
+	ASSERT_TRUE( testDataPathStr );
+	std::filesystem::path testDataPath(testDataPathStr);
+	ResourceTools::Initialize();
+
+	std::filesystem::path before_src = testDataPath / "Patch" / "PreviousBuildResources" / "introMovie.txt";
+	std::filesystem::path after_src = testDataPath / "Patch" / "NextBuildResources" / "introMovie.txt";
+
+	std::filesystem::path patch = std::filesystem::temp_directory_path() / "CarbonResources" / "introMovie.patch";
+	std::filesystem::path before = std::filesystem::temp_directory_path() / "CarbonResources" /  "introMovie.txt";
+
+	std::filesystem::remove( before );
+	std::filesystem::remove( patch );
+	std::filesystem::copy_file( before_src, before );
+
+	// Create a patch containing the difference between before and after.
+	ASSERT_TRUE( ResourceTools::CreatePatchFile( before_src, after_src, patch ) );
+
+	unsigned long chunkSize = 128;
+
+	ResourceTools::BundleStreamOut chunkStream(chunkSize);
+	std::string patchData;
+
+	EXPECT_TRUE(ResourceTools::GetLocalFileData( patch, patchData ));
+
+	EXPECT_TRUE(chunkStream << patchData);
+	// Apply the patch to before
+	ASSERT_TRUE(  ResourceTools::ApplyPatchFileChunked( before, chunkStream ) );
+
+
+	std::string beforeChecksum;
+	std::string beforeData;
+	ResourceTools::GetLocalFileData( before, beforeData );
+	EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( beforeData, beforeChecksum ) );
+
+	std::string afterChecksum;
+	std::string afterData;
+	ResourceTools::GetLocalFileData( after_src, afterData );
+	EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( afterData, afterChecksum ) );
+
+	// After patching before, it should be exactly the same as after.
+	ASSERT_EQ( beforeChecksum, afterChecksum );
 }

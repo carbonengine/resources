@@ -1,5 +1,7 @@
 #include "PatchResourceGroupImpl.h"
 
+#include "Patching.h"
+
 #include <yaml-cpp/yaml.h>
 
 #include <ResourceTools.h>

@@ -44,6 +44,10 @@ namespace ResourceTools
         // Outputs chunks
 		bool operator>>( GetChunk& data );
 
+    	unsigned long GetChunkSize() const;
+
+    	bool ReadBytes( size_t n, std::string& data );
+
     private:
 
 		unsigned long m_chunkSize;
