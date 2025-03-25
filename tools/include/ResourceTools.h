@@ -24,6 +24,7 @@
 #include <string>
 #include <filesystem>
 #include <fstream>
+#include <list>
 #include <sstream>
 
 namespace CryptoPP
@@ -51,6 +52,13 @@ namespace ResourceTools
 		uint64_t checksum;
 	};
 
+	struct ChunkMatch
+	{
+		uint64_t sourceOffset;
+		uint64_t destinationOffset;
+		uint64_t length;
+	};
+
 	// Initialize CURL.
 	// Should be called once at program startup, but if you are initializing
 	// from a Windows DLL you should not initialize it from DllMain or a static initializer
@@ -69,6 +77,8 @@ namespace ResourceTools
 
 	// Generate a weak checksum using the rsync algorithm https://rsync.samba.org/tech_report/node3.html
 	RollingChecksum GenerateRollingAdlerChecksum( const std::string& input, uint64_t start, uint64_t end, RollingChecksum previous );
+
+	std::list<ChunkMatch> FindMatchingChunks( const std::string& source, std::string& destination );
 
     bool GetLocalFileData( const std::filesystem::path& filepath, std::string& data );
 

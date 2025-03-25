@@ -136,6 +136,106 @@ namespace ResourceTools
 	  return rc;
   }
 
+  std::list<ChunkMatch> FindMatchingChunks( const std::string& source, std::string& destination )
+  {
+	  std::list<ChunkMatch> result;
+
+	  uint64_t window = 4; // The amount of bytes to use for the checksum.
+
+	  if( destination.size() < window || source.size() < window )
+	  {
+		  // Not much to find here. Let's not bother.
+		  return result;
+	  }
+
+	  uint64_t start = 0;
+	  uint64_t end = window;
+
+	  RollingChecksum sourceStartChecksum = GenerateRollingAdlerChecksum( source, 0, window );
+	  while( end < destination.size() )
+	  {
+		  ChunkMatch match;
+		  match.sourceOffset = 0;
+		  match.destinationOffset = start;
+		  match.length = 0;
+
+		  RollingChecksum destinationChecksum = GenerateRollingAdlerChecksum( destination, start, end );
+
+		  uint64_t length = 0;
+		  uint64_t maxLength = 0;
+		  match.length = 0;
+		  uint64_t sourceStart = 0;
+		  uint64_t sourceEnd = sourceStart + window;
+		  RollingChecksum rollingDestinationChecksum = destinationChecksum;
+		  RollingChecksum rollingSourceChecksum = sourceStartChecksum;
+	  	  uint64_t sourceMatchStart = sourceStart;
+		  while( sourceEnd <= source.size() && end + length <= destination.size() )
+		  {
+			  if( length )
+			  {
+				  rollingDestinationChecksum = GenerateRollingAdlerChecksum( destination, start + length, end + length, rollingDestinationChecksum );
+			  }
+			  else
+			  {
+				  rollingDestinationChecksum = destinationChecksum;
+			  }
+		  	  if(sourceStart)
+		  	  {
+			  	  rollingSourceChecksum = GenerateRollingAdlerChecksum( source, sourceStart, sourceEnd, rollingSourceChecksum );
+		  	  }
+			  else
+			  {
+			  	rollingSourceChecksum = sourceStartChecksum;
+			  }
+			  if( rollingDestinationChecksum.checksum == rollingSourceChecksum.checksum )
+			  {
+			  	  if(!length)
+			  	  {
+			  	  	sourceMatchStart = sourceStart;
+			  	  }
+				  ++length;
+				  if( length > maxLength )
+				  {
+					  maxLength = length;
+					  match.length = length + window - 1;
+					  match.sourceOffset = sourceMatchStart;
+					  match.destinationOffset = start;
+				  }
+			  }
+		  	  else
+		  	  {
+			  	  length = 0;
+		  	  }
+			  ++sourceStart;
+			  ++sourceEnd;
+		  }
+		  if( maxLength )
+		  {
+			  bool subsumed = false;
+			  for( auto it = result.rbegin(); it != result.rend(); it++ )
+			  {
+				  if( match.destinationOffset - it->destinationOffset > match.length  )
+				  {
+					  break;
+				  }
+				  int64_t delta = match.destinationOffset - it->destinationOffset;
+				  if( it->length >= delta + match.length )
+				  {
+					  subsumed = true;
+					  break;
+				  }
+			  }
+			  if( !subsumed )
+			  {
+				  result.push_back( match );
+			  }
+		  }
+		  ++start;
+		  ++end;
+	  }
+	  return result;
+  }
+
   bool GetLocalFileData( const std::filesystem::path& filepath, std::string& data )
   {
 

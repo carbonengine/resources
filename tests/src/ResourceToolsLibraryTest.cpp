@@ -493,3 +493,51 @@ TEST_F( ResourceToolsTest, RollingChecksum )
 		previous = fromScratch;
 	}
 }
+
+TEST_F( ResourceToolsTest, FindMatchingChunkEverythingMatches )
+{
+	std::string source("0123456789");
+	std::string destination("0123456789");
+	std::list<ResourceTools::ChunkMatch> result = ResourceTools::FindMatchingChunks(source, destination);
+	ASSERT_EQ( 1, result.size() );
+	auto match = result.front();
+	ASSERT_EQ( match.sourceOffset, 0 );
+	ASSERT_EQ( match.destinationOffset, 0 );
+	ASSERT_EQ( match.length, 10 );
+}
+
+TEST_F( ResourceToolsTest, FindMatchingChunkShorterDestination )
+{
+	std::string source("0123456789");
+	std::string destination("01234");
+	std::list<ResourceTools::ChunkMatch> result = ResourceTools::FindMatchingChunks(source, destination);
+	ASSERT_EQ( 1, result.size() );
+	auto match = result.front();
+	ASSERT_EQ( match.sourceOffset, 0 );
+	ASSERT_EQ( match.destinationOffset, 0 );
+	ASSERT_EQ( match.length, 5 );
+}
+
+TEST_F( ResourceToolsTest, FindMatchingChunkShorterSource )
+{
+	std::string source("01234");
+	std::string destination("0123456789");
+	std::list<ResourceTools::ChunkMatch> result = ResourceTools::FindMatchingChunks(source, destination);
+	ASSERT_EQ( 1, result.size() );
+	auto match = result.front();
+	ASSERT_EQ( match.sourceOffset, 0 );
+	ASSERT_EQ( match.destinationOffset, 0 );
+	ASSERT_EQ( match.length, 5 );
+}
+
+TEST_F( ResourceToolsTest, FindMatchingChunkInString )
+{
+	std::string source("abc3456ij");
+	std::string destination("0123456789");
+	std::list<ResourceTools::ChunkMatch> result = ResourceTools::FindMatchingChunks(source, destination);
+	ASSERT_EQ( 1, result.size() );
+	auto match = result.front();
+	ASSERT_EQ( match.sourceOffset, 3 );
+	ASSERT_EQ( match.destinationOffset, 3 );
+	ASSERT_EQ( match.length, 4 );
+}
