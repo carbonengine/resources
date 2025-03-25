@@ -39,11 +39,13 @@ namespace CarbonResources
 
 	    Result GetBinaryOperation(unsigned int& binaryOperation) const;
 
-	    virtual Result ImportFromYaml( YAML::Node& resource, const Version& documentVersion ) override;
+	    virtual Result ImportFromYaml( YAML::Node& resource, const VersionInternal& documentVersion ) override;
 
-	    virtual Result ExportToYaml( YAML::Emitter& out, const Version& documentVersion ) override;
+	    virtual Result ExportToYaml( YAML::Emitter& out, const VersionInternal& documentVersion ) override;
 
         static std::string TypeId();
+
+        virtual Result SetParametersFromResource( const ResourceInfo* other, const VersionInternal& documentVersion ) override;
 
     private:
 	    DocumentParameter<unsigned int> m_binaryOperation = DocumentParameter<unsigned int>( { 0, 0, 0 }, "BinaryOperation" );

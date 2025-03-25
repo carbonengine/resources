@@ -29,34 +29,8 @@
 
 #include <iostream>
 
-#include "Macros.h"
-
 namespace CarbonResources
 {
-    namespace Internal
-    {
-	    struct ThisIsAnExampleTodoRemove
-	    {
-            ThisIsAnExampleTodoRemove(const CarbonResources::ThisIsAnExampleTodoRemove& apiStruct)
-            {
-				ATTEMPT_LOAD_MEMBER( ThisIsAnExampleTodoRemove, apiStruct, a );
-
-                ATTEMPT_LOAD_MEMBER( ThisIsAnExampleTodoRemove, apiStruct, b );
-
-                ATTEMPT_LOAD_MEMBER( ThisIsAnExampleTodoRemove, apiStruct, c );	
-
-            }
-
-            unsigned int unused=0;
-
-		    int a = 1;
-
-		    int b = 2;
-
-		    int c = 404;
-
-	    };
-    }
     
     class BinaryResourceInfo;
 
@@ -66,8 +40,6 @@ namespace CarbonResources
 		BinaryResourceGroupImpl( );
 
 	    ~BinaryResourceGroupImpl();
-
-        void SomethingThatUsesTestStruct( const Internal::ThisIsAnExampleTodoRemove& args );
 
         virtual std::string GetType() const override;
 
@@ -79,7 +51,7 @@ namespace CarbonResources
 
 	    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 
-	    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
+	    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const override;
 
 	    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSV( const std::string& data ) override;
     };

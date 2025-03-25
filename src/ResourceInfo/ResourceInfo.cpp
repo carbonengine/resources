@@ -15,22 +15,11 @@
 namespace CarbonResources
 {
     // TODO split this into own file
-    Result Location::SetFromRelativePathAndDataChecksum(const std::string& resourceType, const std::filesystem::path& relativePath, const std::string& dataChecksum)
+    Result Location::SetFromRelativePathAndDataChecksum(const std::filesystem::path& relativePath, const std::string& dataChecksum)
     {
 		std::string relativePathChecksum = "";
 
-        std::stringstream ss;
-
-        // By concatenating the type with the path files with the same relativePath can exist on the CDN
-        ss << resourceType;
-
-        ss << ":/";
-
-        ss << relativePath;
-
-		std::string relativePathWithPrefix = ss.str();
-
-		if( !ResourceTools::GenerateFowlerNollVoChecksum( relativePathWithPrefix, relativePathChecksum ) )
+		if( !ResourceTools::GenerateFowlerNollVoChecksum( relativePath.string(), relativePathChecksum ) )
 		{
 			return Result::FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUM;
 		}
@@ -61,8 +50,6 @@ namespace CarbonResources
 		m_compressedSize = params.compressedSize;
 
 		m_uncompressedSize = params.uncompressedSize;
-
-		m_something = params.something;
     }
 
     ResourceInfo::~ResourceInfo()
@@ -154,20 +141,6 @@ namespace CarbonResources
 		else
 		{
 			compressedSize = m_compressedSize.GetValue();
-
-			return Result::SUCCESS;
-		}
-    }
-
-    Result ResourceInfo::GetSomething(unsigned long& something) const
-    {
-		if( !m_something.HasValue() )
-		{
-			return Result::RESOURCE_VALUE_NOT_SET;
-		}
-		else
-		{
-			something = m_something.GetValue();
 
 			return Result::SUCCESS;
 		}
@@ -379,7 +352,7 @@ namespace CarbonResources
 		}
 		else
 		{
-			return Result::FAILED_TO_OPEN_LOCAL_FILE;
+			return Result::FAILED_TO_OPEN_FILE;
 		}
     }
 
@@ -398,7 +371,7 @@ namespace CarbonResources
         }
         else
         {
-			return Result::FAILED_TO_OPEN_LOCAL_FILE;
+			return Result::FAILED_TO_OPEN_FILE;
         }
     }
 
@@ -410,7 +383,7 @@ namespace CarbonResources
 
         if (!downloadFileResult)
         {
-			return Result::FAILED_TO_OPEN_REMOTE_FILE;
+			return Result::FAILED_TO_DOWNLOAD_FILE;
         }
         else
         {
@@ -432,7 +405,7 @@ namespace CarbonResources
 		}
 		else
 		{
-			return Result::FAILED_TO_OPEN_LOCAL_FILE_STREAM;
+			return Result::FAILED_TO_OPEN_FILE_STREAM;
 		}
     }
 
@@ -449,7 +422,7 @@ namespace CarbonResources
 		}
 		else
 		{
-			return Result::FAILED_TO_OPEN_LOCAL_FILE_STREAM;
+			return Result::FAILED_TO_OPEN_FILE_STREAM;
 		}
     }
 
@@ -459,7 +432,7 @@ namespace CarbonResources
 		return Result::FAIL;
     }
 
-    Result ResourceInfo::ImportFromYaml( YAML::Node& resource, const Version& documentVersion )
+    Result ResourceInfo::ImportFromYaml( YAML::Node& resource, const VersionInternal& documentVersion )
 	{
 
 		if( m_relativePath.IsParameterExpectedInDocumentVersion( documentVersion ) )
@@ -535,15 +508,6 @@ namespace CarbonResources
 
 		}
 
-        /*
-        TODO finish ABI experiments and clean this all up when document version tests are done
-
-		if( m_something.IsParameterExpectedInDocumentVersion( documentVersion ) )
-		{
-			//TODO handle failure
-			m_something = resource[m_something.GetTag()].as<unsigned long>();
-		}
-        */
 
 		return Result::SUCCESS;
 	}
@@ -553,52 +517,100 @@ namespace CarbonResources
 		return "Resource";
     }
 
-    Result ResourceInfo::SetParametersFromResource( const ResourceInfo* other )
+    Result ResourceInfo::SetParametersFromResource( const ResourceInfo* other, const VersionInternal& documentVersion )
     {
-		std::filesystem::path relativePath;
-
-        if (other->GetRelativePath(relativePath) == Result::SUCCESS)
+        // TODO this needs to be version aware
+        if (!other)
         {
+			return Result::FAIL;
+        }
+
+        if (m_relativePath.IsParameterExpectedInDocumentVersion(documentVersion))
+        {
+			std::filesystem::path relativePath;
+
+			Result getRelativePathResult = other->GetRelativePath( relativePath );
+
+			if( getRelativePathResult != Result::SUCCESS )
+			{
+				return getRelativePathResult;
+			}
+
 			m_relativePath = relativePath;
         }
-
-		std::string location;
-
-        if (other->GetLocation(location) == Result::SUCCESS)
+        
+        if (m_location.IsParameterExpectedInDocumentVersion(documentVersion))
         {
+			std::string location;
+
+			Result getLocationResult = other->GetLocation( location );
+
+			if( getLocationResult != Result::SUCCESS )
+			{
+				return getLocationResult;
+			}
+
 			m_location = location;
         }
-
-        std::string checksum;
-
-        if (other->GetChecksum(checksum) == Result::SUCCESS)
+		
+        if (m_checksum.IsParameterExpectedInDocumentVersion(documentVersion))
         {
+			std::string checksum;
+
+			Result getChecksumResult = other->GetChecksum( checksum );
+
+			if( getChecksumResult != Result::SUCCESS )
+			{
+				return getChecksumResult;
+			}
+
 			m_checksum = checksum;
         }
-
-        unsigned long uncompressedSize;
-
-        if (other->GetUncompressedSize(uncompressedSize) == Result::SUCCESS)
+        
+        if (m_uncompressedSize.IsParameterExpectedInDocumentVersion(documentVersion))
         {
+			unsigned long uncompressedSize;
+
+			Result getUncompressedSizeResult = other->GetUncompressedSize( uncompressedSize );
+
+			if( getUncompressedSizeResult != Result::SUCCESS )
+			{
+				return getUncompressedSizeResult;
+			}
+
 			m_uncompressedSize = uncompressedSize;
         }
-
-        unsigned long compressedSize;
-
-        if( other->GetCompressedSize(compressedSize) == Result::SUCCESS )
+        
+        if (m_compressedSize.IsParameterExpectedInDocumentVersion(documentVersion))
         {
+			unsigned long compressedSize;
+
+			Result getCompressedSizeResult = other->GetCompressedSize( compressedSize );
+
+			if( getCompressedSizeResult != Result::SUCCESS )
+			{
+				return getCompressedSizeResult;
+			}
+
 			m_compressedSize = compressedSize;
-        }
-
-        unsigned long something;
-
-        if (other->GetSomething(something) == Result::SUCCESS)
-        {
-			m_something = something;
         }
 
         return Result::SUCCESS;
     }
+
+    bool ResourceInfo::operator == ( const ResourceInfo* other ) const
+	{
+		if( !m_relativePath.HasValue() )
+		{
+			return false;
+		}
+		if( !other->m_relativePath.HasValue() )
+		{
+			return false;
+		}
+		// Equality is defined as having the same relative path, not same data
+		return ( m_relativePath.GetValue() == other->m_relativePath.GetValue() );
+	}
 
     Result ResourceInfo::SetParametersFromData( const std::string& data )
     {
@@ -631,27 +643,29 @@ namespace CarbonResources
 
         Location l;
 
-		l.SetFromRelativePathAndDataChecksum( type, relativePath, checksum );
+		l.SetFromRelativePathAndDataChecksum( relativePath, checksum );
 
 		m_location = l;
 
         std::string compressedData = "";
 
+        /*
+        * TODO reinstate
         if (!ResourceTools::GZipCompressData(data, compressedData))
         {
 			return Result::FAILED_TO_COMPRESS_DATA;
         }
+        */
 
         m_compressedSize = compressedData.size();
 
         m_uncompressedSize = data.size();
 
-        // TODO guard thought exercise
-        m_something = 101;
+        return Result::SUCCESS;
         
     }
 
-    Result ResourceInfo::ExportToYaml( YAML::Emitter& out, const Version& documentVersion )
+    Result ResourceInfo::ExportToYaml( YAML::Emitter& out, const VersionInternal& documentVersion )
 	{
 		// Relative path
 		if( m_relativePath.IsParameterExpectedInDocumentVersion( documentVersion ) )

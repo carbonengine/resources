@@ -36,7 +36,7 @@ namespace CarbonResources
 		}
 	}
 
-    Result BinaryResourceInfo::ImportFromYaml( YAML::Node& resource, const Version& documentVersion )
+    Result BinaryResourceInfo::ImportFromYaml( YAML::Node& resource, const VersionInternal& documentVersion )
     {
 		if( m_binaryOperation.IsParameterExpectedInDocumentVersion( documentVersion ) )
 		{
@@ -53,7 +53,7 @@ namespace CarbonResources
 		return ResourceInfo::ImportFromYaml( resource, documentVersion );
     }
 
-    Result BinaryResourceInfo::ExportToYaml( YAML::Emitter& out, const Version& documentVersion )
+    Result BinaryResourceInfo::ExportToYaml( YAML::Emitter& out, const VersionInternal& documentVersion )
     {
 		Result resourceExportResult = ResourceInfo::ExportToYaml( out, documentVersion );
 
@@ -82,5 +82,35 @@ namespace CarbonResources
 		return "Binary";
     }
     
+    Result BinaryResourceInfo::SetParametersFromResource( const ResourceInfo* other, const VersionInternal& documentVersion )
+	{
+		if( other == nullptr )
+		{
+			return Result::FAIL;
+		}
+
+		if( other->TypeId() != TypeId() )
+		{
+			return Result::RESOURCE_TYPE_MISSMATCH;
+		}
+
+		const BinaryResourceInfo* otherAsBinary = reinterpret_cast<const BinaryResourceInfo*>( other );
+
+        if (m_binaryOperation.IsParameterExpectedInDocumentVersion(documentVersion))
+        {
+		    unsigned int binaryOperation;
+
+		    Result getBinaryOperationResult = otherAsBinary->GetBinaryOperation( binaryOperation );
+
+		    if( getBinaryOperationResult != Result::SUCCESS )
+		    {
+			    return getBinaryOperationResult;
+		    }
+
+		    m_binaryOperation = binaryOperation;
+        }
+
+		return ResourceInfo::SetParametersFromResource( other, documentVersion );
+	}
 
 }

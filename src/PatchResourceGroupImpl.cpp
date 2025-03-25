@@ -25,7 +25,7 @@ namespace CarbonResources
     Result PatchResourceGroupImpl::SetResourceGroup( const ResourceGroupInfo& resourceGroup )
     {
         // Creates a deep copy
-		return m_resourceGroupParameter.GetValue()->SetParametersFromResource( &resourceGroup );
+		return m_resourceGroupParameter.GetValue()->SetParametersFromResource( &resourceGroup, m_versionParameter.GetValue() );
     }
 
     void PatchResourceGroupImpl::SetMaxInputChunkSize( unsigned long maxInputChunkSize )
@@ -105,7 +105,7 @@ namespace CarbonResources
 		return Result::SUCCESS;
     }
 
-    Result PatchResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const
+    Result PatchResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const
     {
         if (m_resourceGroupParameter.IsParameterExpectedInDocumentVersion(outputDocumentVersion))
         {
@@ -204,7 +204,7 @@ namespace CarbonResources
         }
 
         
-        for( ResourceInfo* resource : resourceGroup.m_resourcesParameter )
+        for( ResourceInfo* resource : resourceGroup )
         {
             // See if there is a patch available for resource
             std::vector<const PatchResourceInfo*> patchesForResource; 

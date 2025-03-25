@@ -52,8 +52,6 @@ namespace CarbonResources
 
 	    ~BinaryResourceGroup();
 
-        void SomethingThatUsesTestStruct( const ThisIsAnExampleTodoRemove& args );
-
     private:
 
 		BinaryResourceGroupImpl* m_impl;

@@ -23,7 +23,7 @@
 #include "ResourceInfo/ResourceInfo.h"
 #include <vector>
 
-#include "Macros.h"
+#include "Version.h"
 
 namespace YAML
 {
@@ -51,7 +51,6 @@ namespace CarbonResources
         YAML
     };
 
-
     class ResourceGroupImpl
     {
     public:
@@ -59,13 +58,15 @@ namespace CarbonResources
 
 	    ~ResourceGroupImpl();
 
+        Result CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params );
+
 	    Result ImportFromFile( const ResourceGroupImportFromFileParams& params );
 
         Result ImportFromData( const std::string& data, DocumentType documentType = DocumentType::YAML );
 
 	    Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
 
-        Result ExportToData( std::string& data, Version outputDocumentVersion = S_DOCUMENT_VERSION ) const;
+        Result ExportToData( std::string& data, VersionInternal outputDocumentVersion = S_DOCUMENT_VERSION ) const;
 
         Result CreateBundle( const BundleCreateParams& params ) const;
 
@@ -79,30 +80,42 @@ namespace CarbonResources
 
         static std::string TypeId();
 
+        std::vector<ResourceInfo*>::iterator begin();
+
+        std::vector<ResourceInfo*>::const_iterator begin() const;
+
+		std::vector<ResourceInfo*>::const_iterator cbegin();
+
+        std::vector<ResourceInfo*>::iterator end();
+
+		std::vector<ResourceInfo*>::const_iterator end() const;
+
+		std::vector<ResourceInfo*>::const_iterator cend();
+
     protected:
 
         virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut );
 
     private:
-	    
-        
-        virtual ResourceInfo* CreateResourceFromResource( ResourceInfo* resource ) const; // TODO this function should match signature of others return Result etc
+
+        virtual Result CreateResourceFromResource( const ResourceInfo& resourceIn, ResourceInfo*& resourceOut ) const;
 
 	    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile );
 
-	    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const;
+	    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const;
 
 	    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSV( const std::string& data );
 
 	    Result ImportFromYaml( const std::string& data );
 
-	    Result ExportYaml( const Version& outputDocumentVersion, std::string& data ) const;
+	    Result ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, std::function<void( int, const std::string& )> statusCallback = nullptr ) const;
 
         Result ProcessChunk( std::string& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const;
 
-    public: // TODO not thrilled by this is there a better way?
+    protected:
+
 	    // Document Parameters
-	    DocumentParameter<Version> m_versionParameter = DocumentParameter<Version>( { 1, 0, 0 }, "Version" );
+	    DocumentParameter<VersionInternal> m_versionParameter = DocumentParameter<VersionInternal>( { 1, 0, 0 }, "Version" );
 
         DocumentParameter<std::string> m_type = DocumentParameter<std::string>( { 1, 0, 0 }, "Type" );
 

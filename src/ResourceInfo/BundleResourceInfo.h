@@ -37,6 +37,8 @@ namespace CarbonResources
 
         static std::string TypeId( );
 
+        virtual Result SetParametersFromResource( const ResourceInfo* other, const VersionInternal& documentVersion ) override;
+
     };
 
 }

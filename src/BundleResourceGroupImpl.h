@@ -54,7 +54,7 @@ namespace CarbonResources
 
         virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 
-        virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
+        virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const override;
 
     protected:
 

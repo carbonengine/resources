@@ -18,9 +18,4 @@ namespace CarbonResources
 
     }
 
-    void BinaryResourceGroup::SomethingThatUsesTestStruct( const ThisIsAnExampleTodoRemove& args )
-    {
-		m_impl->SomethingThatUsesTestStruct( Internal::ThisIsAnExampleTodoRemove( args ) );
-    }
-
 }

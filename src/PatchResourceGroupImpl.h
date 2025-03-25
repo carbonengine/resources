@@ -50,13 +50,11 @@ namespace CarbonResources
 
     private:
 
-	    
-
         virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut ) override;
 
         virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 
-        virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const override;
+        virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const override;
 
         Result GetTargetResourcePatches( const ResourceInfo* targetResource, std::vector<const PatchResourceInfo*>& patches ) const;
 

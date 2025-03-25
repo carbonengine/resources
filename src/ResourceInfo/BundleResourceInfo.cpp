@@ -23,4 +23,9 @@ namespace CarbonResources
 		return "BinaryChunk";
     }
 
+    Result BundleResourceInfo::SetParametersFromResource( const ResourceInfo* other, const VersionInternal& documentVersion )
+	{
+		return ResourceInfo::SetParametersFromResource( other, documentVersion );
+	}
+
 }

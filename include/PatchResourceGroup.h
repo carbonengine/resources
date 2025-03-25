@@ -45,6 +45,9 @@ namespace CarbonResources
 
 	class PatchResourceGroupImpl;
 
+    /** @class PatchResourceGroup
+    *  @brief This class blah blah blah...
+    */
     class API PatchResourceGroup final: public ResourceGroup
     {
 

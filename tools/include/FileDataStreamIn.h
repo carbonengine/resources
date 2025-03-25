@@ -42,6 +42,8 @@ namespace ResourceTools
 
         size_t GetCurrentPosition();
 
+        size_t Size();
+
 		bool operator>>( std::string& data );
 
 

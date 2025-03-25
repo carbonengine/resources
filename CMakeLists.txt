@@ -44,7 +44,9 @@ set(SRC_FILES
     src/ResourceGroup.cpp
     src/ResourceGroupImpl.cpp
     src/ResourceGroupImpl.h
-    src/Macros.h
+    src/Enums.cpp
+    src/VersionInternal.h
+    src/VersionInternal.cpp
     
     src/ResourceInfo/BinaryResourceInfo.cpp
     src/ResourceInfo/BinaryResourceInfo.h

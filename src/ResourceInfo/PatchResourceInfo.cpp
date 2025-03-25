@@ -54,7 +54,7 @@ namespace CarbonResources
 		}
     }
 
-	Result PatchResourceInfo::ImportFromYaml( YAML::Node& resource, const Version& documentVersion )
+	Result PatchResourceInfo::ImportFromYaml( YAML::Node& resource, const VersionInternal& documentVersion )
 	{
 		if( m_targetResourceRelativepath.IsParameterExpectedInDocumentVersion( documentVersion ) )
 		{
@@ -83,7 +83,7 @@ namespace CarbonResources
 		return ResourceInfo::ImportFromYaml( resource, documentVersion );
 	}
 
-	Result PatchResourceInfo::ExportToYaml( YAML::Emitter& out, const Version& documentVersion )
+	Result PatchResourceInfo::ExportToYaml( YAML::Emitter& out, const VersionInternal& documentVersion )
 	{
 		Result resourceExportResult = ResourceInfo::ExportToYaml( out, documentVersion );
 
@@ -123,6 +123,51 @@ namespace CarbonResources
     {
 		return "BinaryPatch";
     }
+
+    Result PatchResourceInfo::SetParametersFromResource( const ResourceInfo* other, const VersionInternal& documentVersion )
+	{
+		if( other == nullptr )
+        {
+			return Result::FAIL;
+        }
+
+        if (other->TypeId() != TypeId())
+        {
+			return Result::RESOURCE_TYPE_MISSMATCH;
+        }
+
+        const PatchResourceInfo* otherAsPatch = reinterpret_cast<const PatchResourceInfo*>( other );
+
+        if (m_dataOffset.IsParameterExpectedInDocumentVersion(documentVersion))
+        {
+			unsigned long dataOffset;
+
+			Result getOffsetResult = otherAsPatch->GetDataOffset( dataOffset );
+
+			if( getOffsetResult != Result::SUCCESS )
+			{
+				return getOffsetResult;
+			}
+
+			m_dataOffset = dataOffset;
+        }
+		
+        if (m_targetResourceRelativepath.IsParameterExpectedInDocumentVersion(documentVersion))
+        {
+			std::filesystem::path targetResourceRelativePath;
+
+			Result getTargetResourceRelativePathResult = otherAsPatch->GetTargetResourceRelativePath( targetResourceRelativePath );
+
+			if( getTargetResourceRelativePathResult != Result::SUCCESS )
+			{
+				return getTargetResourceRelativePathResult;
+			}
+
+			m_targetResourceRelativepath = targetResourceRelativePath;
+        }
+
+		return ResourceInfo::SetParametersFromResource( other, documentVersion );
+	}
 
 
 }

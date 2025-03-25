@@ -6,5 +6,8 @@ Add a description here
 .. toctree::
    :maxdepth: 1
    
-   cApi
+   Api/SupplementaryStructures
+   Api/ResourceGroup
+   Api/BundleResourceGroup
+   Api/PatchResourceGroup
    cli

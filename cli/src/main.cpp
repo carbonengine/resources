@@ -6,7 +6,87 @@
 #include <PatchResourceGroup.h>
 #include <argparse/argparse.hpp>
 #include <BinaryResourceGroup.h>
+#include <filesystem>
 
+// TODO this interface needs work
+void StatusUpdate(int progress, const std::string& info)
+{
+    if (info == "Percentage Update")
+    {
+		std::cout << "[";
+
+        for (int i = 0; i < 100; i++)
+        {
+			if( i < progress )
+            {
+				std::cout << "=";
+            }
+			else if( i == progress )
+            {
+				std::cout << ">";
+            }
+            else
+            {
+				std::cout << " ";
+            }
+        }
+
+        std::cout << "]" << progress << " %\r";
+
+		std::cout.flush();
+    }
+    else
+    {
+		std::cout << info << std::endl;
+    }
+	
+}
+
+void PrintError(CarbonResources::Result result)
+{
+	std::string errorMessage;
+
+    bool ret = CarbonResources::resultToString( result, errorMessage );
+
+    std::cout << errorMessage << "\n" << std::endl;
+}
+
+bool CreateResourceGroup(const std::filesystem::path& inputDirectory, const std::filesystem::path& resourceGroupOutputDirectory)
+{
+    CarbonResources::ResourceGroup resourceGroup;
+
+    CarbonResources::CreateResourceGroupFromDirectoryParams createResourceGroupParams;
+
+    createResourceGroupParams.directory = inputDirectory;
+
+    createResourceGroupParams.statusCallback = &StatusUpdate;
+
+    CarbonResources::Result createFromDirectoryResult = resourceGroup.CreateFromDirectory( createResourceGroupParams );
+
+    if( createFromDirectoryResult != CarbonResources::Result::SUCCESS )
+    {
+		PrintError( createFromDirectoryResult );
+
+		return false;
+    }
+
+    CarbonResources::ResourceGroupExportToFileParams exportParams;
+
+    exportParams.filename = resourceGroupOutputDirectory;
+
+    exportParams.statusCallback = &StatusUpdate;
+
+    CarbonResources::Result exportToFileResult = resourceGroup.ExportToFile( exportParams );
+
+    if( exportToFileResult != CarbonResources::Result::SUCCESS )
+    {
+		PrintError( exportToFileResult );
+
+		return false;
+    }
+
+	return true;
+}
 
 bool CreateBundle( const std::string& inputResourceListPath )
 {
@@ -19,37 +99,32 @@ bool CreatePatch( const std::string& inputResourceListPath )
     return false;
 }
 
-void RunAbiTest()
-{
-	CarbonResources::BinaryResourceGroup binaryResourceGroup;
-
-    CarbonResources::ThisIsAnExampleTodoRemove params;
-
-    params.a = 5;
-
-    params.b = 10;
-
-    params.c = 20;
-
-    binaryResourceGroup.SomethingThatUsesTestStruct( params );
-}
-
 int main( int argc, char** argv )
 {
 
     // Create CLI parser
-	argparse::ArgumentParser cli( "carbon-resources", CarbonResources::S_LIBRARY_VERSION.ToString() );
+	std::stringstream ss;
+	ss << CarbonResources::S_LIBRARY_VERSION.major << "." << CarbonResources::S_LIBRARY_VERSION.minor << "." << CarbonResources::S_LIBRARY_VERSION.patch;
+	argparse::ArgumentParser cli( "carbon-resources", ss.str() );
 	
+    // Create ResourceGroup
+	std::string createResourceGroupName = "create-group";
 
-    // A Test
-	std::string abi_test = "abi-test";
+    argparse::ArgumentParser createResourceGroupCli( createResourceGroupName );
 
-    argparse::ArgumentParser abi_test_cli( abi_test );
+    createResourceGroupCli.add_description( "Create a resource group from a given directory." );
 
-    abi_test_cli.add_description( "Sandbox" );
+    // Required arguments
+	std::string createResourceGroupPathArgumentId = "input-directory";
+	createResourceGroupCli.add_argument( createResourceGroupPathArgumentId )
+		.help( "Base directory to create resource group from." );
 
-
-
+    std::string createResourceGroupOutputFilenameArgumentId = "--output-filename";
+	createResourceGroupCli.add_argument( "-o", createResourceGroupOutputFilenameArgumentId )
+		.required()
+		.default_value( "ResourceGroup.yaml" )
+		.append()
+		.help( "Filename for created resource group." );
 
 
 
@@ -84,9 +159,9 @@ int main( int argc, char** argv )
         
 
     // Add subparsers
+	cli.add_subparser( createResourceGroupCli );
     cli.add_subparser( create_bundle_cli );
 	cli.add_subparser( create_patch_cli );
-	cli.add_subparser( abi_test_cli );
 
     // No arguments passed
     if (argc == 1)
@@ -107,6 +182,10 @@ int main( int argc, char** argv )
         if( cli.is_subcommand_used( create_bundle_cli ) )
         {
 			std::cerr << create_bundle_cli;
+        }
+        else if (cli.is_subcommand_used(createResourceGroupCli))
+        {
+			std::cerr << createResourceGroupCli;
         }
 		else if( cli.is_subcommand_used( create_patch_cli ) )
 		{
@@ -131,11 +210,19 @@ int main( int argc, char** argv )
 
 		result = CreatePatch( resourceListPath );
     }
-	else if( cli.is_subcommand_used( abi_test_cli ) )
+	else if( cli.is_subcommand_used( createResourceGroupCli ) )
 	{
-		RunAbiTest();
-	}
+		std::string inputDirectory = createResourceGroupCli.get<std::string>( createResourceGroupPathArgumentId );
 
+        std::string resourceGroupOutputDirectory = createResourceGroupCli.get<std::string>( createResourceGroupOutputFilenameArgumentId );
+
+		result = CreateResourceGroup( inputDirectory, resourceGroupOutputDirectory );
+
+        if (!result)
+        {
+			std::cerr << createResourceGroupCli;
+        }
+	}
     else
     {
 		std::cerr << cli;

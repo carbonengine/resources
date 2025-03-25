@@ -37,6 +37,11 @@ namespace ResourceTools
 	  return m_currentPosition;
   }
 
+  size_t FileDataStreamIn::Size()
+  {
+	  return m_fileSize;
+  }
+
   bool FileDataStreamIn::StartRead( std::filesystem::path filepath )
   {
       m_inputStream.open( filepath, std::ios::in | std::ios::binary );

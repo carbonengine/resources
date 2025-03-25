@@ -25,9 +25,17 @@
 #include <memory>
 #include <string>
 #include <filesystem>
+#include <functional>
+
+
+
 
 namespace CarbonResources
 {
+    
+
+
+
     class ResourceGroup;
     class PatchResourceGroup;
     class BundleResourceGroup;
@@ -109,15 +117,62 @@ namespace CarbonResources
 		std::filesystem::path filename;
 	};
 
-    struct API ResourceGroupExportToFileParams
-	{
-		std::filesystem::path filename;
 
-        Version outputDocumentVersion = S_DOCUMENT_VERSION;
+    /** @struct ResourceGroupExportToFileParams
+    *  @brief This structure blah blah blah...
+    *  @var ResourceGroupExportToFileParams::size
+    *  This is the size
+    *  @var ResourceGroupExportToFileParams::filename
+    *  filename
+    *  @var ResourceGroupExportToFileParams::outputDocumentVersion
+    *  outputDocumentVersion
+    *  @var ResourceGroupExportToFileParams::statusCallback
+    *  statusCallback
+    */
+	struct API ResourceGroupExportToFileParams
+	{
+		const unsigned int size = sizeof( ResourceGroupExportToFileParams );
+
+		std::filesystem::path filename = "";
+
+		Version outputDocumentVersion = S_DOCUMENT_VERSION;
+
+        std::function<void( int, const std::string& )> statusCallback = nullptr;
 	};
+
+
+	/** @struct CreateResourceGroupFromDirectoryParams
+    *  @brief This structure blah blah blah...
+    *  @var CreateResourceGroupFromDirectoryParams::size
+    *  This is the size
+    *  @var CreateResourceGroupFromDirectoryParams::directory
+    *  directory
+    *  @var CreateResourceGroupFromDirectoryParams::resourceStreamThreshold
+    *  resourceStreamThreshold
+    *  @var CreateResourceGroupFromDirectoryParams::outputDocumentVersion
+    *  outputDocumentVersion
+    *  @var CreateResourceGroupFromDirectoryParams::statusCallback
+    *  statusCallback
+    */
+	struct API CreateResourceGroupFromDirectoryParams
+	{
+		const unsigned int size = sizeof( CreateResourceGroupFromDirectoryParams );
+
+		std::filesystem::path directory = "";
+
+		unsigned long resourceStreamThreshold = 10000000;
+
+		Version outputDocumentVersion = S_DOCUMENT_VERSION;
+
+        std::function<void( int, const std::string& )> statusCallback = nullptr;
+	};
+
 
     class ResourceGroupImpl;    // TODO remove these from public API
 
+    /** @class ResourceGroup
+    *  @brief This class blah blah blah...
+    */
     // TODO lock down things like copy constructors for these public classes
     class API ResourceGroup
     {
@@ -131,13 +186,43 @@ namespace CarbonResources
 
 	    virtual ~ResourceGroup();
 
+        /// @brief Create bundle from resource group
+		/// @param data data which the checksum will be based on
+		/// @param data_size size of data passed in
+		/// @param checksum will contain the resulting checksum on success
+		/// @return true on success, false on failure
+		/// @note will relinquish ownership of bundle resource group
         Result CreateBundle( const BundleCreateParams& params ) const;
 
+        /// @brief Create patch from resource group
+		/// @param data data which the checksum will be based on
+		/// @param data_size size of data passed in
+		/// @param checksum will contain the resulting checksum on success
+		/// @return true on success, false on failure
+		/// @note will relinquish ownership of patch resource group
         Result CreatePatch( const PatchCreateParams& params ) const;
 
+        /// @brief Import resource group to file
+		/// @param data data which the checksum will be based on
+		/// @param data_size size of data passed in
+		/// @param checksum will contain the resulting checksum on success
+		/// @return true on success, false on failure
+		/// @note will relinquish ownership of patch resource group
         Result ImportFromFile( const ResourceGroupImportFromFileParams& params ) const;
 
+        /// @brief Export resource group to file
+		/// @param data data which the checksum will be based on
+		/// @param data_size size of data passed in
+		/// @param checksum will contain the resulting checksum on success
+		/// @return true on success, false on failure
+		/// @note will relinquish ownership of patch resource group
         Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
+
+        /// @brief Creates a ResourceGroup from a supplied directory.
+		/// @param params input parameters, See CreateResourceGroupFromDirectoryParams for more details.
+		/// @return Result see CarbonResources::Result for more details.
+		/// @note No file filtering supported
+        Result CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params );
 
         friend class ResourceGroupImpl;
     };

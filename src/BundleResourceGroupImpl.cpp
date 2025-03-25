@@ -36,7 +36,7 @@ namespace CarbonResources
     Result BundleResourceGroupImpl::SetResourceGroup( const ResourceGroupInfo& resourceGroup )
     {
 		// Creates a deep copy
-		return m_resourceGroupParameter.GetValue()->SetParametersFromResource( &resourceGroup );
+		return m_resourceGroupParameter.GetValue()->SetParametersFromResource( &resourceGroup, m_versionParameter.GetValue() );
     }
 
     Result BundleResourceGroupImpl::Unpack( const BundleUnpackParams& params )
@@ -75,7 +75,7 @@ namespace CarbonResources
         auto chunkIterator = m_resourcesParameter.begin();
 
         // Reconstitute the resources in the bundle
-        for( ResourceInfo* resource : resourceGroup.m_resourcesParameter )
+        for( ResourceInfo* resource : resourceGroup )
 		{
 
             unsigned long resourceFileUncompressedSize;
@@ -281,7 +281,7 @@ namespace CarbonResources
 		return Result::SUCCESS;
     }
 
-    Result BundleResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const
+    Result BundleResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const
     {
 		if( m_resourceGroupParameter.IsParameterExpectedInDocumentVersion( outputDocumentVersion ) )
 		{

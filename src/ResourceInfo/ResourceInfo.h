@@ -26,6 +26,7 @@
 #include <filesystem>
 #include "Enums.h"
 #include "ResourceGroup.h"
+#include "../Version.h"
 
 namespace ResourceTools
 {
@@ -48,7 +49,7 @@ namespace CarbonResources
     class DocumentParameter
     {
     public:
-	    DocumentParameter( Version version, const std::string& tag ) :
+	    DocumentParameter( VersionInternal version, const std::string& tag ) :
 		    m_version( version ),
 		    m_tag( tag )
 	    {
@@ -75,12 +76,12 @@ namespace CarbonResources
 			m_value.reset();
         }
 
-	    Version GetVersionTag()
+	    VersionInternal GetVersionTag()
 	    {
 		    return m_version;
 	    }
 
-	    bool IsParameterExpectedInDocumentVersion( Version documentVersion ) const
+	    bool IsParameterExpectedInDocumentVersion( VersionInternal documentVersion ) const
 	    {
 		    return documentVersion >= m_version;
 	    }
@@ -91,7 +92,7 @@ namespace CarbonResources
 	    }
 
     protected:
-	    Version m_version;
+	    VersionInternal m_version;
 	    std::optional<T> m_value;
 	    std::string m_tag;
     };
@@ -100,7 +101,7 @@ namespace CarbonResources
     class DocumentParameterCollection : public DocumentParameter<std::vector<T>*>
     {
     public:
-	    DocumentParameterCollection( Version version, const std::string& tag ) :
+	    DocumentParameterCollection( VersionInternal version, const std::string& tag ) :
 		    DocumentParameter<std::vector<T>*>( version, tag )
 	    {
 		    this->m_value = &m_collection;
@@ -212,7 +213,7 @@ namespace CarbonResources
 		{
 		}
 
-		Result SetFromRelativePathAndDataChecksum( const std::string& resourceType, const std::filesystem::path& relativePath, const std::string& dataChecksum );
+		Result SetFromRelativePathAndDataChecksum( const std::filesystem::path& relativePath, const std::string& dataChecksum );
 
         std::string ToString()
         {
@@ -281,8 +282,6 @@ namespace CarbonResources
 
 	    void SetRelativePath( const std::filesystem::path& relativePath );
 
-         // TODO Convert to return Result as they may not have a value
-		// Also keeps returns the same
 		Result GetRelativePath(std::filesystem::path& relativePath) const;
 
 	    Result GetLocation(std::string& location) const;
@@ -295,8 +294,6 @@ namespace CarbonResources
 
 	    Result GetCompressedSize(unsigned long& compressedSize) const;
 
-	    Result GetSomething(unsigned long& something) const;
-
         Result GetDataStream( ResourceGetDataStreamParams& params ) const;
 
 	    Result GetData( ResourceGetDataParams& params ) const;
@@ -305,27 +302,15 @@ namespace CarbonResources
 
         Result PutData( ResourcePutDataParams& params ) const;
 
-        virtual Result ImportFromYaml( YAML::Node& resource, const Version& documentVersion ); 
+        virtual Result ImportFromYaml( YAML::Node& resource, const VersionInternal& documentVersion ); 
 
-        virtual Result ExportToYaml( YAML::Emitter& out, const Version& documentVersion );
+        virtual Result ExportToYaml( YAML::Emitter& out, const VersionInternal& documentVersion );
 
         Result SetParametersFromData( const std::string& data );
 
-        Result SetParametersFromResource( const ResourceInfo* other );
+        virtual Result SetParametersFromResource( const ResourceInfo* other, const VersionInternal& documentVersion );
 
-        bool operator==( const ResourceInfo* other ) const 
-		{
-            if (!m_relativePath.HasValue())
-            {
-				return false;
-            }
-            if (!other->m_relativePath.HasValue())
-            {
-				return false;
-            }
-            // Equality is defined as having the same relative path, not same data
-			return ( m_relativePath.GetValue() == other->m_relativePath.GetValue() );
-		}
+        bool operator==( const ResourceInfo* other ) const;
 
         static std::string TypeId();
 
@@ -365,8 +350,6 @@ namespace CarbonResources
 
 		DocumentParameter<unsigned long> m_uncompressedSize = DocumentParameter<unsigned long>( { 0, 0, 0 }, "UncompressedSize" );
 
-        //TODO thought exercise for document versioning, remove
-		DocumentParameter<unsigned long> m_something = DocumentParameter<unsigned long>( { 0, 1, 0 }, "something" );
     };
 
 }

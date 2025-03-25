@@ -6,6 +6,10 @@
 #include <ResourceTools.h>
 #include <BundleStreamOut.h>
 #include <FileDataStreamIn.h>
+#include <ScopedFile.h>
+#include <Md5ChecksumStream.h>
+#include <GzipCompressionStream.h>
+#include "ResourceInfo/BinaryResourceInfo.h"
 #include "ResourceInfo/PatchResourceGroupInfo.h"
 #include "ResourceInfo/BundleResourceGroupInfo.h"
 #include "ResourceInfo/ResourceGroupInfo.h"
@@ -19,7 +23,7 @@ namespace CarbonResources
 
     ResourceGroupImpl::ResourceGroupImpl()
     {
-		m_versionParameter = S_DOCUMENT_VERSION;
+		m_versionParameter = VersionInternal(S_DOCUMENT_VERSION);
 
 		m_type = TypeId();
 
@@ -33,6 +37,194 @@ namespace CarbonResources
     ResourceGroupImpl::~ResourceGroupImpl()
     {
 		m_resourcesParameter.Clear();
+    }
+
+    Result ResourceGroupImpl::CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params )
+    {
+		// Update status
+		if( params.statusCallback )
+		{
+			params.statusCallback( 0, "Creating Resource Group From Directory: " + params.directory.string() );
+		}
+
+        if (!std::filesystem::exists(params.directory))
+        {
+			return Result::INPUT_DIRECTORY_DOESNT_EXIST;
+        }
+
+        // Walk directory and create a resource from each file using data
+		auto recursiveDirectoryIter = std::filesystem::recursive_directory_iterator( params.directory );
+
+        for (const std::filesystem::directory_entry& entry : recursiveDirectoryIter)
+        {
+            if (entry.is_regular_file())
+            {
+                // Update status
+                if (params.statusCallback)
+                {
+					params.statusCallback( 0, "Processing File: " + entry.path().string() );
+                }
+
+                // Create resource
+			    auto fileSize = entry.file_size();
+
+                if( fileSize < params.resourceStreamThreshold )  
+                {
+                    // Create resource from data
+				    ResourceInfoParams resourceParams;
+					
+                    resourceParams.relativePath = std::filesystem::relative( entry.path(), params.directory );
+
+				    ResourceInfo* resource = new ResourceInfo( resourceParams );
+
+                    std::string resourceData;
+
+                    ResourceGetDataParams resourceGetDataParams;
+
+                    resourceGetDataParams.resourceSourceSettings.basePath = params.directory;
+
+                    resourceGetDataParams.resourceSourceSettings.sourceType = ResourceSourceType::LOCAL_RELATIVE;
+
+                    resourceGetDataParams.data = &resourceData;
+
+                    Result getResourceDataResult = resource->GetData( resourceGetDataParams );
+
+                    if (getResourceDataResult != Result::SUCCESS)
+                    {
+					    return getResourceDataResult;
+                    }
+
+                    Result setParametersFromDataResult = resource->SetParametersFromData( resourceData );
+
+                    if (setParametersFromDataResult != Result::SUCCESS)
+                    {
+					    return setParametersFromDataResult;
+                    }
+
+                    Result addResourceResult = AddResource( resource );
+
+                    if (addResourceResult != Result::SUCCESS)
+                    {
+					    return addResourceResult;
+                    }
+                }
+                else
+                {
+                    // Process data via stream
+                    ResourceTools::Md5ChecksumStream checksumStream;
+
+                    //ResourceTools::GzipCompressionStream gzipCompressionStream;   //TODO reinstate when fixed
+
+                    ResourceTools::FileDataStreamIn fileStreamIn( params.resourceStreamThreshold );
+
+                    /*
+                    if (!gzipCompressionStream.Start())
+                    {
+						return Result::FAILED_TO_COMPRESS_DATA;
+                    }
+                    */
+
+                    if (!fileStreamIn.StartRead(entry.path()))
+                    {
+						return Result::FAILED_TO_OPEN_FILE_STREAM;
+                    }
+
+                    unsigned long compressedDataSize = 0;
+
+                    while (!fileStreamIn.IsFinished())
+                    {
+						// Update status
+						if( params.statusCallback )
+						{
+							float percentage = (100.0 / fileStreamIn.Size()) * fileStreamIn.GetCurrentPosition();
+							params.statusCallback( percentage, "Percentage Update" );
+						}
+
+						std::string fileData;
+
+                        if (!(fileStreamIn >> fileData))
+                        {
+							return Result::FAILED_TO_READ_FROM_STREAM;
+                        }
+
+                        if (!(checksumStream << fileData))
+                        {
+							return Result::FAILED_TO_GENERATE_CHECKSUM;
+                        }
+
+						std::string compressedData;
+
+                        /*
+                        ResourceTools::CompressionChunk compressionChunk;
+
+                        compressionChunk.uncompressedData = &fileData;
+
+                        compressionChunk.compressedData = &compressedData;
+
+                        if( !( gzipCompressionStream << compressionChunk ) )
+                        {
+							return Result::FAILED_TO_COMPRESS_DATA;
+                        }
+                        */
+
+                        compressedDataSize += compressedData.size();
+                    }
+					/*
+                    if (!gzipCompressionStream.Finish())
+                    {
+						return Result::FAILED_TO_COMPRESS_DATA;
+                    }
+                    */
+
+                    std::string checksum;
+
+                    if (!checksumStream.FinishAndRetrieve(checksum))
+                    {
+						return Result::FAILED_TO_GENERATE_CHECKSUM;
+                    }
+
+                    // Create resource from parameters
+                    ResourceInfoParams resourceParams;
+
+					resourceParams.relativePath = std::filesystem::relative( entry.path(), params.directory );
+
+					resourceParams.uncompressedSize = fileSize;
+
+                    resourceParams.compressedSize = compressedDataSize;
+
+                    resourceParams.checksum = checksum;
+
+                    Location l;
+
+					Result calculateLocationResult = l.SetFromRelativePathAndDataChecksum( resourceParams.relativePath, resourceParams.checksum );
+
+                    if (calculateLocationResult != Result::SUCCESS)
+                    {
+						return calculateLocationResult;
+                    }
+
+                    resourceParams.location = l.ToString();
+
+                    ResourceInfo* resource = new ResourceInfo( resourceParams );
+
+                    Result addResourceResult = AddResource( resource );
+
+					if( addResourceResult != Result::SUCCESS )
+					{
+						return addResourceResult;
+					}
+                    
+                }
+			}
+        }
+
+        if( params.statusCallback )
+		{
+			params.statusCallback( 0, "Resource group successfully created from directory");
+		}
+
+        return Result::SUCCESS;
+
     }
 
     Result ResourceGroupImpl::ImportFromData( const std::string& data, DocumentType documentType /* = DocumentType::YAML */)
@@ -89,9 +281,15 @@ namespace CarbonResources
 
     Result ResourceGroupImpl::ExportToFile( const ResourceGroupExportToFileParams& params ) const
     {
+		// Update status
+		if( params.statusCallback )
+		{
+			params.statusCallback( 0, "Exporting Resource Group to file: " + params.filename.string() );
+		}
+
 		std::string data = "";
 
-        Result exportYamlResult = ExportYaml( params.outputDocumentVersion, data );
+        Result exportYamlResult = ExportYaml( params.outputDocumentVersion, data, params.statusCallback );
 
         if (exportYamlResult != Result::SUCCESS)
         {
@@ -103,10 +301,15 @@ namespace CarbonResources
 			return Result::FAILED_TO_SAVE_FILE;
 		}
 
+        if( params.statusCallback )
+		{
+			params.statusCallback( 0, "Resource group successfully exported." );
+		}
+
 		return Result::SUCCESS;
     }
 
-    Result ResourceGroupImpl::ExportToData( std::string& data,  Version outputDocumentVersion /* = S_DOCUMENT_VERSION*/) const
+    Result ResourceGroupImpl::ExportToData( std::string& data,  VersionInternal outputDocumentVersion /* = S_DOCUMENT_VERSION*/) const
     {
 		Result exportYamlResult = ExportYaml( outputDocumentVersion, data );
 
@@ -184,7 +387,7 @@ namespace CarbonResources
 			resourceParams.compressedSize = atol( value.c_str() );
 
             // ResourceGroup gets upgraded to 0.1.0
-			m_versionParameter = Version{ 0, 1, 0 };
+			m_versionParameter = VersionInternal{ 0, 1, 0 };
 
 			// Create a Resource
 			ResourceInfo* resource = new ResourceInfo( resourceParams );
@@ -200,70 +403,72 @@ namespace CarbonResources
 		return Result::SUCCESS;
     }
 
-    //TODO not a good structure, Don't like returns like this
-	//TODO Feels a bit strange that resourceGroup is thr one that creates this and not Resource
-    //TODO there are two of these functions I think
-	ResourceInfo* ResourceGroupImpl::CreateResourceFromResource( ResourceInfo* resource ) const
+    Result ResourceGroupImpl::CreateResourceFromResource( const ResourceInfo& resourceIn, ResourceInfo*& resourceOut ) const
     {
-		ResourceInfoParams resourceParams;
+		resourceOut = nullptr;
 
-        std::filesystem::path relativePath;
+		std::string resourceType = "";
 
-        Result getRelativePath = resource->GetRelativePath( relativePath );
+		Result getResourceTypeResult = resourceIn.GetType( resourceType );
 
-        if (getRelativePath == Result::SUCCESS)
+        if (getResourceTypeResult != Result::SUCCESS)
         {
-			resourceParams.relativePath = relativePath;
+			return getResourceTypeResult;
         }
 
-        std::string location;
-
-        Result getLocationResult = resource->GetLocation( location );
-
-        if( getLocationResult == Result::SUCCESS )
+        if (resourceType == ResourceInfo::TypeId())
         {
-			resourceParams.location = location;
+			resourceOut = new ResourceInfo( {} );
+
+            Result setParametersFromResourceResult = resourceOut->SetParametersFromResource( &resourceIn, m_versionParameter.GetValue() );
+
+            if (setParametersFromResourceResult != Result::SUCCESS)
+            {
+				return setParametersFromResourceResult;
+            }
         }
-
-        std::string checksum;
-
-        Result getChecksumResult = resource->GetChecksum( checksum );
-
-        if (getChecksumResult == Result::SUCCESS)
+        else if (resourceType == PatchResourceInfo::TypeId())
         {
-			resourceParams.checksum = checksum;
+			PatchResourceInfo* patchResourceInfo = new PatchResourceInfo( {} );
+
+            Result setParametersFromResourceResult = patchResourceInfo->SetParametersFromResource( &resourceIn, m_versionParameter.GetValue() );
+
+            if( setParametersFromResourceResult != Result::SUCCESS )
+			{
+				return setParametersFromResourceResult;
+			}
+
+            resourceOut = patchResourceInfo;
         }
-        
-        unsigned long compressedSize;
+		else if( resourceType == BundleResourceInfo::TypeId() )
+		{
+			BundleResourceInfo* bundleResourceInfo = new BundleResourceInfo( {} );
 
-        Result getCompressedSizeResult = resource->GetCompressedSize( compressedSize );
+			Result setParametersFromResourceResult = bundleResourceInfo->SetParametersFromResource( &resourceIn, m_versionParameter.GetValue() );
+            
+            if( setParametersFromResourceResult != Result::SUCCESS )
+			{
+				return setParametersFromResourceResult;
+			}
 
-        if( getCompressedSizeResult == Result::SUCCESS )
-        {
-			resourceParams.compressedSize = compressedSize;
-        }
+			resourceOut = bundleResourceInfo;
+		}
+		else if( resourceType == BundleResourceInfo::TypeId() )
+		{
+			BinaryResourceInfo* binaryResourceInfo = new BinaryResourceInfo( {} );
 
-        unsigned long uncompressedSize;
+			Result setParametersFromResourceResult = binaryResourceInfo->SetParametersFromResource( &resourceIn, m_versionParameter.GetValue() );
 
-        Result getUncompressedSizeResult = resource->GetUncompressedSize( uncompressedSize );
+            if( setParametersFromResourceResult != Result::SUCCESS )
+			{
+				return setParametersFromResourceResult;
+			}
 
-        if (getUncompressedSizeResult == Result::SUCCESS)
-        {
-			resourceParams.uncompressedSize = uncompressedSize;
-        }
+			resourceOut = binaryResourceInfo;
+		}
 
-        unsigned long something;
+        return Result::SUCCESS;
 
-        Result getSomethingResult = resource->GetSomething( something );
-
-        if (getSomethingResult == Result::SUCCESS)
-        {
-			resourceParams.something = something;
-        }
-
-		ResourceInfo* createdResource = new ResourceInfo( resourceParams );
-
-        return createdResource;
     }
 
 	Result ResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut )
@@ -293,11 +498,11 @@ namespace CarbonResources
         
         std::string versionStr = resourceGroupFile[m_versionParameter.GetTag()].as<std::string>(); //version stringID needs to be in one place
 		
-        Version version;
+        VersionInternal version;
 		version.FromString( versionStr );
         m_versionParameter = version;
 
-		if( m_versionParameter.GetValue().major > S_DOCUMENT_VERSION.major )
+		if( m_versionParameter.GetValue().getMajor() > S_DOCUMENT_VERSION.major )
         {
 			return Result::DOCUMENT_VERSION_UNSUPPORTED;
         }
@@ -370,12 +575,12 @@ namespace CarbonResources
         return Result::SUCCESS;
     }
 
-    Result ResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const
+    Result ResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const
     {
 		return Result::SUCCESS;
     } 
 
-    Result ResourceGroupImpl::ExportYaml( const Version& outputDocumentVersion, std::string& data ) const
+    Result ResourceGroupImpl::ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, std::function<void( int, const std::string& )> statusCallback /*= nullptr*/ ) const
     {
 		
         YAML::Emitter out;
@@ -385,8 +590,8 @@ namespace CarbonResources
 
         // It is possible to export a different version that the imported version
         // The version must be less than the version of the document and also no higher than supported by the binary at compile
-		Version sanitisedOutputDocumentVersion = outputDocumentVersion;
-		const Version documentCurrentVersion = m_versionParameter.GetValue();
+		VersionInternal sanitisedOutputDocumentVersion = outputDocumentVersion;
+		const VersionInternal documentCurrentVersion = m_versionParameter.GetValue();
 
         if( sanitisedOutputDocumentVersion > documentCurrentVersion )
         {
@@ -425,9 +630,18 @@ namespace CarbonResources
 
         out << YAML::Value << YAML::BeginSeq;
 
+        int i = 0;
 
         for (ResourceInfo* r : m_resourcesParameter)
         {
+			// Update status
+			if( statusCallback )
+			{
+				float percentage = (100.0 / m_resourcesParameter.GetValue()->size()) * i;
+				statusCallback( percentage, "Percentage Update" );
+				i++;
+			}
+
 			out << YAML::BeginMap;
 
 			Result resourceExportResult = r->ExportToYaml( out, sanitisedOutputDocumentVersion );
@@ -1007,14 +1221,28 @@ namespace CarbonResources
                     // The binary data has changed between versions, record an entry in both lists
 
 					// Create a copy of the resource to result 2 (Latest)
-					ResourceInfo* resourceCopy1 = CreateResourceFromResource( resource );
+					ResourceInfo* resourceCopy1 = nullptr;
+
+                    Result createResourceFromResource1Result = CreateResourceFromResource( *resource, resourceCopy1 );
+
+                    if (createResourceFromResource1Result != Result::SUCCESS)
+                    {
+						return createResourceFromResource1Result;
+                    }
 
 					params.result2->AddResource( resourceCopy1 );
 
                     // Create a copy of resource to result 1 (Previous)
 					ResourceInfo* resource2 = ( *subtractionResourcesFindIter );
 
-					ResourceInfo* resourceCopy2 = CreateResourceFromResource( resource2 );
+                    ResourceInfo* resourceCopy2 = nullptr;
+
+                    Result createResourceFromResource2Result = CreateResourceFromResource( *resource2, resourceCopy2 );
+
+                    if( createResourceFromResource2Result != Result::SUCCESS )
+					{
+						return createResourceFromResource2Result;
+					}
 
 					params.result1->AddResource( resourceCopy2 );
                 }
@@ -1024,7 +1252,14 @@ namespace CarbonResources
                 // This is a new resource, add it to target
                 // Note: Could be made optional, perhaps it is desirable to only include patch updates
 				// Not new files, probably make as optional pass in setting
-				ResourceInfo* resourceCopy1 = CreateResourceFromResource( resource );
+				ResourceInfo* resourceCopy1 = nullptr;
+
+                Result createResourceFromResourceResult = CreateResourceFromResource( *resource, resourceCopy1 );
+
+                if (createResourceFromResourceResult != Result::SUCCESS)
+                {
+					return createResourceFromResourceResult;
+                }
 
 				params.result2->AddResource( resourceCopy1 );
 
@@ -1052,6 +1287,36 @@ namespace CarbonResources
 
         return Result::SUCCESS;
     }
+
+    std::vector<ResourceInfo*>::iterator ResourceGroupImpl::begin()
+	{
+		return m_resourcesParameter.begin();
+	}
+
+	std::vector<ResourceInfo*>::const_iterator ResourceGroupImpl::begin() const
+	{
+		return m_resourcesParameter.begin();
+	}
+
+	std::vector<ResourceInfo*>::const_iterator ResourceGroupImpl::cbegin()
+	{
+		return m_resourcesParameter.begin();
+	}
+
+	std::vector<ResourceInfo*>::iterator ResourceGroupImpl::end()
+	{
+		return m_resourcesParameter.end();
+	}
+
+	std::vector<ResourceInfo*>::const_iterator ResourceGroupImpl::end() const
+	{
+		return m_resourcesParameter.end();
+	}
+
+	std::vector<ResourceInfo*>::const_iterator ResourceGroupImpl::cend()
+	{
+		return m_resourcesParameter.end();
+	}
 
 
 }

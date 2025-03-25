@@ -8,6 +8,7 @@
 
 #include <BinaryResourceGroup.h>
 
+#include <FileDataStreamOut.h>
 
 // TODO I think it would be good if the output files of the tests were put in folders which match the test name
 // The DLL handles the case where the dll is a newer version that what was used to compile against, find a way to test this
@@ -404,6 +405,177 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatchWithChunking )
 	patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
 
 	patchCreateParams.maxInputFileSize = 5000;
+
+	EXPECT_EQ( resourceGroupLatest.CreatePatch( patchCreateParams ), CarbonResources::Result::SUCCESS );
+
+
+	// TODO run tests on patch create
+}
+
+TEST_F( CarbonResourcesLibraryTest, CreateResourceGroupFromDirectory )
+{
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::CreateResourceGroupFromDirectoryParams createResourceGroupParams;
+
+	createResourceGroupParams.directory = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceFiles" );
+
+	EXPECT_EQ( resourceGroup.CreateFromDirectory( createResourceGroupParams ), CarbonResources::Result::SUCCESS );
+
+	CarbonResources::ResourceGroupExportToFileParams exportParams;
+
+	exportParams.filename = "ResourceGroups/ResourceGroup.yaml";
+
+	EXPECT_EQ( resourceGroup.ExportToFile( exportParams ), CarbonResources::Result::SUCCESS );
+
+    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroup.yaml" );
+
+    EXPECT_TRUE( FilesMatch( goldFile, exportParams.filename ) );
+}
+
+TEST_F( CarbonResourcesLibraryTest, CreateResourceGroupFromDirectoryOutputPathIsInvalid )
+{
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::CreateResourceGroupFromDirectoryParams createResourceGroupParams;
+
+	createResourceGroupParams.directory = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceFiles" );
+
+	EXPECT_EQ( resourceGroup.CreateFromDirectory( createResourceGroupParams ), CarbonResources::Result::SUCCESS );
+
+	CarbonResources::ResourceGroupExportToFileParams exportParams;
+
+	exportParams.filename = "***";
+
+	EXPECT_EQ( resourceGroup.ExportToFile( exportParams ), CarbonResources::Result::FAILED_TO_SAVE_FILE );
+
+}
+
+TEST_F( CarbonResourcesLibraryTest, CreateResourceGroupFailsWithInvalidInputDirectory )
+{
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::CreateResourceGroupFromDirectoryParams createResourceGroupParams;
+
+	createResourceGroupParams.directory = "INVALID_PATH";
+
+	EXPECT_EQ( resourceGroup.CreateFromDirectory( createResourceGroupParams ), CarbonResources::Result::INPUT_DIRECTORY_DOESNT_EXIST);
+}
+
+
+// TODO don't commit 
+// Just test functions to create useful data locally
+TEST_F( CarbonResourcesLibraryTest, CreateResourceGroupFromDirectoryVanguard )
+{
+	CarbonResources::ResourceGroup resourceGroup;
+
+    CarbonResources::CreateResourceGroupFromDirectoryParams createResourceGroupParams;
+
+    createResourceGroupParams.directory = "C:/Users/gilbert/Documents/Notes/IncrementalBinaryPatching/VanguardTestData/ClientB/WindowsClient";
+
+    EXPECT_EQ( resourceGroup.CreateFromDirectory( createResourceGroupParams ),CarbonResources::Result::SUCCESS);
+
+    CarbonResources::ResourceGroupExportToFileParams exportParams;
+
+    exportParams.filename = "VanguardData/ClientBResourceGroup.yaml";
+
+    EXPECT_EQ( resourceGroup.ExportToFile( exportParams ), CarbonResources::Result::SUCCESS );
+
+}
+
+
+
+TEST_F( CarbonResourcesLibraryTest, CreateVanguardBundle )
+{
+	// Import ResourceGroup
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+
+	importParams.filename = "C:/Users/gilbert/Documents/CCP/Builds/carbon-resources/tests/Debug/VanguardData/ClientBResourceGroup.yaml";
+
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ), CarbonResources::Result::SUCCESS );
+
+
+	// Create a bundle from the ResourceGroup
+	CarbonResources::BundleCreateParams bundleCreateParams;
+
+	bundleCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml"; // A copy is made of the resourceGroup
+
+	bundleCreateParams.resourceGroupBundleRelativePath = "BundleResourceGroup.yaml";
+
+	bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	bundleCreateParams.resourceSourceSettings.basePath = "C:/Users/gilbert/Documents/Notes/IncrementalBinaryPatching/VanguardTestData/ClientB/WindowsClient";
+
+	bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+
+	bundleCreateParams.chunkDestinationSettings.basePath = "VanguardData/ClientBBundle";
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = "VanguardData";
+
+	bundleCreateParams.chunkSize = 50000000;
+
+	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ), CarbonResources::Result::SUCCESS );
+
+
+	// TODO test bundle output
+}
+
+
+TEST_F( CarbonResourcesLibraryTest, CreateVanguardPatchWithChunking )
+{
+	// Previous ResourceGroup
+	CarbonResources::ResourceGroup resourceGroupPrevious;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
+
+	importParamsPrevious.filename = "C:/Users/gilbert/Documents/CCP/Builds/carbon-resources/tests/Debug/VanguardData/ClientAResourceGroup.yaml";
+
+	EXPECT_EQ( resourceGroupPrevious.ImportFromFile( importParamsPrevious ), CarbonResources::Result::SUCCESS );
+
+
+	// Latest ResourceGroup
+	CarbonResources::ResourceGroup resourceGroupLatest;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParamsLatest;
+
+	importParamsLatest.filename = "C:/Users/gilbert/Documents/CCP/Builds/carbon-resources/tests/Debug/VanguardData/ClientBResourceGroup.yaml";
+
+	EXPECT_EQ( resourceGroupLatest.ImportFromFile( importParamsLatest ), CarbonResources::Result::SUCCESS );
+
+
+
+	// Create a patch from the subtraction index
+	CarbonResources::PatchCreateParams patchCreateParams;
+
+	patchCreateParams.resourceGroupRelativePath = "VanguardData/ResourceGroup_previousBuild_latestBuild.yaml";
+
+	patchCreateParams.resourceGroupPatchRelativePath = "VanguardData/PatchResourceGroup_previousBuild_latestBuild.yaml";
+
+	patchCreateParams.resourceSourceSettingsFrom.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	patchCreateParams.resourceSourceSettingsFrom.basePath = "C:/Users/gilbert/Documents/Notes/IncrementalBinaryPatching/VanguardTestData/ClientA/WindowsClient";
+
+	patchCreateParams.resourceSourceSettingsTo.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	patchCreateParams.resourceSourceSettingsTo.basePath = "C:/Users/gilbert/Documents/Notes/IncrementalBinaryPatching/VanguardTestData/ClientB/WindowsClient";
+
+	patchCreateParams.resourcePatchBinaryDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+
+	patchCreateParams.resourcePatchBinaryDestinationSettings.basePath = "VanguardData/Patches/";
+
+	patchCreateParams.resourcePatchResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath = "VanguardData/";
+
+	patchCreateParams.patchFileRelativePathPrefix = "Patches/Patch1";
+
+	patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
+
+	patchCreateParams.maxInputFileSize = 50000000;
 
 	EXPECT_EQ( resourceGroupLatest.CreatePatch( patchCreateParams ), CarbonResources::Result::SUCCESS );
 

@@ -45,9 +45,11 @@ namespace CarbonResources
 
         Result GetDataOffset( unsigned long& dataoffset ) const;
 
-		virtual Result ImportFromYaml( YAML::Node& resource, const Version& documentVersion ) override;
+		virtual Result ImportFromYaml( YAML::Node& resource, const VersionInternal& documentVersion ) override;
 
-		virtual Result ExportToYaml( YAML::Emitter& out, const Version& documentVersion ) override;
+		virtual Result ExportToYaml( YAML::Emitter& out, const VersionInternal& documentVersion ) override;
+
+        virtual Result SetParametersFromResource( const ResourceInfo* other, const VersionInternal& documentVersion ) override;
 
     private:
 

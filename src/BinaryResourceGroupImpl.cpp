@@ -56,7 +56,7 @@ namespace CarbonResources
 		return Result::SUCCESS;
     }
 
-    Result BinaryResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, Version outputDocumentVersion ) const
+    Result BinaryResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const
     {
         return Result::SUCCESS;
     }
@@ -134,7 +134,7 @@ namespace CarbonResources
 			binaryResourceParams.binaryOperation = atol( value.c_str() );
 
             // Version is 0.0.0 which denotes legacy file support
-			m_versionParameter = Version{ 0, 0, 0 };
+			m_versionParameter = VersionInternal{ 0, 0, 0 };
 
 			// Create aBinary Resource
 			BinaryResourceInfo* binaryResource = new BinaryResourceInfo( binaryResourceParams );
@@ -150,25 +150,5 @@ namespace CarbonResources
 
 		return Result::SUCCESS;
 	}
-
-    void BinaryResourceGroupImpl::SomethingThatUsesTestStruct( const Internal::ThisIsAnExampleTodoRemove& args )
-    {
-		std::cout << "VALUE OF C:" << args.c << std::endl;
-
-		/*
-        // At this point we are internal, we can use any arguments we want but they may not exist
-        if (args.c.has_value())
-        {
-			std::cout << "C_HAS_A_VALUE:" << args.c.value() << std::endl;
-
-        }
-        else
-        {
-			std::cout << "C_HAS_NO_VALUE" << std::endl;
-        }
-        */
-		
-    }
-    
 
 }
