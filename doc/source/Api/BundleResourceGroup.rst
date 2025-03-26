@@ -1,10 +1,15 @@
 BundleResourceGroup
 ===================
 
-Fill in this information
+The BundleResourceGroup contains resources specifically of chunk type.
 
-.. doxygenclass:: CarbonResources::PatchResourceGroup
+See BundleResourceGroup file specification for more details.
+
+.. doxygenclass:: CarbonResources::BundleResourceGroup
     :members:
+
+Input Parameters
+----------------
 
 
     

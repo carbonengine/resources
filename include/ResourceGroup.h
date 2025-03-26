@@ -33,14 +33,20 @@
 namespace CarbonResources
 {
     
-
-
-
     class ResourceGroup;
     class PatchResourceGroup;
     class BundleResourceGroup;
 	enum class Result;
     
+    /** @enum ResourceSourceType
+    *  @brief Parameters to represent resource source location type
+    *  @var ResourceSourceType::LOCAL_RELATIVE
+    *  Paths are sourced via plain paths. Resource locations will be constructed by contactenation of base path and the resources' relative path.
+    *  @var ResourceSourceType::LOCAL_CDN
+    *  Paths are sourced via CDN style paths. Resource locations will be constructed by contactenation of base path and the resources' CDN location path.
+    *  @var ResourceSourceType::REMOTE_CDN
+    *  Resources are downloaded. They will then be processed as ResourceSourceType::LOCAL_CDN.
+    */
     enum class ResourceSourceType
     {
         LOCAL_RELATIVE,
@@ -48,6 +54,13 @@ namespace CarbonResources
         REMOTE_CDN,
     };
 
+    /** @struct ResourceSourceSettings
+    *  @brief Parameters to represent where and how a resource is sourced.
+    *  @var ResourceSourceSettings::sourceType
+    *  Specifies the type of resource location. See ResourceSourceType for more info.
+    *  @var ResourceSourceSettings::basePath
+    *  The base path to locate resources.
+    */
     struct API ResourceSourceSettings
 	{
 		unsigned int size = sizeof( ResourceSourceSettings );
@@ -57,12 +70,29 @@ namespace CarbonResources
         std::filesystem::path basePath = "";
 	};
 
+    /** @enum ResourceDestinationType
+    *  @brief Parameters to represent resource destinationlocation type.
+    *  @var ResourceDestinationType::LOCAL_RELATIVE
+    *  Paths are sourced via plain paths. Resource locations will be constructed by contactenation of base path and the resources' relative path.
+    *  @var ResourceDestinationType::LOCAL_CDN
+    *  Paths are sourced via CDN style paths. Resource locations will be constructed by contactenation of base path and the resources' CDN location path.
+    *  @var ResourceDestinationType::REMOTE_CDN
+    *  Resources are compressed. They will then be processed as LOCAL_CDN. Note that the library does not upload the resources, this functionality is external.
+    */
     enum class ResourceDestinationType
 	{
 		LOCAL_RELATIVE,
 		LOCAL_CDN,
+        REMOTE_CDN,  //TODO
 	};
 
+    /** @struct ResourceDestinationSettings
+    *  @brief Parameters to represent where and how a resource is saved.
+    *  @var ResourceDestinationSettings::destinationType
+    *  Specifies the type of resource location. See ResourceDestinationType for more info.
+    *  @var ResourceDestinationSettings::basePath
+    *  The base path to save resources.
+    */
 	struct API ResourceDestinationSettings
 	{
 		unsigned int size = sizeof( ResourceDestinationSettings );
@@ -72,6 +102,23 @@ namespace CarbonResources
         std::filesystem::path basePath = "";
 	};
 
+    /** @struct BundleCreateParams
+    *  @brief Function Parameters required for CarbonResources::ResourceGroup::CreatePatch
+    *  @var BundleCreateParams::resourceSourceSettings
+    *  Where resources related to ResourceGroup are to be be sourced.
+    *  @var BundleCreateParams::chunkDestinationSettings
+    *  Where chunks created will be saved.
+    *  @var BundleCreateParams::resourceGroupRelativePath
+    *  Where to save a ResourceGroup the Bundle was based off. This ResourceGroup will match the original but can be saved somewhere else.
+    *  @var BundleCreateParams::resourceGroupBundleRelativePath
+    *  Relative path for use with the output BundleResourceGroup.
+    *  @var BundleCreateParams::chunkSize
+    *  Size of chunks to break files into. Value representation is in bytes, default is 10000000
+    *  @var BundleCreateParams::fileReadChunkSize
+    *  Size of chunks to read files in. Default is 10000000.
+    *  @var BundleCreateParams::resourceBundleResourceGroupDestinationSettings
+    *  Where to save the resulting BundleResourceGroup
+    */
     struct API BundleCreateParams
 	{
 		ResourceSourceSettings resourceSourceSettings;
@@ -89,11 +136,32 @@ namespace CarbonResources
         ResourceDestinationSettings resourceBundleResourceGroupDestinationSettings;
 	};
 
+    /** @struct PatchCreateParams
+    *  @brief Function Parameters required for CarbonResources::ResourceGroup::CreatePatch
+    *  @var PatchCreateParams::maxInputFileChunkSize
+    *  Files are processed in chunks, maxInputFileChunkSize indicate the size of this chunk. Files smaller than chunk will be processed in one pass.
+    *  @var PatchCreateParams::previousResourceGroup
+    *  ResourceGroup containing resources from previous build.
+    *  @var PatchCreateParams::resourceGroupRelativePath
+    *  Relative path for output resourceGroup which will contain the diff between PatchCreateParams::previousResourceGroup and this ResourceGroup.
+    *  @var PatchCreateParams::resourceGroupPatchRelativePath
+    *  Relative path for output PatchResourceGroup which will contain all the patches produced.
+    *  @var PatchCreateParams::patchFileRelativePathPrefix
+    *  Relative path prefix for produced patch binaries. Default is "Patches/Patch" which will produce patches such as Patches/Patch.1 ...
+    *  @var PatchCreateParams::resourceSourceSettingsFrom
+    *  Where resources for the previous build will be sourced.
+    *  @var PatchCreateParams::resourceSourceSettingsTo
+    *  Where resources for the current ResourceGroup build will be sourced.
+    *  @var PatchCreateParams::resourcePatchBinaryDestinationSettings
+    *  Where the produced binary patches will be saved.
+    *  @var PatchCreateParams::resourcePatchResourceGroupDestinationSettings
+    *  Where the produced PatchResourceGroup will be saved.
+    */
     struct API PatchCreateParams
 	{
 		unsigned int size = sizeof( PatchCreateParams );
 
-        uintmax_t maxInputFileSize = -1;
+        uintmax_t maxInputFileChunkSize = -1;
 
 		ResourceGroup* previousResourceGroup = nullptr;
 
@@ -101,7 +169,7 @@ namespace CarbonResources
 
         std::filesystem::path resourceGroupPatchRelativePath;
 
-        std::filesystem::path patchFileRelativePathPrefix;
+        std::filesystem::path patchFileRelativePathPrefix = "Patches/Patch";
 
 		ResourceSourceSettings resourceSourceSettingsFrom;
 
@@ -112,22 +180,24 @@ namespace CarbonResources
         ResourceDestinationSettings resourcePatchResourceGroupDestinationSettings;
 	};
 
+    /** @struct ResourceGroupImportFromFileParams
+    *  @brief Function Parameters required for CarbonResources::ResourceGroup::ImportFromFile
+    *  @var ResourceGroupImportFromFileParams::filename
+    *  Full filename of input file.
+    */
     struct API ResourceGroupImportFromFileParams
 	{
 		std::filesystem::path filename;
 	};
 
-
     /** @struct ResourceGroupExportToFileParams
-    *  @brief This structure blah blah blah...
-    *  @var ResourceGroupExportToFileParams::size
-    *  This is the size
+    *  @brief Function Parameters required for CarbonResources::ResourceGroup::ExportToFile
     *  @var ResourceGroupExportToFileParams::filename
-    *  filename
+    *  Full filename of output file. If directory doesn't exist it will be created.
     *  @var ResourceGroupExportToFileParams::outputDocumentVersion
-    *  outputDocumentVersion
+    *  Document version to output. By default this will be latest supported by the library.
     *  @var ResourceGroupExportToFileParams::statusCallback
-    *  statusCallback
+    *  Optional status function callback. Callback is triggered at key status update events.
     */
 	struct API ResourceGroupExportToFileParams
 	{
@@ -140,19 +210,16 @@ namespace CarbonResources
         std::function<void( int, const std::string& )> statusCallback = nullptr;
 	};
 
-
 	/** @struct CreateResourceGroupFromDirectoryParams
-    *  @brief This structure blah blah blah...
-    *  @var CreateResourceGroupFromDirectoryParams::size
-    *  This is the size
+    *  @brief Function Parameters required for CarbonResources::ResourceGroup::CreateFromDirectory
     *  @var CreateResourceGroupFromDirectoryParams::directory
-    *  directory
+    *  Input directory for which to find files.
     *  @var CreateResourceGroupFromDirectoryParams::resourceStreamThreshold
-    *  resourceStreamThreshold
+    *  Files encountered that are above this the threshold value will be streamed in. Value is in bytes, default: 10000000
     *  @var CreateResourceGroupFromDirectoryParams::outputDocumentVersion
-    *  outputDocumentVersion
+    *  Document version to output. By default this will be latest supported by the library.
     *  @var CreateResourceGroupFromDirectoryParams::statusCallback
-    *  statusCallback
+    *  Optional status function callback. Callback is triggered at key status update events.
     */
 	struct API CreateResourceGroupFromDirectoryParams
 	{
@@ -167,11 +234,10 @@ namespace CarbonResources
         std::function<void( int, const std::string& )> statusCallback = nullptr;
 	};
 
-
     class ResourceGroupImpl;    // TODO remove these from public API
 
     /** @class ResourceGroup
-    *  @brief This class blah blah blah...
+    *  @brief Contains a collection of Resources
     */
     // TODO lock down things like copy constructors for these public classes
     class API ResourceGroup
@@ -186,36 +252,27 @@ namespace CarbonResources
 
 	    virtual ~ResourceGroup();
 
-        /// @brief Create bundle from resource group
-		/// @param data data which the checksum will be based on
-		/// @param data_size size of data passed in
-		/// @param checksum will contain the resulting checksum on success
-		/// @return true on success, false on failure
-		/// @note will relinquish ownership of bundle resource group
+        /// @brief Creates a Bundle from the ResourceGroup.
+		/// @param params input parameters, See BundleCreateParams for more details.
+        /// @see BundleResourceGroup::Unpack for information regarding bundle unpacking.
+		/// @return Result see CarbonResources::Result for more details.
         Result CreateBundle( const BundleCreateParams& params ) const;
 
-        /// @brief Create patch from resource group
-		/// @param data data which the checksum will be based on
-		/// @param data_size size of data passed in
-		/// @param checksum will contain the resulting checksum on success
-		/// @return true on success, false on failure
-		/// @note will relinquish ownership of patch resource group
+        /// @brief Creates a Patch from the ResourceGroup. This ResourceGroup is expected to be latest.
+		/// @param params input parameters, See PatchCreateParams for more details.
+        /// @see PatchResourceGroup::Apply for information regarding patch application.
+		/// @return Result see CarbonResources::Result for more details.
         Result CreatePatch( const PatchCreateParams& params ) const;
 
-        /// @brief Import resource group to file
-		/// @param data data which the checksum will be based on
-		/// @param data_size size of data passed in
-		/// @param checksum will contain the resulting checksum on success
-		/// @return true on success, false on failure
-		/// @note will relinquish ownership of patch resource group
+        /// @brief Imports resource data from file.
+		/// @param params input parameters, See ResourceGroupImportFromFileParams for more details.
+		/// @return Result see CarbonResources::Result for more details.
+        /// @note Legacy support for importing from resfileindex CSV files is included.
         Result ImportFromFile( const ResourceGroupImportFromFileParams& params ) const;
 
-        /// @brief Export resource group to file
-		/// @param data data which the checksum will be based on
-		/// @param data_size size of data passed in
-		/// @param checksum will contain the resulting checksum on success
-		/// @return true on success, false on failure
-		/// @note will relinquish ownership of patch resource group
+        /// @brief Exports ResourceGroup to file.
+		/// @param params input parameters, See ResourceGroupExportToFileParams for more details.
+		/// @return Result see CarbonResources::Result for more details.
         Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
 
         /// @brief Creates a ResourceGroup from a supplied directory.

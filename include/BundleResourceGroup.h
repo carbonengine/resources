@@ -29,6 +29,13 @@
 namespace CarbonResources
 {
 
+    /** @struct BundleUnpackParams
+    *  @brief Function Parameters required for CarbonResources::BundleResourceGroup::Unpack
+    *  @var BundleUnpackParams::chunkSourceSettings
+    *  Location where chunks can be sourced.
+    *  @var BundleUnpackParams::resourceDestinationSettings
+    *  Location where the unpacked resources should be saved.
+    */
     struct API BundleUnpackParams final
     {
 		ResourceSourceSettings chunkSourceSettings;
@@ -46,6 +53,10 @@ namespace CarbonResources
 
 	    ~BundleResourceGroup();
 
+        /// @brief Unpacks the Resoruces from the BundleResourceGroup.
+		/// @param params input parameters, See BundleUnpackParams for more details.
+		/// @see ResourceGroup::CreateBundle for information regarding bundle creation.
+		/// @return Result see CarbonResources::Result for more details.
         Result Unpack( const BundleUnpackParams& params );
 
     private:

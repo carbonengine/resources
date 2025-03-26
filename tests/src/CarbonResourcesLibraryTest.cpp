@@ -306,7 +306,7 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
     patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
 
-    patchCreateParams.maxInputFileSize = 100000000;
+    patchCreateParams.maxInputFileChunkSize = 100000000;
     
 	EXPECT_EQ(resourceGroupLatest.CreatePatch( patchCreateParams ),CarbonResources::Result::SUCCESS);
 
@@ -403,7 +403,7 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatchWithChunking )
 
 	patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
 
-	patchCreateParams.maxInputFileSize = 5000;
+	patchCreateParams.maxInputFileChunkSize = 5000;
 
 	EXPECT_EQ( resourceGroupLatest.CreatePatch( patchCreateParams ), CarbonResources::Result::SUCCESS );
 

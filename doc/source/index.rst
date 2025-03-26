@@ -13,6 +13,7 @@ Contents
 
    installation
    api
+   cli
    guides
    examples
    designDocuments

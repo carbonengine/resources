@@ -907,7 +907,7 @@ namespace CarbonResources
 
         PatchResourceGroupImpl patchResourceGroup;
 
-        patchResourceGroup.SetMaxInputChunkSize( params.maxInputFileSize );
+        patchResourceGroup.SetMaxInputChunkSize( params.maxInputFileChunkSize );
 
         // Subtraction //TODO this needs to match the format of the original input resource lists
         // Put in place when there is a factory
@@ -972,7 +972,7 @@ namespace CarbonResources
             if( previousUncompressedSize != 0 ) // TODO make a note of what is going on here, it is confusing
             {
 				// Get resource data previous
-				ResourceTools::FileDataStreamIn previousFileDataStream( params.maxInputFileSize );
+				ResourceTools::FileDataStreamIn previousFileDataStream( params.maxInputFileChunkSize );
 
 				ResourceGetDataStreamParams previousResourceGetDataStreamParams;
 
@@ -988,7 +988,7 @@ namespace CarbonResources
                 }
 
                 // Get resource data next
-				ResourceTools::FileDataStreamIn nextFileDataStream( params.maxInputFileSize );
+				ResourceTools::FileDataStreamIn nextFileDataStream( params.maxInputFileChunkSize );
 
 				ResourceGetDataStreamParams nextResourceGetDataStreamParams;
 
@@ -1004,7 +1004,7 @@ namespace CarbonResources
 				}
 
                 // Process one chunk at a time
-				for( uintmax_t dataOffset = 0; dataOffset < nextUncompressedSize; dataOffset += params.maxInputFileSize )
+				for( uintmax_t dataOffset = 0; dataOffset < nextUncompressedSize; dataOffset += params.maxInputFileChunkSize )
                 {
 
 					std::string previousFileData = "";

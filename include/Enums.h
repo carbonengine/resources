@@ -142,9 +142,9 @@ namespace CarbonResources
 		unsigned int patch;
     };
 
-    static const Version S_LIBRARY_VERSION = { 1, 0, 0 };
+    static const Version S_LIBRARY_VERSION = { 1, 0, 0 }; /*!< Current version of the carbon-resources */
 
-    static const Version S_DOCUMENT_VERSION = { 0, 1, 0 };
+    static const Version S_DOCUMENT_VERSION = { 0, 1, 0 }; /*!< Maximum document version supported by carbon-resources */
 
 }
 
