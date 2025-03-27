@@ -494,7 +494,7 @@ TEST_F( ResourceToolsTest, RollingChecksum )
 	}
 }
 
-TEST_F( ResourceToolsTest, FindMatchingChunkEverythingMatches )
+TEST_F( ResourceToolsTest, FindMatchingChunksEverythingMatches )
 {
 	std::string source("0123456789");
 	std::string destination("0123456789");
@@ -506,7 +506,7 @@ TEST_F( ResourceToolsTest, FindMatchingChunkEverythingMatches )
 	ASSERT_EQ( match.length, 10 );
 }
 
-TEST_F( ResourceToolsTest, FindMatchingChunkShorterDestination )
+TEST_F( ResourceToolsTest, FindMatchingChunksShorterDestination )
 {
 	std::string source("0123456789");
 	std::string destination("01234");
@@ -518,7 +518,7 @@ TEST_F( ResourceToolsTest, FindMatchingChunkShorterDestination )
 	ASSERT_EQ( match.length, 5 );
 }
 
-TEST_F( ResourceToolsTest, FindMatchingChunkShorterSource )
+TEST_F( ResourceToolsTest, FindMatchingChunksShorterSource )
 {
 	std::string source("01234");
 	std::string destination("0123456789");
@@ -530,7 +530,7 @@ TEST_F( ResourceToolsTest, FindMatchingChunkShorterSource )
 	ASSERT_EQ( match.length, 5 );
 }
 
-TEST_F( ResourceToolsTest, FindMatchingChunkInString )
+TEST_F( ResourceToolsTest, FindMatchingChunksInString )
 {
 	std::string source("abc3456ij");
 	std::string destination("0123456789");
@@ -540,4 +540,32 @@ TEST_F( ResourceToolsTest, FindMatchingChunkInString )
 	ASSERT_EQ( match.sourceOffset, 3 );
 	ASSERT_EQ( match.destinationOffset, 3 );
 	ASSERT_EQ( match.length, 4 );
+}
+
+TEST_F( ResourceToolsTest, FindMatchingChunkInFile )
+{
+	const char* testDataPathStr = std::getenv( "TEST_DATA_PATH" );
+	ASSERT_TRUE( testDataPathStr );
+	std::filesystem::path testDataPath(testDataPathStr);
+    std::filesystem::path introMovieFilePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
+	std::string data;
+	ResourceTools::GetLocalFileData( introMovieFilePath, data );
+
+	uint64_t offset;
+
+	std::string notInFile = "Once upon a time, in a galaxy far, far away...";
+	ASSERT_FALSE(ResourceTools::FindMatchingChunk( notInFile, introMovieFilePath, offset ) );
+
+	std::string startOfFile = "TIME";
+	ASSERT_TRUE(ResourceTools::FindMatchingChunk( startOfFile, introMovieFilePath, offset ) );
+	ASSERT_EQ( offset, 0 );
+
+	std::string early = "introseq.blue";
+	ASSERT_TRUE(ResourceTools::FindMatchingChunk( early, introMovieFilePath, offset ) );
+	ASSERT_EQ( offset, data.find( early ) );
+
+	// Find the last 20 bytes of the file.
+	std::string final = data.substr( data.size() - 20 );
+	ASSERT_TRUE(ResourceTools::FindMatchingChunk( final, introMovieFilePath, offset ) );
+	ASSERT_EQ( offset, data.size() - 20 );
 }

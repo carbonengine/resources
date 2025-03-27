@@ -236,6 +236,67 @@ namespace ResourceTools
 	  return result;
   }
 
+  bool FindMatchingChunk( const std::string& chunk, std::filesystem::path filePath, uint64_t& chunkOffset )
+  {
+	  size_t chunkSize = chunk.size();
+	  FileDataStreamIn stream( chunkSize );
+	  stream.StartRead( filePath );
+	  std::string backlog;
+	  std::string fileData;
+	  RollingChecksum chunkChecksum = GenerateRollingAdlerChecksum( chunk, 0, chunkSize );
+	  RollingChecksum lastChecksum;
+	  uint64_t fileOffset{ 0 };
+	  uint64_t backlogOffset{ 0 };
+	  while( stream >> fileData )
+	  {
+		  backlog += fileData;
+		  while( backlogOffset + chunkSize <= backlog.size() )
+		  {
+			  if( backlogOffset == 0 )
+			  {
+				  lastChecksum = GenerateRollingAdlerChecksum( backlog, 0, chunkSize );
+			  }
+			  else
+			  {
+				  lastChecksum = GenerateRollingAdlerChecksum( backlog, backlogOffset, backlogOffset + chunkSize, lastChecksum );
+			  }
+			  if( lastChecksum.checksum == chunkChecksum.checksum )
+			  {
+				  // We have a potential match. Time to verify
+				  std::string sourceMD5;
+				  if( !ResourceTools::GenerateMd5Checksum( chunk, sourceMD5 ) )
+				  {
+					  ++backlogOffset;
+					  continue;
+				  }
+				  std::string matchingChunkMD5;
+				  std::string matchStr = backlog.substr( backlogOffset, chunkSize );
+				  if( !ResourceTools::GenerateMd5Checksum( matchStr, matchingChunkMD5 ) )
+				  {
+					  ++backlogOffset;
+					  continue;
+				  }
+				  if( sourceMD5 == matchingChunkMD5 )
+				  {
+					  // It's legit!
+					  chunkOffset = backlogOffset + fileOffset;
+					  return true;
+				  }
+			  }
+			  ++backlogOffset;
+		  }
+
+		  // Shrink fileData every now and then, but beware, we need to access start-1 for the rolling checksum.
+		  if( backlogOffset > chunkSize + 1 )
+		  {
+			  backlogOffset -= chunkSize;
+			  fileOffset += chunkSize;
+			  backlog = backlog.substr( chunkSize );
+		  }
+	  }
+	  return false;
+  }
+
   bool GetLocalFileData( const std::filesystem::path& filepath, std::string& data )
   {
 

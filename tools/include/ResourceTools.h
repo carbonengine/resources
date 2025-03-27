@@ -80,6 +80,8 @@ namespace ResourceTools
 
 	std::list<ChunkMatch> FindMatchingChunks( const std::string& source, std::string& destination );
 
+    bool FindMatchingChunk( const std::string& chunk, std::filesystem::path filePath, uint64_t& chunkOffset );
+
     bool GetLocalFileData( const std::filesystem::path& filepath, std::string& data );
 
     bool DownloadFile( const std::string& url, const std::filesystem::path& outputPath );
