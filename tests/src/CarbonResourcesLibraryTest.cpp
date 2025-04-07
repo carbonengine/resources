@@ -659,6 +659,7 @@ TEST_F( CarbonResourcesLibraryTest, CreateEVEPatchWithChunking )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
+    // Can get this here: http://binaries.eveonline.com/1d/1d34143a37d4b739_bf55ef4a0a7e124bca0e569dcfdfd2bb
 	importParamsPrevious.filename = "C:/Binary-Patching-Resources/LiveTQResIndex.txt";
 
 	EXPECT_EQ( resourceGroupPrevious.ImportFromFile( importParamsPrevious ), CarbonResources::Result::SUCCESS );
@@ -688,6 +689,8 @@ TEST_F( CarbonResourcesLibraryTest, CreateEVEPatchWithChunking )
 
 	patchCreateParams.resourceSourceSettingsTo.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
+    // Can make some changes in the client/res folder to files that would be included. Inclusion can be inspected in the filter .ini files.
+    // When I ran this there were soundback changes already anyway so patches would be created even with no changes.
 	patchCreateParams.resourceSourceSettingsTo.basePath = "C:/Users/gilbert/Documents/CCP/Repos/Perforce/eve/branches/sandbox/2025-BINARY-PATCHING/eve/client/res";
 
 	patchCreateParams.resourcePatchBinaryDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::REMOTE_CDN;
@@ -706,7 +709,12 @@ TEST_F( CarbonResourcesLibraryTest, CreateEVEPatchWithChunking )
 
 	EXPECT_EQ( resourceGroupLatest.CreatePatch( patchCreateParams ), CarbonResources::Result::SUCCESS );
 
-
-	// TODO run tests on patch create
+    // TODO need to now create a bundle from the created PatchResourceGroup.
+    // However first patchCreateParams.resourcePatchBinaryDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::REMOTE_CDN; needs to be changed to LOCAL_CDN
+    // This way the resulting patches will not yet be compressed as bundle chunks will be compressed and we don't want to double compress.
+    // As stated before the destination chunk type should be REMOTE_CDN so that the resulting chunks will be ready to be uploaded to the CDN, they are really the final patch data.
+    // There is a problem in the logic of how bundles are currently chunked, more information has been written in the stub ResourceGroupImpl::CreateBundle
+    // The fix is straightforward but relies on work not yet in, top of my head I think it was compression of large files.
+	
 }
 	*/

@@ -22,6 +22,8 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
 	m_maxInputChunkSize( "--chunk-size" )
 {
 
+    // TODO: The interface here is totally WIP, it needs actually designing to be easy to use.
+	// This is linked to having sensible default values so that not all options are always required and large complex commands are opt in.
 	AddRequiredPositionalArgument( m_previousResourceGroupPathArgumentId, "Filename to previous resourceGroup." );
 
     AddRequiredPositionalArgument( m_nextResourceGroupPathArgumentId, "Filename to next resourceGroup." );

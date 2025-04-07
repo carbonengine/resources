@@ -18,6 +18,8 @@ CreateBundleCliOperation::CreateBundleCliOperation() :
 	m_chunkSizeArgumentId( "--chunk-size" )
 {
 
+    // TODO: The interface here is totally WIP, it needs actually designing to be easy to use.
+    // This is linked to having sensible default values so that not all options are always required and large complex commands are opt in.
 	AddRequiredPositionalArgument( m_inputResourceGroupPathArgumentId, "Path to ResourceGroup to bundle." );
 
 	AddArgument( m_resourceGroupRelativePathArgumentId, "-r", "Relative path to save a ResourceGroup the Bundle was based off", true, "ResourceGroup.yaml" );
