@@ -1,0 +1,83 @@
+TIME
+"0"
+
+SEQUENCE
+"res:/Scene/introseq.blue"
+
+TEXTGROUP
+"4"
+
+SEGMENT
+0:0.0 - 4:48.86
+"boot"
+
+TCSAUDIO
+0:0.0 - 4:48.86
+"res:/sound/music/intro/intromusic.ogg"
+
+TRANSFORM
+# Noise speckles
+0:0.0 - 4:48.86
+"Overlay"
+
+
+
+SEGMENT
+0:0.0 - 0:18.6
+"Earth (Scene 1)"
+
+TRANSFORM
+0:0.0 - 0:22.6
+"Scene 1"
+
+AUDIO
+0:0.0 - 0:22.6
+"res:/sound/music/intro/s001.ogg"
+
+AUDIO
+0:3.69 - 0:15.31
+"res:/sound/music/intro/01_01.ogg"
+
+SUBTITLE
+# Earth
+0:3.72 - 0:0.48
+"G_EI_01_01"
+
+SUBTITLE
+# A world outgrown
+0:5.87 - 0:1.44
+"G_EI_01_02"
+
+SUBTITLE
+# scarred by war and burdened with the advance of our ancestors
+0:7.69 - 0:4.03
+"G_EI_01_03"
+
+SUBTITLE
+# compelled the first voyages across space
+0:12.69 - 0:2.49
+"G_EI_01_04"
+
+SUBTITLE
+# in a desperate quest to colonize other worlds
+0:15.19 - 0:3.14
+"G_EI_01_05"
+
+SEGMENT
+0:18.6 - 0:18.81
+"Jump gate (Scene 2)"
+
+TRANSFORM
+0:0.0 - 0:22.81
+"Scene 2"
+
+AUDIO
+0:0.0 - 0:22.81
+"res:/sound/music/intro/s002.ogg"
+
+AUDIO
+0:1.75 - 0:11.65
+"res:/sound/music/intro/02_01.ogg"
+
+SUBTITLE
+# 

@@ -103,8 +103,23 @@ TEST_F( ResourceToolsTest, GZipCompressData )
 	std::string unzippedFileData;
 	ASSERT_TRUE( ResourceTools::GetLocalFileData( unzippedSourcePath, unzippedFileData ) );
 
+	// Re-add carriage returns into the file, because that's how the file
+	// was when the test data was generated using the old system.
+	std::string reconstructedFileData;
+	size_t pos{0};
+	while( pos != std::string::npos )
+	{
+		pos = unzippedFileData.find( "\n" );
+		reconstructedFileData += unzippedFileData.substr( 0, pos );
+		unzippedFileData = unzippedFileData.substr( pos + 1 );
+		if( pos != std::string::npos )
+		{
+			reconstructedFileData += "\r\n";
+		}
+	}
+
 	std::string compressed;
-	EXPECT_TRUE( ResourceTools::GZipCompressData( unzippedFileData, compressed ) );
+	EXPECT_TRUE( ResourceTools::GZipCompressData( reconstructedFileData, compressed ) );
 
 	// Check that the compressed file matches the data in the file we have on disk
 	// EXCEPT for the header.
@@ -579,8 +594,8 @@ TEST_F( ResourceToolsTest, CountMatchingChunks )
 	std::filesystem::path introMoviePatchedFilePath = testDataPath / "Patch" / "nextBuildResources" / "introMoviePrefixed.txt";
 
 	const size_t CHUNK_SIZE{500};
-	const size_t PREFIX_SIZE{310};
+	const size_t PREFIX_SIZE{308};
 	ASSERT_EQ( ResourceTools::CountMatchingChunks( introMovieFilePath, 0, introMoviePatchedFilePath, 0, CHUNK_SIZE ), 0 );
-	ASSERT_EQ( ResourceTools::CountMatchingChunks( introMovieFilePath, 0, introMoviePatchedFilePath, PREFIX_SIZE, CHUNK_SIZE ), 20 );
-	ASSERT_EQ( ResourceTools::CountMatchingChunks( introMovieFilePath, CHUNK_SIZE, introMoviePatchedFilePath, CHUNK_SIZE + PREFIX_SIZE, 500 ), 19 );
+	ASSERT_EQ( ResourceTools::CountMatchingChunks( introMovieFilePath, 0, introMoviePatchedFilePath, PREFIX_SIZE, CHUNK_SIZE ), 19 );
+	ASSERT_EQ( ResourceTools::CountMatchingChunks( introMovieFilePath, CHUNK_SIZE, introMoviePatchedFilePath, CHUNK_SIZE + PREFIX_SIZE, 500 ), 18 );
 }

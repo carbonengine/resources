@@ -1,41 +1,41 @@
 Version: 0.1.0
 Type: PatchGroup
 NumberOfResources: 3
-TotalResourcesSizeCompressed: 485
-TotalResourcesSizeUnCompressed: 10420
+TotalResourcesSizeCompressed: 413
+TotalResourcesSizeUnCompressed: 9662
 ResourceGroupResource:
   RelativePath: ResourceGroup_previousBuild_latestBuild.yaml
   Type: ResourceGroup
-  Location: 2a/2a0859d673c05b5f_fd2975558729b3d10b90f481093126b2
-  Checksum: fd2975558729b3d10b90f481093126b2
-  UncompressedSize: 801
-  CompressedSize: 341
+  Location: 2a/2a0859d673c05b5f_6e426f75cc5bae174965f0deb4cadefa
+  Checksum: 6e426f75cc5bae174965f0deb4cadefa
+  UncompressedSize: 800
+  CompressedSize: 340
 MaxInputChunkSize: 500
 Resources:
   - RelativePath: Patches/Patch1.0
     Type: BinaryPatch
-    Location: b6/b6162ef461fa3545_621e2c646cceae9162056bc64aae0b21
-    Checksum: 621e2c646cceae9162056bc64aae0b21
-    UncompressedSize: 293
-    CompressedSize: 227
+    Location: b6/b6162ef461fa3545_b6bb4ef88fd12fa54e9e01ebaab2b4bd
+    Checksum: b6bb4ef88fd12fa54e9e01ebaab2b4bd
+    UncompressedSize: 165
+    CompressedSize: 160
     TargetResourceRelativePath: intromovie.txt
-    DataOffset: 9500
-    SourceOffset: 9500
+    DataOffset: 9000
+    SourceOffset: 9000
   - RelativePath: Patches/Patch1.1
     Type: BinaryPatch
-    Location: b6/b6162ef461fa3544_636baae0046f3cb7df45c324ca39b0e1
-    Checksum: 636baae0046f3cb7df45c324ca39b0e1
+    Location: b6/b6162ef461fa3544_0a5289fe6b2d734e776466be973dcaf8
+    Checksum: 0a5289fe6b2d734e776466be973dcaf8
     UncompressedSize: 572
-    CompressedSize: 258
+    CompressedSize: 253
     TargetResourceRelativePath: introMoviePrefixed.txt
     DataOffset: 0
     SourceOffset: 0
   - RelativePath: Patches/Patch1.2
     Type: BinaryPatch
     Location: ""
-    Checksum: c6547cb0c4f1ba9d667f58f2269d04b7
-    UncompressedSize: 9555
+    Checksum: f5c679fbd1dd6095ce223ad663851900
+    UncompressedSize: 8925
     CompressedSize: 0
     TargetResourceRelativePath: introMoviePrefixed.txt
     DataOffset: 500
-    SourceOffset: 190
+    SourceOffset: 192

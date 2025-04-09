@@ -1,0 +1,23 @@
+ntel Iris Plus Graphics 645]
+- [[32902, 22802], medium, Intel HD Graphics KBL]
+- [[32902, 22806], medium, Intel HD Graphics 620]
+- [[32902, 22811], medium, Intel HD Graphics 630]
+- [[32902, 22814], medium, Intel HD Graphics 615]
+- [[32902, 22822], medium, Intel Iris Plus Graphics 640]
+- [[32902, 22823], medium, Intel Iris Plus Graphics 650]
+- [[32902, 35409], medium, Intel Iris Plus Graphics]
+- [[32902, 35411], medium, Intel Iris Plus Graphics]
+- [[32902, 35420], medium, Intel Iris Plus Graphics]
+- [[32902, 39877], medium, Intel HD Graphics CFL]
+- [[32902, 39880], medium, Intel HD Graphics CFL]
+
+# Low
+- [[4098, 12624], low, ATI MOBILITY /ATI RADEON X600]
+- [[4098, 15952], low, ATI RADEON X600/X550 Series]
+- [[4098, 16708], low, ATI RADEON 9500]
+- [[4098, 16712], low, ATI RADEON 9800 SE]
+- [[4098, 16720], low, ATI RADEON 9600 Series]
+- [[4098, 16721], low, ATI RADEON 9600 Series]
+- [[4098, 16722], low, ATI RADEON 9600 Series]
+- [[4098, 16723], low, ATI RADEON 9550/X1050 Series]
+- [[4098
