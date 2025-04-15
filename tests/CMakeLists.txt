@@ -20,28 +20,10 @@ set(SRC_FILES
 
 add_executable(carbon-resources-test ${SRC_FILES})
 
-
-file (GENERATE
-    OUTPUT "Paths_$<CONFIG>.h"
-    CONTENT
-"
-#pragma once
-
-#define TEST_DATA_BASE_PATH \"${CMAKE_SOURCE_DIR}/tests/testData\"
-#define CARBON_RESOURCES_CLI_EXE_NAME \"$<TARGET_FILE_BASE_NAME:carbon-resources-cli>.exe\"
-"
-)
-
-
-
-add_custom_command(
-        TARGET carbon-resources-test PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} "-E" "copy_if_different" "Paths_$<CONFIG>.h" "Paths.h"
-        COMMAND_EXPAND_LISTS
-    )
-
-add_custom_target(GeneratePathsHeader DEPENDS "Paths.h")
-add_dependencies(carbon-resources-test GeneratePathsHeader)
+target_compile_definitions(carbon-resources-test
+        PRIVATE
+        TEST_DATA_BASE_PATH="${CMAKE_SOURCE_DIR}/tests/testData"
+        CARBON_RESOURCES_CLI_EXE_NAME=\"$<TARGET_FILE_BASE_NAME:carbon-resources-cli>.exe\")
 
 target_include_directories(carbon-resources-test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 

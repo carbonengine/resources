@@ -995,7 +995,7 @@ namespace CarbonResources
 			ResourceInfo* resourcePrevious = resourceGroupSubtractionPrevious.m_resourcesParameter.At( i );
 
 			ResourceInfo* resourceNext = resourceGroupSubtractionLatest.m_resourcesParameter.At( i );
-        	uint64_t patchSourceOffset{0};
+        	size_t patchSourceOffset{0};
         	uint64_t patchSourceOffsetDelta{0};
 
             // Check to see if previous entry contains dummy information
@@ -1103,7 +1103,7 @@ namespace CarbonResources
 					std::string patchData;
 
 					bool chunkMatchFound{false};
-					uint64_t matchCount{0};
+					size_t matchCount{0};
 
 
                     if (previousFileData != "")

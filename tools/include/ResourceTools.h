@@ -80,7 +80,7 @@ namespace ResourceTools
 
 	std::list<ChunkMatch> FindMatchingChunks( const std::string& source, std::string& destination );
 
-    bool FindMatchingChunk( const std::string& chunk, std::filesystem::path filePath, uint64_t& chunkOffset );
+    bool FindMatchingChunk( const std::string& chunk, std::filesystem::path filePath, size_t& chunkOffset );
 
 	size_t CountMatchingChunks( const std::filesystem::path& fileA, size_t offsetA, std::filesystem::path fileB, size_t offsetB, size_t chunkSize );
 

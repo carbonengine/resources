@@ -6,7 +6,7 @@ Configures key CMake variables to be correct for the operating system ("platform
 if(APPLE)
     # Explicitly set the minimum macOS version we target; otherwise it defaults to whatever version
     # we are building on, but we want to stick to our policy of supporting the last three releases.
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14 CACHE STRING "The minimum macOS version we target." FORCE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "The minimum macOS version we target." FORCE)
     message(STATUS "Building for minimum macOS version: ${CMAKE_OSX_DEPLOYMENT_TARGET}")
 
     # Explicit architecture required to support x64 builds on arm64 (Apple silicon)

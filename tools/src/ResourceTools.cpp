@@ -236,7 +236,7 @@ namespace ResourceTools
 	  return result;
   }
 
-  bool FindMatchingChunk( const std::string& chunk, std::filesystem::path filePath, uint64_t& chunkOffset )
+  bool FindMatchingChunk( const std::string& chunk, std::filesystem::path filePath, size_t& chunkOffset )
   {
 	  size_t chunkSize = chunk.size();
 	  FileDataStreamIn stream( chunkSize );

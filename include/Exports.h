@@ -26,8 +26,12 @@
 #    else
 #        define API __declspec(dllimport)
 #    endif
-#elif
+#else
+#ifdef EXPORT_LIBRARY
+#        define API __attribute((visibility("default")))
+#    else
 #    define API
+#endif
 #endif
 
 #endif // Exports_H

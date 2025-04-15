@@ -12,7 +12,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "..\ResourceGroupImpl.h"
+#include "../ResourceGroupImpl.h"
 
 namespace CarbonResources
 {

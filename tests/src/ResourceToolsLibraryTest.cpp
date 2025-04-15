@@ -551,7 +551,7 @@ TEST_F( ResourceToolsTest, FindMatchingChunkInFile )
 	std::string data;
 	ResourceTools::GetLocalFileData( introMovieFilePath, data );
 
-	uint64_t offset;
+	size_t offset;
 
 	std::string notInFile = "Once upon a time, in a galaxy far, far away...";
 	ASSERT_FALSE(ResourceTools::FindMatchingChunk( notInFile, introMovieFilePath, offset ) );

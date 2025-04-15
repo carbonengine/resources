@@ -107,7 +107,8 @@ namespace CarbonResources
 
 	    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const;
 
-	    virtual Result [[deprecated( "Prfer yaml" )]] ImportFromCSV( const std::string& data );
+    	[[deprecated( "Prefer yaml" )]]
+	    virtual Result ImportFromCSV( const std::string& data );
 
 	    Result ImportFromYaml( const std::string& data );
 
