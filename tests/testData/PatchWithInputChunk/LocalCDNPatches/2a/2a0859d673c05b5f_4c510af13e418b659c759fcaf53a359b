@@ -1,8 +1,8 @@
 Version: 0.1.0
 Type: ResourceGroup
 NumberOfResources: 4
-TotalResourcesSizeCompressed: 9943
-TotalResourcesSizeUnCompressed: 27624
+TotalResourcesSizeCompressed: 9912
+TotalResourcesSizeUnCompressed: 27533
 Resources:
   - RelativePath: intromovie.txt
     Type: Resource
@@ -20,10 +20,10 @@ Resources:
     BinaryOperation: 33206
   - RelativePath: introMovieSomewhatChanged.txt
     Type: Resource
-    Location: 7a/7ad90d113dc13199_4286081beda866e2bbb1c2adecc1ab30
-    Checksum: 4286081beda866e2bbb1c2adecc1ab30
-    UncompressedSize: 9053
-    CompressedSize: 3228
+    Location: 7a/7ad90d113dc13199_6f9a9704f8ed21cce44332623046bb5c
+    Checksum: 6f9a9704f8ed21cce44332623046bb5c
+    UncompressedSize: 8962
+    CompressedSize: 3197
     BinaryOperation: 33206
   - RelativePath: testresource2.txt
     Type: Resource

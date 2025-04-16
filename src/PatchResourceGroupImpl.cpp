@@ -406,7 +406,15 @@ namespace CarbonResources
                     		while( unCompressedSize )
                     		{
                     			std::string sourceData;
-                    			sourceDataStreamIn >> sourceData;
+                    			if(unCompressedSize >= m_maxInputChunkSize.GetValue())
+                    			{
+                    				sourceDataStreamIn >> sourceData;
+                    			}
+                    			else
+                    			{
+                    				sourceDataStreamIn.ReadBytes( unCompressedSize, sourceData );
+                    			}
+
                     			if( sourceData.empty() )
                     			{
                     				return Result::FAILED_TO_READ_FROM_STREAM;
@@ -460,27 +468,6 @@ namespace CarbonResources
                 {
 					return getResourceUncompressedSizeResult;
                 }
-
-				while( temporaryResourceDataStreamOut.GetFileSize() < expectedResourceSize )
-				{
-					std::string dataChunk;
-
-					if( !( resourceDataStreamIn >> dataChunk ) )
-					{
-						return Result::FAILED_TO_READ_FROM_STREAM;
-					}
-
-					if( !( temporaryResourceDataStreamOut << dataChunk ) )
-					{
-						return Result::FAILED_TO_WRITE_TO_STREAM;
-					}
-
-					// Add to incremental checksum calculation
-					if( !( patchedFileChecksumStream << dataChunk ) )
-					{
-						return Result::FAILED_TO_GENERATE_CHECKSUM;
-					}
-				}
 
                 temporaryResourceDataStreamOut.Finish();
 

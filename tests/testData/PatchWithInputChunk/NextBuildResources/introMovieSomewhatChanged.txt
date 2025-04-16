@@ -499,16 +499,6 @@ SUBTITLE
 "G_EI_12_03"
 
 
-
-
-SEGMENT
-3:40.81 - 0:27.41
-"Bombardment(Scene 13)"
-
-TRANSFORM
-0:0.0 - 0:31.41
-"Scene 13"
-
 AUDIO
 0:0.0 - 0:30.10
 "res:/sound/music/intro/s013.ogg"
@@ -520,7 +510,7 @@ AUDIO
 AUDIO
 0:10.67 - 0:5.95
 "res:/sound/music/intro/13_02.ogg"
-CHANGE 4
+CHANGE 5
 AUDIO
 0:19.91 - 0:9.57
 "res:/sound/music/intro/13_03.ogg"
