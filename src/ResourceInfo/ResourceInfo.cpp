@@ -809,6 +809,10 @@ namespace CarbonResources
     		size_t chunkSize = chunk.size() > matchSize ? matchSize : chunk.size();
     		md5ChecksumStream << chunk.substr( chunkSize );
     		matchSize -= chunkSize;
+    		if(!chunkSize)
+    		{
+    			return Result::FAILED_TO_GENERATE_CHECKSUM;
+    		}
     	}
 
     	if (!md5ChecksumStream.FinishAndRetrieve(checksum))

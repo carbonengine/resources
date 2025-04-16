@@ -1093,9 +1093,12 @@ namespace CarbonResources
                     // nothing is stored, application of the patch will chop off the extra file data
                     std::string nextFileData;
 
-                    if(!(nextFileDataStream >> nextFileData))
+					if(!nextFileDataStream.IsFinished())
 					{
-						return Result::FAILED_TO_RETRIEVE_CHUNK_DATA;
+						if(!(nextFileDataStream >> nextFileData))
+						{
+							return Result::FAILED_TO_RETRIEVE_CHUNK_DATA;
+						}
 					}
 
                     // Create a patch
@@ -1131,6 +1134,11 @@ namespace CarbonResources
 
                     		PatchResourceInfo* patchResource{nullptr};
                     		ConstructPatchResourceInfo( params, patchId, dataOffset, patchSourceOffset, resourceNext, patchResource );
+                    		if( previousFileDataStream.IsFinished() )
+                    		{
+                    			previousFileDataStream.StartRead( previousFileDataStream.GetPath() );
+                    		}
+                    		previousFileDataStream.Seek( patchSourceOffset );
                     		patchResource->SetParametersFromSourceStream( previousFileDataStream, matchSize );
 
                     		// Advance the first stream by the size of the matching data,
