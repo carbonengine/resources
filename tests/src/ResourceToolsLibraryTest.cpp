@@ -586,7 +586,7 @@ TEST_F( ResourceToolsTest, CountMatchingChunks )
 }
 
 #if __APPLE__
-TEST_F( ResourceToolsTest, CalculateBinaryActionMacOS )
+TEST_F( ResourceToolsTest, CalculateBinaryOperationMacOS )
 {
 	// Expected values
 	// 33279: Binaries, not just executables (No extension, .so, .pyd)
@@ -598,7 +598,7 @@ TEST_F( ResourceToolsTest, CalculateBinaryActionMacOS )
 	ASSERT_EQ(0, ResourceTools::CalculateBinaryOperation(nonexistantFilePath));
 }
 #elif WIN32
-TEST_F( ResourceToolsTest, CalculateBinaryActionWindows )
+TEST_F( ResourceToolsTest, CalculateBinaryOperationWindows )
 {
 	// Expected values
 	// 33279: Executables (.exe, .bat, .cmd, .com) # See: update_st_mode_from_path Modules/posixmodule.c
