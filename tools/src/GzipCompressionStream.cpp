@@ -43,27 +43,28 @@ namespace ResourceTools
 
   bool GzipCompressionStream::ProcessBuffer( bool finish )
   {
-  	if( m_buffer.empty() )
-  	{
-  		return true;
-  	}
-
   	constexpr size_t CHUNK = 16384; // 16kb
   	int ret = Z_OK;
   	unsigned char outbuffer[CHUNK];
-  	while( ret == Z_OK && ( finish || m_buffer.size() > CHUNK ) )
+  	int flush{Z_NO_FLUSH};
+  	while( ret == Z_OK && ( finish || !m_buffer.empty() ) )
   	{
-  		size_t processed = std::min(CHUNK, m_buffer.size());
+  		size_t available = m_buffer.size();
   		m_stream.next_in = reinterpret_cast<Bytef*>( const_cast<char*>( m_buffer.c_str() ) );
-  		m_stream.avail_in = static_cast<uInt>( processed );
+  		m_stream.avail_in = static_cast<uInt>( available );
   		m_stream.next_out = outbuffer;
   		m_stream.avail_out = CHUNK;
-  		int flush = finish ? Z_FINISH : Z_NO_FLUSH;
+  		if( finish && m_buffer.size() <= CHUNK )
+  		{
+  			flush = Z_FINISH;
+  		}
+  		uLong alreadyIn = m_stream.total_in;
   		uLong alreadyOut = m_stream.total_out;
   		ret = deflate( &m_stream, flush );
   		uLong outBytes = m_stream.total_out - alreadyOut;
+  		uLong inBytes = m_stream.total_in - alreadyIn;
   		m_out->append( std::string( reinterpret_cast<const char*>( outbuffer ), outBytes ) );
-  		m_buffer = m_buffer.substr( processed );
+  		m_buffer = m_buffer.substr( inBytes );
   	}
 
   	if( ret != Z_OK && ret != Z_STREAM_END )
