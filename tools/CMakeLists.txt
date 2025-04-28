@@ -11,6 +11,7 @@ set(SRC_FILES
     include/FileDataStreamIn.h
     include/FileDataStreamOut.h
     include/GzipCompressionStream.h
+    include/GzipDecompressionStream.h
     include/Md5ChecksumStream.h
     include/Patching.h
     include/ResourceTools.h
@@ -21,6 +22,7 @@ set(SRC_FILES
     src/FileDataStreamIn.cpp
     src/FileDataStreamOut.cpp
     src/GzipCompressionStream.cpp
+    src/GzipDecompressionStream.cpp
     src/Md5ChecksumStream.cpp
     src/ResourceTools.cpp
     src/ScopedFile.cpp

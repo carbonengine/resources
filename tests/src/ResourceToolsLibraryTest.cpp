@@ -10,6 +10,8 @@
 #include "CarbonResourcesTestFixture.h"
 #include "FileDataStreamIn.h"
 #include "GzipCompressionStream.h"
+#include "GzipDecompressionStream.h"
+#include "Md5ChecksumStream.h"
 #include "Patching.h"
 
 struct ResourceToolsTest : public CarbonResourcesTestFixture
@@ -614,7 +616,7 @@ TEST_F( ResourceToolsTest, CalculateBinaryOperationWindows )
 }
 #endif
 
-TEST_F( ResourceToolsTest, GzipStream )
+TEST_F( ResourceToolsTest, GzipStreams )
 {
 	std::string outbuffer;
 	ResourceTools::GzipCompressionStream stream(&outbuffer);
@@ -623,11 +625,14 @@ TEST_F( ResourceToolsTest, GzipStream )
 	std::filesystem::path testDataPath = std::getenv( "TEST_DATA_PATH" );
 	std::filesystem::path testFile = testDataPath / "resourcesOnBranch" / "introMovie.txt";
 	fileStreamIn.StartRead(testFile);
+	ResourceTools::Md5ChecksumStream originalMd5Stream;
+
 	while (!fileStreamIn.IsFinished())
 	{
 		std::string fileData;
 		ASSERT_TRUE(fileStreamIn >> fileData);
 		std::string compressedData;
+		originalMd5Stream << fileData;
 
 		ASSERT_TRUE( stream << &fileData );
 	}
@@ -635,15 +640,20 @@ TEST_F( ResourceToolsTest, GzipStream )
 
 
 	std::string uncompressedData;
-	EXPECT_TRUE( ResourceTools::GZipUncompressData( outbuffer, uncompressedData ) );
+	ResourceTools::GzipDecompressionStream decompressionStream(&uncompressedData);
+	decompressionStream.Start();
+	EXPECT_TRUE( decompressionStream << &outbuffer );
+	EXPECT_TRUE( decompressionStream.Finish() );
 
 	std::string originalData;
 	ResourceTools::GetLocalFileData( testFile, originalData );
 
 	std::string originalChecksum;
-	ResourceTools::GenerateMd5Checksum( originalData, originalChecksum );
+	EXPECT_TRUE( originalMd5Stream.FinishAndRetrieve( originalChecksum ) );
 
+	ResourceTools::Md5ChecksumStream uncompressedMd5Stream;
+	uncompressedMd5Stream << uncompressedData;
 	std::string uncompressedChecksum;
-	ResourceTools::GenerateMd5Checksum( uncompressedData, uncompressedChecksum );
-	EXPECT_EQ( originalChecksum, uncompressedChecksum );
+	EXPECT_TRUE( uncompressedMd5Stream.FinishAndRetrieve( uncompressedChecksum ) );
+	EXPECT_EQ( uncompressedChecksum, originalChecksum );
 }
