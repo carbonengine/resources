@@ -360,8 +360,12 @@ TEST_F( ResourceToolsTest, CreateApplyPatchFile )
 	std::filesystem::path before_src = testDataPath / "Patch" / "PreviousBuildResources" / "introMovie.txt";
 	std::filesystem::path after_src = testDataPath / "Patch" / "NextBuildResources" / "introMovie.txt";
 
-	std::filesystem::path patch = std::filesystem::temp_directory_path() / "CarbonResources" / "introMovie.patch";
-	std::filesystem::path before = std::filesystem::temp_directory_path() / "CarbonResources" /  "introMovie.txt";
+	std::filesystem::path tempDir = std::filesystem::temp_directory_path() / "CarbonResources";
+
+	std::filesystem::path patch = tempDir / "introMovie.patch";
+	std::filesystem::path before = tempDir /  "introMovie.txt";
+
+	std::filesystem::create_directories( tempDir );
 
 	std::filesystem::remove( before );
 	std::filesystem::remove( patch );
