@@ -452,7 +452,7 @@ TEST_F( CarbonResourcesLibraryTest, CreateResourceGroupFromDirectoryOutputPathIs
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-	exportParams.filename = "***";
+	exportParams.filename = "///";
 
 	EXPECT_EQ( resourceGroup.ExportToFile( exportParams ), CarbonResources::Result::FAILED_TO_SAVE_FILE );
 
