@@ -35,18 +35,25 @@ namespace ResourceTools
 	  // Creates directories if required
 	  std::filesystem::path directory = filepath.parent_path();
 
-      if (directory != "")
-      {
-		  if( !std::filesystem::exists( directory ) )
+	  if( directory != "" )
+	  {
+		  try
 		  {
-			  std::filesystem::create_directories( directory );
-		  }
+			  if( !std::filesystem::exists( directory ) )
+			  {
+				  std::filesystem::create_directories( directory );
+			  }
 
-		  if( !std::filesystem::exists( directory ) )
+			  if( !std::filesystem::exists( directory ) )
+			  {
+				  return false;
+			  }
+		  }
+		  catch( std::filesystem::filesystem_error& e )
 		  {
 			  return false;
 		  }
-      }
+	  }
 
 	  m_outputStream.open( filepath, std::ios::out | std::ios::binary );
 
