@@ -435,8 +435,13 @@ TEST_F( CarbonResourcesLibraryTest, CreateResourceGroupFromDirectory )
 
 	EXPECT_EQ( resourceGroup.ExportToFile( exportParams ), CarbonResources::Result::SUCCESS );
 
-    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroup.yaml" );
-
+#if _WIN64
+    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
+#elif __APPLE__
+    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupMacOS.yaml" );
+#else
+#error Unsupported platform
+#endif
     EXPECT_TRUE( FilesMatch( goldFile, exportParams.filename ) );
 }
 
