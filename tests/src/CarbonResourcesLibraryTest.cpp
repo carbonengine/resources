@@ -121,8 +121,13 @@ TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportNewerMajorVersion )
 // This should gracefully fail
 TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportNonExistantFile )
 {
-	// Not yet implemented
-	EXPECT_TRUE( false );
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+
+	importParams.filename = GetTestFileFileAbsolutePath( "NonexistentFiles/ResourceGroup_which_does_not_exist.yaml" );
+
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ), CarbonResources::Result::FAILED_TO_OPEN_FILE );
 }
 
 // Import a ResourceGroup v0.1.0 and export it again checking input == output
