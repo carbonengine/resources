@@ -71,40 +71,22 @@ namespace CarbonResources
 
 	Result PatchResourceInfo::ImportFromYaml( YAML::Node& resource, const VersionInternal& documentVersion )
 	{
-		if( m_targetResourceRelativepath.IsParameterExpectedInDocumentVersion( documentVersion ) )
-		{
-			if( YAML::Node parameter = resource[m_targetResourceRelativepath.GetTag()] )
-			{
-				m_targetResourceRelativepath = parameter.as<std::string>();
-			}
-			else
-			{
-				return Result::MALFORMED_RESOURCE_INPUT;
-			}
-		}
-
-        if( m_dataOffset.IsParameterExpectedInDocumentVersion( documentVersion ) )
-		{
-			if( YAML::Node parameter = resource[m_dataOffset.GetTag()] )
-			{
-				m_dataOffset = parameter.as<uintmax_t>();
-			}
-			else
-			{
-				return Result::MALFORMED_RESOURCE_INPUT;
-			}
-		}
-
-    	if( m_sourceOffset.IsParameterExpectedInDocumentVersion( documentVersion ) )
+    	Result result = SetParameterFromYamlNode( resource, m_targetResourceRelativepath, TypeId(), documentVersion );
+    	if( result != Result::SUCCESS )
     	{
-    		if( YAML::Node parameter = resource[m_sourceOffset.GetTag()] )
-    		{
-    			m_sourceOffset = parameter.as<uintmax_t>();
-    		}
-    		else
-    		{
-    			return Result::MALFORMED_RESOURCE_INPUT;
-    		}
+    		return result;
+    	}
+
+    	result = SetParameterFromYamlNode( resource, m_dataOffset, TypeId(), documentVersion );
+		if( result != Result::SUCCESS )
+    	{
+    		return result;
+    	}
+
+    	result = SetParameterFromYamlNode( resource, m_sourceOffset, TypeId(), documentVersion );
+    	if( result != Result::SUCCESS )
+    	{
+    		return result;
     	}
 
 		return ResourceInfo::ImportFromYaml( resource, documentVersion );

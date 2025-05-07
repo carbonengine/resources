@@ -24,6 +24,7 @@
 #include <optional>
 #include <vector>
 #include <filesystem>
+#include<yaml-cpp/yaml.h>
 #include "Enums.h"
 #include "ResourceGroup.h"
 #include "../VersionInternal.h"
@@ -33,13 +34,6 @@ namespace ResourceTools
 {
     class FileDataStreamIn;
     class FileDataStreamOut;
-}
-
-
-namespace YAML
-{
-    class Emitter;
-    class Node;
 }
 
 namespace CarbonResources
@@ -372,6 +366,34 @@ namespace CarbonResources
 
     	DocumentParameter<unsigned int> m_binaryOperation = DocumentParameter<unsigned int>( BINARY_OPERATION, TypeId() );
     };
+
+	inline Result SetParameterFromYamlNodeData(YAML::Node& node, DocumentParameter<std::filesystem::path>& parameter)
+    {
+	    parameter = node.as<std::string>();
+    	return Result::SUCCESS;
+    }
+
+	template <typename T>
+	Result SetParameterFromYamlNodeData(YAML::Node& node, DocumentParameter<T>& parameter)
+    {
+	    parameter = node.as<T>();
+    	return Result::SUCCESS;
+    }
+
+	template <typename T>
+	Result SetParameterFromYamlNode(YAML::Node& resource, DocumentParameter<T>& parameter, const std::string& context, const VersionInternal& documentVersion )
+    {
+		if( !parameter.IsParameterExpectedInDocumentVersion( documentVersion ) )
+		{
+			return Result::SUCCESS; // Ignore unexpected parameter
+		}
+		YAML::Node param = resource[parameter.GetTag()];
+		if( !param.IsDefined() )
+		{
+			return Result::MALFORMED_RESOURCE_INPUT;
+		}
+		return SetParameterFromYamlNodeData( param, parameter );
+    }
 
 }
 #endif // ResourceInfo_H

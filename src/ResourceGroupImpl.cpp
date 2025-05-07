@@ -520,8 +520,24 @@ namespace CarbonResources
     Result ResourceGroupImpl::ImportFromYaml( const std::string& data )
     {
         YAML::Node resourceGroupFile = YAML::Load( data );
-        
-        std::string versionStr = resourceGroupFile[m_versionParameter.GetTag()].as<std::string>(); //version stringID needs to be in one place
+
+		YAML::Node typeNode = resourceGroupFile[m_type.GetTag()];
+		if( !typeNode.IsDefined() )
+		{
+			return Result::MALFORMED_RESOURCE_GROUP;
+		}
+		m_type = typeNode.as<std::string>();
+		if( m_type.GetValue() != GetType() )
+		{
+			return Result::FILE_TYPE_MISMATCH;
+		}
+
+    	YAML::Node resourceGroupVersionNode = resourceGroupFile[m_versionParameter.GetTag()];
+    	if( !resourceGroupVersionNode.IsDefined() )
+    	{
+    		return Result::MALFORMED_RESOURCE_GROUP;
+    	}
+        std::string versionStr = resourceGroupVersionNode.as<std::string>(); //version stringID needs to be in one place
 		
         VersionInternal version;
 		version.FromString( versionStr );
@@ -539,15 +555,23 @@ namespace CarbonResources
 			version = S_DOCUMENT_VERSION;
         }
 
-        m_type = resourceGroupFile[m_type.GetTag()].as<std::string>();
-
-        /*
-        * TODO reinstate this validation
-		if( m_type.GetValue() != TypeId() )
+		YAML::Node numberOfResourcesNode = resourceGroupFile[m_numberOfResources.GetTag()];
+		if( !numberOfResourcesNode.IsDefined() )
 		{
-			return Result::FILE_TYPE_MISMATCH;
+			return Result::MALFORMED_RESOURCE_GROUP;
 		}
-        */
+
+		YAML::Node totalResourceSizeCompressedNode = resourceGroupFile[m_totalResourcesSizeCompressed.GetTag()];
+		if( !totalResourceSizeCompressedNode.IsDefined() )
+		{
+			return Result::MALFORMED_RESOURCE_GROUP;
+		}
+
+    	YAML::Node totalResourceSizeUncompressedNode = resourceGroupFile[m_totalResourcesSizeUncompressed.GetTag()];
+		if( !totalResourceSizeUncompressedNode.IsDefined() )
+		{
+			return Result::MALFORMED_RESOURCE_GROUP;
+		}
 
         Result res = ImportGroupSpecialisedYaml( resourceGroupFile );
 
@@ -557,8 +581,11 @@ namespace CarbonResources
 		}
 
         YAML::Node resources = resourceGroupFile[m_resourcesParameter.GetTag()];
+    	if( !resources.IsDefined() )
+    	{
+    		return Result::MALFORMED_RESOURCE_GROUP;
+    	}
 
-        
         for (auto iter = resources.begin(); iter != resources.end(); iter++)
         {
             // This bit is a sequence
