@@ -56,6 +56,8 @@ set(SRC_FILES
     src/ResourceInfo/PatchResourceGroupInfo.cpp
     src/ResourceInfo/BundleResourceGroupInfo.h
     src/ResourceInfo/BundleResourceGroupInfo.cpp
+    src/ParameterVersion.h
+    src/ParameterVersion.cpp
 )
 
 add_library(carbon-resources SHARED ${SRC_FILES})

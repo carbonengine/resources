@@ -1,4 +1,4 @@
-#include "Version.h"
+#include "VersionInternal.h"
 #include "Enums.h"
 
 namespace CarbonResources
@@ -22,7 +22,7 @@ namespace CarbonResources
     {
     }
 
-    bool VersionInternal::operator>( VersionInternal value ) const
+    bool VersionInternal::operator>( const VersionInternal& value ) const
     {
 	    if( m_major > value.m_major )
 	    {
@@ -41,25 +41,7 @@ namespace CarbonResources
 	    }
     }
 
-    bool VersionInternal::operator>( VersionInternal& value ) const
-    {
-	    if( m_major > value.m_major )
-	    {
-		    return true;
-	    }
-	    else
-	    {
-		    if( m_minor > value.m_minor )
-		    {
-			    return true;
-		    }
-		    else
-		    {
-			    return m_patch > value.m_patch;
-		    }
-	    }
-    }
-	bool VersionInternal::operator<( VersionInternal value ) const
+    bool VersionInternal::operator<( const VersionInternal& value ) const
     {
 	    if( m_major < value.m_major )
 	    {
@@ -78,26 +60,7 @@ namespace CarbonResources
 	    }
     }
 
-    bool VersionInternal::operator<( VersionInternal& value ) const
-    {
-	    if( m_major < value.m_major )
-	    {
-		    return true;
-	    }
-	    else
-	    {
-		    if( m_minor < value.m_minor )
-		    {
-			    return true;
-		    }
-		    else
-		    {
-			    return m_patch < value.m_patch;
-		    }
-	    }
-    }
-
-    bool VersionInternal::operator>=( VersionInternal& value ) const
+    bool VersionInternal::operator>=( const VersionInternal& value ) const
     {
 
 	    if( m_major > value.m_major )
@@ -132,40 +95,9 @@ namespace CarbonResources
 	    }
     }
 
-    // TODO duplicate logic above
-	bool VersionInternal::operator>=( VersionInternal value ) const
+    bool VersionInternal::operator<=( const VersionInternal& value ) const
     {
-
-	    if( m_major > value.m_major )
-	    {
-		    return true;
-	    }
-	    else if( m_major == value.m_major )
-	    {
-		    if( m_minor > value.m_minor )
-		    {
-			    return true;
-		    }
-		    else if( m_minor == value.m_minor )
-		    {
-			    if( m_patch >= value.m_patch )
-			    {
-				    return true;
-			    }
-			    else
-			    {
-				    return false;
-			    }
-		    }
-		    else
-		    {
-			    return false;
-		    }
-	    }
-	    else
-	    {
-		    return false;
-	    }
+	    return !(*this > value);
     }
 
     std::string VersionInternal::ToString() const

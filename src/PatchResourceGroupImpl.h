@@ -60,9 +60,9 @@ namespace CarbonResources
 
     protected:
 
-        DocumentParameter<uintmax_t> m_maxInputChunkSize = DocumentParameter<uintmax_t>( { 0, 1, 0 }, "MaxInputChunkSize" );
+        DocumentParameter<uintmax_t> m_maxInputChunkSize = DocumentParameter<uintmax_t>( MAX_INPUT_CHUNK_SIZE, TypeId() );
 
-        DocumentParameter<ResourceGroupInfo*> m_resourceGroupParameter = DocumentParameter<ResourceGroupInfo*>( { 0, 1, 0 }, "ResourceGroupResource" );
+        DocumentParameter<ResourceGroupInfo*> m_resourceGroupParameter = DocumentParameter<ResourceGroupInfo*>( RESOURCE_GROUP_RESOURCE, TypeId() );
     };
 
 }

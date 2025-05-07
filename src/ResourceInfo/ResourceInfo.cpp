@@ -637,7 +637,7 @@ namespace CarbonResources
 			return Result::FAIL;
         }
 
-        if (m_relativePath.IsParameterExpectedInDocumentVersion(documentVersion))
+        if (m_relativePath.IsParameterExpectedInDocumentVersion( documentVersion ))
         {
 			std::filesystem::path relativePath;
 
@@ -651,7 +651,7 @@ namespace CarbonResources
 			m_relativePath = relativePath;
         }
         
-        if (m_location.IsParameterExpectedInDocumentVersion(documentVersion))
+        if (m_location.IsParameterExpectedInDocumentVersion( documentVersion ))
         {
 			std::string location;
 
@@ -665,7 +665,7 @@ namespace CarbonResources
 			m_location = location;
         }
 		
-        if (m_checksum.IsParameterExpectedInDocumentVersion(documentVersion))
+        if (m_checksum.IsParameterExpectedInDocumentVersion( documentVersion ))
         {
 			std::string checksum;
 
@@ -679,7 +679,7 @@ namespace CarbonResources
 			m_checksum = checksum;
         }
         
-        if (m_uncompressedSize.IsParameterExpectedInDocumentVersion(documentVersion))
+        if (m_uncompressedSize.IsParameterExpectedInDocumentVersion( documentVersion ))
         {
 			uintmax_t uncompressedSize;
 
@@ -693,7 +693,7 @@ namespace CarbonResources
 			m_uncompressedSize = uncompressedSize;
         }
         
-        if (m_compressedSize.IsParameterExpectedInDocumentVersion(documentVersion))
+        if (m_compressedSize.IsParameterExpectedInDocumentVersion( documentVersion ))
         {
 			uintmax_t compressedSize;
 
@@ -707,7 +707,7 @@ namespace CarbonResources
 			m_compressedSize = compressedSize;
         }
 
-    	if (m_binaryOperation.IsParameterExpectedInDocumentVersion(documentVersion))
+    	if (m_binaryOperation.IsParameterExpectedInDocumentVersion( documentVersion ))
     	{
     		unsigned int binaryOperation;
 

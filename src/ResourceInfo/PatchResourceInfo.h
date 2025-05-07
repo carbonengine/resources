@@ -57,10 +57,10 @@ namespace CarbonResources
 
     private:
 
-        DocumentParameter<uintmax_t> m_dataOffset = DocumentParameter<uintmax_t>( { 0, 0, 0 }, "DataOffset" );
-    	DocumentParameter<uintmax_t> m_sourceOffset = DocumentParameter<uintmax_t>( { 0, 0, 0 }, "SourceOffset" );
+        DocumentParameter<uintmax_t> m_dataOffset = DocumentParameter<uintmax_t>( DATA_OFFSET, TypeId() );
+    	DocumentParameter<uintmax_t> m_sourceOffset = DocumentParameter<uintmax_t>( SOURCE_OFFSET, TypeId() );
 
-		DocumentParameter<std::filesystem::path> m_targetResourceRelativepath = DocumentParameter<std::filesystem::path>( { 0, 0, 0 }, "TargetResourceRelativePath" );
+		DocumentParameter<std::filesystem::path> m_targetResourceRelativepath = DocumentParameter<std::filesystem::path>( TARGET_RESOURCE_RELATIVE_PATH, TypeId() );
     };
 
 
