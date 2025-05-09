@@ -401,7 +401,7 @@ TEST_F( CarbonResourcesLibraryTest, ApplyPatchWithChunking )
 
 	patchApplyParams.resourcesToPatchDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
 
-	patchApplyParams.resourcesToPatchDestinationSettings.basePath = "ApplyPatchOut";
+	patchApplyParams.resourcesToPatchDestinationSettings.basePath = "ApplyPatchWithChunkingOut";
 
 	patchApplyParams.temporaryFilePath = "tempFile.resource";
 
