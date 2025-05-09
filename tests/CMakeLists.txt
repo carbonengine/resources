@@ -23,7 +23,7 @@ add_executable(carbon-resources-test ${SRC_FILES})
 target_compile_definitions(carbon-resources-test
         PRIVATE
         TEST_DATA_BASE_PATH="${CMAKE_SOURCE_DIR}/tests/testData"
-        CARBON_RESOURCES_CLI_EXE_NAME=\"$<TARGET_FILE_BASE_NAME:carbon-resources-cli>.exe\")
+        CARBON_RESOURCES_CLI_EXE_PATH=\"$<TARGET_FILE:carbon-resources-cli>\")
 
 target_include_directories(carbon-resources-test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 

@@ -52,15 +52,18 @@ TEST_F( CarbonResourcesCliTest, CreatePatch )
 
 	arguments.push_back( nextResourceGroupPath );
 
-	arguments.push_back( "--resource-source-type-previous LOCAL_RELATIVE" );
+	arguments.push_back( "--resource-source-type-previous" );
+	arguments.push_back( "LOCAL_RELATIVE" );
 
 	std::string nextResourcesLocation = GetTestFileFileAbsolutePath( "Patch/NextBuildResources" ).string();
 
-	arguments.push_back( "--resource-source-base-path-next " + nextResourcesLocation );
+	arguments.push_back( "--resource-source-base-path-next");
+	arguments.push_back( nextResourcesLocation );
 
 	std::string previousResourcesLocation = GetTestFileFileAbsolutePath( "Patch/PreviousBuildResources" ).string();
 
-	arguments.push_back( "--resource-source-base-path-previous " + previousResourcesLocation );
+	arguments.push_back( "--resource-source-base-path-previous");
+	arguments.push_back( previousResourcesLocation );
 
 	int res = RunCli( arguments, output );
 
