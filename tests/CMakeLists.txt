@@ -23,7 +23,7 @@ add_executable(carbon-resources-test ${SRC_FILES})
 target_compile_definitions(carbon-resources-test
         PRIVATE
         TEST_DATA_BASE_PATH="${CMAKE_SOURCE_DIR}/tests/testData"
-        CARBON_RESOURCES_CLI_EXE_PATH=\"$<TARGET_FILE:carbon-resources-cli>\")
+        CARBON_RESOURCES_CLI_EXE_NAME=\"$<TARGET_FILE_BASE_NAME:carbon-resources-cli>\")
 
 target_include_directories(carbon-resources-test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 
@@ -54,13 +54,13 @@ if(WIN32)
         COMMAND_EXPAND_LISTS
     )
 elseif(APPLE)
-  #TODO
-        #add_custom_command(
-        #TARGET carbon-resources-test POST_BUILD
-        #COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        #$<TARGET_FILE_DIR:ccp::log>/libCcpLog.dylib $<TARGET_FILE_DIR:carbon-resources-test>
-        #COMMAND_EXPAND_LISTS
-#)
+    # Get CLI exe
+    add_custom_command(
+            TARGET carbon-resources-test POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:carbon-resources-cli> $<TARGET_FILE_DIR:carbon-resources-test>
+            COMMAND_EXPAND_LISTS
+
+    )
 endif()
 
 cmake_path(SET TEST_DATA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/testData)
@@ -69,5 +69,6 @@ gtest_discover_tests(
         carbon-resources-test capiTests
         PROPERTIES
             ENVIRONMENT "TEST_DATA_PATH=${TEST_DATA_PATH}"
+            WORKING_DIRECTORY $<TARGET_FILE_DIR:carbon-resources-test>  # So that we can find the CLI executable.
         DISCOVERY_MODE PRE_TEST # Workaround to get builds working on macOS on ARM https://gitlab.kitware.com/cmake/cmake/-/issues/21845
 )
