@@ -275,7 +275,7 @@ TEST_F( CarbonResourcesLibraryTest, ApplyPatch )
 
     CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
-    importParamsPrevious.filename = GetTestFileFileAbsolutePath( "Patch/PatchResourceGroup_previousBuild_latestBuild.yaml" );
+    importParamsPrevious.filename = GetTestFileFileAbsolutePath( "Patch/PatchResourceGroup.yaml" );
 
 	EXPECT_EQ( patchResourceGroup.ImportFromFile( importParamsPrevious ).type, CarbonResources::ResultType::SUCCESS );
 
@@ -303,7 +303,9 @@ TEST_F( CarbonResourcesLibraryTest, ApplyPatch )
 
     EXPECT_EQ(patchResourceGroup.Apply( patchApplyParams ).type,CarbonResources::ResultType::SUCCESS);
 
-    // TODO test the output of the applied patches
+    // Check Expected Outcome
+	std::filesystem::path goldDirectory = GetTestFileFileAbsolutePath( "Patch/NextBuildResources" );
+	EXPECT_TRUE( DirectoryIsSubset( patchApplyParams.resourcesToPatchDestinationSettings.basePath , goldDirectory ));
 
 }
 
@@ -330,14 +332,12 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
 	EXPECT_EQ(resourceGroupLatest.ImportFromFile( importParamsLatest ).type,CarbonResources::ResultType::SUCCESS);
 
-
-
     // Create a patch from the subtraction index
 	CarbonResources::PatchCreateParams patchCreateParams;
 
-    patchCreateParams.resourceGroupRelativePath = "ResourceGroup_previousBuild_latestBuild.yaml";
+    patchCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
 
-    patchCreateParams.resourceGroupPatchRelativePath = "PatchResourceGroup_previousBuild_latestBuild.yaml";
+    patchCreateParams.resourceGroupPatchRelativePath = "PatchResourceGroup.yaml";
 
     patchCreateParams.resourceSourceSettingsFrom.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
@@ -355,16 +355,20 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
     patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath = "resPath";
 
-    patchCreateParams.patchFileRelativePathPrefix = "Patches/Patch1";
+    patchCreateParams.patchFileRelativePathPrefix = "Patches/Patch";
 
     patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
 
-    patchCreateParams.maxInputFileChunkSize = 100000000;
+    patchCreateParams.maxInputFileChunkSize = 50000000;
     
 	EXPECT_EQ(resourceGroupLatest.CreatePatch( patchCreateParams ).type,CarbonResources::ResultType::SUCCESS);
 
+    // Check expected outcome
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "Patch/PatchResourceGroup.yaml" );
+	EXPECT_TRUE( FilesMatch( goldFile, patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath / "PatchResourceGroup.yaml" ) );
 
-    // TODO run tests on patch create
+	std::filesystem::path goldDirectory = GetTestFileFileAbsolutePath( "Patch/LocalCDNPatches" );
+	EXPECT_TRUE( DirectoryIsSubset( goldDirectory, patchCreateParams.resourcePatchBinaryDestinationSettings.basePath ) );
     
 }
 
