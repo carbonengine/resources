@@ -6,11 +6,10 @@ TotalResourcesSizeUnCompressed: 19008
 ResourceGroupResource:
   RelativePath: ResourceGroup_previousBuild_latestBuild.yaml
   Type: ResourceGroup
-  Location: 2a/2a0859d673c05b5f_4c510af13e418b659c759fcaf53a359b
-  Checksum: 4c510af13e418b659c759fcaf53a359b
-  UncompressedSize: 1141
-  CompressedSize: 422
-  BinaryOperation: 0
+  Location: 2a/2a0859d673c05b5f_f73cf1536ab540af6d4673255b0bd7f5
+  Checksum: f73cf1536ab540af6d4673255b0bd7f5
+  UncompressedSize: 1033
+  CompressedSize: 401
 MaxInputChunkSize: 500
 Resources:
   - RelativePath: Patches/Patch1.0

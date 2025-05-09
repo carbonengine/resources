@@ -126,6 +126,7 @@ namespace CarbonResources
 		FAILED_TO_SAVE_TO_STREAM,
 		INPUT_DIRECTORY_DOESNT_EXIST,
 	    RESOURCE_TYPE_MISSMATCH,
+    	MALFORMED_RESOURCE_GROUP,
         //NOTE: if adding to this enum, a complimentary entry must be added to resultToString.
     };
 

@@ -24,9 +24,11 @@
 #include <optional>
 #include <vector>
 #include <filesystem>
+#include<yaml-cpp/yaml.h>
 #include "Enums.h"
 #include "ResourceGroup.h"
-#include "../Version.h"
+#include "../VersionInternal.h"
+#include "../ParameterVersion.h"
 
 namespace ResourceTools
 {
@@ -34,24 +36,39 @@ namespace ResourceTools
     class FileDataStreamOut;
 }
 
-
-namespace YAML
-{
-    class Emitter;
-    class Node;
-}
-
 namespace CarbonResources
 {
-    
+	class VersionedParameter
+	{
+	public:
+		VersionedParameter( Parameter parameter, std::string context ) : m_parameter( parameter ), m_context(std::move( context ))
+		{
+			const ParameterInfo* info = GetParameterInfo( parameter );
+			m_tag = info->m_tag;
+		};
+
+		bool IsParameterExpectedInDocumentVersion( VersionInternal documentVersion ) const
+		{
+			return IsParameterExpected( m_parameter, m_context, documentVersion );
+		}
+
+	    std::string GetTag() const
+	    {
+		    return m_tag;
+	    }
+
+	protected:
+	    std::string m_tag;
+		std::string m_context;
+		Parameter m_parameter;
+	};
 
     template <typename T>
-    class DocumentParameter
+    class DocumentParameter : public VersionedParameter
     {
     public:
-	    DocumentParameter( VersionInternal version, const std::string& tag ) :
-		    m_version( version ),
-		    m_tag( tag )
+	    DocumentParameter( Parameter parameter, const std::string& context ) :
+		    VersionedParameter( parameter, context )
 	    {
 	    }
 
@@ -76,33 +93,16 @@ namespace CarbonResources
 			m_value.reset();
         }
 
-	    VersionInternal GetVersionTag()
-	    {
-		    return m_version;
-	    }
-
-	    bool IsParameterExpectedInDocumentVersion( VersionInternal documentVersion ) const
-	    {
-		    return documentVersion >= m_version;
-	    }
-
-	    std::string GetTag() const
-	    {
-		    return m_tag;
-	    }
-
     protected:
-	    VersionInternal m_version;
 	    std::optional<T> m_value;
-	    std::string m_tag;
     };
 
     template <typename T>
     class DocumentParameterCollection : public DocumentParameter<std::vector<T>*>
     {
     public:
-	    DocumentParameterCollection( VersionInternal version, const std::string& tag ) :
-		    DocumentParameter<std::vector<T>*>( version, tag )
+	    DocumentParameterCollection(Parameter parameter, const std::string& context ) :
+		    DocumentParameter<std::vector<T>*>( parameter, context )
 	    {
 		    this->m_value = &m_collection;
 	    }
@@ -352,20 +352,48 @@ namespace CarbonResources
     protected:
 
         // Parameters for document version 0.0.0
-		DocumentParameter<std::filesystem::path> m_relativePath = DocumentParameter<std::filesystem::path>( { 0, 0, 0 }, "RelativePath" );
+		DocumentParameter<std::filesystem::path> m_relativePath = DocumentParameter<std::filesystem::path>( RELATIVE_PATH, TypeId() );
 
-		DocumentParameter<Location> m_location = DocumentParameter<Location>( { 0, 0, 0 }, "Location" );
+		DocumentParameter<Location> m_location = DocumentParameter<Location>( LOCATION, TypeId() );
 
-        DocumentParameter<std::string> m_type = DocumentParameter<std::string>( { 0, 0, 0 }, "Type" );
+        DocumentParameter<std::string> m_type = DocumentParameter<std::string>( TYPE, TypeId() );
 
-		DocumentParameter<std::string> m_checksum = DocumentParameter<std::string>( { 0, 0, 0 }, "Checksum" );
+		DocumentParameter<std::string> m_checksum = DocumentParameter<std::string>( CHECKSUM, TypeId() );
 
-		DocumentParameter<uintmax_t> m_compressedSize = DocumentParameter<uintmax_t>( { 0, 0, 0 }, "CompressedSize" );
+		DocumentParameter<uintmax_t> m_compressedSize = DocumentParameter<uintmax_t>( COMPRESSED_SIZE, TypeId() );
 
-		DocumentParameter<uintmax_t> m_uncompressedSize = DocumentParameter<uintmax_t>( { 0, 0, 0 }, "UncompressedSize" );
+		DocumentParameter<uintmax_t> m_uncompressedSize = DocumentParameter<uintmax_t>( UNCOMPRESSED_SIZE, TypeId() );
 
-    	DocumentParameter<unsigned int> m_binaryOperation = DocumentParameter<unsigned int>( { 0, 0, 0 }, "BinaryOperation" );
+    	DocumentParameter<unsigned int> m_binaryOperation = DocumentParameter<unsigned int>( BINARY_OPERATION, TypeId() );
     };
+
+	inline Result SetParameterFromYamlNodeData(YAML::Node& node, DocumentParameter<std::filesystem::path>& parameter)
+    {
+	    parameter = node.as<std::string>();
+		return Result{ ResultType::SUCCESS };
+    }
+
+	template <typename T>
+	Result SetParameterFromYamlNodeData(YAML::Node& node, DocumentParameter<T>& parameter)
+    {
+	    parameter = node.as<T>();
+		return Result{ ResultType::SUCCESS };
+    }
+
+	template <typename T>
+	Result SetParameterFromYamlNode(YAML::Node& resource, DocumentParameter<T>& parameter, const std::string& context, const VersionInternal& documentVersion )
+    {
+		if( !parameter.IsParameterExpectedInDocumentVersion( documentVersion ) )
+		{
+			return Result{ ResultType::SUCCESS }; // Ignore unexpected parameter
+		}
+		YAML::Node param = resource[parameter.GetTag()];
+		if( !param.IsDefined() )
+		{
+			return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+		}
+		return SetParameterFromYamlNodeData( param, parameter );
+    }
 
 }
 #endif // ResourceInfo_H

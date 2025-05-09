@@ -19,33 +19,35 @@
 
 constexpr uint64_t ROLLING_CHECKSUM_MODULO = 2 << 15;
 
-static CURL* s_curlHandle{nullptr};
+
+int s_activeDownloaders{ 0 };
+
+bool InitializeCurl()
+{
+	// According to the docs, `curl_global_init` must be called at least once within a program
+	// before the program calls any other function in libcurl, and multiple calls
+	// should have the same effect as one call. (https://curl.se/libcurl/c/curl_global_init.html)
+	return curl_global_init( CURL_GLOBAL_DEFAULT ) == CURLE_OK;
+}
+
+void ShutDownCurl()
+{
+	curl_global_cleanup();
+}
+
+size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, void* context )
+{
+	const char* charString = static_cast<const char*>( contents );
+	const size_t realSize = size * nmemb;
+	std::ofstream* out = static_cast<std::ofstream*>( context );
+	std::string str( charString, realSize );
+	*out << str;
+	return realSize;
+}
+
 
 namespace ResourceTools
 {
-  bool Initialize()
-  {
-  	if(!s_curlHandle)
-  	{
-  		// According to the docs, `curl_global_init` must be called at least once within a program
-  		// before the program calls any other function in libcurl, and multiple calls
-  		// should have the same effect as one call. (https://curl.se/libcurl/c/curl_global_init.html)
-  		curl_global_init( CURL_GLOBAL_DEFAULT );
-  		s_curlHandle = curl_easy_init();
-  	}
-  	return s_curlHandle != nullptr;
-  }
-
-  bool ShutDown()
-  {
-	if( s_curlHandle )
-	{
-		curl_easy_cleanup( s_curlHandle );
-		curl_global_cleanup();
-		s_curlHandle = nullptr;
-	}
-  	return true;
-  }
 
 
 
@@ -368,17 +370,26 @@ namespace ResourceTools
 
   }
 
-size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, void* context )
+  Downloader::Downloader()
   {
-  	const char* charString = static_cast<const char*>(contents);
-  	const size_t realSize = size * nmemb;
-  	std::ofstream* out = static_cast<std::ofstream*>(context);
-  	std::string str( charString, realSize );
-  	*out << str;
-  	return realSize;
+  	if( !s_activeDownloaders++ )
+  	{
+  		InitializeCurl();
+  	}
+  	m_curlHandle = curl_easy_init();
   }
 
-  bool DownloadFile( const std::string& url, const std::filesystem::path& outputPath )
+  Downloader::~Downloader()
+  {
+	  curl_easy_cleanup( m_curlHandle );
+	  m_curlHandle = nullptr;
+	  if( !--s_activeDownloaders )
+	  {
+		  ShutDownCurl();
+	  }
+  }
+
+  bool Downloader::DownloadFile( const std::string& url, const std::filesystem::path& outputPath )
   {
 	  if( std::filesystem::exists( outputPath ) )
 	  {
@@ -391,18 +402,13 @@ size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, voi
 		  // Failed to create directory to place the downloaded file in.
 		  return false;
 	  }
-	  if( !s_curlHandle )
-	  {
-		  // Initialize() must be called before downloading.
-		  return false;
-	  }
 	  std::ofstream out( outputPath, std::ios_base::app | std::ios::binary );
-	  curl_easy_setopt( s_curlHandle, CURLOPT_URL, url.c_str() );
-	  curl_easy_setopt( s_curlHandle, CURLOPT_FAILONERROR, 1 );
-	  curl_easy_setopt( s_curlHandle, CURLOPT_WRITEDATA, &out );
-	  curl_easy_setopt( s_curlHandle, CURLOPT_WRITEFUNCTION, WriteToFileStreamCallback );
-  	  curl_easy_setopt( s_curlHandle, CURLOPT_ACCEPT_ENCODING, "gzip" );
-	  CURLcode cc = curl_easy_perform( s_curlHandle );
+	  curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
+	  curl_easy_setopt( m_curlHandle, CURLOPT_FAILONERROR, 1 );
+	  curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, &out );
+	  curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, WriteToFileStreamCallback );
+	  curl_easy_setopt( m_curlHandle, CURLOPT_ACCEPT_ENCODING, "gzip" );
+	  CURLcode cc = curl_easy_perform( m_curlHandle );
 	  return cc == CURLE_OK;
   }
 

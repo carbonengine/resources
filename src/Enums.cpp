@@ -122,6 +122,10 @@ namespace CarbonResources
         case ResultType::RESOURCE_TYPE_MISSMATCH:
 			output = "Resource parameters were attempted to be set by a resource of a different type. This is an internal library error which shouldn't be encountered. If you encounter this error contact API addministrators.";
 			return true;
+
+	    case ResultType::MALFORMED_RESOURCE_GROUP:
+	    	output = "The resource group does not seem to contain the required parameters for this version.";
+	    	return true;
 	    }
 
 	    output = "Error code unrecognised. This is an internal library error which shouldn't be encountered. If you encounter this error contact API addministrators.";

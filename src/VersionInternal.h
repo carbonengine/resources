@@ -39,17 +39,13 @@ namespace CarbonResources
 
         VersionInternal( unsigned int major, unsigned int minor, unsigned int patch );
 
-		bool operator>( VersionInternal value ) const;
+		bool operator>( const VersionInternal& value ) const;
 
-		bool operator>( VersionInternal& value ) const;
+        bool operator<( const VersionInternal& value ) const;
 
-		bool operator<( VersionInternal value ) const;
+        bool operator>=( const VersionInternal& value ) const;
 
-        bool operator<( VersionInternal& value ) const;
-
-        bool operator>=( VersionInternal& value ) const;
-
-        bool operator>=( VersionInternal value ) const;
+        bool operator<=( const VersionInternal& value ) const;
 
         std::string ToString() const;
 

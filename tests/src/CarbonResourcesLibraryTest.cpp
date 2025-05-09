@@ -84,20 +84,64 @@ TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportExport_V_0_0_0_To_V_0_1_0
 	EXPECT_TRUE( FilesMatch( exportParams.filename, goldStandardFilename ) );
 }
 
+TEST_F( CarbonResourcesLibraryTest, ImportEmptyResourceGroup )
+{
+	CarbonResources::ResourceGroup resourceGroup;
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+	importParams.filename = GetTestFileFileAbsolutePath( "ResourceGroups/EmptyResourceGroup.yaml" );
+	EXPECT_EQ(resourceGroup.ImportFromFile( importParams ).type,CarbonResources::ResultType::SUCCESS);
+}
+
+void CreateEmptyResourceGroupWithMissingParameter(std::filesystem::path emptyResourceGroupPath, std::filesystem::path outPath, const std::string& missingTagName)
+{
+	std::filesystem::path testDataFolder( TEST_DATA_BASE_PATH );
+	std::ifstream fileIn( emptyResourceGroupPath );
+	create_directories( outPath.parent_path() );
+	std::ofstream fileOut( outPath, std::ios::out);
+	ASSERT_TRUE( fileOut.is_open() );
+	std::string line;
+	while(std::getline( fileIn, line ))
+	{
+		std::string formattedTag = missingTagName + ":";
+		std::string startOfLine = line.substr( 0, missingTagName.size() + 1 );
+		if( formattedTag != startOfLine )
+		{
+			fileOut << line << std::endl;
+		}
+	}
+}
+
+CarbonResources::Result AttemptImportResourceGroupMissingParameter( const std::string& tag, std::filesystem::path emptyResourceGroupPath )
+{
+	std::filesystem::path outPath(std::filesystem::current_path() / "ResourceGroups" / ("Missing" + tag + ".yaml"));
+	CreateEmptyResourceGroupWithMissingParameter( emptyResourceGroupPath, outPath, tag );
+	CarbonResources::ResourceGroup resourceGroup;
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+	importParams.filename = outPath;
+	return resourceGroup.ImportFromFile( importParams );
+}
+
 // Import a ResourceGroup with missing parameters that are expected for the version provided
 // This should fail gracefully and give appropriate feedback to user
 TEST_F( CarbonResourcesLibraryTest, ResourceGroupHandleImportMissingParametersForVersion )
 {
-	// Not yet implemented
-	EXPECT_TRUE( false );
+	std::filesystem::path emptyResourceGroupPath = GetTestFileFileAbsolutePath( "ResourceGroups/EmptyResourceGroup.yaml" );
+	EXPECT_EQ( AttemptImportResourceGroupMissingParameter( "Version", emptyResourceGroupPath ).type, CarbonResources::ResultType::MALFORMED_RESOURCE_GROUP );
+	EXPECT_EQ( AttemptImportResourceGroupMissingParameter( "Type", emptyResourceGroupPath ).type, CarbonResources::ResultType::MALFORMED_RESOURCE_GROUP );
+	EXPECT_EQ( AttemptImportResourceGroupMissingParameter( "NumberOfResources", emptyResourceGroupPath ).type, CarbonResources::ResultType::MALFORMED_RESOURCE_GROUP );
+	EXPECT_EQ( AttemptImportResourceGroupMissingParameter( "TotalResourcesSizeCompressed", emptyResourceGroupPath ).type, CarbonResources::ResultType::MALFORMED_RESOURCE_GROUP );
+	EXPECT_EQ( AttemptImportResourceGroupMissingParameter( "TotalResourcesSizeUnCompressed", emptyResourceGroupPath ).type, CarbonResources::ResultType::MALFORMED_RESOURCE_GROUP );
+	EXPECT_EQ( AttemptImportResourceGroupMissingParameter( "Resources", emptyResourceGroupPath ).type, CarbonResources::ResultType::MALFORMED_RESOURCE_GROUP );
 }
 
-// Import a mal formed ResourceGroup
+// Import a malformed ResourceGroup
 // This should fail gracefully and give appropriate feedback to user
 TEST_F( CarbonResourcesLibraryTest, ResourceGroupHandleImportIncorrectlyFormattedInput )
 {
-	// Not yet implemented
-	EXPECT_TRUE( false );
+	CarbonResources::ResourceGroup resourceGroup;
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+	importParams.filename = GetTestFileFileAbsolutePath( "ResourcesRemote/a9/a9d1721dd5cc6d54_4d7a8d216f4c8c5c6379476c0668fe84" );
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::UNSUPPORTED_FILE_FORMAT );
 }
 
 // Import a ResourceGroup with version greater than current document minor version specified in enums.h
@@ -105,24 +149,33 @@ TEST_F( CarbonResourcesLibraryTest, ResourceGroupHandleImportIncorrectlyFormatte
 // The version of the imported ResourceGroup should be set at the max supported version in enums.h
 TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportNewerMinorVersion )
 {
-	// Not yet implemented
-	EXPECT_TRUE( false );
+	CarbonResources::ResourceGroup resourceGroup;
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+	importParams.filename = GetTestFileFileAbsolutePath( "ResourceGroups/HigherMinorVersion.yaml" );
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
 }
 
 // Import a ResourceGroup with version greater than current document major version specified in enums.h
 // This should gracefully fail to open
 TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportNewerMajorVersion )
 {
-	// Not yet implemented
-	EXPECT_TRUE( false );
+	CarbonResources::ResourceGroup resourceGroup;
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+	importParams.filename = GetTestFileFileAbsolutePath( "ResourceGroups/HigherMajorVersion.yaml" );
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::DOCUMENT_VERSION_UNSUPPORTED );
 }
 
 // Import a ResourceGroup that doesn't exist
 // This should gracefully fail
 TEST_F( CarbonResourcesLibraryTest, ResourceGroupImportNonExistantFile )
 {
-	// Not yet implemented
-	EXPECT_TRUE( false );
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+
+	importParams.filename = GetTestFileFileAbsolutePath( "NonexistentFiles/ResourceGroup_which_does_not_exist.yaml" );
+
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::FAILED_TO_OPEN_FILE );
 }
 
 // Import a ResourceGroup v0.1.0 and export it again checking input == output
@@ -435,8 +488,13 @@ TEST_F( CarbonResourcesLibraryTest, CreateResourceGroupFromDirectory )
 
 	EXPECT_EQ( resourceGroup.ExportToFile( exportParams ).type, CarbonResources::ResultType::SUCCESS );
 
-    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroup.yaml" );
-
+#if _WIN64
+    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
+#elif __APPLE__
+    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupMacOS.yaml" );
+#else
+#error Unsupported platform
+#endif
     EXPECT_TRUE( FilesMatch( goldFile, exportParams.filename ) );
 }
 
@@ -452,7 +510,7 @@ TEST_F( CarbonResourcesLibraryTest, CreateResourceGroupFromDirectoryOutputPathIs
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-	exportParams.filename = "***";
+	exportParams.filename = "///";
 
 	EXPECT_EQ( resourceGroup.ExportToFile( exportParams ).type, CarbonResources::ResultType::FAILED_TO_SAVE_FILE );
 

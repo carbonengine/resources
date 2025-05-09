@@ -38,6 +38,8 @@ namespace CryptoPP
 }
 
 
+#include <curl/curl.h>
+
 namespace ResourceTools
 {
 
@@ -59,14 +61,17 @@ namespace ResourceTools
 		uint64_t length;
 	};
 
-	// Initialize CURL.
-	// Should be called once at program startup, but if you are initializing
-	// from a Windows DLL you should not initialize it from DllMain or a static initializer
-	// because Windows holds the loader lock during that time and it could cause a deadlock.
-	// See: https://curl.se/libcurl/c/curl_global_init.html
-	bool Initialize();
-
-	bool ShutDown();  // Shut down CURL.
+	// A utility class for downloading files.
+	// Reuse is encouraged for multiple downloads, but do not share across threads.
+	class Downloader
+	{
+		public:
+			Downloader();
+			~Downloader();
+			bool DownloadFile( const std::string& url, const std::filesystem::path& outputPath );
+	private:
+		CURL* m_curlHandle{ nullptr };
+	};
 
     bool GenerateMd5Checksum( const std::string& data, std::string& checksum );
 
@@ -85,8 +90,6 @@ namespace ResourceTools
 	size_t CountMatchingChunks( const std::filesystem::path& fileA, size_t offsetA, std::filesystem::path fileB, size_t offsetB, size_t chunkSize );
 
     bool GetLocalFileData( const std::filesystem::path& filepath, std::string& data );
-
-    bool DownloadFile( const std::string& url, const std::filesystem::path& outputPath );
 
     bool GZipCompressData( const std::string& dataToCompress, std::string& compressedData );
 

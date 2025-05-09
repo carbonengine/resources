@@ -56,11 +56,17 @@ set(SRC_FILES
     src/ResourceInfo/PatchResourceGroupInfo.cpp
     src/ResourceInfo/BundleResourceGroupInfo.h
     src/ResourceInfo/BundleResourceGroupInfo.cpp
+    src/ParameterVersion.h
+    src/ParameterVersion.cpp
 )
 
 add_library(carbon-resources SHARED ${SRC_FILES})
 
 target_compile_definitions(carbon-resources PRIVATE EXPORT_LIBRARY)
+
+if(WIN32)
+    target_compile_definitions(carbon-resources PRIVATE NOMINMAX) # Do not define min/max macros.
+endif()
 
 target_link_libraries(carbon-resources PRIVATE carbon-resources-tools yaml-cpp::yaml-cpp)
 

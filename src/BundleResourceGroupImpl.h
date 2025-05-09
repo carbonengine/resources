@@ -21,6 +21,8 @@
 
 #include "BundleResourceGroup.h"
 
+#include "ParameterVersion.h"
+
 #include "ResourceGroupImpl.h"
 
 #include "ResourceInfo/BundleResourceInfo.h"
@@ -58,9 +60,9 @@ namespace CarbonResources
 
     protected:
 
-        DocumentParameter<uintmax_t> m_chunkSize = DocumentParameter<uintmax_t>( { 0, 1, 0 }, "ChunkSize" );
+        DocumentParameter<uintmax_t> m_chunkSize = DocumentParameter<uintmax_t>( CHUNK_SIZE, TypeId() );
 
-		DocumentParameter<ResourceGroupInfo*> m_resourceGroupParameter = DocumentParameter<ResourceGroupInfo*>( { 0, 1, 0 }, "ResourceGroupResource" );
+		DocumentParameter<ResourceGroupInfo*> m_resourceGroupParameter = DocumentParameter<ResourceGroupInfo*>( RESOURCE_GROUP_RESOURCE, TypeId() );
 
     };
 

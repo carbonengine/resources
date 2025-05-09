@@ -441,7 +441,8 @@ namespace CarbonResources
 
 		std::replace( url.begin(), url.end(), '\\', '/' );
 
-		bool downloadFileResult = ResourceTools::DownloadFile( url, tempPath.string() );
+    	ResourceTools::Downloader downloader;
+		bool downloadFileResult = downloader.DownloadFile( url, tempPath.string() );
 
         if (!downloadFileResult)
         {
@@ -509,7 +510,8 @@ namespace CarbonResources
 
         std::replace( url.begin(), url.end(), '\\', '/' );
 
-		bool downloadFileResult = ResourceTools::DownloadFile( url, tempPath.string() );
+    	ResourceTools::Downloader downloader;
+		bool downloadFileResult = downloader.DownloadFile( url, tempPath.string() );
 
 		if( !downloadFileResult )
 		{
@@ -546,7 +548,7 @@ namespace CarbonResources
     		}
     		else
     		{
-				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+    			m_binaryOperation.Reset();
     		}
     	}
 
@@ -639,7 +641,7 @@ namespace CarbonResources
 			return Result{ ResultType::FAIL };
         }
 
-        if (m_relativePath.IsParameterExpectedInDocumentVersion(documentVersion))
+        if (m_relativePath.IsParameterExpectedInDocumentVersion( documentVersion ))
         {
 			std::filesystem::path relativePath;
 
@@ -653,7 +655,7 @@ namespace CarbonResources
 			m_relativePath = relativePath;
         }
         
-        if (m_location.IsParameterExpectedInDocumentVersion(documentVersion))
+        if (m_location.IsParameterExpectedInDocumentVersion( documentVersion ))
         {
 			std::string location;
 
@@ -667,7 +669,7 @@ namespace CarbonResources
 			m_location = location;
         }
 		
-        if (m_checksum.IsParameterExpectedInDocumentVersion(documentVersion))
+        if (m_checksum.IsParameterExpectedInDocumentVersion( documentVersion ))
         {
 			std::string checksum;
 
@@ -681,7 +683,7 @@ namespace CarbonResources
 			m_checksum = checksum;
         }
         
-        if (m_uncompressedSize.IsParameterExpectedInDocumentVersion(documentVersion))
+        if (m_uncompressedSize.IsParameterExpectedInDocumentVersion( documentVersion ))
         {
 			uintmax_t uncompressedSize;
 
@@ -695,7 +697,7 @@ namespace CarbonResources
 			m_uncompressedSize = uncompressedSize;
         }
         
-        if (m_compressedSize.IsParameterExpectedInDocumentVersion(documentVersion))
+        if (m_compressedSize.IsParameterExpectedInDocumentVersion( documentVersion ))
         {
 			uintmax_t compressedSize;
 
@@ -709,7 +711,7 @@ namespace CarbonResources
 			m_compressedSize = compressedSize;
         }
 
-    	if (m_binaryOperation.IsParameterExpectedInDocumentVersion(documentVersion))
+    	if (m_binaryOperation.IsParameterExpectedInDocumentVersion( documentVersion ))
     	{
     		unsigned int binaryOperation;
 
@@ -719,8 +721,14 @@ namespace CarbonResources
     		{
     			return getBinaryOperationResult;
     		}
-
-    		m_binaryOperation = binaryOperation;
+			if( binaryOperation != 0 )
+			{
+				m_binaryOperation = binaryOperation;
+			}
+    		else
+    		{
+    			m_binaryOperation.Reset();
+    		}
     	}
 
         return Result{ ResultType::SUCCESS };
@@ -918,13 +926,12 @@ namespace CarbonResources
     	// Binary Operation
     	if( m_binaryOperation.IsParameterExpectedInDocumentVersion( documentVersion ) )
     	{
-    		if( !m_binaryOperation.HasValue() )
+    		// This is an optional field
+    		if( m_binaryOperation.HasValue() )
     		{
-				return Result{ ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET };
+    			out << YAML::Key << m_binaryOperation.GetTag();
+    			out << YAML::Value << m_binaryOperation.GetValue();
     		}
-
-    		out << YAML::Key << m_binaryOperation.GetTag();
-    		out << YAML::Value << m_binaryOperation.GetValue();
     	}
 
         /*

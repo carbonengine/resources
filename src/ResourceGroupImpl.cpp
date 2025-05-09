@@ -68,12 +68,14 @@ namespace CarbonResources
                 // Create resource
 			    auto fileSize = entry.file_size();
 
-                if( fileSize < params.resourceStreamThreshold )  
+                if( fileSize < params.resourceStreamThreshold )
                 {
                     // Create resource from data
 				    ResourceInfoParams resourceParams;
 					
                     resourceParams.relativePath = std::filesystem::relative( entry.path(), params.directory );
+
+                	resourceParams.binaryOperation = ResourceTools::CalculateBinaryOperation( entry.path() );
 
 				    ResourceInfo* resource = new ResourceInfo( resourceParams );
 
@@ -122,17 +124,16 @@ namespace CarbonResources
                 {
                     // Process data via stream
                     ResourceTools::Md5ChecksumStream checksumStream;
+                	std::string compressedData;
 
-                    //ResourceTools::GzipCompressionStream gzipCompressionStream;   //TODO reinstate when fixed
+                    ResourceTools::GzipCompressionStream gzipCompressionStream( &compressedData );
 
                     ResourceTools::FileDataStreamIn fileStreamIn( params.resourceStreamThreshold );
 
-                    /*
                     if (!gzipCompressionStream.Start())
                     {
-						return Result::FAILED_TO_COMPRESS_DATA;
+						return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
                     }
-                    */
 
                     if (!fileStreamIn.StartRead(entry.path()))
                     {
@@ -162,29 +163,22 @@ namespace CarbonResources
 							return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
                         }
 
-						std::string compressedData;
-
-                        /*
-                        ResourceTools::CompressionChunk compressionChunk;
-
-                        compressionChunk.uncompressedData = &fileData;
-
-                        compressionChunk.compressedData = &compressedData;
-
-                        if( !( gzipCompressionStream << compressionChunk ) )
+                        if( !( gzipCompressionStream << &fileData ) )
                         {
-							return Result::FAILED_TO_COMPRESS_DATA;
+							return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
                         }
-                        */
 
                         compressedDataSize += compressedData.size();
+                    	compressedData.clear();
                     }
-					/*
+
                     if (!gzipCompressionStream.Finish())
                     {
-						return Result::FAILED_TO_COMPRESS_DATA;
+						return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
                     }
-                    */
+
+                	compressedDataSize += compressedData.size();
+                	compressedData.clear();
 
                     std::string checksum;
 
@@ -204,6 +198,7 @@ namespace CarbonResources
 
                     resourceParams.checksum = checksum;
 
+                	resourceParams.binaryOperation = ResourceTools::CalculateBinaryOperation( entry.path() );
 
                     Location l;
 
@@ -433,8 +428,7 @@ namespace CarbonResources
 
 			if( !std::getline( ss, value, delimiter ) )
 			{
-				// 33206 seems to be what we currently set for non-binary resources.
-				resourceParams.binaryOperation = 33206;
+				resourceParams.binaryOperation = 0;
 			}
 			else
 			{
@@ -555,8 +549,24 @@ namespace CarbonResources
     Result ResourceGroupImpl::ImportFromYaml( const std::string& data, StatusCallback statusCallback /* = nullptr */ )
     {
         YAML::Node resourceGroupFile = YAML::Load( data );
-        
-        std::string versionStr = resourceGroupFile[m_versionParameter.GetTag()].as<std::string>(); //version stringID needs to be in one place
+
+		YAML::Node typeNode = resourceGroupFile[m_type.GetTag()];
+		if( !typeNode.IsDefined() )
+		{
+			return Result{ ResultType::MALFORMED_RESOURCE_GROUP };
+		}
+		m_type = typeNode.as<std::string>();
+		if( m_type.GetValue() != GetType() )
+		{
+			return Result{ ResultType::FILE_TYPE_MISMATCH };
+		}
+
+    	YAML::Node resourceGroupVersionNode = resourceGroupFile[m_versionParameter.GetTag()];
+    	if( !resourceGroupVersionNode.IsDefined() )
+    	{
+			return Result{ ResultType::MALFORMED_RESOURCE_GROUP };
+    	}
+        std::string versionStr = resourceGroupVersionNode.as<std::string>(); //version stringID needs to be in one place
 		
         VersionInternal version;
 		version.FromString( versionStr );
@@ -574,15 +584,23 @@ namespace CarbonResources
 			version = S_DOCUMENT_VERSION;
         }
 
-        m_type = resourceGroupFile[m_type.GetTag()].as<std::string>();
-
-        /*
-        * TODO reinstate this validation
-		if( m_type.GetValue() != TypeId() )
+		YAML::Node numberOfResourcesNode = resourceGroupFile[m_numberOfResources.GetTag()];
+		if( !numberOfResourcesNode.IsDefined() )
 		{
-			return Result::FILE_TYPE_MISMATCH;
+			return Result{ ResultType::MALFORMED_RESOURCE_GROUP };
 		}
-        */
+
+		YAML::Node totalResourceSizeCompressedNode = resourceGroupFile[m_totalResourcesSizeCompressed.GetTag()];
+		if( !totalResourceSizeCompressedNode.IsDefined() )
+		{
+			return Result{ ResultType::MALFORMED_RESOURCE_GROUP };
+		}
+
+    	YAML::Node totalResourceSizeUncompressedNode = resourceGroupFile[m_totalResourcesSizeUncompressed.GetTag()];
+		if( !totalResourceSizeUncompressedNode.IsDefined() )
+		{
+			return Result{ ResultType::MALFORMED_RESOURCE_GROUP };
+		}
 
         Result res = ImportGroupSpecialisedYaml( resourceGroupFile );
 
@@ -592,8 +610,11 @@ namespace CarbonResources
 		}
 
         YAML::Node resources = resourceGroupFile[m_resourcesParameter.GetTag()];
+    	if( !resources.IsDefined() )
+    	{
+			return Result{ ResultType::MALFORMED_RESOURCE_GROUP };
+    	}
 
-        
         for (auto iter = resources.begin(); iter != resources.end(); iter++)
         {
             // This bit is a sequence

@@ -56,13 +56,7 @@ namespace ResourceTools
       }
       else
       {
-          
-
           // Copy chunk amount out of cache
-		  //std::string& dataRef = *data.data;
-
-          //dataRef = m_cache.substr( 0, m_chunkSize );
-
           int numberOfChunksConsumed = 0;
 
           std::string uncompressedData;
@@ -80,6 +74,8 @@ namespace ResourceTools
 				  return false;
               }
 
+              numberOfChunksConsumed++;
+
               if( compressedData.size() >= m_chunkSize )
               {
                   // Chunk size achieved after compression
@@ -88,9 +84,7 @@ namespace ResourceTools
 				  break;
               }
 
-              numberOfChunksConsumed++;
-
-              if (numberOfChunksConsumed * m_chunkSize > m_cache.size())
+              if ((numberOfChunksConsumed + 1) * m_chunkSize > m_cache.size())
               {
                   // Chunk not achieved, not enough data in cache to create chunk of requested size
 				  break;
@@ -107,11 +101,13 @@ namespace ResourceTools
 			  dataRef = m_cache.substr( 0, m_chunkSize * numberOfChunksConsumed );
 
 			  m_cache.erase( 0, m_chunkSize * numberOfChunksConsumed );
+
+              return true;
           }
 		  
       }
 
-      return true;
+      return false;
 
   }
 
@@ -128,6 +124,7 @@ namespace ResourceTools
 	  }
   	  out = m_cache.substr( 0, n );
   	  m_cache.erase( 0, n );
+	  return true;
   }
 
 }

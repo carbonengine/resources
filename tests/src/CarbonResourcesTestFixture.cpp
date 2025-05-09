@@ -10,8 +10,6 @@
 
 #include <ResourceTools.h>
 
-#include "Paths.h"
-
 void CarbonResourcesTestFixture::SetUp()
 {
 

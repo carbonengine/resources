@@ -23,7 +23,7 @@
 #include "ResourceInfo/ResourceInfo.h"
 #include <vector>
 
-#include "Version.h"
+#include "VersionInternal.h"
 #include "ResourceInfo/PatchResourceInfo.h"
 
 namespace YAML
@@ -121,17 +121,17 @@ namespace CarbonResources
     protected:
 
 	    // Document Parameters
-	    DocumentParameter<VersionInternal> m_versionParameter = DocumentParameter<VersionInternal>( { 1, 0, 0 }, "Version" );
+	    DocumentParameter<VersionInternal> m_versionParameter = DocumentParameter<VersionInternal>( VERSION, TypeId() );
 
-        DocumentParameter<std::string> m_type = DocumentParameter<std::string>( { 1, 0, 0 }, "Type" );
+        DocumentParameter<std::string> m_type = DocumentParameter<std::string>( TYPE, TypeId() );
 
-        DocumentParameter<uintmax_t> m_numberOfResources = DocumentParameter<uintmax_t>( { 1, 0, 0 }, "NumberOfResources" );
+        DocumentParameter<uintmax_t> m_numberOfResources = DocumentParameter<uintmax_t>( NUMBER_OF_RESOURCES, TypeId() );
 
-        DocumentParameter<uintmax_t> m_totalResourcesSizeCompressed = DocumentParameter<uintmax_t>( { 1, 0, 0 }, "TotalResourcesSizeCompressed" );
+        DocumentParameter<uintmax_t> m_totalResourcesSizeCompressed = DocumentParameter<uintmax_t>( TOTAL_RESOURCE_SIZE_COMPRESSED, TypeId() );
 
-        DocumentParameter<uintmax_t> m_totalResourcesSizeUncompressed = DocumentParameter<uintmax_t>( { 1, 0, 0 }, "TotalResourcesSizeUnCompressed" );
+        DocumentParameter<uintmax_t> m_totalResourcesSizeUncompressed = DocumentParameter<uintmax_t>( TOTAL_RESOURCE_SIZE_UNCOMPRESSED, TypeId() );
 
-	    DocumentParameterCollection<ResourceInfo*> m_resourcesParameter = DocumentParameterCollection<ResourceInfo*>( { 0, 0, 0 }, "Resources" );
+	    DocumentParameterCollection<ResourceInfo*> m_resourcesParameter = DocumentParameterCollection<ResourceInfo*>( RESOURCE, TypeId() );
     };
 
 }

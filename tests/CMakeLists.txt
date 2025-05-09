@@ -69,4 +69,5 @@ gtest_discover_tests(
         carbon-resources-test capiTests
         PROPERTIES
             ENVIRONMENT "TEST_DATA_PATH=${TEST_DATA_PATH}"
+        DISCOVERY_MODE PRE_TEST # Workaround to get builds working on macOS on ARM https://gitlab.kitware.com/cmake/cmake/-/issues/21845
 )

@@ -6,8 +6,9 @@
 namespace ResourceTools
 {
   
-  GzipCompressionStream::GzipCompressionStream( ):
-	m_compressionInProgress( false )
+  GzipCompressionStream::GzipCompressionStream( std::string* out ):
+	m_compressionInProgress( false ),
+	m_out( out )
   {
 
   }
@@ -40,37 +41,50 @@ namespace ResourceTools
       return true;
   }
 
-  bool GzipCompressionStream::operator<<( CompressionChunk& compressionChunk )
+  bool GzipCompressionStream::ProcessBuffer( bool finish )
+  {
+  	constexpr size_t CHUNK = 16384; // 16kb
+  	int ret = Z_OK;
+  	unsigned char outbuffer[CHUNK];
+  	int flush{Z_NO_FLUSH};
+  	while( ret == Z_OK && ( finish || !m_buffer.empty() ) )
+  	{
+  		size_t available = m_buffer.size();
+  		m_stream.next_in = reinterpret_cast<Bytef*>( const_cast<char*>( m_buffer.c_str() ) );
+  		m_stream.avail_in = static_cast<uInt>( available );
+  		m_stream.next_out = outbuffer;
+  		m_stream.avail_out = CHUNK;
+  		if( finish && m_buffer.size() <= CHUNK )
+  		{
+  			flush = Z_FINISH;
+  		}
+  		uLong alreadyIn = m_stream.total_in;
+  		uLong alreadyOut = m_stream.total_out;
+  		ret = deflate( &m_stream, flush );
+  		uLong outBytes = m_stream.total_out - alreadyOut;
+  		uLong inBytes = m_stream.total_in - alreadyIn;
+  		m_out->append( std::string( reinterpret_cast<const char*>( outbuffer ), outBytes ) );
+  		m_buffer = m_buffer.substr( inBytes );
+  	}
+
+  	if( ret != Z_OK && ret != Z_STREAM_END )
+  	{
+  		deflateEnd( &m_stream );
+  		return false;
+  	}
+  	return true;
+  }
+
+  bool GzipCompressionStream::operator<<( std::string* toCompress )
   {
       if (!m_compressionInProgress)
       {
 		  return false;
       }
 
-	  int ret = 0;
-	  constexpr int CHUNK = 16384; // 16kb
-	  unsigned char out[CHUNK];
+  	  m_buffer.append( *toCompress );
 
-      
-	  m_stream.next_in = reinterpret_cast<Bytef*>( const_cast<char*>( compressionChunk.uncompressedData->c_str() ) );
-	  m_stream.avail_in = static_cast<uInt>( compressionChunk.uncompressedData->size() );
-
-      do
-	  {
-		  m_stream.next_out = out;
-		  m_stream.avail_out = CHUNK;
-		  int flush = m_stream.avail_in <= CHUNK ? Z_FINISH : Z_NO_FLUSH;
-		  ret = deflate( &m_stream, flush );
-		  compressionChunk.compressedData->append( std::string( reinterpret_cast<const char*>( out ), m_stream.total_out ) );
-	  } while( ret == Z_OK );
-
-      if( ret != Z_STREAM_END )
-	  {
-		  deflateEnd( &m_stream );
-		  return false;
-	  }
-
-	  return true;
+      return ProcessBuffer( false );
   }
 
   bool GzipCompressionStream::Finish()
@@ -80,10 +94,10 @@ namespace ResourceTools
 		  return false;
 	  }
 
+  	  ProcessBuffer( true );
+
       m_compressionInProgress = false;
 
 	  return deflateEnd( &m_stream ) == Z_OK;
   }
-
-
 }

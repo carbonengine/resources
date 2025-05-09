@@ -25,24 +25,16 @@
 
 namespace ResourceTools
 {
-
-    struct CompressionChunk
-    {
-		std::string* uncompressedData;
-
-        std::string* compressedData;
-    };
-
     class GzipCompressionStream
 	{
 	public:
-		GzipCompressionStream( );
+		GzipCompressionStream( std::string* out);
 
 		~GzipCompressionStream();
 
         bool Start();
 
-		bool operator<<( CompressionChunk& compressionChunk );
+		bool operator<<( std::string* toCompress );
 
         bool Finish();
 
@@ -51,6 +43,10 @@ namespace ResourceTools
 
         bool m_compressionInProgress;
         z_stream m_stream;
+    	std::string m_buffer;
+    	std::string* m_out;
+
+    	bool ProcessBuffer( bool finish );
 	};
 
 

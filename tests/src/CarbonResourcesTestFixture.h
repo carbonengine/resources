@@ -23,8 +23,6 @@
 
 #include <gtest/gtest.h>
 
-#include "Paths.h"
-
 #include <filesystem>
 
 struct CarbonResourcesTestFixture : public ::testing::Test

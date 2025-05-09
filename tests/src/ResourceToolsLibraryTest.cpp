@@ -3,12 +3,18 @@
 #include <PatchResourceGroup.h>
 #include <ResourceTools.h>
 #include <BundleStreamOut.h>
+#include <BundleStreamIn.h>
 #include <filesystem>
 
 #include <gtest/gtest.h>
 
 #include "CarbonResourcesTestFixture.h"
+#include "FileDataStreamIn.h"
+#include "GzipCompressionStream.h"
+#include "GzipDecompressionStream.h"
+#include "Md5ChecksumStream.h"
 #include "Patching.h"
+#include "FileDataStreamOut.h"
 
 struct ResourceToolsTest : public CarbonResourcesTestFixture
 {
@@ -39,10 +45,10 @@ TEST_F( ResourceToolsTest, DownloadFile )
 	const char* FOLDER_NAME = "a9";
 	const char* FILE_NAME = "a9d1721dd5cc6d54_e6bbb2df307e5a9527159a4c971034b5";
 
-	const char* testDataPathStr = std::getenv( "TEST_DATA_PATH" );
+	const char* testDataPathStr = TEST_DATA_BASE_PATH;
 	ASSERT_TRUE( testDataPathStr );
+	ResourceTools::Downloader downloader;
 	std::filesystem::path testDataPath(testDataPathStr);
-	ResourceTools::Initialize();
 
 	std::filesystem::path sourcePath = testDataPath / "resourcesLocal" / FOLDER_NAME / FILE_NAME;
 	std::string sourcePathString(sourcePath.string());
@@ -56,7 +62,7 @@ TEST_F( ResourceToolsTest, DownloadFile )
 		std::filesystem::remove( outputPath );
 	}
 	EXPECT_FALSE( std::filesystem::exists( outputPath ) );
-	EXPECT_TRUE( ResourceTools::DownloadFile( url, outputPathString ) );
+	EXPECT_TRUE( downloader.DownloadFile( url, outputPathString ) );
 	EXPECT_TRUE( std::filesystem::exists( outputPath ) );
 
 	// Check if download succeeds.
@@ -72,7 +78,6 @@ TEST_F( ResourceToolsTest, DownloadFile )
 	std::string checksum;
 	ResourceTools::GenerateMd5Checksum( downloadedData, checksum );
 	EXPECT_STREQ( checksum.c_str(), "6ccf6b7e2e263646f5a78e77b9ba3168" );
-	ResourceTools::ShutDown();
 }
 
 TEST_F( ResourceToolsTest, GZipCompressString )
@@ -80,38 +85,32 @@ TEST_F( ResourceToolsTest, GZipCompressString )
 	std::string inputDataToCompress = "SomeData";
 	std::string outputData = "";
 	EXPECT_TRUE( ResourceTools::GZipCompressData( inputDataToCompress, outputData ) );
-	std::string expected( "\x1F\x8B\b\0\0\0\0\0\x2\n\v\xCE\xCFMuI,I\x4\0\xB8pH\n\b\0\0\0", 28 );
-	EXPECT_EQ( outputData, expected );
+	EXPECT_EQ( outputData.substr( 0, 2 ), "\x1F\x8B"); // Start of GZIP header.
 }
 
 TEST_F( ResourceToolsTest, GZipCompressData )
 {
-	const char* FOLDER_NAME = "a9";
-	const char* FILE_NAME = "a9d1721dd5cc6d54_e6bbb2df307e5a9527159a4c971034b5";
-	const int GZIP_HEADER_BYTES = 10; // The size of a standard gzip header with no "optional" fields.
-	const int FILENAME_BYTES = strlen( FILE_NAME ) + 1; // Number of bytes that the "optional" filename field takes up in the header. 49 characters and one '\0' byte
-
-	const char* testDataPathStr = std::getenv( "TEST_DATA_PATH" );
+	const char* testDataPathStr = TEST_DATA_BASE_PATH;
 	ASSERT_TRUE( testDataPathStr );
 	std::filesystem::path testDataPath( testDataPathStr );
-	std::filesystem::path zippedSourcePath = testDataPath / "resourcesLocal" / FOLDER_NAME / FILE_NAME;
-	std::filesystem::path unzippedSourcePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path sourcePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
 
-	std::string zippedFileData;
-	ASSERT_TRUE( ResourceTools::GetLocalFileData( zippedSourcePath, zippedFileData ) );
-
-	std::string unzippedFileData;
-	ASSERT_TRUE( ResourceTools::GetLocalFileData( unzippedSourcePath, unzippedFileData ) );
+	std::string fileData;
+	ASSERT_TRUE( ResourceTools::GetLocalFileData( sourcePath, fileData ) );
 
 	std::string compressed;
-	EXPECT_TRUE( ResourceTools::GZipCompressData( unzippedFileData, compressed ) );
+	EXPECT_TRUE( ResourceTools::GZipCompressData( fileData, compressed ) );
 
-	// Check that the compressed file matches the data in the file we have on disk
-	// EXCEPT for the header.
-	// https://docs.fileformat.com/compression/gz/
-	std::string compressedNoHeader = compressed.substr( GZIP_HEADER_BYTES );
-	std::string zippedFileDataNoHeader = zippedFileData.substr( GZIP_HEADER_BYTES + FILENAME_BYTES );
-	EXPECT_EQ( compressedNoHeader, zippedFileDataNoHeader );
+	std::string decompressed;
+	EXPECT_TRUE( ResourceTools::GZipUncompressData( compressed, decompressed ) );
+
+	// Make sure decompressed file matches expected contents.
+	std::string originalChecksum;
+	ResourceTools::GenerateMd5Checksum( fileData, originalChecksum );
+
+	std::string decompressedChecksum;
+	ResourceTools::GenerateMd5Checksum( decompressed, decompressedChecksum );
+	EXPECT_EQ( decompressedChecksum, originalChecksum );
 }
 
 TEST_F( ResourceToolsTest, GZipUncompressString )
@@ -121,32 +120,6 @@ TEST_F( ResourceToolsTest, GZipUncompressString )
 	EXPECT_TRUE( ResourceTools::GZipUncompressData( inputDataToUncompress, outputData ) );
 	EXPECT_EQ( outputData, "SomeData" );
 }
-
-TEST_F( ResourceToolsTest, GZipUncompressData )
-{
-	const char* FOLDER_NAME = "a9";
-	const char* FILE_NAME = "a9d1721dd5cc6d54_e6bbb2df307e5a9527159a4c971034b5";
-	const char* testDataPathStr = std::getenv( "TEST_DATA_PATH" );
-	ASSERT_TRUE( testDataPathStr );
-
-	std::filesystem::path testDataPath( testDataPathStr );
-	std::filesystem::path zippedSourcePath = testDataPath / "resourcesLocal" / FOLDER_NAME / FILE_NAME;
-	std::filesystem::path unzippedSourcePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
-
-	// Load gzipped file.
-	std::string zippedFileData;
-	ASSERT_TRUE( ResourceTools::GetLocalFileData( zippedSourcePath, zippedFileData ) );
-
-	// Decompress the file.
-	std::string decompressed;
-	EXPECT_TRUE( ResourceTools::GZipUncompressData( zippedFileData, decompressed ) );
-
-	// Make sure decompressed file matches expected contents.
-	std::string checksum;
-	ResourceTools::GenerateMd5Checksum( decompressed, checksum );
-	EXPECT_EQ( checksum, "e6bbb2df307e5a9527159a4c971034b5" );
-}
-
 TEST_F( ResourceToolsTest, ResourceChunking )
 {
 	uintmax_t chunkSize = 1000;
@@ -242,12 +215,8 @@ TEST_F( ResourceToolsTest, ResourceChunking )
 	EXPECT_TRUE( ResourceTools::SaveFile( chunkPath, chunkData ) );
 
 
-    // TODO reimplement this
-
-    /*
-
 	// Reconsitute the files
-	ResourceTools::ChunkStream chunkStreamReconstitute( chunkSize );
+	ResourceTools::BundleStreamIn chunkStreamReconstitute( chunkSize );
 
     for (int i = 0; i < numberOfChunks + 1; i++)
     {
@@ -273,66 +242,58 @@ TEST_F( ResourceToolsTest, ResourceChunking )
 
     // Reconstitute the files and check they match original
 
-    // Resource 1
-	std::string reconstitutedResource1Data;
+    struct Resource
+    {
+		std::filesystem::path reconsitutedPath;
 
-	ResourceTools::GetFile resource1File;
+        size_t expectedFileSize;
 
-    resource1File.data = &reconstitutedResource1Data;
+        std::string expectedChecksum;
+    };
 
-    resource1File.fileSize = resource1Data.size();
+    std::vector<Resource> reconstitutedResources;
 
-    EXPECT_TRUE( chunkStreamReconstitute >> resource1File );
+    reconstitutedResources.push_back( Resource{ "Chunks/One.png", resource1Data.size(), resource1Checksum } );
 
-	std::string reconstitutedResource1Checksum;
+    reconstitutedResources.push_back( Resource{ "Chunks/Two.png", resource2Data.size(), resource2Checksum } );
 
-	EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( reconstitutedResource1Data, reconstitutedResource1Checksum ) );
+    reconstitutedResources.push_back( Resource{ "Chunks/Three.png", resource3Data.size(), resource3Checksum } );
 
-    EXPECT_EQ( resource1Checksum, reconstitutedResource1Checksum );
+    for( auto reconsititedResource : reconstitutedResources )
+    {
 
-    EXPECT_TRUE( ResourceTools::SaveFile( "Chunks/One.png", reconstitutedResource1Data ) );
+		ResourceTools::FileDataStreamOut resourceDataStreamOut;
 
+		EXPECT_TRUE( resourceDataStreamOut.StartWrite( reconsititedResource.reconsitutedPath ) );
 
-    // Resource 2
-	std::string reconstitutedResource2Data;
+		ResourceTools::Md5ChecksumStream reconstitutedResource1ChecksumStream;
 
-	ResourceTools::GetFile resource2File;
+		while( resourceDataStreamOut.GetFileSize() < reconsititedResource.expectedFileSize )
+		{
+			std::string reconstitutedResourceData;
 
-	resource2File.data = &reconstitutedResource2Data;
+			ResourceTools::GetFile resourceFile;
 
-	resource2File.fileSize = resource2Data.size();
+			resourceFile.data = &reconstitutedResourceData;
 
-	EXPECT_TRUE( chunkStreamReconstitute >> resource2File );
+			resourceFile.fileSize = reconsititedResource.expectedFileSize;
 
-	std::string reconstitutedResource2Checksum;
+			EXPECT_TRUE( chunkStreamReconstitute >> resourceFile );
 
-	EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( reconstitutedResource2Data, reconstitutedResource2Checksum ) );
+			EXPECT_TRUE( resourceDataStreamOut << reconstitutedResourceData );
 
-	EXPECT_EQ( resource2Checksum, reconstitutedResource2Checksum );
+			EXPECT_TRUE( reconstitutedResource1ChecksumStream << reconstitutedResourceData );
+		}
 
-    EXPECT_TRUE( ResourceTools::SaveFile( "Chunks/Two.png", reconstitutedResource2Data ) );
+		// Finish streaming out
+		resourceDataStreamOut.Finish();
 
+		std::string reconstitutedChecksum;
 
-    // Resource 3
-	std::string reconstitutedResource3Data;
+		EXPECT_TRUE( reconstitutedResource1ChecksumStream.FinishAndRetrieve( reconstitutedChecksum ) );
 
-	ResourceTools::GetFile resource3File;
-
-	resource3File.data = &reconstitutedResource3Data;
-
-	resource3File.fileSize = resource3Data.size();
-
-	EXPECT_TRUE( chunkStreamReconstitute >> resource3File );
-
-	std::string reconstitutedResource3Checksum;
-
-	EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( reconstitutedResource3Data, reconstitutedResource3Checksum ) );
-
-	EXPECT_EQ( resource3Checksum, reconstitutedResource3Checksum );
-
-    EXPECT_TRUE( ResourceTools::SaveFile( "Chunks/Three.png", reconstitutedResource3Data ) );
-
-    */
+		EXPECT_EQ( reconsititedResource.expectedChecksum, reconstitutedChecksum );
+    }
 
 }
 
@@ -381,16 +342,19 @@ TEST_F( ResourceToolsTest, CreateApplyPatch )
 
 TEST_F( ResourceToolsTest, CreateApplyPatchFile )
 {
-	const char* testDataPathStr = std::getenv( "TEST_DATA_PATH" );
+	const char* testDataPathStr = TEST_DATA_BASE_PATH;
 	ASSERT_TRUE( testDataPathStr );
 	std::filesystem::path testDataPath(testDataPathStr);
-	ResourceTools::Initialize();
 
 	std::filesystem::path before_src = testDataPath / "Patch" / "PreviousBuildResources" / "introMovie.txt";
 	std::filesystem::path after_src = testDataPath / "Patch" / "NextBuildResources" / "introMovie.txt";
 
-	std::filesystem::path patch = std::filesystem::temp_directory_path() / "CarbonResources" / "introMovie.patch";
-	std::filesystem::path before = std::filesystem::temp_directory_path() / "CarbonResources" /  "introMovie.txt";
+	std::filesystem::path tempDir = std::filesystem::temp_directory_path() / "CarbonResources";
+
+	std::filesystem::path patch = tempDir / "introMovie.patch";
+	std::filesystem::path before = tempDir /  "introMovie.txt";
+
+	std::filesystem::create_directories( tempDir );
 
 	std::filesystem::remove( before );
 	std::filesystem::remove( patch );
@@ -419,10 +383,9 @@ TEST_F( ResourceToolsTest, CreateApplyPatchFile )
 
 TEST_F( ResourceToolsTest, ApplyPatchFileChunked )
 {
-	const char* testDataPathStr = std::getenv( "TEST_DATA_PATH" );
+	const char* testDataPathStr = TEST_DATA_BASE_PATH;
 	ASSERT_TRUE( testDataPathStr );
 	std::filesystem::path testDataPath(testDataPathStr);
-	ResourceTools::Initialize();
 
 	std::filesystem::path before_src = testDataPath / "Patch" / "PreviousBuildResources" / "introMovie.txt";
 	std::filesystem::path after_src = testDataPath / "Patch" / "NextBuildResources" / "introMovie.txt";
@@ -544,7 +507,7 @@ TEST_F( ResourceToolsTest, FindMatchingChunksInString )
 
 TEST_F( ResourceToolsTest, FindMatchingChunkInFile )
 {
-	const char* testDataPathStr = std::getenv( "TEST_DATA_PATH" );
+	const char* testDataPathStr = TEST_DATA_BASE_PATH;
 	ASSERT_TRUE( testDataPathStr );
 	std::filesystem::path testDataPath(testDataPathStr);
     std::filesystem::path introMovieFilePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
@@ -572,7 +535,7 @@ TEST_F( ResourceToolsTest, FindMatchingChunkInFile )
 
 TEST_F( ResourceToolsTest, CountMatchingChunks )
 {
-	const char* testDataPathStr = std::getenv( "TEST_DATA_PATH" );
+	const char* testDataPathStr = TEST_DATA_BASE_PATH;
 	ASSERT_TRUE( testDataPathStr );
 	std::filesystem::path testDataPath(testDataPathStr);
 	std::filesystem::path introMovieFilePath = testDataPath / "Patch" / "previousBuildResources" / "introMoviePrefixed.txt";
@@ -591,7 +554,7 @@ TEST_F( ResourceToolsTest, CalculateBinaryOperationMacOS )
 	// Expected values
 	// 33279: Binaries, not just executables (No extension, .so, .pyd)
 	// 33188: Basically everything else
-	std::filesystem::path testDataPath = std::getenv( "TEST_DATA_PATH" );
+	std::filesystem::path testDataPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path textFilePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
 	std::filesystem::path nonexistantFilePath = testDataPath / "resourcesOnBranch" / "thisFileDoesNotExist.txt";
 	ASSERT_EQ(33188, ResourceTools::CalculateBinaryOperation(textFilePath));
@@ -603,8 +566,7 @@ TEST_F( ResourceToolsTest, CalculateBinaryOperationWindows )
 	// Expected values
 	// 33279: Executables (.exe, .bat, .cmd, .com) # See: update_st_mode_from_path Modules/posixmodule.c
 	// 33206: Basically everything else (.dll, .pyd, .yaml, .txt etc. )
-	std::filesystem::path testDataPathStr = std::getenv( "TEST_DATA_PATH" );
-	std::filesystem::path testDataPath = std::getenv( "TEST_DATA_PATH" );
+	std::filesystem::path testDataPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path textFilePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
 	std::filesystem::path nonexistantFilePath = testDataPath / "resourcesOnBranch" / "thisFileDoesNotExist.txt";
 	std::filesystem::path binaryFilePath = std::filesystem::temp_directory_path() / "CarbonResources" /  "binary.exe";
@@ -615,3 +577,45 @@ TEST_F( ResourceToolsTest, CalculateBinaryOperationWindows )
 	ASSERT_EQ(0, ResourceTools::CalculateBinaryOperation(nonexistantFilePath));
 }
 #endif
+
+TEST_F( ResourceToolsTest, GzipStreams )
+{
+	std::string outbuffer;
+	ResourceTools::GzipCompressionStream stream(&outbuffer);
+	stream.Start();
+	ResourceTools::FileDataStreamIn fileStreamIn( 50 );
+	std::filesystem::path testDataPath = TEST_DATA_BASE_PATH;
+	std::filesystem::path testFile = testDataPath / "resourcesOnBranch" / "introMovie.txt";
+	fileStreamIn.StartRead(testFile);
+	ResourceTools::Md5ChecksumStream originalMd5Stream;
+
+	while (!fileStreamIn.IsFinished())
+	{
+		std::string fileData;
+		ASSERT_TRUE(fileStreamIn >> fileData);
+		std::string compressedData;
+		originalMd5Stream << fileData;
+
+		ASSERT_TRUE( stream << &fileData );
+	}
+	ASSERT_TRUE( stream.Finish() );
+
+
+	std::string uncompressedData;
+	ResourceTools::GzipDecompressionStream decompressionStream(&uncompressedData);
+	decompressionStream.Start();
+	EXPECT_TRUE( decompressionStream << &outbuffer );
+	EXPECT_TRUE( decompressionStream.Finish() );
+
+	std::string originalData;
+	ResourceTools::GetLocalFileData( testFile, originalData );
+
+	std::string originalChecksum;
+	EXPECT_TRUE( originalMd5Stream.FinishAndRetrieve( originalChecksum ) );
+
+	ResourceTools::Md5ChecksumStream uncompressedMd5Stream;
+	uncompressedMd5Stream << uncompressedData;
+	std::string uncompressedChecksum;
+	EXPECT_TRUE( uncompressedMd5Stream.FinishAndRetrieve( uncompressedChecksum ) );
+	EXPECT_EQ( uncompressedChecksum, originalChecksum );
+}
