@@ -21,7 +21,7 @@ namespace CarbonResources
     {
 		std::string relativePathChecksum = "";
 
-		if( !ResourceTools::GenerateFowlerNollVoChecksum( relativePath.string(), relativePathChecksum ) )
+		if( !ResourceTools::GenerateFowlerNollVoChecksum( relativePath.generic_string(), relativePathChecksum ) )
 		{
 			return Result{ ResultType::FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUM };
 		}
