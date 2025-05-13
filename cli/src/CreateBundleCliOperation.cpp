@@ -114,8 +114,18 @@ bool CreateBundleCliOperation::Execute() const
 
 	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = m_argumentParser->get<std::string>( m_bundleResourceGroupDestinationBasePathArgumentId );
 
-	bundleCreateParams.chunkSize = std::stoull( m_argumentParser->get( m_chunkSizeArgumentId ) );
-
+	try
+	{
+		bundleCreateParams.chunkSize = std::stoull( m_argumentParser->get( m_chunkSizeArgumentId ) );
+	}
+	catch( std::invalid_argument& e )
+	{
+		return false;
+	}
+	catch( std::out_of_range& e )
+	{
+		return false;
+	}
 	PrintStartBanner( resourceGroupParams, bundleCreateParams );
 
 	return CreateBundle( resourceGroupParams, bundleCreateParams );
