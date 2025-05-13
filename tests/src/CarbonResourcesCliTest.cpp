@@ -34,7 +34,7 @@ TEST_F( CarbonResourcesCliTest, CreateBundle )
 	arguments.push_back( GetTestFileFileAbsolutePath( "Bundle/Res" ).string() );
 
 	arguments.push_back( "--bundle-resourcegroup-relative-path" );
-	arguments.push_back( "BundleResourceGroup.yaml" );
+	arguments.push_back( "BundleOut/BundleResourceGroup.yaml" );
 
 	arguments.push_back( "--bundle-resourcegroup-destination-type" );
 	arguments.push_back( "LOCAL_RELATIVE" );
@@ -91,6 +91,18 @@ TEST_F( CarbonResourcesCliTest, CreatePatch )
 
 	arguments.push_back( "--resource-source-base-path-previous");
 	arguments.push_back( previousResourcesLocation );
+
+	arguments.push_back( "--patch-resourcegroup-destination-path");
+	arguments.push_back( "PatchOut" );
+
+	arguments.push_back( "--patch-destination-base-path" );
+	arguments.push_back( "Patchout/Patches" );
+
+	arguments.push_back( "--patch-destination-type" );
+	arguments.push_back( "LOCAL_CDN" );
+
+	arguments.push_back( "--chunk-size" );
+	arguments.push_back( "50000000" );
 
 	int res = RunCli( arguments, output );
 
