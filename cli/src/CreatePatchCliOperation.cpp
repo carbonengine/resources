@@ -51,7 +51,6 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
     AddArgument( m_patchFileRelativePathPrefix, "Relative path prefix for produced patch binaries. Default is “Patches/Patch” which will produce patches such as Patches/Patch.1 …", false, "Patches/Patch" );
 
     AddArgument( m_maxInputChunkSize, "Files are processed in chunks, maxInputFileChunkSize indicate the size of this chunk. Files smaller than chunk will be processed in one pass.", false, "100000000" );
-	m_argumentParser->at(m_maxInputChunkSize).default_value<uintmax_t>( 100000000 );
 }
 
 bool CreatePatchCliOperation::Execute() const
@@ -156,7 +155,18 @@ bool CreatePatchCliOperation::Execute() const
 
 	createPatchParams.patchFileRelativePathPrefix = m_argumentParser->get<std::string>( m_patchFileRelativePathPrefix );
 
-	createPatchParams.maxInputFileChunkSize = m_argumentParser->get<uintmax_t>( m_maxInputChunkSize );
+	try
+	{
+		createPatchParams.maxInputFileChunkSize = std::stoull( m_argumentParser->get( m_maxInputChunkSize ) );
+	}
+	catch( std::invalid_argument& e )
+	{
+		return false;
+	}
+	catch( std::out_of_range& e )
+	{
+		return false;
+	}
 
     if (s_verbosity > 0)
     {
