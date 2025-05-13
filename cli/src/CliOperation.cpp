@@ -38,14 +38,14 @@ bool CliOperation::AddRequiredPositionalArgument( const std::string& argumentId,
 		.help( helpString );
 }
 
-bool CliOperation::AddArgument( const std::string& argumentId, const std::string& helpString, bool required /* = false*/, std::string defualtValue /*= ""*/ )
+bool CliOperation::AddArgument( const std::string& argumentId, const std::string& helpString, bool required /* = false*/, std::string defaultValue /*= ""*/ )
 {
 	if( !m_argumentParser )
 	{
 		return false;
 	}
 
-	argparse::Argument argument = m_argumentParser->add_argument( argumentId )
+	argparse::Argument& argument = m_argumentParser->add_argument( argumentId )
 									  .help( helpString );
 
 	if( required )
@@ -53,9 +53,9 @@ bool CliOperation::AddArgument( const std::string& argumentId, const std::string
 		argument.required();
 	}
 
-	if( defualtValue != "" )
+	if( !defaultValue.empty() )
 	{
-		argument.default_value( defualtValue );
+		argument.default_value( defaultValue );
 	}
 }
 

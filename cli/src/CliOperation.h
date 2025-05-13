@@ -58,7 +58,7 @@ protected:
 
     bool AddRequiredPositionalArgument( const std::string& argumentId, const std::string& helpString );
 
-	bool AddArgument( const std::string& argumentId, const std::string& helpString, bool required = false, std::string defualtValue = "" );
+	bool AddArgument( const std::string& argumentId, const std::string& helpString, bool required = false, std::string defaultValue = "" );
 
     argparse::ArgumentParser* m_argumentParser;
 
