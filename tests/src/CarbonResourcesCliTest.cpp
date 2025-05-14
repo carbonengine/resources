@@ -13,11 +13,11 @@ TEST_F( CarbonResourcesCliTest, CreateResourceGroupFromDirectory )
 	arguments.push_back( "-VVV" );
 
 	std::filesystem::path inputDirectory = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceFiles" );
-	arguments.push_back( inputDirectory );
+	arguments.push_back( inputDirectory.string() );
 
 	arguments.push_back( "--output-file" );
 	std::filesystem::path outputFile = "GroupOut/ResourceGroup.yaml";
-	arguments.push_back( outputFile );
+	arguments.push_back( outputFile.string() );
 
 	int res = RunCli( arguments, output );
 
