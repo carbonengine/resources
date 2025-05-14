@@ -28,17 +28,17 @@ class CreateResourceGroupCliOperation : public CliOperation
 public:
 	CreateResourceGroupCliOperation();
 
-	virtual bool Execute() const override;
+	virtual bool Execute() const final;
 
 private:
-
-	bool CreateResourceGroup( const std::filesystem::path& inputDirectory, const std::filesystem::path& resourceGroupOutputDirectory ) const;
+    void PrintStartBanner( const std::filesystem::path& inputDirectory, const std::filesystem::path& resourceGroupOutputDirectory ) const;
+	bool CreateResourceGroup( const std::filesystem::path& inputDirectory, const std::filesystem::path& resourceGroupOutputFile ) const;
 
 private:
 
 	std::string m_createResourceGroupPathArgumentId;
 
-	std::string m_createResourceGroupOutputFilenameArgumentId;
+	std::string m_createResourceGroupOutputFileArgumentId;
 };
 
 #endif // CreateResourceGroupCliOperation_H

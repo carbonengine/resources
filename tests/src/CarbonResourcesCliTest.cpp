@@ -2,7 +2,6 @@
 
 struct CarbonResourcesCliTest : public CliTestFixture{};
 
-//TODO: Implement
 TEST_F( CarbonResourcesCliTest, CreateResourceGroupFromDirectory )
 {
 	std::string output;
@@ -11,11 +10,25 @@ TEST_F( CarbonResourcesCliTest, CreateResourceGroupFromDirectory )
 
 	arguments.push_back( "create-group" );
 
-	arguments.push_back( "PATH_TO_RESOURCELIST_TO_BUNDLE" );
+	arguments.push_back( "-VVV" );
+
+	std::filesystem::path inputDirectory = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceFiles" );
+	arguments.push_back( inputDirectory );
+
+	arguments.push_back( "--output-file" );
+	std::filesystem::path outputFile = "GroupOut/ResourceGroup.yaml";
+	arguments.push_back( outputFile );
 
 	int res = RunCli( arguments, output );
 
-	EXPECT_TRUE( BundleIsValid() );
+#if _WIN64
+    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
+#elif __APPLE__
+    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupMacOS.yaml" );
+#else
+#error Unsupported platform
+#endif
+    EXPECT_TRUE( FilesMatch( goldFile, "GroupOut/ResourceGroup.yaml" ) );
 }
 
 TEST_F( CarbonResourcesCliTest, CreateBundle )
