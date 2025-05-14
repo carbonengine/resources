@@ -47,12 +47,6 @@ if(WIN32)
         COMMAND_EXPAND_LISTS
     )
 
-    # Curl depends on zlib1.dll, which needs to be copied explicitly.
-    add_custom_command(
-        TARGET carbon-resources-test POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE_DIR:CURL::libcurl_shared>/zlib1.dll $<TARGET_FILE_DIR:carbon-resources-test>
-        COMMAND_EXPAND_LISTS
-    )
 elseif(APPLE)
     # Get CLI exe
     add_custom_command(

@@ -11,3 +11,15 @@ set(VCPKG_OSX_DEPLOYMENT_TARGET 10.15)
 if (PORT MATCHES "bsdiff-drake127")
     set(VCPKG_LIBRARY_LINKAGE static)
 endif()
+
+if (PORT MATCHES "yaml-cpp")
+    set(VCPKG_LIBRARY_LINKAGE static)
+endif()
+
+if (PORT MATCHES "curl")
+    set(VCPKG_LIBRARY_LINKAGE static)
+endif()
+
+if (PORT MATCHES "zlib")
+    set(VCPKG_LIBRARY_LINKAGE static)
+endif()

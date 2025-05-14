@@ -70,8 +70,6 @@ endif()
 
 target_link_libraries(carbon-resources PRIVATE carbon-resources-tools yaml-cpp::yaml-cpp)
 
-#target_include_directories(carbon-resources PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
-
 target_include_directories(carbon-resources
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -85,6 +83,23 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 set_target_properties(carbon-resources PROPERTIES OUTPUT_NAME "_carbon-resources")
+
+# Static lib used for cli
+add_library(carbon-resources-static STATIC ${SRC_FILES})
+
+target_compile_definitions(carbon-resources-static PUBLIC CARBON_RESOURCES_STATIC)
+
+if(WIN32)
+    target_compile_definitions(carbon-resources-static PRIVATE NOMINMAX) # Do not define min/max macros.
+endif()
+
+target_link_libraries(carbon-resources-static PRIVATE carbon-resources-tools yaml-cpp::yaml-cpp)
+
+target_include_directories(carbon-resources-static
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+)
 
 add_subdirectory(cli)
 

@@ -14,3 +14,15 @@ set(VCPKG_CXX_FLAGS ${VCPKG_C_FLAGS})
 if (PORT MATCHES "bsdiff-drake127")
     set(VCPKG_LIBRARY_LINKAGE static)
 endif()
+
+if (PORT MATCHES "yaml-cpp")
+    set(VCPKG_LIBRARY_LINKAGE static)
+endif()
+
+if (PORT MATCHES "curl")
+    set(VCPKG_LIBRARY_LINKAGE static)
+endif()
+
+if (PORT MATCHES "zlib")
+    set(VCPKG_LIBRARY_LINKAGE static)
+endif()

@@ -19,7 +19,7 @@ set(SRC_FILES
 
 ccp_add_executable(carbon-resources-cli ${SRC_FILES})
 
-target_link_libraries(carbon-resources-cli PRIVATE carbon-resources argparse::argparse)
+target_link_libraries(carbon-resources-cli PRIVATE carbon-resources-static argparse::argparse)
 
 get_target_property(_SOURCES carbon-resources-cli SOURCES)
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -28,3 +28,11 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 set_target_properties(carbon-resources-cli PROPERTIES OUTPUT_NAME "carbon-resources")
+
+# Install rule to ensure that our runtime files are in the expected, platform-specific folder
+install(
+        TARGETS carbon-resources-cli
+        EXPORT carbon-resources-cliTarget
+        CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
+        RUNTIME DESTINATION bin/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
+)
