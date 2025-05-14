@@ -1,0 +1,202 @@
+
+SUBTITLE
+# The Amarrians encountered the Minmatar race
+0:1.05 - 0:2.23
+"G_EI_10_01"
+
+SUBTITLE
+# dismissing them as primitive barbarians destined for a life of slavery
+0:3.78 - 0:3.98
+"G_EI_10_02"
+
+SUBTITLE
+# Moving quickly to subjugate them
+0:9.19 - 0:1.76
+"G_EI_10_03"
+
+SUBTITLE
+# they launched a merciless crusade against the Minmatar worlds
+0:11.29 - 0:3.02
+"G_EI_10_04"
+
+
+
+SEGMENT
+3:13.14 - 0:15.04
+"Gallente(Scene 11)"
+
+TRANSFORM
+0:0.0 - 0:19.04
+"Scene 11"
+
+AUDIO
+0:1.75 - 0:14.25
+"res:/sound/music/intro/11_01.ogg"
+
+SUBTITLE
+# At the same time, the Gallente race flourished nearby
+0:1.77 - 0:3.42
+"G_EI_11_01"
+
+SUBTITLE
+# They created the first democratic republic of the new era
+0:6.55 - 0:3.33
+"G_EI_11_02"
+
+SUBTITLE
+# and established a regional federation of independent states
+0:10.65 - 0:3.56
+"G_EI_11_03"
+
+
+
+SEGMENT
+3:28.18 - 0:12.63
+"Caldari(Scene 12)"
+
+TRANSFORM
+0:0.0 - 0:16.63
+"Scene 12"
+
+AUDIO
+0:1.01 - 0:13.66
+"res:/sound/music/intro/12_01.ogg"
+
+SUBTITLE
+# The Caldari emerged as the strongest state among them
+0:1.03 - 0:3.02
+"G_EI_12_01"
+
+SUBTITLE
+# driven by the relentless pursuit of economic and military might
+0:4.28 - 0:3.28
+"G_EI_12_02"
+
+SUBTITLE
+# Their nationalist ideals soon clashed with Gallente liberalism
+0:8.88 - 0:3.72
+"G_EI_12_03"
+
+
+
+
+SEGMENT
+3:40.81 - 0:27.41
+"Bombardment(Scene 13)"
+
+TRANSFORM
+0:0.0 - 0:31.41
+"Scene 13"
+
+AUDIO
+0:0.0 - 0:30.10
+"res:/sound/music/intro/s013.ogg"
+
+AUDIO
+0:2.04 - 0:6.86
+"res:/sound/music/intro/13_01.ogg"
+
+AUDIO
+0:10.67 - 0:5.95
+"res:/sound/music/intro/13_02.ogg"
+
+AUDIO
+0:19.91 - 0:9.57
+"res:/sound/music/intro/13_03.ogg"
+
+SUBTITLE
+# Destruction and suffering once again
+0:2.04 - 0:2.06
+"G_EI_13_01"
+
+SUBTITLE
+# became the defining essence of our civilization
+0:4.1 - 0:2.8
+"G_EI_13_02"
+
+SUBTITLE
+# Four races...
+0:10.83 - 0:0.69
+"G_EI_13_03"
+
+SUBTITLE
+# torn apart by two horrific wars
+0:12.54 - 0:2.28
+"G_EI_13_04"
+
+SUBTITLE
+# When all that remained were the smoldering ruins
+0:19.94 - 0:2.4
+"G_EI_13_05"
+
+SUBTITLE
+# of lost cities and shattered lives
+0:22.34 - 0:2.3
+"G_EI_13_06"
+
+SUBTITLE
+# a universal truce was declared to end the despair
+0:25.01 - 0:2.98
+"G_EI_13_07"
+
+
+
+
+SEGMENT
+4:8.22 - 0:11.18
+"Station(Scene 14)"
+
+TRANSFORM
+0:0.0 - 0:15.18
+"Scene 14"
+
+AUDIO
+0:3.19 - 0:10.88
+"res:/sound/music/intro/14_01.ogg"
+
+SUBTITLE
+# For more than a century the races of EVE have coexisted in relative peace
+0:3.22 - 0:3.97
+"G_EI_14_01"
+
+SUBTITLE
+# Prosperity and the pursuit of wealth govern the mission of mankind
+0:8.72 - 0:3.65
+"G_EI_14_02"
+
+
+
+
+SEGMENT
+4:19.4 - 0:29.07
+"Finale(Scene 15)"
+
+TRANSFORM
+0:0.0 - 0:29.07
+"Scene 15"
+
+AUDIO
+0:3.85 - 0:18.75
+"res:/sound/music/intro/15_01.ogg"
+
+SUBTITLE
+# We have a destiny to meet...
+0:3.85 - 0:1.43
+"G_EI_15_01"
+
+SUBTITLE
+# and the courage of our pilots will show us the path
+0:6.18 - 0:2.58
+"G_EI_15_02"
+
+SUBTITLE
+# On the strength of your wings the fate of empires
+0:10.62 - 0:2.66
+"G_EI_15_03"
+
+SUBTITLE
+and the hopes of worlds will be decided
+0:13.27 - 0:2.4
+"G_EI_15_04"
+
+SUBTI

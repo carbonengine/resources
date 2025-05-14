@@ -33,6 +33,7 @@ public:
 	virtual bool Execute() const override;
 
 private:
+    void PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const;
 	bool CreateBundle( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const;
 
 private:

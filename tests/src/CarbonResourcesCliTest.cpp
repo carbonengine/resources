@@ -2,7 +2,6 @@
 
 struct CarbonResourcesCliTest : public CliTestFixture{};
 
-//TODO: Implement
 TEST_F( CarbonResourcesCliTest, CreateResourceGroupFromDirectory )
 {
 	std::string output;
@@ -11,14 +10,27 @@ TEST_F( CarbonResourcesCliTest, CreateResourceGroupFromDirectory )
 
 	arguments.push_back( "create-group" );
 
-	arguments.push_back( "PATH_TO_RESOURCELIST_TO_BUNDLE" );
+	arguments.push_back( "-VVV" );
+
+	std::filesystem::path inputDirectory = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceFiles" );
+	arguments.push_back( inputDirectory.string() );
+
+	arguments.push_back( "--output-file" );
+	std::filesystem::path outputFile = "GroupOut/ResourceGroup.yaml";
+	arguments.push_back( outputFile.string() );
 
 	int res = RunCli( arguments, output );
 
-	EXPECT_TRUE( BundleIsValid() );
+#if _WIN64
+    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
+#elif __APPLE__
+    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupMacOS.yaml" );
+#else
+#error Unsupported platform
+#endif
+    EXPECT_TRUE( FilesMatch( goldFile, "GroupOut/ResourceGroup.yaml" ) );
 }
 
-//TODO: Implement
 TEST_F( CarbonResourcesCliTest, CreateBundle )
 {
 	std::string output;
@@ -27,11 +39,39 @@ TEST_F( CarbonResourcesCliTest, CreateBundle )
 
     arguments.push_back( "create-bundle" );
 
-	arguments.push_back( "PATH_TO_RESOURCELIST_TO_BUNDLE" );
+	arguments.push_back( "-VVV" );
+
+	arguments.push_back( GetTestFileFileAbsolutePath( "Bundle/resfileindexShort.txt" ).string() );
+
+	arguments.push_back( "--resource-source-path" );
+	arguments.push_back( GetTestFileFileAbsolutePath( "Bundle/Res" ).string() );
+
+	arguments.push_back( "--bundle-resourcegroup-relative-path" );
+	arguments.push_back( "BundleOut/BundleResourceGroup.yaml" );
+
+	arguments.push_back( "--bundle-resourcegroup-destination-type" );
+	arguments.push_back( "LOCAL_RELATIVE" );
+
+	arguments.push_back( "--chunk-destination-path" );
+	arguments.push_back( "CreateBundleOut" );
+
+	arguments.push_back( "--chunk-destination-type" );
+	arguments.push_back( "LOCAL_CDN" );
+
+	arguments.push_back( "--chunk-size");
+	arguments.push_back( "1000" );
+
 
 	int res = RunCli( arguments, output );
 
-    EXPECT_TRUE( BundleIsValid() );
+	EXPECT_EQ( res, 0 );
+
+	// Check expected outcome
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateBundle/BundleResourceGroup.yaml" );
+	EXPECT_TRUE( FilesMatch( goldFile, "BundleOut/BundleResourceGroup.yaml" ) );
+
+	std::filesystem::path goldDirectory = GetTestFileFileAbsolutePath( "CreateBundle/CreateBundleOut" );
+	EXPECT_TRUE( DirectoryIsSubset( goldDirectory, "CreateBundleOut" ) );
 }
 
 TEST_F( CarbonResourcesCliTest, CreatePatch )
@@ -64,6 +104,18 @@ TEST_F( CarbonResourcesCliTest, CreatePatch )
 
 	arguments.push_back( "--resource-source-base-path-previous");
 	arguments.push_back( previousResourcesLocation );
+
+	arguments.push_back( "--patch-resourcegroup-destination-path");
+	arguments.push_back( "PatchOut" );
+
+	arguments.push_back( "--patch-destination-base-path" );
+	arguments.push_back( "Patchout/Patches" );
+
+	arguments.push_back( "--patch-destination-type" );
+	arguments.push_back( "LOCAL_CDN" );
+
+	arguments.push_back( "--chunk-size" );
+	arguments.push_back( "50000000" );
 
 	int res = RunCli( arguments, output );
 

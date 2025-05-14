@@ -18,27 +18,25 @@ CreateBundleCliOperation::CreateBundleCliOperation() :
 	m_chunkSizeArgumentId( "--chunk-size" )
 {
 
-    // TODO: The interface here is totally WIP, it needs actually designing to be easy to use.
-    // This is linked to having sensible default values so that not all options are always required and large complex commands are opt in.
 	AddRequiredPositionalArgument( m_inputResourceGroupPathArgumentId, "Path to ResourceGroup to bundle." );
 
-	AddArgument( m_resourceGroupRelativePathArgumentId, "Relative path to save a ResourceGroup the Bundle was based off", true, "ResourceGroup.yaml" );
+	AddArgument( m_resourceGroupRelativePathArgumentId, "Relative path to save a ResourceGroup the Bundle was based off", false, "ResourceGroup.yaml" );
 
-    AddArgument( m_bundleResourceGroupRelativePathArgumentId, "Relative path to save a Bundle ResourceGroup", true, "BundleResourceGroup.yaml" );
+    AddArgument( m_bundleResourceGroupRelativePathArgumentId, "Relative path to save a Bundle ResourceGroup", false, "BundleResourceGroup.yaml" );
 
-    AddArgument( m_resourceSourceTypeArgumentId, "Represents the type of repository where resources will be sourced.", true, "LOCAL_RELATIVE" );
+    AddArgument( m_resourceSourceTypeArgumentId, "Represents the type of repository where resources will be sourced.", false, "LOCAL_RELATIVE" );
 
-	AddArgument( m_resourceSourceBasePathArgumentId, "Represents the base path where the resources will be sourced.", true, "" );
+	AddArgument( m_resourceSourceBasePathArgumentId, "Represents the base path where the resources will be sourced.", false, "." );
 
-    AddArgument( m_chunkDestinationTypeArgumentId, "Represents the type of repository where chunks will be saved.", true, "LOCAL_RELATIVE" );
+    AddArgument( m_chunkDestinationTypeArgumentId, "Represents the type of repository where chunks will be saved.", false, "LOCAL_RELATIVE" );
 
-	AddArgument( m_chunkDestinationBasePathArgumentId, "Represents the base path where the chunks will be saved.", true, "" );
+	AddArgument( m_chunkDestinationBasePathArgumentId, "Represents the base path where the chunks will be saved.", false, "BundleOut" );
 
-    AddArgument( m_bundleResourceGroupDestinationTypeArgumentId, "Represents the type of repository where the bundle ResourceGroup will be saved.", true, "LOCAL_RELATIVE" );
+    AddArgument( m_bundleResourceGroupDestinationTypeArgumentId, "Represents the type of repository where the bundle ResourceGroup will be saved.", false, "LOCAL_RELATIVE" );
 
-	AddArgument( m_bundleResourceGroupDestinationBasePathArgumentId, "Represents the base path where the bundle ResourceGroup will be saved.", true, "" );
+	AddArgument( m_bundleResourceGroupDestinationBasePathArgumentId, "Represents the base path where the bundle ResourceGroup will be saved.", false, "." );
 
-    AddArgument( m_chunkSizeArgumentId, "Represents the base path where the bundle ResourceGroup will be saved.", true, "10000000" );
+    AddArgument( m_chunkSizeArgumentId, "Represents the maximum size of the produced chunks in bytes.", false, "10000000" );
 }
 
 bool CreateBundleCliOperation::Execute() const
@@ -49,103 +47,122 @@ bool CreateBundleCliOperation::Execute() const
 
     CarbonResources::BundleCreateParams bundleCreateParams;
 
-    if (m_argumentParser->is_used(m_resourceGroupRelativePathArgumentId))
-    {
-		bundleCreateParams.resourceGroupRelativePath = m_argumentParser->get<std::string>( m_resourceGroupRelativePathArgumentId );
-    }
+	bundleCreateParams.resourceGroupRelativePath = m_argumentParser->get<std::string>( m_resourceGroupRelativePathArgumentId );
 
-    if (m_argumentParser->is_used(m_bundleResourceGroupRelativePathArgumentId))
-    {
-		bundleCreateParams.resourceGroupBundleRelativePath = m_argumentParser->get<std::string>( m_bundleResourceGroupRelativePathArgumentId );
-    }
+	bundleCreateParams.resourceGroupBundleRelativePath = m_argumentParser->get<std::string>( m_bundleResourceGroupRelativePathArgumentId );
 
-    if (m_argumentParser->is_used(m_resourceSourceTypeArgumentId))
-    {
-		std::string resourceSourceType = m_argumentParser->get<std::string>( m_resourceSourceTypeArgumentId );
+	std::string resourceSourceType = m_argumentParser->get(m_resourceSourceTypeArgumentId);
 
-		if( resourceSourceType == "LOCAL_CDN" )
-		{
-			bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
-		}
-		else if( resourceSourceType == "REMOTE_CDN" )
-		{
-			bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::REMOTE_CDN;
-		}
-		else if( resourceSourceType == "LOCAL_RELATIVE" )
-		{
-			bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
-		}
-		else
-		{
-			return false;
-		}
-    }
+	if( resourceSourceType == "LOCAL_CDN" )
+	{
+		bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
+	}
+	else if( resourceSourceType == "REMOTE_CDN" )
+	{
+		bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::REMOTE_CDN;
+	}
+	else if( resourceSourceType == "LOCAL_RELATIVE" )
+	{
+		bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+	}
+	else
+	{
+		return false;
+	}
 
-    if (m_argumentParser->is_used(m_resourceSourceBasePathArgumentId))
-    {
-		bundleCreateParams.resourceSourceSettings.basePath = m_argumentParser->get<std::string>( m_resourceSourceBasePathArgumentId );
-    }
-	
-    if (m_argumentParser->is_used(m_chunkDestinationTypeArgumentId))
-    {
-		std::string chunkDesinationType = m_argumentParser->get<std::string>( m_chunkDestinationTypeArgumentId );
+	bundleCreateParams.resourceSourceSettings.basePath = m_argumentParser->get<std::string>( m_resourceSourceBasePathArgumentId );
 
-		if( chunkDesinationType == "LOCAL_CDN" )
-		{
-			bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
-		}
-		else if( chunkDesinationType == "REMOTE_CDN" )
-		{
-			bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::REMOTE_CDN;
-		}
-		else if( chunkDesinationType == "LOCAL_RELATIVE" )
-		{
-			bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
-		}
-		else
-		{
-			return false;
-		}
-    }
-    
-    if (m_argumentParser->is_used(m_chunkDestinationBasePathArgumentId))
-    {
-		bundleCreateParams.chunkDestinationSettings.basePath = m_argumentParser->get<std::string>( m_chunkDestinationBasePathArgumentId );
-    }
-	
-    if (m_argumentParser->is_used(m_bundleResourceGroupDestinationTypeArgumentId))
-    {
-		std::string bundleResourceGroupDestinationType = m_argumentParser->get<std::string>( m_bundleResourceGroupDestinationTypeArgumentId );
+	std::string chunkDesinationType = m_argumentParser->get<std::string>( m_chunkDestinationTypeArgumentId );
 
-		if( bundleResourceGroupDestinationType == "LOCAL_CDN" )
-		{
-			bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
-		}
-		else if( bundleResourceGroupDestinationType == "REMOTE_CDN" )
-		{
-			bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::REMOTE_CDN;
-		}
-		else if( bundleResourceGroupDestinationType == "LOCAL_RELATIVE" )
-		{
-			bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
-		}
-		else
-		{
-			return false;
-		}
-    }
+	if( chunkDesinationType == "LOCAL_CDN" )
+	{
+		bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+	}
+	else if( chunkDesinationType == "REMOTE_CDN" )
+	{
+		bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::REMOTE_CDN;
+	}
+	else if( chunkDesinationType == "LOCAL_RELATIVE" )
+	{
+		bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+	}
+	else
+	{
+		return false;
+	}
 
-    if (m_argumentParser->is_used(m_bundleResourceGroupDestinationBasePathArgumentId))
-    {
-		bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = m_argumentParser->get<std::string>( m_bundleResourceGroupDestinationBasePathArgumentId );
-    }
-    
-    if (m_argumentParser->is_used(m_chunkSizeArgumentId))
-    {
-		bundleCreateParams.chunkSize = m_argumentParser->get<uintmax_t>( m_chunkSizeArgumentId );
-    }
+	bundleCreateParams.chunkDestinationSettings.basePath = m_argumentParser->get<std::string>( m_chunkDestinationBasePathArgumentId );
+
+	std::string bundleResourceGroupDestinationType = m_argumentParser->get<std::string>( m_bundleResourceGroupDestinationTypeArgumentId );
+
+	if( bundleResourceGroupDestinationType == "LOCAL_CDN" )
+	{
+		bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+	}
+	else if( bundleResourceGroupDestinationType == "REMOTE_CDN" )
+	{
+		bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::REMOTE_CDN;
+	}
+	else if( bundleResourceGroupDestinationType == "LOCAL_RELATIVE" )
+	{
+		bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+	}
+	else
+	{
+		return false;
+	}
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = m_argumentParser->get<std::string>( m_bundleResourceGroupDestinationBasePathArgumentId );
+
+	try
+	{
+		bundleCreateParams.chunkSize = std::stoull( m_argumentParser->get( m_chunkSizeArgumentId ) );
+	}
+	catch( std::invalid_argument& e )
+	{
+		return false;
+	}
+	catch( std::out_of_range& e )
+	{
+		return false;
+	}
+	PrintStartBanner( resourceGroupParams, bundleCreateParams );
 
 	return CreateBundle( resourceGroupParams, bundleCreateParams );
+}
+
+void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const
+{
+	if( s_verbosity <= 0 )
+	{
+		return;
+	}
+
+	std::cout << "---Running Bundle Creation---" << std::endl;
+
+    PrintCommonOperationHeaderInformation();
+
+	std::cout << "Resource Group: " << resourceGroupParams.filename << std::endl;
+
+	std::cout << "Resource Group Relative Path: " << bundleCreateParams.resourceGroupRelativePath << std::endl;
+
+    std::cout << "Bundle Resource Group Relative Path: " << bundleCreateParams.resourceGroupBundleRelativePath << std::endl;
+
+    std::cout << "Resource Source Type: " << SourceTypeToString( bundleCreateParams.resourceSourceSettings.sourceType ) << std::endl;
+
+	std::cout << "Resource Source Base Path: " << bundleCreateParams.resourceSourceSettings.basePath << std::endl;
+
+    std::cout << "Chunk Destination Type: " << DestinationTypeToString( bundleCreateParams.chunkDestinationSettings.destinationType ) << std::endl;
+
+	std::cout << "Chunk Destination Base Path: " << bundleCreateParams.chunkDestinationSettings.basePath << std::endl;
+
+    std::cout << "Bundle Resource Group Destination Type: " << DestinationTypeToString( bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType ) << std::endl;
+
+	std::cout << "Bundle Resource Group Destination Base Path: " << bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath << std::endl;
+
+    std::cout << "Chunk Size: " << bundleCreateParams.chunkSize << " Bytes" << std::endl;
+
+	std::cout << "----------------------------\n" << std::endl;
 }
 
 bool CreateBundleCliOperation::CreateBundle( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const

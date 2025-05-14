@@ -263,9 +263,9 @@ TEST_F( CarbonResourcesLibraryTest, CreateBundle )
 
 	EXPECT_EQ(resourceGroup.CreateBundle( bundleCreateParams ).type,CarbonResources::ResultType::SUCCESS);
 
+	EXPECT_TRUE( FilesMatch( "resPath/BundleResourceGroup.yaml" , GetTestFileFileAbsolutePath( "CreateBundle/BundleResourceGroup.yaml" ) ) );
+	EXPECT_TRUE( DirectoryIsSubset( "CreateBundleOut", GetTestFileFileAbsolutePath( "CreateBundle/CreateBundleOut" ) ) );
 
-    // TODO test bundle output
-    
 }
 
 TEST_F( CarbonResourcesLibraryTest, ApplyPatch )
