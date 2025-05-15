@@ -8,6 +8,7 @@ find_package(ZLIB REQUIRED)
 set(SRC_FILES
     include/BundleStreamIn.h
     include/BundleStreamOut.h
+    include/Downloader.h
     include/FileDataStreamIn.h
     include/FileDataStreamOut.h
     include/GzipCompressionStream.h
@@ -19,6 +20,7 @@ set(SRC_FILES
     
     src/BundleStreamIn.cpp
     src/BundleStreamOut.cpp
+    src/Downloader.cpp
     src/FileDataStreamIn.cpp
     src/FileDataStreamOut.cpp
     src/GzipCompressionStream.cpp

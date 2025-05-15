@@ -20,12 +20,11 @@
 #ifndef ResourceTools_H
 #define ResourceTools_H
 
-#include <memory>
-#include <string>
 #include <filesystem>
-#include <fstream>
 #include <list>
-#include <sstream>
+#include <string>
+
+#include "Downloader.h"
 
 namespace CryptoPP
 {
@@ -38,7 +37,6 @@ namespace CryptoPP
 }
 
 
-#include <curl/curl.h>
 
 namespace ResourceTools
 {
@@ -59,18 +57,6 @@ namespace ResourceTools
 		uint64_t sourceOffset;
 		uint64_t destinationOffset;
 		uint64_t length;
-	};
-
-	// A utility class for downloading files.
-	// Reuse is encouraged for multiple downloads, but do not share across threads.
-	class Downloader
-	{
-		public:
-			Downloader();
-			~Downloader();
-			bool DownloadFile( const std::string& url, const std::filesystem::path& outputPath );
-	private:
-		CURL* m_curlHandle{ nullptr };
 	};
 
     bool GenerateMd5Checksum( const std::string& data, std::string& checksum );
