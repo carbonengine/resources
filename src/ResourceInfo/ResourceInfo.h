@@ -316,6 +316,8 @@ namespace CarbonResources
 
         virtual Result ExportToYaml( YAML::Emitter& out, const VersionInternal& documentVersion );
 
+    	Result ExportToCsv( std::string& out, const VersionInternal& documentVersion );
+
         Result SetParametersFromData( const std::string& data );
 
     	Result SetParametersFromSourceStream( ResourceTools::FileDataStreamIn& stream, size_t matchSize );

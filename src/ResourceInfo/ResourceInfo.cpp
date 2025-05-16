@@ -953,4 +953,71 @@ namespace CarbonResources
 		return Result{ ResultType::SUCCESS };
 	}
 
+    Result ResourceInfo::ExportToCsv( std::string& out, const VersionInternal& documentVersion )
+    {
+    	std::stringstream result;
+
+    	// Relative path
+		if( !m_relativePath.HasValue() )
+		{
+			return Result{ ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET };
+		}
+
+        std::filesystem::path relativePath;
+
+        Result getRelativePathResult = GetRelativePath( relativePath );
+
+        if (getRelativePathResult.type != ResultType::SUCCESS)
+        {
+			return getRelativePathResult;
+        }
+
+        std::string relativePathStr = relativePath.string();
+		std::replace( relativePathStr.begin(), relativePathStr.end(), '\\', '/' );
+
+		result << relativePathStr << ",";
+
+
+        // Location
+		if( !m_location.HasValue() )
+		{
+			return Result{ ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET };
+		}
+
+		result << m_location.GetValue().ToString() << ",";
+
+		// Checksum
+		if( !m_checksum.HasValue() )
+		{
+			return Result{ ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET };
+		}
+
+		result << m_checksum.GetValue() << ",";
+
+		if( !m_uncompressedSize.HasValue() )
+		{
+			return Result{ ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET };
+		}
+
+		result << m_uncompressedSize.GetValue() << ",";
+
+        // Compressed Size
+		if( !m_compressedSize.HasValue() )
+		{
+			return Result{ ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET };
+		}
+
+		result << m_compressedSize.GetValue(); // End of required fields
+
+    	// This is an optional field
+    	if( m_binaryOperation.HasValue() )
+    	{
+    		result << "," << m_binaryOperation.GetValue();
+    	}
+
+    	out = result.str();
+
+		return Result{ ResultType::SUCCESS };
+    }
+
 }

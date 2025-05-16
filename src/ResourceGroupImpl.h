@@ -116,6 +116,8 @@ namespace CarbonResources
 
 	    Result ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, std::function<void( int, int, const std::string& )> statusCallback = nullptr ) const;
 
+	    Result ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, std::function<void( int, int, const std::string& )> statusCallback = nullptr ) const;
+
         Result ProcessChunk( std::string& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const;
 
     protected:

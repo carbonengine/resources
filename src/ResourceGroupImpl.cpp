@@ -323,12 +323,23 @@ namespace CarbonResources
 
 		std::string data = "";
 
-        Result exportYamlResult = ExportYaml( params.outputDocumentVersion, data, params.statusCallback );
+    	if( params.outputDocumentVersion.major == 0 && params.outputDocumentVersion.minor == 0 )
+    	{
+    		Result exportCsvResult = ExportCsv( params.outputDocumentVersion, data, params.statusCallback );
+    		if( exportCsvResult.type != ResultType::SUCCESS )
+    		{
+    			return exportCsvResult;
+    		}
+    	}
+    	else
+    	{
+    		Result exportYamlResult = ExportYaml( params.outputDocumentVersion, data, params.statusCallback );
 
-        if (exportYamlResult.type != ResultType::SUCCESS)
-        {
-			return exportYamlResult;
-        }
+    		if (exportYamlResult.type != ResultType::SUCCESS)
+    		{
+    			return exportYamlResult;
+    		}
+    	}
 
         if( !ResourceTools::SaveFile( params.filename, data ) )
 		{
@@ -744,6 +755,36 @@ namespace CarbonResources
 
         return Result{ ResultType::SUCCESS };
       
+    }
+
+    Result ResourceGroupImpl::ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, std::function<void( int, int, const std::string& )> statusCallback /*= nullptr*/ ) const
+    {
+    	if( outputDocumentVersion.getMajor() > 0 || outputDocumentVersion.getMinor() > 0 || outputDocumentVersion.getPatch() > 0 )
+    	{
+    		return Result{ ResultType::UNSUPPORTED_FILE_FORMAT };
+    	}
+
+    	std::string out;
+
+    	int i{0};
+		for (ResourceInfo* r : m_resourcesParameter)
+        {
+			// Update status
+			if( statusCallback )
+			{
+				float percentage = (100.0 / m_resourcesParameter.GetValue()->size()) * i;
+				statusCallback( 0, percentage, "Percentage Update" );
+				i++;
+			}
+
+			Result resourceExportResult = r->ExportToCsv( out, m_versionParameter.GetValue() );
+            if( resourceExportResult.type != ResultType::SUCCESS )
+			{
+				return resourceExportResult;
+			}
+			data += out + "\n";
+        }
+    	return Result{ ResultType::SUCCESS };
     }
 
     Result ResourceGroupImpl::ProcessChunk( std::string& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const

@@ -31,6 +31,38 @@ TEST_F( CarbonResourcesCliTest, CreateResourceGroupFromDirectory )
     EXPECT_TRUE( FilesMatch( goldFile, "GroupOut/ResourceGroup.yaml" ) );
 }
 
+TEST_F( CarbonResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormat )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-group" );
+
+	arguments.push_back( "-VVV" );
+
+	std::filesystem::path inputDirectory = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceFiles" );
+	arguments.push_back( inputDirectory.string() );
+
+	arguments.push_back( "--output-file" );
+	std::filesystem::path outputFile = "GroupOut/ResourceGroup.csv";
+	arguments.push_back( outputFile.string() );
+
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.0.0" );
+
+	int res = RunCli( arguments, output );
+
+#if _WIN64
+    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.csv" );
+#elif __APPLE__
+    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupMacOS.csv" );
+#else
+#error Unsupported platform
+#endif
+    EXPECT_TRUE( FilesMatch( goldFile, "GroupOut/ResourceGroup.csv" ) );
+}
+
 TEST_F( CarbonResourcesCliTest, CreateBundle )
 {
 	std::string output;
