@@ -55,7 +55,14 @@ namespace CarbonResources
 
     	m_binaryOperation = params.binaryOperation;
 
-    	m_prefix = params.prefix;
+    	if( !params.prefix.empty() )
+    	{
+    		m_prefix = params.prefix;
+    	}
+    	else
+    	{
+    		m_prefix.Reset();
+    	}
     }
 
     ResourceInfo::~ResourceInfo()
