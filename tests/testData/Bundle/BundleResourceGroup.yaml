@@ -10,7 +10,6 @@ ResourceGroupResource:
   Checksum: ea117af13934749b0aa682f4d21000f0
   UncompressedSize: 884
   CompressedSize: 370
-  BinaryOperation: 0
 ChunkSize: 1000
 Resources:
   - RelativePath: CreateBundleOut/ResourceGroup0.chunk
@@ -19,291 +18,249 @@ Resources:
     Checksum: 9a6fdf46c84a4481581b836f9b923c7e
     UncompressedSize: 1000
     CompressedSize: 475
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup1.chunk
     Type: BinaryChunk
     Location: e4/e4188a68dec16d7e_aad30cddceb5f5583320d457cc96dca6
     Checksum: aad30cddceb5f5583320d457cc96dca6
     UncompressedSize: 1000
     CompressedSize: 515
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup2.chunk
     Type: BinaryChunk
     Location: d2/d27fe7a06ff8890d_8114022a7c5f275ab027a673eb639375
     Checksum: 8114022a7c5f275ab027a673eb639375
     UncompressedSize: 1000
     CompressedSize: 517
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup3.chunk
     Type: BinaryChunk
     Location: e5/e56eca629f189afc_a3590b74edef43724392d45268943aa2
     Checksum: a3590b74edef43724392d45268943aa2
     UncompressedSize: 1000
     CompressedSize: 514
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup4.chunk
     Type: BinaryChunk
     Location: 66/668977be160feedb_93f228e2fb48b68685731a3821fe5f36
     Checksum: 93f228e2fb48b68685731a3821fe5f36
     UncompressedSize: 1000
     CompressedSize: 527
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup5.chunk
     Type: BinaryChunk
     Location: fc/fc28094d2c1007ba_dece524e29e21ece3533295d3cf08771
     Checksum: dece524e29e21ece3533295d3cf08771
     UncompressedSize: 1000
     CompressedSize: 507
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup6.chunk
     Type: BinaryChunk
     Location: cf/cfcaadec65345079_e5cc44c9620ce859a33d24c5dbad741d
     Checksum: e5cc44c9620ce859a33d24c5dbad741d
     UncompressedSize: 1000
     CompressedSize: 540
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup7.chunk
     Type: BinaryChunk
     Location: de/de04e724f5287728_5f4a102b792e27dd94a0dcd662c22d25
     Checksum: 5f4a102b792e27dd94a0dcd662c22d25
     UncompressedSize: 1000
     CompressedSize: 521
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup8.chunk
     Type: BinaryChunk
     Location: 2b/2b5fd14e7ba80e47_19fdd769b3b31864b17996c69626800b
     Checksum: 19fdd769b3b31864b17996c69626800b
     UncompressedSize: 1000
     CompressedSize: 529
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup9.chunk
     Type: BinaryChunk
     Location: c1/c13482dd91d5ed76_483f4002a6a953bb4576a0f2c10ca4d2
     Checksum: 483f4002a6a953bb4576a0f2c10ca4d2
     UncompressedSize: 1000
     CompressedSize: 415
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup10.chunk
     Type: BinaryChunk
     Location: 2b/2ba2bab95aebc114_e4f1664441d0239e5e224c11bfe677b0
     Checksum: e4f1664441d0239e5e224c11bfe677b0
     UncompressedSize: 1000
     CompressedSize: 231
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup11.chunk
     Type: BinaryChunk
     Location: 99/9935292a47a2f485_1689d000b33b9dc52a09f8a6aa2c6424
     Checksum: 1689d000b33b9dc52a09f8a6aa2c6424
     UncompressedSize: 1000
     CompressedSize: 244
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup12.chunk
     Type: BinaryChunk
     Location: 84/843c17b73654ddb6_67006df7d996a91d81130d7977ea1ead
     Checksum: 67006df7d996a91d81130d7977ea1ead
     UncompressedSize: 1000
     CompressedSize: 272
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup13.chunk
     Type: BinaryChunk
     Location: f1/f1ce6628230bda87_83ef03e4bcea2e3753ab3c63025ffdc0
     Checksum: 83ef03e4bcea2e3753ab3c63025ffdc0
     UncompressedSize: 1000
     CompressedSize: 272
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup14.chunk
     Type: BinaryChunk
     Location: d2/d256e147bfe74020_78570f2a33be5fc2bc64684436e5a7cf
     Checksum: 78570f2a33be5fc2bc64684436e5a7cf
     UncompressedSize: 1000
     CompressedSize: 282
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup15.chunk
     Type: BinaryChunk
     Location: ad/ada7c80e91df5af1_fb896487ff132cf3e1b01f83556016df
     Checksum: fb896487ff132cf3e1b01f83556016df
     UncompressedSize: 1000
     CompressedSize: 266
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup16.chunk
     Type: BinaryChunk
     Location: 58/58a49e01f2d42532_577f730d7155b108084bdc77d992ea4a
     Checksum: 577f730d7155b108084bdc77d992ea4a
     UncompressedSize: 1000
     CompressedSize: 230
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup17.chunk
     Type: BinaryChunk
     Location: 49/49e71da5fe161753_510c8b03c25bc0077a60bbd00cc4e20e
     Checksum: 510c8b03c25bc0077a60bbd00cc4e20e
     UncompressedSize: 1000
     CompressedSize: 236
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup18.chunk
     Type: BinaryChunk
     Location: a6/a68967927c38f83c_f22d77c8bc40ecf30d649ce0361574df
     Checksum: f22d77c8bc40ecf30d649ce0361574df
     UncompressedSize: 1000
     CompressedSize: 223
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup19.chunk
     Type: BinaryChunk
     Location: 90/903484d04a35be4d_44d41d810417d3b56e561abccb9ab41b
     Checksum: 44d41d810417d3b56e561abccb9ab41b
     UncompressedSize: 1000
     CompressedSize: 233
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup20.chunk
     Type: BinaryChunk
     Location: b7/b7bd10a4a62199ed_cec3438cfa7237d91f7cd7cdf4785dde
     Checksum: cec3438cfa7237d91f7cd7cdf4785dde
     UncompressedSize: 1000
     CompressedSize: 235
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup21.chunk
     Type: BinaryChunk
     Location: c9/c9aa91009d95415c_e59a56d9e8cd88f427c94222e5fd2038
     Checksum: e59a56d9e8cd88f427c94222e5fd2038
     UncompressedSize: 1000
     CompressedSize: 240
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup22.chunk
     Type: BinaryChunk
     Location: 21/210a95f954fea02f_35604f3af72b5d163f5725daebcafec1
     Checksum: 35604f3af72b5d163f5725daebcafec1
     UncompressedSize: 1000
     CompressedSize: 255
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup23.chunk
     Type: BinaryChunk
     Location: 20/20c748abbc9faede_149efd04f6e3410c643500656670a4a5
     Checksum: 149efd04f6e3410c643500656670a4a5
     UncompressedSize: 1000
     CompressedSize: 242
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup24.chunk
     Type: BinaryChunk
     Location: b8/b86cd6f09e3ed659_d9b3fd746e14f5a4e120b1886729422a
     Checksum: d9b3fd746e14f5a4e120b1886729422a
     UncompressedSize: 1000
     CompressedSize: 297
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup25.chunk
     Type: BinaryChunk
     Location: bd/bded187f610c6508_244f3e44620515584f8525106229ebc8
     Checksum: 244f3e44620515584f8525106229ebc8
     UncompressedSize: 1000
     CompressedSize: 219
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup26.chunk
     Type: BinaryChunk
     Location: 50/50193605ded0043b_627b235bc3a7938dd038431de3ac6e3c
     Checksum: 627b235bc3a7938dd038431de3ac6e3c
     UncompressedSize: 1000
     CompressedSize: 267
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup27.chunk
     Type: BinaryChunk
     Location: 38/38d5c79009ec961a_8f5345eac13dc26d7483c695c60eeb23
     Checksum: 8f5345eac13dc26d7483c695c60eeb23
     UncompressedSize: 1000
     CompressedSize: 250
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup28.chunk
     Type: BinaryChunk
     Location: b8/b8f05298661c14a5_92fb568af159f14cc972a4bb653c9431
     Checksum: 92fb568af159f14cc972a4bb653c9431
     UncompressedSize: 1000
     CompressedSize: 256
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup29.chunk
     Type: BinaryChunk
     Location: a7/a736dbcc5ba9a534_d3951f502e383143cdd44036d34fe8cc
     Checksum: d3951f502e383143cdd44036d34fe8cc
     UncompressedSize: 1000
     CompressedSize: 223
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup30.chunk
     Type: BinaryChunk
     Location: 6e/6ed337cf29bedf4e_81d33c71366d5fc10596fcd95b68573a
     Checksum: 81d33c71366d5fc10596fcd95b68573a
     UncompressedSize: 1000
     CompressedSize: 236
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup31.chunk
     Type: BinaryChunk
     Location: c0/c0ccc734c21bfc5f_28cf512e47ed998a766f10ee08cff40d
     Checksum: 28cf512e47ed998a766f10ee08cff40d
     UncompressedSize: 1000
     CompressedSize: 245
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup32.chunk
     Type: BinaryChunk
     Location: c3/c3f4c8aa21aee4cc_e0831e3670b6ee901242e15aca450edc
     Checksum: e0831e3670b6ee901242e15aca450edc
     UncompressedSize: 1000
     CompressedSize: 290
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup33.chunk
     Type: BinaryChunk
     Location: 80/80921d5e2940359d_8f6ccd9d61cb1d22d16a50dba9df8b09
     Checksum: 8f6ccd9d61cb1d22d16a50dba9df8b09
     UncompressedSize: 1000
     CompressedSize: 235
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup34.chunk
     Type: BinaryChunk
     Location: af/af8d36b4af99700a_9a9af2005e267caa26d539eba2c88f67
     Checksum: 9a9af2005e267caa26d539eba2c88f67
     UncompressedSize: 1000
     CompressedSize: 229
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup35.chunk
     Type: BinaryChunk
     Location: 99/996f33f27dc5422b_75af23ca82b3b382cec0612ef84028bf
     Checksum: 75af23ca82b3b382cec0612ef84028bf
     UncompressedSize: 1000
     CompressedSize: 258
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup36.chunk
     Type: BinaryChunk
     Location: 0f/0f0b9ef490c30478_5033453d903740ed111246e0424aea43
     Checksum: 5033453d903740ed111246e0424aea43
     UncompressedSize: 1000
     CompressedSize: 240
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup37.chunk
     Type: BinaryChunk
     Location: 30/3020ce9dcee6be89_b5436a0b9dd43037cca84926608c4f76
     Checksum: b5436a0b9dd43037cca84926608c4f76
     UncompressedSize: 1000
     CompressedSize: 214
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup38.chunk
     Type: BinaryChunk
     Location: 9d/9da3725bdcce24c6_216f559228faea7c5e43cdd833e21d44
     Checksum: 216f559228faea7c5e43cdd833e21d44
     UncompressedSize: 1000
     CompressedSize: 199
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup39.chunk
     Type: BinaryChunk
     Location: 2f/2fdcfa5b0315b897_4871fc562da801bfa89ff1ce058117d0
     Checksum: 4871fc562da801bfa89ff1ce058117d0
     UncompressedSize: 1000
     CompressedSize: 213
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup40.chunk
     Type: BinaryChunk
     Location: 77/77ff951b4930e0df_454d337d2a40dfdb3a05445659a414f6
     Checksum: 454d337d2a40dfdb3a05445659a414f6
     UncompressedSize: 1000
     CompressedSize: 345
-    BinaryOperation: 0
   - RelativePath: CreateBundleOut/ResourceGroup41.chunk
     Type: BinaryChunk
     Location: 26/260605b5b0d3c3ce_7751a251b082b041f41262880300cdd9
     Checksum: 7751a251b082b041f41262880300cdd9
     UncompressedSize: 961
     CompressedSize: 346
-    BinaryOperation: 0

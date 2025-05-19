@@ -62,7 +62,8 @@ TEST_F( ResourceToolsTest, DownloadFile )
 		std::filesystem::remove( outputPath );
 	}
 	EXPECT_FALSE( std::filesystem::exists( outputPath ) );
-	EXPECT_TRUE( downloader.DownloadFile( url, outputPathString ) );
+	std::chrono::seconds retrySeconds{0};
+	EXPECT_TRUE( downloader.DownloadFile( url, outputPathString, retrySeconds ) );
 	EXPECT_TRUE( std::filesystem::exists( outputPath ) );
 
 	// Check if download succeeds.

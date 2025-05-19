@@ -66,9 +66,11 @@ private:
 
 	std::string m_patchResourceGroupDestinationBasePathArgumentId;
 
-    std::string m_patchFileRelativePathPrefix;
+    std::string m_patchFileRelativePathPrefixArgumentId;
 
-    std::string m_maxInputChunkSize;
+    std::string m_maxInputChunkSizeArgumentId;
+
+	std::string m_downloadRetrySecondsArgumentId;
 };
 
 #endif // CreatePatchCliOperation_H

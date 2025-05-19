@@ -11,6 +11,7 @@ Resources:
     UncompressedSize: 1524736
     CompressedSize: 535943
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_audio2.dll
     Type: Resource
     Location: 3d/3dcbe1df821ae900_b3cb13d41186ba2acb65204c69b44095
@@ -18,6 +19,7 @@ Resources:
     UncompressedSize: 2834944
     CompressedSize: 1257651
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_ctypes.pyd
     Type: Resource
     Location: e2/e20a250712f00f89_f038d42c3d0e02f8cf8770493670bc95
@@ -25,6 +27,7 @@ Resources:
     UncompressedSize: 105472
     CompressedSize: 41828
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_d3dinfo.dll
     Type: Resource
     Location: 09/09242e16df70c7a5_19a41a94ef648c6a9b3f7f395650e9d2
@@ -32,6 +35,7 @@ Resources:
     UncompressedSize: 228352
     CompressedSize: 81092
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_destiny.dll
     Type: Resource
     Location: 2e/2e7ea5278ef43fd2_ec8a915755c0a47973cbad3cfb6bcd0d
@@ -39,6 +43,7 @@ Resources:
     UncompressedSize: 722432
     CompressedSize: 240095
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_elementtree.pyd
     Type: Resource
     Location: a1/a13eabe20b047f87_b69ef21b09f04b463d4ab7066c052134
@@ -46,6 +51,7 @@ Resources:
     UncompressedSize: 88064
     CompressedSize: 35619
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_evelocalization.dll
     Type: Resource
     Location: 49/49a6d005de8d19b5_c99241284f3d4876c3b726d317d58041
@@ -53,6 +59,7 @@ Resources:
     UncompressedSize: 252416
     CompressedSize: 90259
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_eveplanetresources.dll
     Type: Resource
     Location: ca/caabd132f4f00f5f_148f5483d9e2140aa08ed26270b341e0
@@ -60,6 +67,7 @@ Resources:
     UncompressedSize: 219648
     CompressedSize: 85711
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_geo2.dll
     Type: Resource
     Location: 38/3860e66abf3eaa43_b9b7c37f42b9dfca53f5008277ad1a25
@@ -67,6 +75,7 @@ Resources:
     UncompressedSize: 186880
     CompressedSize: 60940
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_ime.dll
     Type: Resource
     Location: f3/f3acce5090245333_25411d2de326aadf15026a8e403be19e
@@ -74,6 +83,7 @@ Resources:
     UncompressedSize: 108544
     CompressedSize: 40279
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_pyevepathfinder.dll
     Type: Resource
     Location: e4/e4da02955cc1d0e8_3e322e649f647d0a05dfe846fc3fecf6
@@ -81,6 +91,7 @@ Resources:
     UncompressedSize: 764416
     CompressedSize: 267417
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_pyfsd.dll
     Type: Resource
     Location: bc/bc87ed61594f4cb4_6f86916d6d53e3bceeb76dfd4819fe2c
@@ -88,6 +99,7 @@ Resources:
     UncompressedSize: 347648
     CompressedSize: 117781
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_socket.pyd
     Type: Resource
     Location: e8/e8896005cfc91fe8_377f99ec7d30b33dae4507bef5fd6b83
@@ -95,6 +107,7 @@ Resources:
     UncompressedSize: 49152
     CompressedSize: 21470
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_spacemouse.dll
     Type: Resource
     Location: 2a/2a24174e6e85e687_db913bc498363ab55a90adb3c95e4393
@@ -102,6 +115,7 @@ Resources:
     UncompressedSize: 58368
     CompressedSize: 23774
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_ssl.pyd
     Type: Resource
     Location: d3/d3dc8a5219c07b5d_8f6a643d5a9107df2dc38b002cb0975b
@@ -109,6 +123,7 @@ Resources:
     UncompressedSize: 2418176
     CompressedSize: 1168198
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_trinity_dx11.dll
     Type: Resource
     Location: 1c/1c149ff318330602_4dd15ff794263194ae868e1c7e3df8dd
@@ -116,6 +131,7 @@ Resources:
     UncompressedSize: 23735296
     CompressedSize: 7522559
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_trinity_dx12.dll
     Type: Resource
     Location: b1/b116740da36b3c05_6871e4e256cfd351d72f7380c213e1ee
@@ -123,6 +139,7 @@ Resources:
     UncompressedSize: 23927296
     CompressedSize: 7586013
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_videoplayer.dll
     Type: Resource
     Location: e0/e0167722418708da_0dcd9d9a8efb90ca0600cd09345afe93
@@ -130,6 +147,7 @@ Resources:
     UncompressedSize: 1981440
     CompressedSize: 871172
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/_yaml.pyd
     Type: Resource
     Location: f9/f98397ab7c8adc4e_cb4086fc52801deaa40ac29f5b8448fd
@@ -137,6 +155,7 @@ Resources:
     UncompressedSize: 234496
     CompressedSize: 96053
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/accountingEntryTypesLoader.pyd
     Type: Resource
     Location: e8/e8c1452ee4e7bed3_f1bf43a1b1cc72f67b8fd3a90e39ea1a
@@ -144,6 +163,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21290
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/accountingKeysLoader.pyd
     Type: Resource
     Location: 08/08ee35d49c1cb3e4_58862daa2668568eee3ec25b4591e8bf
@@ -151,6 +171,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21279
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/achievementEventsLoader.pyd
     Type: Resource
     Location: c7/c7918ba9194d645b_18114bafdaa4b394dc8caacceef0d952
@@ -158,6 +179,7 @@ Resources:
     UncompressedSize: 61952
     CompressedSize: 22234
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/activityNodesLoader.pyd
     Type: Resource
     Location: 6f/6f5d793a344fd9cb_cadfee192d85141866e98c41cdd70d5e
@@ -165,6 +187,7 @@ Resources:
     UncompressedSize: 74240
     CompressedSize: 24332
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/agencyHelpVideoGroupsLoader.pyd
     Type: Resource
     Location: 93/936e7a9df9e08b98_163a0f88f4f5ad760b8bda8c13460374
@@ -172,6 +195,7 @@ Resources:
     UncompressedSize: 61440
     CompressedSize: 22131
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/agencyHelpVideosLoader.pyd
     Type: Resource
     Location: a7/a79cd5a55db078e7_002659051861f561e5993c87f60dbfbc
@@ -179,6 +203,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21206
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/agentTypesLoader.pyd
     Type: Resource
     Location: 5b/5bd479aa0b33a6e1_46103d1c4367bb88c336adea6986a7ee
@@ -186,6 +211,7 @@ Resources:
     UncompressedSize: 52736
     CompressedSize: 20139
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/agentsInSpaceLoader.pyd
     Type: Resource
     Location: d5/d5c0a06005e28fbe_8364a84c9fc92f66f03901e8b33b5354
@@ -193,6 +219,7 @@ Resources:
     UncompressedSize: 55296
     CompressedSize: 20883
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/ancestriesLoader.pyd
     Type: Resource
     Location: c6/c661554be6ed3d28_77d4653cbdc9c05b4a0f25836f7a92d6
@@ -200,6 +227,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21402
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/atomsLoader.pyd
     Type: Resource
     Location: b3/b36a0bcd99d12e5b_9386c4b693804c09d6dd6ad3fcf14cfe
@@ -207,6 +235,7 @@ Resources:
     UncompressedSize: 102912
     CompressedSize: 29000
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/billTypesLoader.pyd
     Type: Resource
     Location: 8f/8f07518a060a832f_4cd919bbcc66df789c3348dd25ec15ee
@@ -214,6 +243,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21206
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/billboardsLoader.pyd
     Type: Resource
     Location: 8f/8fca396e84f24fc7_c543b57584c26b1ec9688743523c4210
@@ -221,6 +251,7 @@ Resources:
     UncompressedSize: 119808
     CompressedSize: 32451
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/bloodlinesLoader.pyd
     Type: Resource
     Location: f3/f3771630977200d6_7789bcec6a70c8556ea2bb2b6aa65686
@@ -228,6 +259,7 @@ Resources:
     UncompressedSize: 55808
     CompressedSize: 21087
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/blue.dll
     Type: Resource
     Location: 5b/5b666d98abe03981_3e95cc305a7c95a8d3ddaed079fbdf75
@@ -235,6 +267,7 @@ Resources:
     UncompressedSize: 9288704
     CompressedSize: 3671687
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/cacert.pem
     Type: Resource
     Location: e0/e0ed4afe507082c5_3cc8232eaaec8d48f6931578cf302fa4
@@ -242,6 +275,7 @@ Resources:
     UncompressedSize: 288740
     CompressedSize: 155276
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/careerPathsLoader.pyd
     Type: Resource
     Location: 96/96c7e961613e6a8f_fbea983800204f6fd7b2a9ed7a6c0d93
@@ -249,6 +283,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21203
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/categoriesLoader.pyd
     Type: Resource
     Location: 17/177a254a7e5d10d7_08f6cadc38402f4a8721c270d1a1f3be
@@ -256,6 +291,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21265
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/challengeConditionsLoader.pyd
     Type: Resource
     Location: 4e/4e8a6df468491ab4_5c372a0943fcc6578187741bd418a316
@@ -263,6 +299,7 @@ Resources:
     UncompressedSize: 53248
     CompressedSize: 20350
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/challengeEventsLoader.pyd
     Type: Resource
     Location: b1/b1453bdae63602f5_d28c8614be4acd87393d53531e82ba3e
@@ -270,6 +307,7 @@ Resources:
     UncompressedSize: 53248
     CompressedSize: 20359
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/challengesLoader.pyd
     Type: Resource
     Location: 97/97ef5068b67e4019_0d3bb219f1a5630e9b6edb8bcfd0a678
@@ -277,6 +315,7 @@ Resources:
     UncompressedSize: 82432
     CompressedSize: 26470
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/character_avatarbehaviorsLoader.pyd
     Type: Resource
     Location: 5a/5ae947d606d582f1_1682896d806a15bb444feb871d0a570f
@@ -284,6 +323,7 @@ Resources:
     UncompressedSize: 62976
     CompressedSize: 22573
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/character_colorLocationsLoader.pyd
     Type: Resource
     Location: 62/62858176326e0b90_ff5ddf364c473cde57c03b49970387a5
@@ -291,6 +331,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21216
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/character_colorNamesLoader.pyd
     Type: Resource
     Location: f6/f625f7bd49eaf24c_d2d5370de696e431811e239b6554b8d6
@@ -298,6 +339,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21145
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/character_modifierLocationsLoader.pyd
     Type: Resource
     Location: cb/cba15481c1990bd0_5e7263e216eed8ec3f1634e291cba4bb
@@ -305,6 +347,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21185
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/character_portraitresourcesLoader.pyd
     Type: Resource
     Location: f2/f235e40cec9072fd_02e21f9f4abd048bc7f26bc77e21b119
@@ -312,6 +355,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21247
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/character_resourcesLoader.pyd
     Type: Resource
     Location: bc/bcc288d01a375d16_329bd55e7ab01807f5dd4c4aa3875873
@@ -319,6 +363,7 @@ Resources:
     UncompressedSize: 62464
     CompressedSize: 22437
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/character_sculptingLocationsLoader.pyd
     Type: Resource
     Location: cd/cd219d65cb3f1b6a_1a6c3082980ccb40a8c00f97bda3f1e8
@@ -326,6 +371,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21171
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/checkPointsLoader.pyd
     Type: Resource
     Location: d2/d2349796799d6358_0c03f7bbb0410f9debb72292893f5900
@@ -333,6 +379,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21261
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/commandSetsLoader.pyd
     Type: Resource
     Location: 81/813733d9d60e7a2d_3de6f52e484b677732c230e7bb2bec8e
@@ -340,6 +387,7 @@ Resources:
     UncompressedSize: 67584
     CompressedSize: 23251
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/compressibleTypesLoader.pyd
     Type: Resource
     Location: 58/58b1f94d72e3ea06_f8e331d44305e84db42274e5864e31f6
@@ -347,6 +395,7 @@ Resources:
     UncompressedSize: 52224
     CompressedSize: 19836
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/concrt140.dll
     Type: Resource
     Location: 72/72da8d0d223aa42d_236f1317af810ce8afefe17acc45a482
@@ -354,6 +403,7 @@ Resources:
     UncompressedSize: 332528
     CompressedSize: 144391
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/contestedGatesDataLoader.pyd
     Type: Resource
     Location: 22/2235c15fae80e69a_55d3d080d497df78af4ca009dfff2938
@@ -361,6 +411,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21338
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/contrabandTypesLoader.pyd
     Type: Resource
     Location: bb/bb0225b7e0c4077c_12ef6defb38c631a282f396af46a2b86
@@ -368,6 +419,7 @@ Resources:
     UncompressedSize: 71680
     CompressedSize: 23345
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/controlTowerResourcesLoader.pyd
     Type: Resource
     Location: d5/d5b7635dac674978_8c8c153a0bebad1a322cc93581ae35fe
@@ -375,6 +427,7 @@ Resources:
     UncompressedSize: 64000
     CompressedSize: 22598
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/conversationAgentsLoader.pyd
     Type: Resource
     Location: 77/77a9ff983b45a98c_719b7a7db25c9528f06c970ab217c906
@@ -382,6 +435,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21409
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/conversationsLoader.pyd
     Type: Resource
     Location: 98/9825577c19806af1_565c8a7da1deec0cc9743fb4120ffac5
@@ -389,6 +443,7 @@ Resources:
     UncompressedSize: 79872
     CompressedSize: 25347
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/corporationActivitiesLoader.pyd
     Type: Resource
     Location: fa/fa6a5ea177cbacd8_4c246df44a3e1a2891b1db6e3acd1bc3
@@ -396,6 +451,7 @@ Resources:
     UncompressedSize: 55296
     CompressedSize: 20703
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/corporationRoleGroupsLoader.pyd
     Type: Resource
     Location: af/af67dd723cbb45ff_dfd8ea7f5d152ecbfc102002a4c0d343
@@ -403,6 +459,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21395
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/corporationRolesLoader.pyd
     Type: Resource
     Location: b5/b5f1bd10b8e95cee_5a6484ce2d9c588eb0c430f2dabe831d
@@ -410,6 +467,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21171
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/cratesLoader.pyd
     Type: Resource
     Location: 3c/3cef428eff5fe503_bcd793299036c75871094a363827ddf6
@@ -417,6 +475,7 @@ Resources:
     UncompressedSize: 71168
     CompressedSize: 24217
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/currencyBucketsLoader.pyd
     Type: Resource
     Location: 9a/9a6b18d8af6bc5db_6887610f1fca3fa9971510695a62ca6a
@@ -424,6 +483,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21229
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dailyChallengeCampaignsLoader.pyd
     Type: Resource
     Location: 24/2493c40236946422_7de878944030257e1c4af5a4a2fb4e1f
@@ -431,6 +491,7 @@ Resources:
     UncompressedSize: 55296
     CompressedSize: 20795
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dailyChallengePoolsLoader.pyd
     Type: Resource
     Location: 7a/7a5e9de2af69b526_5a5bb95bd8ce814dfd98f6fc0af17a9b
@@ -438,6 +499,7 @@ Resources:
     UncompressedSize: 69632
     CompressedSize: 23384
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dailyChallengeRewardsLoader.pyd
     Type: Resource
     Location: 77/7751d226628f8553_c7a5d5b6faed0db4d2924071ac7851d8
@@ -445,6 +507,7 @@ Resources:
     UncompressedSize: 66560
     CompressedSize: 23078
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dailyChallengesLoader.pyd
     Type: Resource
     Location: 34/347a2c5b6dac38f0_42cbeb781e31b3f303de28cb4b41f8cf
@@ -452,6 +515,7 @@ Resources:
     UncompressedSize: 78336
     CompressedSize: 25490
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dbghelp.dll
     Type: Resource
     Location: fd/fdb132600645401b_15ee5c7404fa5b6de0eb0c042474d3bf
@@ -459,6 +523,7 @@ Resources:
     UncompressedSize: 1369936
     CompressedSize: 519172
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/defaultOverviewsLoader.pyd
     Type: Resource
     Location: be/be7daaf77ba9b566_7c3f02e0e00bf81239d002a2618bbe0b
@@ -466,6 +531,7 @@ Resources:
     UncompressedSize: 61440
     CompressedSize: 22153
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dogmaAttributeCategoriesLoader.pyd
     Type: Resource
     Location: 3c/3c47264ab8383917_2bd2db8c9d4c29c5ea7589d4790c83a7
@@ -473,6 +539,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21189
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dogmaAttributesLoader.pyd
     Type: Resource
     Location: c7/c7aa119a1c326556_99599f20f1f1e81c45ca3709c61feb8e
@@ -480,6 +547,7 @@ Resources:
     UncompressedSize: 58368
     CompressedSize: 21905
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dogmaEffectsLoader.pyd
     Type: Resource
     Location: 0e/0e4a426efc0e5155_8829028ce1497279c5bb13dbe5cdf756
@@ -487,6 +555,7 @@ Resources:
     UncompressedSize: 68608
     CompressedSize: 24185
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dogmaUnitsLoader.pyd
     Type: Resource
     Location: d7/d7b991f02d5122a6_c0687c361bcd07b990dc8dc71f3c0313
@@ -494,6 +563,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21199
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dungeonEnvironmentTemplatesLoader.pyd
     Type: Resource
     Location: 30/30b28e193d80423f_21d00ea386a7b39c57660a8a986dbd23
@@ -501,6 +571,7 @@ Resources:
     UncompressedSize: 77824
     CompressedSize: 24764
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dungeonsLoader.pyd
     Type: Resource
     Location: ba/ba964f70446091ce_d506249de85c42230e795eed1f183bd1
@@ -508,6 +579,7 @@ Resources:
     UncompressedSize: 64512
     CompressedSize: 22889
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/dynamicItemAttributesLoader.pyd
     Type: Resource
     Location: d9/d910cd23a8468ed8_cbc1a876e9e730f6a1c0b839dd3e3d91
@@ -515,6 +587,7 @@ Resources:
     UncompressedSize: 85504
     CompressedSize: 25888
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/effectSequencesLoader.pyd
     Type: Resource
     Location: 10/1050e054c733b22a_fb5d53a03186a813c8496be8f6451fb3
@@ -522,6 +595,7 @@ Resources:
     UncompressedSize: 89088
     CompressedSize: 27352
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/effectsLoader.pyd
     Type: Resource
     Location: cf/cf394efce7c63187_5a022ead91657a81c02b4919a1446510
@@ -529,6 +603,7 @@ Resources:
     UncompressedSize: 89600
     CompressedSize: 26991
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/environmentTemplateAnchorCategoryIDsLoader.pyd
     Type: Resource
     Location: 82/826d019877b528af_42ce98f1d8726ae6e3632fe221a611ec
@@ -536,6 +611,7 @@ Resources:
     UncompressedSize: 69120
     CompressedSize: 23104
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/environmentTemplateAnchorGroupIDsLoader.pyd
     Type: Resource
     Location: 4f/4f3262d8f2aa4272_af86182402ff3963c222b37fa9e57f59
@@ -543,6 +619,7 @@ Resources:
     UncompressedSize: 69120
     CompressedSize: 23094
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/environmentTemplateAnchorTypeIDsLoader.pyd
     Type: Resource
     Location: 84/84f57622e1d3d8b3_4a689360f77abc4a28babb3c9fbcb5a7
@@ -550,6 +627,7 @@ Resources:
     UncompressedSize: 69120
     CompressedSize: 23090
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/environmentTemplatesLoader.pyd
     Type: Resource
     Location: fd/fdfcac6c2ea019f7_743b27c1b8a430f8485d9fbcb0f97b41
@@ -557,6 +635,7 @@ Resources:
     UncompressedSize: 118272
     CompressedSize: 32300
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/epicArcsLoader.pyd
     Type: Resource
     Location: 8f/8f43467ed64f8cc3_947886ad3dc9a2d9e0db18b916f5317d
@@ -564,6 +643,7 @@ Resources:
     UncompressedSize: 80384
     CompressedSize: 25249
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/essReserveKeysLoader.pyd
     Type: Resource
     Location: 18/18ee07a4a28e01c2_63958fb1af2784b22c0adb56461ea3fe
@@ -571,6 +651,7 @@ Resources:
     UncompressedSize: 55296
     CompressedSize: 20867
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/eve_client_grpc_client.pyd
     Type: Resource
     Location: fe/fee95dd844bc6e81_89f1f9b9c26745b84abd9a001610e499
@@ -578,6 +659,7 @@ Resources:
     UncompressedSize: 10903552
     CompressedSize: 3968922
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/eve_crashmon.exe
     Type: Resource
     Location: f9/f92298606d2b4ea5_be18b4c760cde621b832ccab39eff90c
@@ -585,6 +667,7 @@ Resources:
     UncompressedSize: 775272
     CompressedSize: 371800
     BinaryOperation: 33279
+    Prefix: app
   - RelativePath: bin64/exefile.exe
     Type: Resource
     Location: 28/28e981d293f89a31_2ad5f3e42876a941f6479a7bfb4aadd0
@@ -592,6 +675,7 @@ Resources:
     UncompressedSize: 898664
     CompressedSize: 543862
     BinaryOperation: 33279
+    Prefix: app
   - RelativePath: bin64/exoplanets/sampledata/6JOFbbCRMSQpFhYx10NrOLoopt4Qige3.tab
     Type: Resource
     Location: 28/28b62d69f1ca3f38_511df15327808ca8f63b2e76fb54fc09
@@ -599,6 +683,7 @@ Resources:
     UncompressedSize: 132704
     CompressedSize: 43432
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/exoplanets/sampledata/6StZPUdDUS2ErkZSt3N2rKlBWcXY2WVY.tab
     Type: Resource
     Location: 94/94f259e5073f2827_5a5b78ae6c80b8771036f98698d36256
@@ -606,6 +691,7 @@ Resources:
     UncompressedSize: 110556
     CompressedSize: 38268
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/exoplanets/sampledata/BMicuND85mkns2Um25QHDSOpUhunwh1Y.tab
     Type: Resource
     Location: 14/147b4e2b50f8b08e_5ef5f6c321fcb98d5a2b7c76daab04ec
@@ -613,6 +699,7 @@ Resources:
     UncompressedSize: 132760
     CompressedSize: 40787
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/exoplanets/sampledata/CZuwEep8qYGzMlFqF6peIryIg1E5bbjI.tab
     Type: Resource
     Location: ac/ac866c554f11bd78_d246bef4d96dc73bd1159bac090332bb
@@ -620,6 +707,7 @@ Resources:
     UncompressedSize: 122960
     CompressedSize: 38093
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/exoplanets/sampledata/N5JC1Z84MrcDPGnVMLo1CGMffgEge6kg.tab
     Type: Resource
     Location: 76/7691594e9bb467e5_017536e8e77c0fae42ebed3ce59e0116
@@ -627,6 +715,7 @@ Resources:
     UncompressedSize: 136568
     CompressedSize: 45055
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/exoplanets/sampledata/NHbD32ISL19D2vPk0BkLN92AiYimmeMU.tab
     Type: Resource
     Location: ac/acccdfbdb5647c6e_6358bb97a1fad9601913c930689fec6a
@@ -634,6 +723,7 @@ Resources:
     UncompressedSize: 132704
     CompressedSize: 43587
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/exoplanets/sampledata/YV3On1anMCyAejIpVRbAwtpZ0XTCv0jo.tab
     Type: Resource
     Location: 26/26bd143a85d37506_4c6a3cbb99ddc61eb0b79333bef20181
@@ -641,6 +731,7 @@ Resources:
     UncompressedSize: 137501
     CompressedSize: 40352
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/exoplanets/sampledata/iO6XNMJzQlVJrjLugxIH8unGxWHfnMfH.tab
     Type: Resource
     Location: 03/035a4247113040e6_a059cf4ae18ee5c691a948e9b49b1205
@@ -648,6 +739,7 @@ Resources:
     UncompressedSize: 146292
     CompressedSize: 38977
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/exoplanets/sampledata/jbT94HaYOUfJnNmpjmMZgR9cRvWyrK5R.tab
     Type: Resource
     Location: ff/ff542c02920cdd16_54d5694bbadb07ac7d510588882aa6dc
@@ -655,6 +747,7 @@ Resources:
     UncompressedSize: 137443
     CompressedSize: 40314
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/exoplanets/sampledata/usld2BNsWSGAyCC250tnaWSlAjKkFlPF.tab
     Type: Resource
     Location: bf/bf1589c5b24d07b4_653b3a0e2c429a7d8ac2fbeb2d22a700
@@ -662,6 +755,7 @@ Resources:
     UncompressedSize: 127322
     CompressedSize: 37649
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/expertSystemsLoader.pyd
     Type: Resource
     Location: 86/867b6ee2b63a13bb_5bc0fecb1288fdb4e3845b070a389bfe
@@ -669,6 +763,7 @@ Resources:
     UncompressedSize: 75264
     CompressedSize: 24152
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/explosionBucketIDsLoader.pyd
     Type: Resource
     Location: e1/e17f22b771f7e21c_03ff603f8a5db3cafe8ec718b5e6946a
@@ -676,6 +771,7 @@ Resources:
     UncompressedSize: 86016
     CompressedSize: 26970
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/explosionIDsLoader.pyd
     Type: Resource
     Location: 63/63d03f10108d4056_5e249e6b265c89b9383b9360a0c41be7
@@ -683,6 +779,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21422
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/factionsLoader.pyd
     Type: Resource
     Location: 38/38918a95c14fd7dc_f9265763170ac01a61b17e22e654ddcb
@@ -690,6 +787,7 @@ Resources:
     UncompressedSize: 62464
     CompressedSize: 22486
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/globalTypesLoader.pyd
     Type: Resource
     Location: 3d/3de1c77d22eed561_4172b98e0f1f7ba403835d6222c50307
@@ -697,6 +795,7 @@ Resources:
     UncompressedSize: 69120
     CompressedSize: 22992
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/goalsLoader.pyd
     Type: Resource
     Location: d5/d56954247308bd11_b26cbb37d6b9710e2ef6d5824b22158b
@@ -704,6 +803,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21323
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/graphicIDsLoader.pyd
     Type: Resource
     Location: 43/4384e62651664841_4cc270579f0544e1c75dc5281f08a87d
@@ -711,6 +811,7 @@ Resources:
     UncompressedSize: 94208
     CompressedSize: 27837
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/graphicLocationsLoader.pyd
     Type: Resource
     Location: ea/ea550e39e0d0b45f_80812a9de3f32182ca43775858e9d119
@@ -718,6 +819,7 @@ Resources:
     UncompressedSize: 75776
     CompressedSize: 24709
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/graphicMaterialSetsLoader.pyd
     Type: Resource
     Location: 22/222da1927029d94d_f74e0770c65cfa8cf4394e7a11c30816
@@ -725,6 +827,7 @@ Resources:
     UncompressedSize: 60928
     CompressedSize: 22660
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/groupGraphicsLoader.pyd
     Type: Resource
     Location: 6a/6a42e0e07ff5c203_8d1756d82eb3c1f6dbda8e48134a9ef9
@@ -732,6 +835,7 @@ Resources:
     UncompressedSize: 81920
     CompressedSize: 25696
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/groupRewardsLoader.pyd
     Type: Resource
     Location: 0e/0ea61b8159f7568c_6de12c92c4cea41e2cc11626b9fc2e93
@@ -739,6 +843,7 @@ Resources:
     UncompressedSize: 73216
     CompressedSize: 24244
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/groupsLoader.pyd
     Type: Resource
     Location: 4f/4fe0b947680244c7_52ceb06fcb64a3804cbaf73ae0f2ed90
@@ -746,6 +851,7 @@ Resources:
     UncompressedSize: 55808
     CompressedSize: 21169
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/iconIDsLoader.pyd
     Type: Resource
     Location: 55/55ad1bb5543e8e76_73bebb9ac0312c1fdc8b1fb2cfd6f25b
@@ -753,6 +859,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21192
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/launchdarkly_stackless_client_sdk.pyd
     Type: Resource
     Location: cb/cb5e1449d652cb1d_5c46163cf7b9396651bca597eab5e907
@@ -760,6 +867,7 @@ Resources:
     UncompressedSize: 1089536
     CompressedSize: 374146
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/marketGroupsLoader.pyd
     Type: Resource
     Location: c1/c1a6e1e12d8ab40b_9ffc54d5f9d5f3a0877ed580803a3b01
@@ -767,6 +875,7 @@ Resources:
     UncompressedSize: 55296
     CompressedSize: 20917
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/menuHighlightsLoader.pyd
     Type: Resource
     Location: e6/e6fcd1d52e71b031_3c6e9b165efcb48f972c1be7c8079700
@@ -774,6 +883,7 @@ Resources:
     UncompressedSize: 61952
     CompressedSize: 22185
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/metaGroupsLoader.pyd
     Type: Resource
     Location: 75/75afcb56739c9d2c_22443b23e434cd01f730721a415f5b49
@@ -781,6 +891,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21247
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/missionsLoader.pyd
     Type: Resource
     Location: 2a/2a43d05c1d179dca_7a234e8e25d3aed0fe56345df23d201b
@@ -788,6 +899,7 @@ Resources:
     UncompressedSize: 83456
     CompressedSize: 25483
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/msvcp140.dll
     Type: Resource
     Location: 07/07e19af09acdfa85_2f443a41e00a370754a50cfc02c2e470
@@ -795,6 +907,7 @@ Resources:
     UncompressedSize: 627440
     CompressedSize: 199251
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/musicTriggersLoader.pyd
     Type: Resource
     Location: e3/e39b47ad2ea6ce23_d5267ad62d376f1097a4ae6c0d098c9d
@@ -802,6 +915,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21154
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/newActivitiesLoader.pyd
     Type: Resource
     Location: 25/25b9c963321a66c0_524c68917e75558e7aa1a39fa8205b3f
@@ -809,6 +923,7 @@ Resources:
     UncompressedSize: 62464
     CompressedSize: 22502
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/newFeaturesLoader.pyd
     Type: Resource
     Location: 8b/8b8cbd2787d2403a_0941428872071690d190cb5005052b73
@@ -816,6 +931,7 @@ Resources:
     UncompressedSize: 62976
     CompressedSize: 22564
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/nodeGraphsLoader.pyd
     Type: Resource
     Location: 32/32bad72f9475b3e8_4e5eb5f0a670d4c28f001e8927cfab9e
@@ -823,6 +939,7 @@ Resources:
     UncompressedSize: 141824
     CompressedSize: 36054
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/nodeTypesLoader.pyd
     Type: Resource
     Location: 03/03027de6d5d2fb06_4c2101cfb4ac9f421043c17c953730b7
@@ -830,6 +947,7 @@ Resources:
     UncompressedSize: 107520
     CompressedSize: 29955
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/npcCharactersLoader.pyd
     Type: Resource
     Location: 1d/1db4a9b9a453f640_b16371d8dacf7a5f1584985f77b23622
@@ -837,6 +955,7 @@ Resources:
     UncompressedSize: 73216
     CompressedSize: 24386
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/npcCorporationDivisionsLoader.pyd
     Type: Resource
     Location: 13/13b49b3b2fe9b872_633d33b3bef9ae00b3b3252d53fee5dc
@@ -844,6 +963,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21289
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/npcCorporationsLoader.pyd
     Type: Resource
     Location: 53/539c463a30828899_10de394021c3bbb787dfbec7ce00a483
@@ -851,6 +971,7 @@ Resources:
     UncompressedSize: 117760
     CompressedSize: 30214
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/objectivesLoader.pyd
     Type: Resource
     Location: 14/14b31f852bcfd5a3_b77f39b1d0195788386cf463b2ba8130
@@ -858,6 +979,7 @@ Resources:
     UncompressedSize: 57344
     CompressedSize: 21420
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/operationCategoriesLoader.pyd
     Type: Resource
     Location: f0/f04279816c193c12_95ba8a2bf7d659222fa402a03b1c6139
@@ -865,6 +987,7 @@ Resources:
     UncompressedSize: 61952
     CompressedSize: 22283
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/operationSitesLoader.pyd
     Type: Resource
     Location: 3f/3ffd6edaa94733f6_8d042faf7e838e22f33ac63f4380bc68
@@ -872,6 +995,7 @@ Resources:
     UncompressedSize: 59392
     CompressedSize: 21817
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/operationTasksLoader.pyd
     Type: Resource
     Location: 59/59f10db149aacbec_1a50c7f6c3d2e62949d863f0896a96f2
@@ -879,6 +1003,7 @@ Resources:
     UncompressedSize: 112640
     CompressedSize: 31018
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/operationTreeStructuresLoader.pyd
     Type: Resource
     Location: ee/eeacd0e2c7fe3704_9c5d1928b14d451439c65ca6c931966c
@@ -886,6 +1011,7 @@ Resources:
     UncompressedSize: 77824
     CompressedSize: 24788
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/operationsLoader.pyd
     Type: Resource
     Location: ed/edda9184f759e389_37e6b54279f04a37f580e71855e6bfb7
@@ -893,6 +1019,7 @@ Resources:
     UncompressedSize: 79360
     CompressedSize: 25304
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/packages/certifi/cacert.pem
     Type: Resource
     Location: 57/57b598ae7653c816_3cc8232eaaec8d48f6931578cf302fa4
@@ -900,6 +1027,7 @@ Resources:
     UncompressedSize: 288740
     CompressedSize: 155276
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/packages/monolithgeoip2/data/GeoLite2-ASN.mmdb
     Type: Resource
     Location: 3d/3d0428ae7e856655_fda96dd4baf121d0bc9a2408cd598a24
@@ -907,6 +1035,7 @@ Resources:
     UncompressedSize: 8154123
     CompressedSize: 4444663
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/packages/monolithgeoip2/data/GeoLite2-Country.mmdb
     Type: Resource
     Location: 53/53490eadeb4c4fbd_901a4c133e0a699d850d3fc99ee657f9
@@ -914,6 +1043,7 @@ Resources:
     UncompressedSize: 5844936
     CompressedSize: 2894964
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/petitionEventsLoader.pyd
     Type: Resource
     Location: 0b/0b3ec8d644997c4e_ed17e3694da9e34b3a9852574009268d
@@ -921,6 +1051,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21187
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/petitionPropertiesLoader.pyd
     Type: Resource
     Location: d7/d70a9fe4a9ffaa2a_6eb3c45ee2182f3e09d9137fad35ee18
@@ -928,6 +1059,7 @@ Resources:
     UncompressedSize: 57344
     CompressedSize: 21385
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/pvpFilamentEventDatesLoader.pyd
     Type: Resource
     Location: 96/96b1a92ac8c48d8a_6d8b084cafe9fab08e6e284e9903bdb9
@@ -935,6 +1067,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21376
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/pvpFilamentMatchTypesLoader.pyd
     Type: Resource
     Location: 36/363df17ad5aaf473_feedbcf8a4d92ae737d69a8a32db149b
@@ -942,6 +1075,7 @@ Resources:
     UncompressedSize: 65536
     CompressedSize: 23246
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/pyexpat.pyd
     Type: Resource
     Location: 09/0917f6256a3a00dd_9a3e0956d19c1027e67a83ef5c855ebc
@@ -949,6 +1083,7 @@ Resources:
     UncompressedSize: 157696
     CompressedSize: 64358
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/python27.dll
     Type: Resource
     Location: cf/cfda5f0cd7d5daf2_cd669ccf6f14563fc61f78ff18c32121
@@ -956,6 +1091,7 @@ Resources:
     UncompressedSize: 3557376
     CompressedSize: 1581008
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/racesLoader.pyd
     Type: Resource
     Location: 5f/5f4a4a47221116bb_1737ec76b245040ee2ce8f063ad7ec38
@@ -963,6 +1099,7 @@ Resources:
     UncompressedSize: 69632
     CompressedSize: 23198
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/rad_tm_win64.dll
     Type: Resource
     Location: e5/e5895e4afd9cbbf9_0710d8093e890378bb7a369b87b199f4
@@ -970,6 +1107,7 @@ Resources:
     UncompressedSize: 208384
     CompressedSize: 94253
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/recruitmentGroupsLoader.pyd
     Type: Resource
     Location: f8/f8d3459b14ab166b_9a32aeada579585e04c59e5670c890be
@@ -977,6 +1115,7 @@ Resources:
     UncompressedSize: 55296
     CompressedSize: 20881
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/recruitmentTypesLoader.pyd
     Type: Resource
     Location: 4b/4b5f65c3e56b30c2_30f170f1b3bb25d41bd25819494069b6
@@ -984,6 +1123,7 @@ Resources:
     UncompressedSize: 55296
     CompressedSize: 20888
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/requiredSkillsForTypesLoader.pyd
     Type: Resource
     Location: 6f/6faa1dbd8443112a_c19ff63eee85794e3167c819faabf636
@@ -991,6 +1131,7 @@ Resources:
     UncompressedSize: 66560
     CompressedSize: 22692
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/requiredSkillsIndexLoader.pyd
     Type: Resource
     Location: e4/e4de60315d8ad9b2_885f1e99f521810cf7d8f041d33bb429
@@ -998,6 +1139,7 @@ Resources:
     UncompressedSize: 111616
     CompressedSize: 29418
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/schematicsLoader.pyd
     Type: Resource
     Location: e2/e2fa3808394b704d_a4f79ca7a3bad9df967823980e3d8ea4
@@ -1005,6 +1147,7 @@ Resources:
     UncompressedSize: 77824
     CompressedSize: 24358
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/schoolMapLoader.pyd
     Type: Resource
     Location: 9b/9b55c117ae9985df_67ccb2288235e6af32ece7f4c177fdb0
@@ -1012,6 +1155,7 @@ Resources:
     UncompressedSize: 55296
     CompressedSize: 20788
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/schoolsLoader.pyd
     Type: Resource
     Location: 7a/7a15cb94d11b1112_feb5b4ff405c8240370f53a2e3a6f0f6
@@ -1019,6 +1163,7 @@ Resources:
     UncompressedSize: 61952
     CompressedSize: 22248
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/seasonSelectionLoader.pyd
     Type: Resource
     Location: 19/196b94888a0952ea_e7a0618f860255b8436996978a6f5138
@@ -1026,6 +1171,7 @@ Resources:
     UncompressedSize: 41984
     CompressedSize: 17341
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/seasonalCampaignsLoginRewardsLoader.pyd
     Type: Resource
     Location: 12/1265f5017c47d445_8df903fbe851a34f22912157c7de955e
@@ -1033,6 +1179,7 @@ Resources:
     UncompressedSize: 75776
     CompressedSize: 24454
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/shipCosmeticLicensesLoader.pyd
     Type: Resource
     Location: 4a/4af7098a356b1304_2689980331d15aef7778e027b3c74482
@@ -1040,6 +1187,7 @@ Resources:
     UncompressedSize: 55296
     CompressedSize: 20846
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/skillPlansLoader.pyd
     Type: Resource
     Location: 12/12346a8744c401a6_ae2fec5c8ed2a77418224f2ab6158b60
@@ -1047,6 +1195,7 @@ Resources:
     UncompressedSize: 71680
     CompressedSize: 23803
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/skillTreeGroupsLoader.pyd
     Type: Resource
     Location: 1f/1f48bca01676010e_9f34aba7e7264668e296e596c4131884
@@ -1054,6 +1203,7 @@ Resources:
     UncompressedSize: 61440
     CompressedSize: 22138
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/skyBoxEffectsLoader.pyd
     Type: Resource
     Location: 68/68df2d0ec0bd7d59_7a1d379ebd3dfe0fc71594d06de090f4
@@ -1061,6 +1211,7 @@ Resources:
     UncompressedSize: 64000
     CompressedSize: 22549
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/soundIDsLoader.pyd
     Type: Resource
     Location: 04/041de3d4da9d607a_6cbd348a10b619789aa3ce97d96e0f25
@@ -1068,6 +1219,7 @@ Resources:
     UncompressedSize: 56320
     CompressedSize: 21075
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/spaceComponentsByTypeLoader.pyd
     Type: Resource
     Location: 6e/6e5b27b4699263bc_62c52d90a583486b3b8ab7e8a12db485
@@ -1075,6 +1227,7 @@ Resources:
     UncompressedSize: 371712
     CompressedSize: 65875
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/spaceObjectHighlightsLoader.pyd
     Type: Resource
     Location: 8b/8b9f919783b8c0f9_1c89ce7520a33c40792d734e0c551802
@@ -1082,6 +1235,7 @@ Resources:
     UncompressedSize: 57344
     CompressedSize: 21564
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/staticdata/mapObjects.db
     Type: Resource
     Location: ec/ec5ccfc55e244faa_f4e6d7b05f2750fea1141a929835b29c
@@ -1089,6 +1243,7 @@ Resources:
     UncompressedSize: 32821248
     CompressedSize: 15480362
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/stationOperationsLoader.pyd
     Type: Resource
     Location: e2/e24687e7f16426e3_6a3e26a9b68341e898dede6fb39eaef4
@@ -1096,6 +1251,7 @@ Resources:
     UncompressedSize: 75776
     CompressedSize: 24346
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/stationServicesLoader.pyd
     Type: Resource
     Location: a8/a87819840435f751_611814586d2fe964d4f6f196c425436f
@@ -1103,6 +1259,7 @@ Resources:
     UncompressedSize: 55296
     CompressedSize: 20907
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/stationStandingsRestrictionsLoader.pyd
     Type: Resource
     Location: 63/636013224a2aa529_6865d3363ec164f8c3fe2a1130543266
@@ -1110,6 +1267,7 @@ Resources:
     UncompressedSize: 69120
     CompressedSize: 23029
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/surveysLoader.pyd
     Type: Resource
     Location: 4c/4c407af10326d4a8_eeb9fafe89dcfb7330f4280149013724
@@ -1117,6 +1275,7 @@ Resources:
     UncompressedSize: 70144
     CompressedSize: 23794
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/tagsLoader.pyd
     Type: Resource
     Location: bf/bf26f2cfe0535584_d35456ccb980f25983a7537f5d9457fc
@@ -1124,6 +1283,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21293
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/tbb12.dll
     Type: Resource
     Location: bc/bcff2a16b5db55ae_b8776525b9ef3be9ac3380445500d379
@@ -1131,6 +1291,7 @@ Resources:
     UncompressedSize: 175616
     CompressedSize: 71455
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/travelEffectsLoader.pyd
     Type: Resource
     Location: a0/a001a8f837639b93_c05fe0b2edb84ae058e6b5041d032892
@@ -1138,6 +1299,7 @@ Resources:
     UncompressedSize: 59904
     CompressedSize: 21994
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/typeDogmaLoader.pyd
     Type: Resource
     Location: e3/e355384f1df33589_6d95b04d4058a156b19bf7cc0f63851e
@@ -1145,6 +1307,7 @@ Resources:
     UncompressedSize: 71168
     CompressedSize: 23549
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/typeListLoader.pyd
     Type: Resource
     Location: 3a/3adf8dd0366a3633_ba4892b4aea2b287b39afc79f0d426f0
@@ -1152,6 +1315,7 @@ Resources:
     UncompressedSize: 62464
     CompressedSize: 22432
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/typeMaterialsLoader.pyd
     Type: Resource
     Location: 48/48ac511bbb72c833_3f659a116c7ca991e87cb56a52d98641
@@ -1159,6 +1323,7 @@ Resources:
     UncompressedSize: 63488
     CompressedSize: 22395
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/typesLoader.pyd
     Type: Resource
     Location: 77/770ac7c2e8a85cee_12a385ab41b141936c6e3e9332cc036c
@@ -1166,6 +1331,7 @@ Resources:
     UncompressedSize: 57344
     CompressedSize: 21885
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/uiBlinksLoader.pyd
     Type: Resource
     Location: 70/70e3b6b1bd46d3a8_651b7196abf9c88fbf552eded907abc9
@@ -1173,6 +1339,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21388
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/uiElementTypesLoader.pyd
     Type: Resource
     Location: e9/e986a221abf0c2ee_53de92e6b9ae022f332922909338c7a7
@@ -1180,6 +1347,7 @@ Resources:
     UncompressedSize: 56832
     CompressedSize: 21259
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/uiHelpPointersLoader.pyd
     Type: Resource
     Location: b1/b1f9fc9acef8e06a_7a3b0b39b4d5b70e733cd520883959ae
@@ -1187,6 +1355,7 @@ Resources:
     UncompressedSize: 63488
     CompressedSize: 22907
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/uiHidingTemplatesLoader.pyd
     Type: Resource
     Location: 1b/1b42474dfb2e42f9_ff1fd6fbda0465f4c2c298ba5d16cd1d
@@ -1194,6 +1363,7 @@ Resources:
     UncompressedSize: 72704
     CompressedSize: 23752
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/uiHighlightsLoader.pyd
     Type: Resource
     Location: 38/38cb32f3ba5085a2_1fba327dd58dc1a55ab46766dafd92fd
@@ -1201,6 +1371,7 @@ Resources:
     UncompressedSize: 65024
     CompressedSize: 23458
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/ujson.pyd
     Type: Resource
     Location: 6a/6ac87e315c8171d7_da5aae6ed39b612fcd6beca33f0523d7
@@ -1208,6 +1379,7 @@ Resources:
     UncompressedSize: 87040
     CompressedSize: 42476
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/unicodedata.pyd
     Type: Resource
     Location: 00/0078956d7adf8e75_3f0388b2681869f2a3dc90cac9a8e313
@@ -1215,6 +1387,7 @@ Resources:
     UncompressedSize: 692736
     CompressedSize: 260058
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/vcomp140.dll
     Type: Resource
     Location: c8/c81da9e7e9cb5215_f6235b7863dc1c2595d5189a065a7888
@@ -1222,6 +1395,7 @@ Resources:
     UncompressedSize: 180624
     CompressedSize: 91647
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/vcruntime140.dll
     Type: Resource
     Location: 0a/0a995891562ace05_cafd6f3410af3b95968a1efb17ecee05
@@ -1229,6 +1403,7 @@ Resources:
     UncompressedSize: 85040
     CompressedSize: 47528
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/voidSpaceEncountersLoader.pyd
     Type: Resource
     Location: 75/75ceef4dd4949ec3_36430306f8c52381ad0a0693b1c22ddf
@@ -1236,6 +1411,7 @@ Resources:
     UncompressedSize: 61952
     CompressedSize: 22335
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/warZonesPositionDataLoader.pyd
     Type: Resource
     Location: 70/705e2ae1bd9a33b9_5cdcdab9679472ef8340f172195e07dc
@@ -1243,6 +1419,7 @@ Resources:
     UncompressedSize: 77824
     CompressedSize: 24845
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: bin64/wwiseEventsLoader.pyd
     Type: Resource
     Location: a5/a508aaa4d6661bb5_d838b4655542e6061e7821590ecd1dff
@@ -1250,6 +1427,7 @@ Resources:
     UncompressedSize: 66560
     CompressedSize: 23587
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: code.ccp
     Type: Resource
     Location: f0/f032ac16b88d97a4_bc91faf3d2f2c77601fd178af8bb43e9
@@ -1257,6 +1435,7 @@ Resources:
     UncompressedSize: 23360988
     CompressedSize: 22266301
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: manifest.dat
     Type: Resource
     Location: 1a/1a48a0969136daa1_1f827b6342e8acb17874479a1b888d2a
@@ -1264,6 +1443,7 @@ Resources:
     UncompressedSize: 15996
     CompressedSize: 9876
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: res/planetResources.pickle
     Type: Resource
     Location: 0e/0e4d57a482714eb5_2e2bb515e1e67607785dd50e32eb9769
@@ -1271,6 +1451,7 @@ Resources:
     UncompressedSize: 202125
     CompressedSize: 197306
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: resfiledependencies.yaml
     Type: Resource
     Location: ee/eea80354bae9a691_520abc15c189be5066f31bf653e40409
@@ -1278,6 +1459,7 @@ Resources:
     UncompressedSize: 8253698
     CompressedSize: 523512
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: resfileindex.txt
     Type: Resource
     Location: 1d/1d34143a37d4b739_3c53f94cffff0b5dbe7f93e9dd27c7c8
@@ -1285,6 +1467,7 @@ Resources:
     UncompressedSize: 16938052
     CompressedSize: 4261724
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: resfileindex_Windows.txt
     Type: Resource
     Location: 7d/7d87a0a3a100cf9f_8afac055497cefd25f094ebefb071144
@@ -1292,6 +1475,7 @@ Resources:
     UncompressedSize: 549175
     CompressedSize: 107276
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: resfileindex_prefetch.txt
     Type: Resource
     Location: 56/5610a6eb8b5a4975_23fdc5d120831381032f3feb2e5b0356
@@ -1299,6 +1483,7 @@ Resources:
     UncompressedSize: 8386529
     CompressedSize: 1847258
     BinaryOperation: 33206
+    Prefix: app
   - RelativePath: start.ini
     Type: Resource
     Location: e3/e3cd8a97159e6321_359522b10ab9fdcdda98da7d94d75a8c
@@ -1306,3 +1491,4 @@ Resources:
     UncompressedSize: 320
     CompressedSize: 295
     BinaryOperation: 33206
+    Prefix: app

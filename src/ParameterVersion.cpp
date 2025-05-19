@@ -36,6 +36,7 @@ ParameterInfo PARAMETER_CHECKSUM( Parameter::CHECKSUM, "Checksum", { { CONTEXT_R
 ParameterInfo PARAMETER_COMPRESSED_SIZE( Parameter::COMPRESSED_SIZE, "CompressedSize", { { CONTEXT_RESOURCE, VERSION_0_0_0, VERSION_MAX } } );
 ParameterInfo PARAMETER_UNCOMPRESSED_SIZE( Parameter::UNCOMPRESSED_SIZE, "UncompressedSize", { { CONTEXT_RESOURCE, VERSION_0_0_0, VERSION_MAX } } );
 ParameterInfo PARAMETER_BINARY_OPERATION( Parameter::BINARY_OPERATION, "BinaryOperation", { { CONTEXT_RESOURCE, VERSION_0_0_0, VERSION_MAX } }, true );
+ParameterInfo PARAMETER_PREFIX( Parameter::PREFIX, "Prefix", { { CONTEXT_RESOURCE, VERSION_0_0_0, VERSION_MAX } }, true );
 
 ParameterInfo::ParameterInfo( CarbonResources::Parameter id, std::string tag, std::vector<ParameterContext> context, bool isOptional ) :
 	m_id( id ),

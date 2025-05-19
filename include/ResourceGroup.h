@@ -134,6 +134,8 @@ namespace CarbonResources
         ResourceDestinationSettings resourceBundleResourceGroupDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_RELATIVE, "BundleOut/" };
 		
         StatusCallback statusCallback = nullptr;
+
+    	std::chrono::seconds downloadRetrySeconds{120};
 	};
 
     /** @struct PatchCreateParams
@@ -180,6 +182,8 @@ namespace CarbonResources
         ResourceDestinationSettings resourcePatchResourceGroupDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_RELATIVE, "PatchOut/" };
 	
         StatusCallback statusCallback = nullptr;
+
+    	std::chrono::seconds downloadRetrySeconds{120};
     };
 
     /** @struct ResourceGroupImportFromFileParams
@@ -234,6 +238,8 @@ namespace CarbonResources
 		Version outputDocumentVersion = S_DOCUMENT_VERSION;
 
         StatusCallback statusCallback = nullptr;
+
+		std::string resourcePrefix;
 	};
 
     class ResourceGroupImpl;    // TODO remove these from public API

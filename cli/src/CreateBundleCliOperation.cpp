@@ -15,7 +15,8 @@ CreateBundleCliOperation::CreateBundleCliOperation() :
 	m_chunkDestinationBasePathArgumentId( "--chunk-destination-path" ),
 	m_bundleResourceGroupDestinationTypeArgumentId( "--bundle-resourcegroup-destination-type" ),
 	m_bundleResourceGroupDestinationBasePathArgumentId( "--bundle-resourcegroup-destination-path" ),
-	m_chunkSizeArgumentId( "--chunk-size" )
+	m_chunkSizeArgumentId( "--chunk-size" ),
+	m_downloadRetrySecondsArgumentId( "--download-retry-seconds" )
 {
 
 	AddRequiredPositionalArgument( m_inputResourceGroupPathArgumentId, "Path to ResourceGroup to bundle." );
@@ -37,6 +38,8 @@ CreateBundleCliOperation::CreateBundleCliOperation() :
 	AddArgument( m_bundleResourceGroupDestinationBasePathArgumentId, "Represents the base path where the bundle ResourceGroup will be saved.", false, false, "." );
 
     AddArgument( m_chunkSizeArgumentId, "Represents the maximum size of the produced chunks in bytes.", false, false, "10000000" );
+
+	AddArgument( m_downloadRetrySecondsArgumentId, "The number of seconds before attempt to download a resource fails with a network related error", false, false, "120");
 }
 
 bool CreateBundleCliOperation::Execute() const
@@ -117,9 +120,11 @@ bool CreateBundleCliOperation::Execute() const
 
 	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = m_argumentParser->get<std::string>( m_bundleResourceGroupDestinationBasePathArgumentId );
 
+	long long retrySeconds{120};
 	try
 	{
 		bundleCreateParams.chunkSize = std::stoull( m_argumentParser->get( m_chunkSizeArgumentId ) );
+		retrySeconds = std::stoll( m_argumentParser->get( m_downloadRetrySecondsArgumentId ) );
 	}
 	catch( std::invalid_argument& e )
 	{
@@ -129,6 +134,8 @@ bool CreateBundleCliOperation::Execute() const
 	{
 		return false;
 	}
+	bundleCreateParams.downloadRetrySeconds = std::chrono::seconds( retrySeconds );
+
 	PrintStartBanner( resourceGroupParams, bundleCreateParams );
 
 	return CreateBundle( resourceGroupParams, bundleCreateParams );
@@ -167,6 +174,8 @@ void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::Resource
 	std::cout << "Bundle Resource Group Destination Base Path: " << bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath << std::endl;
 
     std::cout << "Chunk Size: " << bundleCreateParams.chunkSize << " Bytes" << std::endl;
+
+	std::cout << "Download Retry Seconds: " << bundleCreateParams.downloadRetrySeconds.count() << std::endl;
 
 	std::cout << "----------------------------\n" << std::endl;
 }

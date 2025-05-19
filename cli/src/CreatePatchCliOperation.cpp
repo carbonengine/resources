@@ -18,8 +18,9 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
 	m_patchBinaryDestinationBasePathArgumentId( "--patch-destination-base-path" ),
 	m_patchResourceGroupDestinationTypeArgumentId( "--patch-resourcegroup-destination-type" ),
 	m_patchResourceGroupDestinationBasePathArgumentId( "--patch-resourcegroup-destination-path" ),
-	m_patchFileRelativePathPrefix( "--patch-prefix" ),
-	m_maxInputChunkSize( "--chunk-size" )
+	m_patchFileRelativePathPrefixArgumentId( "--patch-prefix" ),
+	m_maxInputChunkSizeArgumentId( "--chunk-size" ),
+	m_downloadRetrySecondsArgumentId( "--download-retry" )
 {
 
     // TODO: The interface here is totally WIP, it needs actually designing to be easy to use.
@@ -48,9 +49,11 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
 
 	AddArgument( m_patchResourceGroupDestinationBasePathArgumentId, "Represents the base path where the patch ResourceGroup will be saved.", false, false, "." );
 
-    AddArgument( m_patchFileRelativePathPrefix, "Relative path prefix for produced patch binaries. Default is “Patches/Patch” which will produce patches such as Patches/Patch.1 …", false, false, "Patches/Patch" );
+    AddArgument( m_patchFileRelativePathPrefixArgumentId, "Relative path prefix for produced patch binaries. Default is “Patches/Patch” which will produce patches such as Patches/Patch.1 …", false, false, "Patches/Patch" );
 
-    AddArgument( m_maxInputChunkSize, "Files are processed in chunks, maxInputFileChunkSize indicate the size of this chunk. Files smaller than chunk will be processed in one pass.", false, false, "100000000" );
+    AddArgument( m_maxInputChunkSizeArgumentId, "Files are processed in chunks, maxInputFileChunkSize indicate the size of this chunk. Files smaller than chunk will be processed in one pass.", false, false, "100000000" );
+
+	AddArgument( m_downloadRetrySecondsArgumentId, "The number of seconds before attempt to download a resource fails with a network related error", false, false, "120");
 }
 
 bool CreatePatchCliOperation::Execute() const
@@ -159,11 +162,13 @@ bool CreatePatchCliOperation::Execute() const
 
 	createPatchParams.resourcePatchResourceGroupDestinationSettings.basePath = m_argumentParser->get<std::string>( m_patchResourceGroupDestinationBasePathArgumentId );
 
-	createPatchParams.patchFileRelativePathPrefix = m_argumentParser->get<std::string>( m_patchFileRelativePathPrefix );
+	createPatchParams.patchFileRelativePathPrefix = m_argumentParser->get<std::string>( m_patchFileRelativePathPrefixArgumentId );
 
+	long long retrySeconds{120};
 	try
 	{
-		createPatchParams.maxInputFileChunkSize = std::stoull( m_argumentParser->get( m_maxInputChunkSize ) );
+		createPatchParams.maxInputFileChunkSize = std::stoull( m_argumentParser->get( m_maxInputChunkSizeArgumentId ) );
+		retrySeconds = std::stoll( m_argumentParser->get( m_downloadRetrySecondsArgumentId ) );
 	}
 	catch( std::invalid_argument& e )
 	{
@@ -173,6 +178,7 @@ bool CreatePatchCliOperation::Execute() const
 	{
 		return false;
 	}
+	createPatchParams.downloadRetrySeconds = std::chrono::seconds( retrySeconds );
 
     if (s_verbosity > 0)
     {
@@ -221,6 +227,8 @@ void CreatePatchCliOperation::PrintStartBanner( const CarbonResources::ResourceG
 	std::cout << "Resource Patch Resource Group Destination Settings Base Path: " << createPatchParams.resourcePatchResourceGroupDestinationSettings.basePath << std::endl;
 
 	std::cout << "Resource Patch Resource Group Destination Settings Destination Type: " << DestinationTypeToString( createPatchParams.resourcePatchResourceGroupDestinationSettings.destinationType ) << std::endl;
+
+	std::cout << "Download Retry Seconds: " <<  createPatchParams.downloadRetrySeconds.count() << std::endl;
 
 	std::cout << "----------------------------\n" << std::endl;
 }

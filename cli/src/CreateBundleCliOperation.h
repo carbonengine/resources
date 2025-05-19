@@ -56,6 +56,8 @@ private:
 	std::string m_bundleResourceGroupDestinationBasePathArgumentId;
 
     std::string m_chunkSizeArgumentId;
+
+	std::string m_downloadRetrySecondsArgumentId;
 };
 
 #endif // CreateBundleCliOperation_H

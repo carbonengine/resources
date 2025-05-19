@@ -77,6 +77,8 @@ namespace CarbonResources
 
                 	resourceParams.binaryOperation = ResourceTools::CalculateBinaryOperation( entry.path() );
 
+                	resourceParams.prefix = params.resourcePrefix;
+
 				    ResourceInfo* resource = new ResourceInfo( resourceParams );
 
                     std::string resourceData;
@@ -323,12 +325,23 @@ namespace CarbonResources
 
 		std::string data = "";
 
-        Result exportYamlResult = ExportYaml( params.outputDocumentVersion, data, params.statusCallback );
+    	if( params.outputDocumentVersion.major == 0 && params.outputDocumentVersion.minor == 0 )
+    	{
+    		Result exportCsvResult = ExportCsv( params.outputDocumentVersion, data, params.statusCallback );
+    		if( exportCsvResult.type != ResultType::SUCCESS )
+    		{
+    			return exportCsvResult;
+    		}
+    	}
+    	else
+    	{
+    		Result exportYamlResult = ExportYaml( params.outputDocumentVersion, data, params.statusCallback );
 
-        if (exportYamlResult.type != ResultType::SUCCESS)
-        {
-			return exportYamlResult;
-        }
+    		if (exportYamlResult.type != ResultType::SUCCESS)
+    		{
+    			return exportYamlResult;
+    		}
+    	}
 
         if( !ResourceTools::SaveFile( params.filename, data ) )
 		{
@@ -394,9 +407,11 @@ namespace CarbonResources
             // Split filename and prefix
 			std::string resourcePrefixDelimiter = ":/";
 			std::string filename = value.substr( value.find(resourcePrefixDelimiter) + resourcePrefixDelimiter.size() );
-			std::string resourceType = value.substr( 0, value.find( ":" ) );
+			std::string resourcePrefix = value.substr( 0, value.find( ":" ) );
 
 			resourceParams.relativePath = filename;
+
+			resourceParams.prefix = resourcePrefix;
 
 			if( !std::getline( ss, value, delimiter ) )
 			{
@@ -746,6 +761,49 @@ namespace CarbonResources
       
     }
 
+    Result ResourceGroupImpl::ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, std::function<void( int, int, const std::string& )> statusCallback /*= nullptr*/ ) const
+    {
+    	if( outputDocumentVersion.getMajor() > 0 || outputDocumentVersion.getMinor() > 0 || outputDocumentVersion.getPatch() > 0 )
+    	{
+    		return Result{ ResultType::UNSUPPORTED_FILE_FORMAT };
+    	}
+
+    	std::string out;
+
+
+    	auto resourceInfos = m_resourcesParameter.GetValue();
+    	std::sort(
+    		resourceInfos->begin(),
+    		resourceInfos->end(),
+    		[] (ResourceInfo* a, ResourceInfo* b) {
+    			std::filesystem::path ap;
+    			std::filesystem::path bp;
+    			a->GetRelativePath( ap );
+    			b->GetRelativePath( bp );
+    			return ap < bp;
+    		} );
+
+    	int i{0};
+		for (ResourceInfo* r : m_resourcesParameter)
+        {
+			// Update status
+			if( statusCallback )
+			{
+				float percentage = (100.0 / m_resourcesParameter.GetValue()->size()) * i;
+				statusCallback( 0, percentage, "Percentage Update" );
+				i++;
+			}
+
+			Result resourceExportResult = r->ExportToCsv( out, m_versionParameter.GetValue() );
+            if( resourceExportResult.type != ResultType::SUCCESS )
+			{
+				return resourceExportResult;
+			}
+			data += out + "\n";
+        }
+    	return Result{ ResultType::SUCCESS };
+    }
+
     Result ResourceGroupImpl::ProcessChunk( std::string& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const
     {
 		// Create resource from Patch Data
@@ -843,6 +901,8 @@ namespace CarbonResources
             resourceGetDataParams.resourceSourceSettings = params.resourceSourceSettings;
 
             resourceGetDataParams.dataStream = &resourceDataStream;
+
+        	resourceGetDataParams.downloadRetrySeconds = params.downloadRetrySeconds;
 
 			Result resourceGetDataResult = resource->GetDataStream( resourceGetDataParams );
 
@@ -1026,6 +1086,7 @@ namespace CarbonResources
 
     	return Result{ ResultType::SUCCESS };
 	}
+
 	Result ResourceGroupImpl::CreatePatch( const PatchCreateParams& params ) const
     {
         // Update status
@@ -1147,6 +1208,8 @@ namespace CarbonResources
 				ResourceGetDataStreamParams previousResourceGetDataStreamParams;
 
 				previousResourceGetDataStreamParams.resourceSourceSettings = params.resourceSourceSettingsFrom;
+
+            	previousResourceGetDataStreamParams.downloadRetrySeconds = params.downloadRetrySeconds;
 
 				previousResourceGetDataStreamParams.dataStream = &previousFileDataStream;
 

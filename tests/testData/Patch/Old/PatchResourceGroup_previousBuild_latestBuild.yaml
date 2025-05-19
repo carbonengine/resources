@@ -10,7 +10,6 @@ ResourceGroupResource:
   Checksum: b4a113bea8a8640b8ec23630212b9c92
   UncompressedSize: 881
   CompressedSize: 364
-  BinaryOperation: 0
 MaxInputChunkSize: 100000000
 Resources:
   - RelativePath: Patches/Patch1.0
@@ -19,7 +18,6 @@ Resources:
     Checksum: 7a53578b1066cd8ce42b1d06af36f193
     UncompressedSize: 9165
     CompressedSize: 109
-    BinaryOperation: 0
     TargetResourceRelativePath: intromovie.txt
     DataOffset: 0
     SourceOffset: 0
@@ -29,7 +27,6 @@ Resources:
     Checksum: 28111ebf86b5dbbc9167285a9d5b2c18
     UncompressedSize: 9593
     CompressedSize: 320
-    BinaryOperation: 0
     TargetResourceRelativePath: introMoviePrefixed.txt
     DataOffset: 0
     SourceOffset: 0

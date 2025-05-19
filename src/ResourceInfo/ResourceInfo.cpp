@@ -53,7 +53,19 @@ namespace CarbonResources
 
 		m_uncompressedSize = params.uncompressedSize;
 
-    	m_binaryOperation = params.binaryOperation;
+    	if( params.binaryOperation )
+    	{
+    		m_binaryOperation = params.binaryOperation;
+    	}
+
+    	if( !params.prefix.empty() )
+    	{
+    		m_prefix = params.prefix;
+    	}
+    	else
+    	{
+    		m_prefix.Reset();
+    	}
     }
 
     ResourceInfo::~ResourceInfo()
@@ -537,7 +549,7 @@ namespace CarbonResources
 		std::replace( url.begin(), url.end(), '\\', '/' );
 
     	ResourceTools::Downloader downloader;
-		bool downloadFileResult = downloader.DownloadFile( url, tempPath.string() );
+		bool downloadFileResult = downloader.DownloadFile( url, tempPath.string(), params.downloadRetrySeconds );
 
         if (!downloadFileResult)
         {
@@ -635,7 +647,7 @@ namespace CarbonResources
         std::replace( url.begin(), url.end(), '\\', '/' );
 
     	ResourceTools::Downloader downloader;
-		bool downloadFileResult = downloader.DownloadFile( url, tempPath.string() );
+		bool downloadFileResult = downloader.DownloadFile( url, tempPath.string(), params.downloadRetrySeconds );
 
 		if( !downloadFileResult )
 		{
@@ -751,6 +763,15 @@ namespace CarbonResources
 
 		}
 
+    	if( m_prefix.IsParameterExpectedInDocumentVersion( documentVersion ) )
+    	{
+    		YAML::Node parameter = resource[m_prefix.GetTag()];
+    		if( parameter.IsDefined() )
+    		{
+    			m_prefix = parameter.as<std::string>();
+    		}
+    	}
+
 
 		return Result{ ResultType::SUCCESS };
 	}
@@ -845,6 +866,11 @@ namespace CarbonResources
 
     		if( getBinaryOperationResult.type != ResultType::SUCCESS )
     		{
+    			if( getBinaryOperationResult.type == ResultType::RESOURCE_VALUE_NOT_SET )
+    			{
+    				m_binaryOperation.Reset();
+    				return Result{ ResultType::SUCCESS };
+    			}
     			return getBinaryOperationResult;
     		}
 			if( binaryOperation != 0 )
@@ -1060,6 +1086,16 @@ namespace CarbonResources
     		}
     	}
 
+    	if( m_prefix.IsParameterExpectedInDocumentVersion( documentVersion ) )
+    	{
+    		// This is an optional field
+    		if( m_prefix.HasValue() )
+    		{
+    			out << YAML::Key << m_prefix.GetTag();
+    			out << YAML::Value << m_prefix.GetValue();
+    		}
+    	}
+
         /*
         // Clean this up after ABI thought exercises finished
 
@@ -1078,5 +1114,77 @@ namespace CarbonResources
 
 		return Result{ ResultType::SUCCESS };
 	}
+
+    Result ResourceInfo::ExportToCsv( std::string& out, const VersionInternal& documentVersion )
+    {
+    	std::stringstream result;
+
+    	if( m_prefix.HasValue() )
+    	{
+    		result << m_prefix.GetValue() << ":/";
+    	}
+
+    	// Relative path
+		if( !m_relativePath.HasValue() )
+		{
+			return Result{ ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET };
+		}
+
+        std::filesystem::path relativePath;
+
+        Result getRelativePathResult = GetRelativePath( relativePath );
+
+        if (getRelativePathResult.type != ResultType::SUCCESS)
+        {
+			return getRelativePathResult;
+        }
+
+        std::string relativePathStr = relativePath.string();
+		std::replace( relativePathStr.begin(), relativePathStr.end(), '\\', '/' );
+
+		result << relativePathStr << ",";
+
+
+        // Location
+		if( !m_location.HasValue() )
+		{
+			return Result{ ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET };
+		}
+
+		result << m_location.GetValue().ToString() << ",";
+
+		// Checksum
+		if( !m_checksum.HasValue() )
+		{
+			return Result{ ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET };
+		}
+
+		result << m_checksum.GetValue() << ",";
+
+		if( !m_uncompressedSize.HasValue() )
+		{
+			return Result{ ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET };
+		}
+
+		result << m_uncompressedSize.GetValue() << ",";
+
+        // Compressed Size
+		if( !m_compressedSize.HasValue() )
+		{
+			return Result{ ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET };
+		}
+
+		result << m_compressedSize.GetValue(); // End of required fields
+
+    	// This is an optional field
+    	if( m_binaryOperation.HasValue() )
+    	{
+    		result << "," << m_binaryOperation.GetValue();
+    	}
+
+    	out = result.str();
+
+		return Result{ ResultType::SUCCESS };
+    }
 
 }

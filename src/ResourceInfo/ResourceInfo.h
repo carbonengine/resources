@@ -244,6 +244,8 @@ namespace CarbonResources
 		uintmax_t uncompressedSize = 0;
 
     	unsigned int binaryOperation = 0;
+
+    	std::string prefix;
 	};
 
     struct ResourceGetDataStreamParams
@@ -256,6 +258,7 @@ namespace CarbonResources
 
 		std::string expectedChecksum = "";
 
+    	std::chrono::seconds downloadRetrySeconds{120};
 	};
 
     struct ResourceGetDataParams
@@ -267,6 +270,8 @@ namespace CarbonResources
         std::filesystem::path cacheBasePath = "cache";
 
         std::string expectedChecksum = "";
+
+    	std::chrono::seconds downloadRetrySeconds{120};
 	};
 
     struct ResourcePutDataStreamParams
@@ -321,6 +326,8 @@ namespace CarbonResources
 
         virtual Result ExportToYaml( YAML::Emitter& out, const VersionInternal& documentVersion );
 
+    	Result ExportToCsv( std::string& out, const VersionInternal& documentVersion );
+
         Result SetParametersFromData( const std::string& data );
 
     	Result SetParametersFromSourceStream( ResourceTools::FileDataStreamIn& stream, size_t matchSize );
@@ -370,6 +377,8 @@ namespace CarbonResources
 		DocumentParameter<uintmax_t> m_uncompressedSize = DocumentParameter<uintmax_t>( UNCOMPRESSED_SIZE, TypeId() );
 
     	DocumentParameter<unsigned int> m_binaryOperation = DocumentParameter<unsigned int>( BINARY_OPERATION, TypeId() );
+
+    	DocumentParameter<std::string> m_prefix = DocumentParameter<std::string>( PREFIX, TypeId() );
     };
 
 	inline Result SetParameterFromYamlNodeData(YAML::Node& node, DocumentParameter<std::filesystem::path>& parameter)
