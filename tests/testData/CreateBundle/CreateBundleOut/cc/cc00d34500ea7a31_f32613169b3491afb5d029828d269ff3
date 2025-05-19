@@ -10,7 +10,6 @@ Resources:
     Checksum: 5e631fd37d3350e30095d1251b178f2c
     UncompressedSize: 9117
     CompressedSize: 3259
-    BinaryOperation: 0
     Prefix: res
   - RelativePath: videocardcategories.yaml
     Type: Resource
@@ -18,7 +17,6 @@ Resources:
     Checksum: 90d25dac9f4ed3233c5fda72bee3dfe6
     UncompressedSize: 32815
     CompressedSize: 5003
-    BinaryOperation: 0
     Prefix: res
   - RelativePath: testresource2.txt
     Type: Resource
@@ -26,5 +24,4 @@ Resources:
     Checksum: 271c8036e4eae5515053e924a0a39e0f
     UncompressedSize: 29
     CompressedSize: 97
-    BinaryOperation: 0
     Prefix: res

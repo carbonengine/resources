@@ -53,7 +53,10 @@ namespace CarbonResources
 
 		m_uncompressedSize = params.uncompressedSize;
 
-    	m_binaryOperation = params.binaryOperation;
+    	if( params.binaryOperation )
+    	{
+    		m_binaryOperation = params.binaryOperation;
+    	}
 
     	if( !params.prefix.empty() )
     	{
@@ -736,6 +739,11 @@ namespace CarbonResources
 
     		if( getBinaryOperationResult.type != ResultType::SUCCESS )
     		{
+    			if( getBinaryOperationResult.type == ResultType::RESOURCE_VALUE_NOT_SET )
+    			{
+    				m_binaryOperation.Reset();
+    				return Result{ ResultType::SUCCESS };
+    			}
     			return getBinaryOperationResult;
     		}
 			if( binaryOperation != 0 )
