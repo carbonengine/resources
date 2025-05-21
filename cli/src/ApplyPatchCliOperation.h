@@ -3,10 +3,10 @@
 #include "CliOperation.h"
 #include <PatchResourceGroup.h>
 
-class ApplyPatchOperation : public CliOperation
+class ApplyPatchCliOperation : public CliOperation
 {
 public:
-	ApplyPatchOperation();
+	ApplyPatchCliOperation();
 	bool Execute() const final;
 private:
 	void PrintStartBanner(const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams) const;

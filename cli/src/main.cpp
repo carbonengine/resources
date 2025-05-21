@@ -6,7 +6,7 @@
 #include <filesystem>
 
 #include "Cli.h"
-#include "ApplyPatchOperation.h"
+#include "ApplyPatchCliOperation.h"
 #include "CreateResourceGroupCliOperation.h"
 #include "CreatePatchCliOperation.h"
 #include "CreateBundleCliOperation.h"
@@ -37,7 +37,7 @@ int main( int argc, char** argv )
 	cli.AddOperation( &createBundleOperation );
 
 #ifdef DEV_FEATURES
-	ApplyPatchOperation addPatchOperation;
+	ApplyPatchCliOperation addPatchOperation;
 
 	cli.AddOperation( &addPatchOperation );
 #endif

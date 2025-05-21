@@ -1,11 +1,11 @@
-#include "ApplyPatchOperation.h"
+#include "ApplyPatchCliOperation.h"
 
 #include <PatchResourceGroup.h>
 
 #include <iostream>
 #include <argparse/argparse.hpp>
 
-ApplyPatchOperation::ApplyPatchOperation() :
+ApplyPatchCliOperation::ApplyPatchCliOperation() :
 	CliOperation("apply-patch", "Apply a patch"),
 	m_patchResourceGroupPathArgumentId("--patch-resource-group-path"),
 	m_patchBinariesBasePathArgumentId("--patch-binaries-base-path"),
@@ -28,7 +28,7 @@ ApplyPatchOperation::ApplyPatchOperation() :
 	AddArgument( m_outputDestinationTypeArgumentId,"The type of repository in which to place the patched version of the files.", false, false, "LOCAL_RELATIVE");
 }
 
-bool ApplyPatchOperation::Execute() const
+bool ApplyPatchCliOperation::Execute() const
 {
 	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
@@ -117,7 +117,7 @@ std::string Stringify( const std::vector<std::filesystem::path>& v )
 	return result;
 }
 
-void ApplyPatchOperation::PrintStartBanner(const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams) const
+void ApplyPatchCliOperation::PrintStartBanner(const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams) const
 {
 	if( s_verbosity <= 0 )
 	{
@@ -141,7 +141,7 @@ void ApplyPatchOperation::PrintStartBanner(const CarbonResources::ResourceGroupI
 	std::cout << "----------------------------\n" << std::endl;
 }
 
-bool ApplyPatchOperation::ApplyPatch(const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams) const
+bool ApplyPatchCliOperation::ApplyPatch(const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams) const
 {
 	// Load the patch file
 	CarbonResources::PatchResourceGroup patchResourceGroup;
