@@ -1,0 +1,20 @@
+#pragma once
+
+#include "CliOperation.h"
+#include <BundleResourceGroup.h>
+
+class UnpackBundleCliOperation : public CliOperation
+{
+public:
+	UnpackBundleCliOperation();
+	bool Execute() const final;
+private:
+	void PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParams, const CarbonResources::BundleUnpackParams& unpackParams ) const;
+	bool Unpack( const CarbonResources::ResourceGroupImportFromFileParams& importParams, const CarbonResources::BundleUnpackParams& unpackParams ) const;
+	std::string m_bundleResourceGroupPathArgumentId;
+	std::string m_chunkSourceBasePathsArgumentId;
+	std::string m_chunkSourceTypeArgumentId;
+	std::string m_resourceDestinationBasePathArgumentId;
+	std::string m_resourceDestinationTypeArgumentId;
+};
+

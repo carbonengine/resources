@@ -17,6 +17,8 @@ set(SRC_FILES
     src/CreateResourceGroupCliOperation.cpp
     src/CreateResourceGroupCliOperation.h
     src/main.cpp
+    src/UnpackBundleCliOperation.cpp
+    src/UnpackBundleCliOperation.h
 )
 
 ccp_add_executable(carbon-resources-cli ${SRC_FILES})

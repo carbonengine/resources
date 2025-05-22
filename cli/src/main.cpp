@@ -10,6 +10,7 @@
 #include "CreateResourceGroupCliOperation.h"
 #include "CreatePatchCliOperation.h"
 #include "CreateBundleCliOperation.h"
+#include "UnpackBundleCliOperation.h"
 
 std::string CalculateVersionString()
 {
@@ -40,6 +41,10 @@ int main( int argc, char** argv )
 	ApplyPatchCliOperation addPatchOperation;
 
 	cli.AddOperation( &addPatchOperation );
+
+	UnpackBundleCliOperation unpackBundleCliOperation;
+
+	cli.AddOperation( &unpackBundleCliOperation );
 #endif
 
     // Check no arguments

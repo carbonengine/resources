@@ -320,3 +320,19 @@ bool CliOperation::StringToResourceDestinationType( const std::string& stringRep
 	}
 	return true;
 }
+
+std::string PathsToString( const std::vector<std::filesystem::path>& v )
+{
+	std::string result;
+	bool first{true};
+	for( const auto& s : v )
+	{
+		if(!first)
+		{
+			result += ",";
+		}
+		first = false;
+		result += s;
+	}
+	return result;
+}

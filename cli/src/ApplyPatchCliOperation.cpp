@@ -107,21 +107,7 @@ bool ApplyPatchCliOperation::Execute() const
 	return ApplyPatch( importParamsPrevious, patchApplyParams );
 }
 
-std::string Stringify( const std::vector<std::filesystem::path>& v )
-{
-	std::string result;
-	bool first{true};
-	for( const auto& s : v )
-	{
-		if(!first)
-		{
-			result += ",";
-		}
-		first = false;
-		result += s;
-	}
-	return result;
-}
+
 
 void ApplyPatchCliOperation::PrintStartBanner(const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams) const
 {
@@ -135,11 +121,11 @@ void ApplyPatchCliOperation::PrintStartBanner(const CarbonResources::ResourceGro
     PrintCommonOperationHeaderInformation();
 
 	std::cout << "Patch Resource Group: " << importParamsPrevious.filename << std::endl;
-	std::cout << "Patch Binaries Base Paths: " << Stringify( patchApplyParams.patchBinarySourceSettings.basePaths ) << std::endl;
+	std::cout << "Patch Binaries Base Paths: " << PathsToString( patchApplyParams.patchBinarySourceSettings.basePaths ) << std::endl;
 	std::cout << "Patch Binaries Source Type: " << SourceTypeToString( patchApplyParams.patchBinarySourceSettings.sourceType ) << std::endl;
-	std::cout << "Resources To Patch Base Paths: " << Stringify( patchApplyParams.resourcesToPatchSourceSettings.basePaths ) << std::endl;
+	std::cout << "Resources To Patch Base Paths: " << PathsToString( patchApplyParams.resourcesToPatchSourceSettings.basePaths ) << std::endl;
 	std::cout << "Resources To Patch Source Type: " << SourceTypeToString( patchApplyParams.resourcesToPatchSourceSettings.sourceType ) << std::endl;
-	std::cout << "Next Resources Base Path: " << Stringify( patchApplyParams.newBuildResourcesSourceSettings.basePaths ) << std::endl;
+	std::cout << "Next Resources Base Path: " << PathsToString( patchApplyParams.newBuildResourcesSourceSettings.basePaths ) << std::endl;
 	std::cout << "Next Resources Source Type: " << SourceTypeToString( patchApplyParams.newBuildResourcesSourceSettings.sourceType ) << std::endl;
 	std::cout << "Output Path Base Path: " << patchApplyParams.resourcesToPatchDestinationSettings.basePath << std::endl;
 	std::cout << "Output Path Destination Type: " << DestinationTypeToString( patchApplyParams.resourcesToPatchDestinationSettings.destinationType ) << std::endl;

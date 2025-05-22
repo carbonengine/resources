@@ -23,6 +23,7 @@
 
 #include <Enums.h>
 
+#include <filesystem>
 #include <functional>
 
 namespace CarbonResources
@@ -92,5 +93,7 @@ private:
 	static inline char s_currentBusyAnimationChar = '/';
 
 };
+
+std::string PathsToString( const std::vector<std::filesystem::path>& v );
 
 #endif // CliOperation_H
