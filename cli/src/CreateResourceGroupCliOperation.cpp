@@ -80,10 +80,7 @@ void CreateResourceGroupCliOperation::PrintStartBanner( const std::filesystem::p
 
 	std::cout << "Output Document Version: " << version << std::endl;
 
-	if( !resourcePrefix.empty() )
-	{
-		std::cout << "Resource Prefix: " << resourcePrefix << std::endl;
-	}
+	std::cout << "Resource Prefix: " << resourcePrefix << std::endl;
 
 	std::cout << "----------------------------\n" << std::endl;
 }

@@ -166,6 +166,11 @@ namespace CarbonResources
 
     static const Version S_DOCUMENT_VERSION = { 0, 1, 0 }; /*!< Maximum document version supported by carbon-resources */
 
+    static const std::vector S_VALID_DOCUMENT_VERSIONS = { 
+                                                            Version{ 0, 0, 0 },
+														    Version{ 0, 1, 0 }
+                                                         }; /*!< List of valid document version supported by carbon-resources */
+
 }
 
 #endif // Enums_H

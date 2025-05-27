@@ -52,6 +52,14 @@ namespace CarbonResources
 			return Result{ ResultType::INPUT_DIRECTORY_DOESNT_EXIST };
         }
 
+        // Ensure document version is valid
+        VersionInternal documentVersion( params.outputDocumentVersion );
+
+        if (!documentVersion.isVersionValid())
+        {
+			return Result{ ResultType::DOCUMENT_VERSION_UNSUPPORTED };
+        }
+
         // Walk directory and create a resource from each file using data
 		auto recursiveDirectoryIter = std::filesystem::recursive_directory_iterator( params.directory );
 
@@ -99,16 +107,6 @@ namespace CarbonResources
                     }
 
                     Result setParametersFromDataResult = resource->SetParametersFromData( resourceData );
-
-                    //TEMP
-					uintmax_t fSize;
-					resource->GetUncompressedSize( fSize );
-					if( fSize != fileSize )
-                    {
-						int i = 0;
-						i++;
-                    }
-                    //TEMPEND
 
                     if (setParametersFromDataResult.type != ResultType::SUCCESS)
                     {
@@ -214,16 +212,6 @@ namespace CarbonResources
                     resourceParams.location = l.ToString();
 
                     ResourceInfo* resource = new ResourceInfo( resourceParams );
-
-                    //TEMP
-					uintmax_t fSize;
-					resource->GetUncompressedSize( fSize );
-					if( fSize != fileSize )
-					{
-						int i = 0;
-						i++;
-					}
-					//TEMPEND
 
                     Result addResourceResult = AddResource( resource );
 
@@ -686,6 +674,12 @@ namespace CarbonResources
 
         // It is possible to export a different version that the imported version
         // The version must be less than the version of the document and also no higher than supported by the binary at compile
+		// Ensure document version is valid
+		if( !outputDocumentVersion.isVersionValid() )
+		{
+			return Result{ ResultType::DOCUMENT_VERSION_UNSUPPORTED };
+		}
+
 		VersionInternal sanitisedOutputDocumentVersion = outputDocumentVersion;
 		const VersionInternal documentCurrentVersion = m_versionParameter.GetValue();
 

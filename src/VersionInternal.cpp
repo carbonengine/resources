@@ -95,6 +95,26 @@ namespace CarbonResources
 	    }
     }
 
+    bool VersionInternal::operator == ( const VersionInternal& value ) const
+    {
+        if (value.m_major != m_major)
+        {
+			return false;
+        }
+        else if (value.m_minor != m_minor)
+        {
+			return false;
+        }
+        else if (value.m_patch != m_patch)
+        {
+			return false;
+        }
+        else
+        {
+			return true;
+        }
+    }
+
     bool VersionInternal::operator<=( const VersionInternal& value ) const
     {
 	    return !(*this > value);
@@ -163,5 +183,20 @@ namespace CarbonResources
     unsigned int VersionInternal::getPatch() const
     {
 		return m_patch;
+    }
+
+    bool VersionInternal::isVersionValid() const
+    {
+        for (Version v : S_VALID_DOCUMENT_VERSIONS)
+        {
+			VersionInternal internalVersion( v );
+
+            if (this->operator==(internalVersion))
+            {
+				return true;
+            }
+        }
+
+        return false;
     }
 }

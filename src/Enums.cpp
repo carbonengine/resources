@@ -32,7 +32,7 @@ namespace CarbonResources
 		    return true;
 
 	    case ResultType::DOCUMENT_VERSION_UNSUPPORTED:
-		    output = "Document major version is greater than library max version. Library needs updating.";
+		    output = "Document version supplied is not supported.";
 		    return true;
 
 	    case ResultType::REQUIRED_RESOURCE_PARAMETER_NOT_SET:

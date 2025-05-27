@@ -47,6 +47,8 @@ namespace CarbonResources
 
         bool operator<=( const VersionInternal& value ) const;
 
+        bool operator==( const VersionInternal& value ) const;
+
         std::string ToString() const;
 
 		bool FromString( std::string versionString );
@@ -56,6 +58,8 @@ namespace CarbonResources
         unsigned int getMinor() const;
 
         unsigned int getPatch() const;
+
+        bool isVersionValid() const;
 
     private:
 
