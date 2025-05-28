@@ -51,7 +51,7 @@ public:
 
 	virtual bool Execute() const = 0;
 
-    bool ProcessCommandLine( int argc, char** argv ) const;
+    bool ProcessCommandLine( int argc, char** argv );
 
     std::string GetName() const;
 
@@ -83,11 +83,15 @@ private:
 
     static char GetBusyChar();
 
+    bool SetVerbosityLevel();
+
 protected:
 
-	static inline unsigned int s_verbosity = 0;
+	static inline unsigned int s_verbosityLevel = 0;
 
 private:
+	std::string m_verbosityLevelId;
+
 	std::string m_name;
 
 	std::string m_description;

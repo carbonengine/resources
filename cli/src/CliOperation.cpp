@@ -5,20 +5,15 @@
 #include <ResourceGroup.h>
 
 CliOperation::CliOperation( const std::string& name, const std::string& description ) :
+	m_verbosityLevelId( "--verbosity-level" ),
 	m_name( name ),
 	m_description( description ),
 	m_argumentParser( nullptr )
 {
 	m_argumentParser = new argparse::ArgumentParser( name );
 
-    AddRequiredPositionalArgument( "Name", "Name of operation." );
+    AddArgument( m_verbosityLevelId, "Set verbosity to level", false, false, "0" );
 
-	m_argumentParser->add_argument( "-V", "--verbose" )
-		.action( [&]( const auto& ) { ++s_verbosity; } )
-		.append()
-		.default_value( false )
-		.implicit_value( true )
-		.nargs( 0 );
 }
 
 CliOperation ::~CliOperation()
@@ -77,7 +72,7 @@ void CliOperation::PrintError() const
 
 void CliOperation::PrintCommonOperationHeaderInformation() const
 {
-	std::cout << "Verbosity Level: " << s_verbosity << std::endl;
+	std::cout << "Verbosity Level: " << s_verbosityLevel << std::endl;
 }
 
 void CliOperation::PrintCarbonResourcesError( CarbonResources::Result result ) const
@@ -142,13 +137,13 @@ char CliOperation::GetBusyChar()
 
 CarbonResources::StatusCallback CliOperation::GetStatusCallback() const
 {
-	return s_verbosity > 0 ? &StatusUpdate : nullptr;
+	return s_verbosityLevel > 0 ? &StatusUpdate : nullptr;
 }
 
 void CliOperation::StatusUpdate( int layer, int progress, const std::string& info )
 {
     // No update is shown for status updates for layers greater than the verbosity level
-    if (layer > s_verbosity)
+	if( layer > s_verbosityLevel )
     {
 		return;
     }
@@ -158,7 +153,7 @@ void CliOperation::StatusUpdate( int layer, int progress, const std::string& inf
     // Processes with layers less than the verbosity level will print full log details
     // Processes which match verbosity level will show temp progress of step in a collapsed fashion
     // Processes with greater verbosity level will not show. To see these level must be increased from command line.
-	if( layer < s_verbosity )
+	if( layer < s_verbosityLevel )
 	{
 		// Show detail of the process
 		std::stringstream ss;
@@ -203,7 +198,7 @@ void CliOperation::StatusUpdate( int layer, int progress, const std::string& inf
         // Set to zero as this line will not be overwritten
         s_lastMessageLength = 0;
 	}
-	else if(layer == s_verbosity)
+	else if( layer == s_verbosityLevel )
     {
 		std::stringstream ss;
 
@@ -281,18 +276,25 @@ std::string CliOperation::DestinationTypeToString( CarbonResources::ResourceDest
 	}
 }
 
-bool CliOperation::ProcessCommandLine( int argc, char** argv ) const
+bool CliOperation::ProcessCommandLine( int argc, char** argv )
 {
 	try
 	{
-		m_argumentParser->parse_args( argc, argv );
+		std::vector<std::string> arguments;
 
-        std::string nameOfCommand = m_argumentParser->get<std::string>( "Name" );
+        arguments.push_back( argv[0] );
 
-		if( nameOfCommand != m_name )
-		{
-			return false;
-		}
+        if (argc > 2)
+        {
+			for( int i = 2; i < argc; i++ )
+			{
+				std::string argument( argv[i] );
+
+				arguments.push_back( argument );
+			}
+        }
+
+		m_argumentParser->parse_args( arguments );
 
 	}
 	catch( const std::runtime_error& e )
@@ -301,6 +303,11 @@ bool CliOperation::ProcessCommandLine( int argc, char** argv ) const
 		return false;
 
 	}
+
+    if (!SetVerbosityLevel())
+    {
+		return false;
+    }
 
 	return true;
 }
@@ -365,4 +372,22 @@ std::string PathsToString( const std::vector<std::filesystem::path>& v )
 		result += s.string();
 	}
 	return result;
+}
+
+bool CliOperation::SetVerbosityLevel()
+{
+	try
+	{
+		s_verbosityLevel = std::stoi( m_argumentParser->get( m_verbosityLevelId ) );
+	}
+	catch( std::invalid_argument& e )
+	{
+		return false;
+	}
+	catch( std::out_of_range& e )
+	{
+		return false;
+	}
+
+	return true;
 }

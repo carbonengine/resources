@@ -180,7 +180,7 @@ bool CreatePatchCliOperation::Execute() const
 	}
 	createPatchParams.downloadRetrySeconds = std::chrono::seconds( retrySeconds );
 
-    if (s_verbosity > 0)
+    if( s_verbosityLevel > 0 )
     {
 		PrintStartBanner( previousResourceGroupParams, nextResourceGroupParams, createPatchParams );
     }

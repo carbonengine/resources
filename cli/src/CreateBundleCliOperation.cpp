@@ -146,7 +146,7 @@ bool CreateBundleCliOperation::Execute() const
 
 void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const
 {
-	if( s_verbosity <= 0 )
+	if( s_verbosityLevel <= 0 )
 	{
 		return;
 	}

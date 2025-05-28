@@ -111,7 +111,7 @@ bool ApplyPatchCliOperation::Execute() const
 
 void ApplyPatchCliOperation::PrintStartBanner(const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams) const
 {
-	if( s_verbosity <= 0 )
+	if( s_verbosityLevel <= 0 )
 	{
 		return;
 	}

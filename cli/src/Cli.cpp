@@ -13,7 +13,7 @@ Cli::~Cli()
 	
 }
 
-void Cli::AddOperation( const CliOperation* operation )
+void Cli::AddOperation( CliOperation* operation )
 {
 	m_operations.push_back( operation );
 }

@@ -36,7 +36,7 @@ public:
 
 	~Cli();
 
-	void AddOperation( const CliOperation* operation );
+	void AddOperation( CliOperation* operation );
 
 	void PrintError();
 
@@ -50,7 +50,7 @@ private:
 
     std::string m_version;
 
-	std::vector<const CliOperation*> m_operations;
+	std::vector<CliOperation*> m_operations;
 };
 
 #endif // Cli_H

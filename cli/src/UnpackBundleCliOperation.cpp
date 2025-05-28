@@ -66,7 +66,7 @@ bool UnpackBundleCliOperation::Execute() const
 
 void UnpackBundleCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParams, const CarbonResources::BundleUnpackParams& unpackParams ) const
 {
-	if( s_verbosity <= 0 )
+	if( s_verbosityLevel <= 0 )
 	{
 		return;
 	}

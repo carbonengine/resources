@@ -65,7 +65,7 @@ bool CreateResourceGroupCliOperation::Execute() const
 
 void CreateResourceGroupCliOperation::PrintStartBanner( const std::filesystem::path& inputDirectory, const std::filesystem::path& outputFile, const std::string& version, const std::string& resourcePrefix ) const
 {
-	if( !s_verbosity )
+	if( !s_verbosityLevel )
 	{
 		return;
 	}
