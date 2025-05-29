@@ -5,7 +5,7 @@
 #include <ResourceGroup.h>
 
 CreateResourceGroupCliOperation::CreateResourceGroupCliOperation() :
-	CliOperation( "create-group", "Create a resource group from a given directory." ),
+	CliOperation( "create-group", "Create a Resource Group from a given directory." ),
 	m_createResourceGroupPathArgumentId( "input-directory" ),
 	m_createResourceGroupOutputFileArgumentId( "--output-file" ),
 	m_createResourceGroupDocumentVersionArgumentId( "--document-version" ),
@@ -14,9 +14,18 @@ CreateResourceGroupCliOperation::CreateResourceGroupCliOperation() :
 
 	AddRequiredPositionalArgument( m_createResourceGroupPathArgumentId, "Base directory to create resource group from." );
 
-	AddArgument( m_createResourceGroupOutputFileArgumentId, "Filename for created resource group.", false, false, "ResourceGroup.yaml" );
-	AddArgument( m_createResourceGroupDocumentVersionArgumentId, "Document version for created resource group.", false, false, "0.1.0" );
-	AddArgument( m_createResourceGroupResourcePrefixArgumentId, R"(Blue resource path prefix, such as "res" or "app")", false, false, "" );
+    // Struct is inspected to ascertain default values
+	// This keeps default value settings in one place
+	// Lib defaults matches CLI
+	CarbonResources::CreateResourceGroupFromDirectoryParams defaultImportParams;
+
+    CarbonResources::ResourceGroupExportToFileParams defaultExportParams;
+
+	AddArgument( m_createResourceGroupOutputFileArgumentId, "Filename for created resource group.", false, false, defaultExportParams.filename.string() );
+
+	AddArgument( m_createResourceGroupDocumentVersionArgumentId, "Document version for created resource group.", false, false, VersionToString( defaultImportParams.outputDocumentVersion ) );
+
+	AddArgument( m_createResourceGroupResourcePrefixArgumentId, R"(Optional resource path prefix, such as "res" or "app")", false, false, "" );
 }
 
 bool ParseDocumentVersion( const std::string& version, CarbonResources::Version& documentVersion )
@@ -40,7 +49,7 @@ bool ParseDocumentVersion( const std::string& version, CarbonResources::Version&
 	return true;
 }
 
-bool CreateResourceGroupCliOperation::Execute() const
+bool CreateResourceGroupCliOperation::Execute( std::string& returnErrorMessage ) const
 {
 	std::string inputDirectory = m_argumentParser->get<std::string>( m_createResourceGroupPathArgumentId );
 
@@ -55,9 +64,11 @@ bool CreateResourceGroupCliOperation::Execute() const
 	PrintStartBanner( inputDirectory, outputFile, version, resourcePrefix );
 
 	bool versionIsValid = ParseDocumentVersion( version, documentVersion);
+
 	if( !versionIsValid )
 	{
-		std::cout << "Invalid Document Version: " << version << std::endl;
+        returnErrorMessage = "Invalid document version";
+
 		return false;
 	}
 	return CreateResourceGroup( inputDirectory, outputFile, documentVersion, resourcePrefix );
@@ -65,7 +76,7 @@ bool CreateResourceGroupCliOperation::Execute() const
 
 void CreateResourceGroupCliOperation::PrintStartBanner( const std::filesystem::path& inputDirectory, const std::filesystem::path& outputFile, const std::string& version, const std::string& resourcePrefix ) const
 {
-	if( !s_verbosityLevel )
+	if( s_verbosityLevel == CarbonResources::STATUS_LEVEL::OFF )
 	{
 		return;
 	}
@@ -99,6 +110,12 @@ bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem
 
 	createResourceGroupParams.statusCallback = GetStatusCallback();
 
+
+    if( createResourceGroupParams.statusCallback )
+	{
+		createResourceGroupParams.statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Creating Resource Group from directory" );
+	}
+
 	CarbonResources::Result createFromDirectoryResult = resourceGroup.CreateFromDirectory( createResourceGroupParams );
 
 	if( createFromDirectoryResult.type != CarbonResources::ResultType::SUCCESS )
@@ -116,6 +133,11 @@ bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem
 
 	exportParams.statusCallback = GetStatusCallback();
 
+    if( exportParams.statusCallback )
+	{
+		exportParams.statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 50, "Exporting Resource Group to file." );
+	}
+
 	CarbonResources::Result exportToFileResult = resourceGroup.ExportToFile( exportParams );
 
 	if( exportToFileResult.type != CarbonResources::ResultType::SUCCESS )
@@ -123,6 +145,11 @@ bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem
 		PrintCarbonResourcesError( exportToFileResult );
 
 		return false;
+	}
+
+    if( exportParams.statusCallback )
+	{
+		exportParams.statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Resource Group successfully created from directory." );
 	}
 
 	return true;

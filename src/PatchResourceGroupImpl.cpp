@@ -172,6 +172,11 @@ namespace CarbonResources
 
     Result PatchResourceGroupImpl::Apply( const PatchApplyParams& params )
     {
+		if( params.statusCallback )
+		{
+			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Applying Patch." );
+		}
+
         // Will be removed when falls out of scope
 		ResourceTools::ScopedFile temporaryFileScope( params.temporaryFilePath );
 
@@ -205,9 +210,29 @@ namespace CarbonResources
 			return resourceGroupImportFromDataResult;
         }
 
+        auto numResources = resourceGroup.GetSize();
+		int numProcessed = 0;
         
         for( ResourceInfo* resource : resourceGroup )
         {
+			if( params.statusCallback )
+			{
+				std::filesystem::path relativePath;
+
+				if( resource->GetRelativePath( relativePath ).type != ResultType::SUCCESS )
+				{
+					return Result{ ResultType::FAIL };
+				}
+
+				float percentage = ( 100.0 / numResources ) * numProcessed;
+
+				std::string message = "Patching: " + relativePath.string();
+
+				params.statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, percentage, message );
+
+				numProcessed++;
+			}
+
             // See if there is a patch available for resource
             std::vector<const PatchResourceInfo*> patchesForResource; 
 
@@ -485,7 +510,7 @@ namespace CarbonResources
 
 				ResourceGetDataStreamParams resourceGetDataParams;
 
-                resourceGetDataParams.resourceSourceSettings = params.newBuildResourcesSourceSettings;
+                resourceGetDataParams.resourceSourceSettings = params.nextBuildResourcesSourceSettings;
 
                 resourceGetDataParams.dataStream = &resourceStreamIn;
 
@@ -589,6 +614,11 @@ namespace CarbonResources
 
             resourceStreamOut.Finish();
         }
+
+        if( params.statusCallback )
+		{
+			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Patches applied" );
+		}
 
         return Result{ ResultType::SUCCESS };
 

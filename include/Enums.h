@@ -30,8 +30,28 @@
 namespace CarbonResources
 {
 
+    // TODO doxygen documentation
+    enum class STATUS_LEVEL
+    {
+        OFF,
+
+	    OVERVIEW,
+
+	    PROCEDURE,
+
+	    DETAIL,
+    };
+
+    // TODO doxygen documentation
+	enum class STATUS_PROGRESS_TYPE
+	{
+		UNBOUNDED,
+
+		PERCENTAGE,
+	};
+
     /** Status Callback function signature. */
-    using StatusCallback = std::function<void( int, int, const std::string& )>;
+    using StatusCallback = std::function<void( STATUS_LEVEL, STATUS_PROGRESS_TYPE, unsigned int, const std::string& )>;
 
     /**
     * @enum CarbonResources::ResultType
@@ -144,8 +164,43 @@ namespace CarbonResources
 		std::string info = "";
     };
 	
+    //TODO doxy string
 	bool API resultToString( Result result, std::string& output );
-    
+
+    /** @enum ResourceSourceType
+    *  @brief Parameters to represent resource source location type
+    *  @var ResourceSourceType::LOCAL_RELATIVE
+    *  Paths are sourced via plain paths. Resource locations will be constructed by contactenation of base path and the resources' relative path.
+    *  @var ResourceSourceType::LOCAL_CDN
+    *  Paths are sourced via CDN style paths. Resource locations will be constructed by contactenation of base path and the resources' CDN location path.
+    *  @var ResourceSourceType::REMOTE_CDN
+    *  Resources are downloaded. They will then be processed as ResourceSourceType::LOCAL_CDN.
+    */
+	enum class ResourceSourceType
+	{
+		LOCAL_RELATIVE,
+		LOCAL_CDN,
+		REMOTE_CDN,
+		//Note: If altering this enum, ensure that Enums::resourceSourceTypeChoicesAsString reflects update.
+	};
+
+    /** @enum ResourceDestinationType
+    *  @brief Parameters to represent resource destinationlocation type.
+    *  @var ResourceDestinationType::LOCAL_RELATIVE
+    *  Paths are sourced via plain paths. Resource locations will be constructed by contactenation of base path and the resources' relative path.
+    *  @var ResourceDestinationType::LOCAL_CDN
+    *  Paths are sourced via CDN style paths. Resource locations will be constructed by contactenation of base path and the resources' CDN location path.
+    *  @var ResourceDestinationType::REMOTE_CDN
+    *  Resources are compressed. They will then be processed as LOCAL_CDN. Note that the library does not upload the resources, this functionality is external.
+    */
+	enum class ResourceDestinationType
+	{
+		LOCAL_RELATIVE,
+		LOCAL_CDN,
+		REMOTE_CDN,
+		//Note: If altering this enum, ensure that Enums::resourceDestinationTypeChoicesAsString reflects update.
+	};
+
     /** @struct Version
     *  @brief Represents Version information. Version follows semantic versioning paradigm.
     *  @var Version::major

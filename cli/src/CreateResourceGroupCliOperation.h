@@ -28,7 +28,7 @@ class CreateResourceGroupCliOperation : public CliOperation
 public:
 	CreateResourceGroupCliOperation();
 
-	virtual bool Execute() const final;
+	virtual bool Execute( std::string& returnErrorMessage ) const final;
 
 private:
     void PrintStartBanner( const std::filesystem::path& inputDirectory, const std::filesystem::path& resourceGroupOutputDirectory, const std::string& version, const std::string& resourcePrefix ) const;

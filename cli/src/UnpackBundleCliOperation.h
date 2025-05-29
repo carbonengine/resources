@@ -7,10 +7,14 @@ class UnpackBundleCliOperation : public CliOperation
 {
 public:
 	UnpackBundleCliOperation();
-	bool Execute() const final;
+
+	bool Execute( std::string& returnErrorMessage ) const final;
+
 private:
 	void PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParams, const CarbonResources::BundleUnpackParams& unpackParams ) const;
-	bool Unpack( const CarbonResources::ResourceGroupImportFromFileParams& importParams, const CarbonResources::BundleUnpackParams& unpackParams ) const;
+
+	bool Unpack( CarbonResources::ResourceGroupImportFromFileParams& importParams, CarbonResources::BundleUnpackParams& unpackParams ) const;
+
 	std::string m_bundleResourceGroupPathArgumentId;
 	std::string m_chunkSourceBasePathsArgumentId;
 	std::string m_chunkSourceTypeArgumentId;

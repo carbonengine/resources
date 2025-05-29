@@ -30,11 +30,11 @@ class CreateBundleCliOperation : public CliOperation
 public:
 	CreateBundleCliOperation();
 
-	virtual bool Execute() const override;
+	virtual bool Execute( std::string& returnErrorMessage ) const override;
 
 private:
     void PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const;
-	bool CreateBundle( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const;
+	bool CreateBundle( CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const;
 
 private:
 	void CreateResourceGroupFromFileType();

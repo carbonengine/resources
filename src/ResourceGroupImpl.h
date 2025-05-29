@@ -45,7 +45,7 @@ namespace CarbonResources
 
 	    ResourceGroupImpl* result2 = nullptr;
 
-        std::function<void( int, int, const std::string& )> statusCallback = nullptr;
+        StatusCallback statusCallback = nullptr;
     };
 
     enum class DocumentType
@@ -97,6 +97,8 @@ namespace CarbonResources
 
 		std::vector<ResourceInfo*>::const_iterator cend();
 
+        size_t GetSize() const;
+
     protected:
 
         virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut );
@@ -114,9 +116,9 @@ namespace CarbonResources
 
 	    Result ImportFromYaml( const std::string& data, StatusCallback statusCallback = nullptr );
 
-	    Result ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, std::function<void( int, int, const std::string& )> statusCallback = nullptr ) const;
+	    Result ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback = nullptr ) const;
 
-	    Result ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, std::function<void( int, int, const std::string& )> statusCallback = nullptr ) const;
+	    Result ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback = nullptr ) const;
 
         Result ProcessChunk( std::string& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const;
 

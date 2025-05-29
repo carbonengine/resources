@@ -6,35 +6,47 @@
 #include <argparse/argparse.hpp>
 
 ApplyPatchCliOperation::ApplyPatchCliOperation() :
-	CliOperation("apply-patch", "Apply a patch"),
-	m_patchResourceGroupPathArgumentId("--patch-resource-group-path"),
-	m_patchBinariesBasePathsArgumentId("--patch-binaries-base-path"),
+	CliOperation("apply-patch", "Applies a patch supplied via a Patch Resource Group to a directory [Only available in extended feature development build]"),
+	m_patchResourceGroupPathArgumentId("patch-resource-group-path"),
+	m_patchBinariesSourceBasePathsArgumentId("--patch-binaries-base-path"),
 	m_patchBinariesSourceTypeArgumentId("--patch-binaries-source-type"),
-	m_resourcesToPatchBasePathsArgumentId("--resources-to-patch-base-path"),
+	m_resourcesToPatchSourceBasePathsArgumentId("--resources-to-patch-base-path"),
 	m_resourcesToPatchSourceTypeArgumentId("--resources-to-patch-source-type"),
-	m_nextResourcesBasePathArgumentId("--next-resources-base-path"),
+	m_nextResourcesBasePathsArgumentId("--next-resources-base-path"),
 	m_nextResourcesSourceTypeArgumentId("--next-resources-source-type"),
-	m_outputBasePathArgumentId("--output-base-path"),
-	m_outputDestinationTypeArgumentId("--output-destination-type")
+	m_resourcesToPatchDestinationPathArgumentId("--output-base-path"),
+	m_resourcesToPatchDestinationTypeArgumentId("--output-destination-type")
 {
-	AddArgument( m_patchResourceGroupPathArgumentId, "The path to the PatchResourceGroup.yaml file.", true);
-	AddArgument( m_patchBinariesBasePathsArgumentId,"The paths to the folders containing the patch binaries.", true, true);
-	AddArgument( m_patchBinariesSourceTypeArgumentId,"The type of repository the patch binaries are sourced from.", false, false, "LOCAL_RELATIVE");
-	AddArgument( m_resourcesToPatchBasePathsArgumentId,"The paths to the folders containing resources to patch.", true, true);
-	AddArgument( m_resourcesToPatchSourceTypeArgumentId,"The type of repository the resources to patch are sourced from.", false, false, "LOCAL_RELATIVE");
-	AddArgument( m_nextResourcesBasePathArgumentId,"The path to the folder containing the resources after the patch. This is used to download added files, which are not included in the generated patch files.", true);
-	AddArgument( m_nextResourcesSourceTypeArgumentId,"The type of repository the resources after the patch are sourced from.", false, false, "LOCAL_RELATIVE");
-	AddArgument( m_outputBasePathArgumentId,"The path in which to place the patched version of the files.", true);
-	AddArgument( m_outputDestinationTypeArgumentId,"The type of repository in which to place the patched version of the files.", false, false, "LOCAL_RELATIVE");
+	AddRequiredPositionalArgument( m_patchResourceGroupPathArgumentId, "The path to the PatchResourceGroup.yaml file." );
+
+	CarbonResources::PatchApplyParams defaultParams;
+
+	AddArgument( m_patchBinariesSourceBasePathsArgumentId, "The paths to the folders containing the patch binaries.", true, true, PathsToString( defaultParams.patchBinarySourceSettings.basePaths ) );
+
+    AddArgument( m_resourcesToPatchSourceBasePathsArgumentId, "The paths to the folders containing resources to patch.", true, true, PathsToString( defaultParams.resourcesToPatchSourceSettings.basePaths ) );
+
+    AddArgument( m_nextResourcesBasePathsArgumentId, "The path to resources after the patch. This is used to get fully added files which are not included in the generated patch files.", true, true, PathListToString( defaultParams.nextBuildResourcesSourceSettings.basePaths ) );
+
+	AddArgument( m_patchBinariesSourceTypeArgumentId, "The type of repository the patch binaries are sourced from.", false, false, SourceTypeToString( defaultParams.patchBinarySourceSettings.sourceType ), ResourceSourceTypeChoicesAsString() );
+
+	AddArgument( m_resourcesToPatchSourceTypeArgumentId, "The type of repository the resources to patch are sourced from.", false, false, SourceTypeToString( defaultParams.resourcesToPatchSourceSettings.sourceType ), ResourceSourceTypeChoicesAsString() );
+
+	AddArgument( m_nextResourcesSourceTypeArgumentId, "The type of repository the resources after the patch are sourced from.", false, false, SourceTypeToString( defaultParams.nextBuildResourcesSourceSettings.sourceType ), ResourceSourceTypeChoicesAsString() );
+
+	AddArgument( m_resourcesToPatchDestinationPathArgumentId, "The path in which to place the patched version of the files.", false, false, "ApplyPatchOut" );
+
+	AddArgument( m_resourcesToPatchDestinationTypeArgumentId, "The type of repository in which to place the patched version of the files.", false, false, DestinationTypeToString( defaultParams.resourcesToPatchDestinationSettings.destinationType ), ResourceDestinationTypeChoicesAsString() );
 }
 
-bool ApplyPatchCliOperation::Execute() const
+bool ApplyPatchCliOperation::Execute( std::string& returnErrorMessage ) const
 {
 	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
 	std::optional<std::string> filename = m_argumentParser->present<std::string>( m_patchResourceGroupPathArgumentId );
 	if( !filename.has_value() )
 	{
+		returnErrorMessage = "Failed to parse patch resource group path";
+
 		return false;
 	}
     importParamsPrevious.filename = filename.value();
@@ -42,22 +54,28 @@ bool ApplyPatchCliOperation::Execute() const
 	CarbonResources::PatchApplyParams patchApplyParams;
 
 	std::vector<std::filesystem::path> newBuildResourceSettingBasePaths;
-	std::optional<std::string> nextResources = m_argumentParser->present<std::string>( m_nextResourcesBasePathArgumentId );
+	std::optional<std::string> nextResources = m_argumentParser->present<std::string>( m_nextResourcesBasePathsArgumentId );
 	if( !nextResources.has_value() )
 	{
+		returnErrorMessage = "Failed to parse next resource base path";
+
 		return false;
 	}
 	newBuildResourceSettingBasePaths.push_back( nextResources.value() );
 	std::string nextResourcesType = m_argumentParser->get( m_nextResourcesSourceTypeArgumentId );
-	if( !StringToResourceSourceType( nextResourcesType, patchApplyParams.newBuildResourcesSourceSettings.sourceType ) )
+	if( !StringToResourceSourceType( nextResourcesType, patchApplyParams.nextBuildResourcesSourceSettings.sourceType ) )
 	{
+		returnErrorMessage = "Invalid next build source type";
+
 		return false;
 	}
 
 	std::vector<std::filesystem::path> patchBinarySourceSettingsBasePaths;
-	auto patchBinaries = m_argumentParser->present<std::vector<std::string>>( m_patchBinariesBasePathsArgumentId );
+	auto patchBinaries = m_argumentParser->present<std::vector<std::string>>( m_patchBinariesSourceBasePathsArgumentId );
 	if( !patchBinaries.has_value() )
 	{
+		returnErrorMessage = "Failed to parse patch binaries base path";
+
 		return false;
 	}
 	for( auto path : patchBinaries.value() )
@@ -65,17 +83,21 @@ bool ApplyPatchCliOperation::Execute() const
 		patchBinarySourceSettingsBasePaths.push_back( path );
 	}
 	patchApplyParams.patchBinarySourceSettings.basePaths = patchBinarySourceSettingsBasePaths;
-	patchApplyParams.newBuildResourcesSourceSettings.basePaths = newBuildResourceSettingBasePaths;
+	patchApplyParams.nextBuildResourcesSourceSettings.basePaths = newBuildResourceSettingBasePaths;
 	std::string patchBinariesType = m_argumentParser->get( m_patchBinariesSourceTypeArgumentId );
 	if( !StringToResourceSourceType( patchBinariesType, patchApplyParams.patchBinarySourceSettings.sourceType ) )
 	{
+		returnErrorMessage = "Invalid patch binary source type";
+
 		return false;
 	}
 
 	std::vector<std::filesystem::path> resourcesToPatchSourceSettingsBasePaths;
-	auto resourcesToPatch = m_argumentParser->present<std::vector<std::string>>( m_resourcesToPatchBasePathsArgumentId );
+	auto resourcesToPatch = m_argumentParser->present<std::vector<std::string>>( m_resourcesToPatchSourceBasePathsArgumentId );
 	if( !resourcesToPatch.has_value() )
 	{
+		returnErrorMessage = "Failed to parse patch source base path";
+
 		return false;
 	}
 	for( auto path : resourcesToPatch.value() )
@@ -86,24 +108,25 @@ bool ApplyPatchCliOperation::Execute() const
 	std::string resourcesToPatchType = m_argumentParser->get( m_resourcesToPatchSourceTypeArgumentId );
 	if( !StringToResourceSourceType( resourcesToPatchType, patchApplyParams.resourcesToPatchSourceSettings.sourceType ) )
 	{
+		returnErrorMessage = "Invalid resources to patch source type";
+
 		return false;
 	}
 
-	std::optional<std::string> outputPath = m_argumentParser->present( m_outputBasePathArgumentId );
-	if( !outputPath.has_value() )
-	{
-		return false;
-	}
-    patchApplyParams.resourcesToPatchDestinationSettings.basePath = outputPath.value();
-	std::string outputType = m_argumentParser->get( m_outputDestinationTypeArgumentId );
+    patchApplyParams.resourcesToPatchDestinationSettings.basePath = m_argumentParser->get( m_resourcesToPatchDestinationPathArgumentId );
+
+	std::string outputType = m_argumentParser->get( m_resourcesToPatchDestinationTypeArgumentId );
 	if( !StringToResourceDestinationType( outputType , patchApplyParams.resourcesToPatchDestinationSettings.destinationType ) )
 	{
+		returnErrorMessage = "Invalid resources to patch destination type";
+
 		return false;
 	}
 
     patchApplyParams.temporaryFilePath = "tempFile.resource";
 
 	PrintStartBanner( importParamsPrevious, patchApplyParams );
+
 	return ApplyPatch( importParamsPrevious, patchApplyParams );
 }
 
@@ -111,7 +134,7 @@ bool ApplyPatchCliOperation::Execute() const
 
 void ApplyPatchCliOperation::PrintStartBanner(const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams) const
 {
-	if( s_verbosityLevel <= 0 )
+	if( s_verbosityLevel == CarbonResources::STATUS_LEVEL::OFF )
 	{
 		return;
 	}
@@ -125,23 +148,52 @@ void ApplyPatchCliOperation::PrintStartBanner(const CarbonResources::ResourceGro
 	std::cout << "Patch Binaries Source Type: " << SourceTypeToString( patchApplyParams.patchBinarySourceSettings.sourceType ) << std::endl;
 	std::cout << "Resources To Patch Base Paths: " << PathsToString( patchApplyParams.resourcesToPatchSourceSettings.basePaths ) << std::endl;
 	std::cout << "Resources To Patch Source Type: " << SourceTypeToString( patchApplyParams.resourcesToPatchSourceSettings.sourceType ) << std::endl;
-	std::cout << "Next Resources Base Path: " << PathsToString( patchApplyParams.newBuildResourcesSourceSettings.basePaths ) << std::endl;
-	std::cout << "Next Resources Source Type: " << SourceTypeToString( patchApplyParams.newBuildResourcesSourceSettings.sourceType ) << std::endl;
+	std::cout << "Next Resources Base Path: " << PathsToString( patchApplyParams.nextBuildResourcesSourceSettings.basePaths ) << std::endl;
+	std::cout << "Next Resources Source Type: " << SourceTypeToString( patchApplyParams.nextBuildResourcesSourceSettings.sourceType ) << std::endl;
 	std::cout << "Output Path Base Path: " << patchApplyParams.resourcesToPatchDestinationSettings.basePath << std::endl;
 	std::cout << "Output Path Destination Type: " << DestinationTypeToString( patchApplyParams.resourcesToPatchDestinationSettings.destinationType ) << std::endl;
 
 	std::cout << "----------------------------\n" << std::endl;
 }
 
-bool ApplyPatchCliOperation::ApplyPatch(const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams) const
+bool ApplyPatchCliOperation::ApplyPatch(CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, CarbonResources::PatchApplyParams patchApplyParams) const
 {
+	CarbonResources::StatusCallback statusCallback = GetStatusCallback();
+
+	if( statusCallback )
+	{
+		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Applying Patch." );
+	}
+
 	// Load the patch file
 	CarbonResources::PatchResourceGroup patchResourceGroup;
+
+    importParamsPrevious.statusCallback = statusCallback;
+
 	if( patchResourceGroup.ImportFromFile( importParamsPrevious ).type != CarbonResources::ResultType::SUCCESS )
 	{
 		return false;
 	}
 
+    if( statusCallback )
+	{
+		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 20, "Applying patches from resource group" );
+	}
+
+    patchApplyParams.statusCallback = statusCallback;
+
     // Apply the patch
-	return patchResourceGroup.Apply( patchApplyParams ).type == CarbonResources::ResultType::SUCCESS;
+    CarbonResources::Result applyPatchResult = patchResourceGroup.Apply( patchApplyParams );
+
+    if (applyPatchResult.type != CarbonResources::ResultType::SUCCESS)
+    {
+        return false;
+    }
+
+    if( statusCallback )
+	{
+		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Successfully applied patch" );
+	}
+    
+	return true;
 }

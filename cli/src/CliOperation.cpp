@@ -12,7 +12,9 @@ CliOperation::CliOperation( const std::string& name, const std::string& descript
 {
 	m_argumentParser = new argparse::ArgumentParser( name );
 
-    AddArgument( m_verbosityLevelId, "Set verbosity to level", false, false, "0" );
+    m_argumentParser->add_description( description );
+
+    AddArgument( m_verbosityLevelId, "Set verbosity to level", false, false, "0", "0,1,2,3" );
 
 }
 
@@ -35,15 +37,32 @@ bool CliOperation::AddRequiredPositionalArgument( const std::string& argumentId,
 		.help( helpString );
 }
 
-bool CliOperation::AddArgument( const std::string& argumentId, const std::string& helpString, bool required /* = false*/, bool append /* = false*/, std::string defaultValue /*= ""*/ )
+bool CliOperation::AddArgument( const std::string& argumentId, const std::string& helpString, bool required /* = false*/, bool append /* = false*/, std::string defaultValue /*= ""*/, std::string choicesString /* = ""*/ )
 {
 	if( !m_argumentParser )
 	{
 		return false;
 	}
 
+    // Some useful information is added to help string based on argument inputs specified
+    std::string helpStringExtended = helpString;
+
+    if( choicesString != "" )
+    {
+		std::stringstream ss;
+
+        ss << helpStringExtended << " [Choices: " << choicesString << "]";
+
+        helpStringExtended = ss.str();
+    }
+
+    if (append)
+    {
+		helpStringExtended = helpStringExtended + " [Accepts multiple]";
+    }
+
 	argparse::Argument& argument = m_argumentParser->add_argument( argumentId )
-									  .help( helpString );
+									   .help( helpStringExtended );
 
 	if( required )
 	{
@@ -65,14 +84,19 @@ argparse::ArgumentParser* CliOperation::GetParser() const
 	return m_argumentParser;
 }
 
-void CliOperation::PrintError() const
+void CliOperation::PrintError(std::string message) const
 {
+    if (message != "")
+    {
+		std::cout << "[ERROR: " << message << "]\n\n";
+    }
+
 	std::cout << *m_argumentParser;
 }
 
 void CliOperation::PrintCommonOperationHeaderInformation() const
 {
-	std::cout << "Verbosity Level: " << s_verbosityLevel << std::endl;
+	std::cout << "Verbosity Level: " << VerbosityLevelToString(s_verbosityLevel) << std::endl;
 }
 
 void CliOperation::PrintCarbonResourcesError( CarbonResources::Result result ) const
@@ -137,45 +161,40 @@ char CliOperation::GetBusyChar()
 
 CarbonResources::StatusCallback CliOperation::GetStatusCallback() const
 {
-	return s_verbosityLevel > 0 ? &StatusUpdate : nullptr;
+	return s_verbosityLevel != CarbonResources::STATUS_LEVEL::OFF ? &StatusUpdate : nullptr;
 }
 
-void CliOperation::StatusUpdate( int layer, int progress, const std::string& info )
+void CliOperation::StatusUpdate( CarbonResources::STATUS_LEVEL level, CarbonResources::STATUS_PROGRESS_TYPE type, int progress, const std::string& info )
 {
     // No update is shown for status updates for layers greater than the verbosity level
-	if( layer > s_verbosityLevel )
+	if( level > s_verbosityLevel ) 
     {
 		return;
     }
 
     // Verbosity level affects if a progres bar is shown or detail.
-    // This level can be incremented to get final detail output
-    // Processes with layers less than the verbosity level will print full log details
-    // Processes which match verbosity level will show temp progress of step in a collapsed fashion
-    // Processes with greater verbosity level will not show. To see these level must be increased from command line.
-	if( layer < s_verbosityLevel )
+    // This level can be incremented to adjust detail of log output
+	if( level <= s_verbosityLevel )
 	{
 		// Show detail of the process
 		std::stringstream ss;
 
         // Apply indent based on layer
-		for( int i = 0; i < layer; i++ )
-		{
-			ss << "    ";
-		}
+		ss << GetVerbosityLevelIndent( level );
 
         ss << "[";
 
-        // If progress is less than 0 then show busy
+        // If progress is unbounded then show busy
         // Else print percentage progress
-        if (progress < 0)
+        if (type == CarbonResources::STATUS_PROGRESS_TYPE::UNBOUNDED)
         {
-			ss << GetBusyChar();	
+			ss << GetBusyChar();
         }
         else
         {
 			ss << progress << "%";
         }
+        
 		ss << "] " << info;
 
         std::string message = ss.str();
@@ -183,97 +202,10 @@ void CliOperation::StatusUpdate( int layer, int progress, const std::string& inf
         std::cout << "\r";
 
 		std::cout << message;
-		
-        // Overwrite extra data from last message
-        if( message.size() < s_lastMessageLength )
-		{
-			for( int i = message.size(); i < s_lastMessageLength; i++ )
-			{
-				std::cout << " ";
-			}
-		}
-
         std::cout << std::endl;
 
-        // Set to zero as this line will not be overwritten
-        s_lastMessageLength = 0;
 	}
-	else if( layer == s_verbosityLevel )
-    {
-		std::stringstream ss;
 
-        // Apply indent based on layer
-		for( int i = 0; i < layer; i++ )
-		{
-			ss << "    ";
-		}
-
-        ss << "[";
-
-		// If progress is less than 0 then show busy
-		// Else print percentage progress
-		if( progress < 0 )
-		{
-			ss << GetBusyChar();
-		}
-		else
-		{
-			ss << progress << "%";
-		}
-		ss << "] ";
-
-        std::string message = ss.str();
-
-        std::cout << "\r";
-
-		std::cout << message;
-
-        // Overwrite extra data from last message
-		if( message.size() < s_lastMessageLength )
-		{
-			for( int i = message.size(); i < s_lastMessageLength; i++ )
-			{
-				std::cout << " ";
-			}
-		}
-
-        std::cout.flush();
-
-        s_lastMessageLength = message.size();
-    }
-	
-    
-
-}
-
-std::string CliOperation::SourceTypeToString( CarbonResources::ResourceSourceType type ) const
-{
-    switch (type)
-    {
-	case CarbonResources::ResourceSourceType::LOCAL_CDN:
-		return "Local Cdn";
-	case CarbonResources::ResourceSourceType::LOCAL_RELATIVE:
-		return "Local Relative";
-	case CarbonResources::ResourceSourceType::REMOTE_CDN:
-		return "Remote Cdn";
-	default:
-		return "Unknown source type";
-    }
-}
-
-std::string CliOperation::DestinationTypeToString( CarbonResources::ResourceDestinationType type ) const
-{
-	switch( type )
-	{
-	case CarbonResources::ResourceDestinationType::LOCAL_CDN:
-		return "Local Cdn";
-	case CarbonResources::ResourceDestinationType::LOCAL_RELATIVE:
-		return "Local Relative";
-	case CarbonResources::ResourceDestinationType::REMOTE_CDN:
-		return "Remote Cdn";
-	default:
-		return "Unknown source type";
-	}
 }
 
 bool CliOperation::ProcessCommandLine( int argc, char** argv )
@@ -316,6 +248,54 @@ std::string CliOperation::GetName() const
 {
     return m_name;
 }
+
+std::string CliOperation::GetDescription() const
+{
+	return m_description;
+}
+
+std::string CliOperation::VerbosityLevelToString( CarbonResources::STATUS_LEVEL level ) const
+{
+    switch (level)
+    {
+	case CarbonResources::STATUS_LEVEL::OFF:
+		return "0 - (Off)";
+
+	case CarbonResources::STATUS_LEVEL::OVERVIEW:
+		return "1 - (Overview)";
+
+	case CarbonResources::STATUS_LEVEL::PROCEDURE:
+		return "2 - (Procedure)";
+
+	case CarbonResources::STATUS_LEVEL::DETAIL:
+		return "3 - (Detail)";
+
+	default:
+		return "Unknown";
+    }
+}
+
+std::string CliOperation::GetVerbosityLevelIndent(CarbonResources::STATUS_LEVEL level)
+{
+	switch( level )
+	{
+	case CarbonResources::STATUS_LEVEL::OFF:
+		return "";
+
+	case CarbonResources::STATUS_LEVEL::OVERVIEW:
+		return "";
+
+	case CarbonResources::STATUS_LEVEL::PROCEDURE:
+		return "\t";
+
+	case CarbonResources::STATUS_LEVEL::DETAIL:
+		return "\t\t";
+
+	default:
+		return "";
+	}
+}
+
 bool CliOperation::StringToResourceSourceType( const std::string& stringRepresentation, CarbonResources::ResourceSourceType& out ) const
 {
 	if( stringRepresentation == "LOCAL_CDN" )
@@ -358,6 +338,96 @@ bool CliOperation::StringToResourceDestinationType( const std::string& stringRep
 	return true;
 }
 
+std::string CliOperation::PathListToString( std::vector<std::filesystem::path>& paths ) const
+{
+	std::stringstream ss;
+
+	for( auto iter = paths.begin(); iter != paths.end(); iter++ )
+	{
+		ss << ( *iter );
+
+		if( iter + 1 != paths.end() )
+		{
+			ss << ",";
+		}
+	}
+
+    return ss.str();
+}
+
+std::string CliOperation::SourceTypeToString( CarbonResources::ResourceSourceType type ) const
+{
+	switch( type )
+	{
+	case CarbonResources::ResourceSourceType::LOCAL_RELATIVE :
+		return "LOCAL_RELATIVE";
+
+	case CarbonResources::ResourceSourceType::LOCAL_CDN:
+		return "LOCAL_CDN";
+
+	case CarbonResources::ResourceSourceType::REMOTE_CDN:
+		return "REMOTE_CDN";
+
+	default:
+		return "Unrecognised source type";
+	}
+}
+
+std::string CliOperation::SizeToString( uintmax_t size ) const
+{
+	std::stringstream ss;
+
+	ss << size;
+
+    return ss.str();
+}
+
+std::string CliOperation::SecondsToString( std::chrono::seconds seconds ) const
+{
+	std::stringstream ss;
+
+	ss << seconds.count();
+
+    return ss.str();
+}
+
+std::string CliOperation::VersionToString( CarbonResources::Version& version ) const
+{
+	std::stringstream ss;
+
+	ss << version.major << "." << version.minor << "." << version.patch;
+
+	return ss.str();
+}
+
+std::string CliOperation::ResourceSourceTypeChoicesAsString() const
+{
+	return "LOCAL_RELATIVE, LOCAL_CDN, REMOTE_CDN";
+}
+
+std::string CliOperation::ResourceDestinationTypeChoicesAsString() const
+{
+	return "LOCAL_RELATIVE, LOCAL_CDN, REMOTE_CDN";
+}
+
+std::string CliOperation::DestinationTypeToString( CarbonResources::ResourceDestinationType type ) const
+{
+	switch( type )
+	{
+	case CarbonResources::ResourceDestinationType::LOCAL_RELATIVE:
+		return "LOCAL_RELATIVE";
+
+	case CarbonResources::ResourceDestinationType::LOCAL_CDN:
+		return "LOCAL_CDN";
+
+	case CarbonResources::ResourceDestinationType::REMOTE_CDN:
+		return "REMOTE_CDN";
+
+	default:
+		return "Unrecognised source type";
+	}
+}
+
 std::string PathsToString( const std::vector<std::filesystem::path>& v )
 {
 	std::string result;
@@ -376,18 +446,28 @@ std::string PathsToString( const std::vector<std::filesystem::path>& v )
 
 bool CliOperation::SetVerbosityLevel()
 {
-	try
+	std::string verbosityLevelString = m_argumentParser->get<std::string>( m_verbosityLevelId );
+
+    if( verbosityLevelString == "0" )
+    {
+		s_verbosityLevel = CarbonResources::STATUS_LEVEL::OFF;
+    }
+	else if( verbosityLevelString == "1" )
+    {
+		s_verbosityLevel = CarbonResources::STATUS_LEVEL::OVERVIEW;
+    }
+	else if( verbosityLevelString == "2" )
 	{
-		s_verbosityLevel = std::stoi( m_argumentParser->get( m_verbosityLevelId ) );
+		s_verbosityLevel = CarbonResources::STATUS_LEVEL::PROCEDURE;
 	}
-	catch( std::invalid_argument& e )
+	else if( verbosityLevelString == "3" )
 	{
+		s_verbosityLevel = CarbonResources::STATUS_LEVEL::DETAIL;
+	}
+    else
+    {
 		return false;
-	}
-	catch( std::out_of_range& e )
-	{
-		return false;
-	}
+    }
 
 	return true;
 }

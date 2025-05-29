@@ -18,6 +18,10 @@ std::string CalculateVersionString()
 
 	ss << CarbonResources::S_LIBRARY_VERSION.major << "." << CarbonResources::S_LIBRARY_VERSION.minor << "." << CarbonResources::S_LIBRARY_VERSION.patch;
 
+#ifdef DEV_FEATURES
+	ss << " [EXTENDED FEATURE DEVELOPMENT BUILD]";
+#endif
+
     return ss.str();
 }
 

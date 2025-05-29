@@ -6,7 +6,7 @@
 #include <PatchResourceGroup.h>
 
 CreateBundleCliOperation::CreateBundleCliOperation() :
-	CliOperation( "create-bundle", "Creates bundle from supplied ResourceGroup." ),
+	CliOperation( "create-bundle", "Creates a bundle from supplied ResourceGroup. Bundle takes the form of individual binary chunks." ),
 	m_inputResourceGroupPathArgumentId( "resourcegroup-path" ),
 	m_resourceGroupRelativePathArgumentId( "--resourcegroup-relative-path" ),
 	m_bundleResourceGroupRelativePathArgumentId( "--bundle-resourcegroup-relative-path" ),
@@ -22,30 +22,35 @@ CreateBundleCliOperation::CreateBundleCliOperation() :
 {
 	AddRequiredPositionalArgument( m_inputResourceGroupPathArgumentId, "Path to ResourceGroup to bundle." );
 
-	AddArgument( m_resourceGroupRelativePathArgumentId, "Relative path to save a ResourceGroup the Bundle was based off", false, false, "ResourceGroup.yaml" );
+    // Struct is inspected to ascertain default values
+	// This keeps default value settings in one place
+	// Lib defaults matches CLI
+	CarbonResources::BundleCreateParams defaultParams;
 
-    AddArgument( m_bundleResourceGroupRelativePathArgumentId, "Relative path to save a Bundle ResourceGroup", false, false, "BundleResourceGroup.yaml" );
+	AddArgument( m_resourceSourceBasePathArgumentId, "Represents the base path where the resources will be sourced.", true, true, PathListToString( defaultParams.resourceSourceSettings.basePaths ) );
 
-    AddArgument( m_resourceSourceTypeArgumentId, "Represents the type of repository where resources will be sourced.", false, false, "LOCAL_RELATIVE" );
+	AddArgument( m_resourceSourceTypeArgumentId, "Represents the type of repository where resources will be sourced.", false, false, SourceTypeToString( defaultParams.resourceSourceSettings.sourceType ), ResourceSourceTypeChoicesAsString() );
+    
+	AddArgument( m_resourceGroupRelativePathArgumentId, "Relative path to save a ResourceGroup the Bundle was based off", false, false, defaultParams.resourceGroupRelativePath.string() );
 
-	AddArgument( m_resourceSourceBasePathArgumentId, "Represents the base path where the resources will be sourced.", false, true, "." );
+    AddArgument( m_bundleResourceGroupRelativePathArgumentId, "Relative path to save a Bundle ResourceGroup", false, false, defaultParams.resourceGroupBundleRelativePath.string() );
 
-    AddArgument( m_chunkDestinationTypeArgumentId, "Represents the type of repository where chunks will be saved.", false, false, "LOCAL_RELATIVE" );
+    AddArgument( m_chunkDestinationTypeArgumentId, "Represents the type of repository where chunks will be saved.", false, false, DestinationTypeToString( defaultParams.chunkDestinationSettings.destinationType ), ResourceDestinationTypeChoicesAsString() );
 
-	AddArgument( m_chunkDestinationBasePathArgumentId, "Represents the base path where the chunks will be saved.", false, false, "BundleOut" );
+	AddArgument( m_chunkDestinationBasePathArgumentId, "Represents the base path where the chunks will be saved.", false, false, defaultParams.chunkDestinationSettings.basePath.string() );
 
-    AddArgument( m_bundleResourceGroupDestinationTypeArgumentId, "Represents the type of repository where the bundle ResourceGroup will be saved.", false, false, "LOCAL_RELATIVE" );
+    AddArgument( m_bundleResourceGroupDestinationTypeArgumentId, "Represents the type of repository where the bundle ResourceGroup will be saved.", false, false, DestinationTypeToString( defaultParams.resourceBundleResourceGroupDestinationSettings.destinationType ), ResourceDestinationTypeChoicesAsString() );
 
-	AddArgument( m_bundleResourceGroupDestinationBasePathArgumentId, "Represents the base path where the bundle ResourceGroup will be saved.", false, false, "." );
+	AddArgument( m_bundleResourceGroupDestinationBasePathArgumentId, "Represents the base path where the bundle ResourceGroup will be saved.", false, false, defaultParams.resourceBundleResourceGroupDestinationSettings.basePath.string() );
 
-    AddArgument( m_chunkSizeArgumentId, "Represents the maximum size of the produced chunks in bytes.", false, false, "10000000" );
+    AddArgument( m_chunkSizeArgumentId, "Represents the maximum size of the produced chunks in bytes.", false, false, SizeToString( defaultParams.chunkSize ) );
 
-	AddArgument( m_downloadRetrySecondsArgumentId, "The number of seconds before attempt to download a resource fails with a network related error", false, false, "120");
+	AddArgument( m_downloadRetrySecondsArgumentId, "The number of seconds before attempt to download a resource fails with a network related error", false, false, SecondsToString( defaultParams.downloadRetrySeconds ) );
 
-    AddArgument( m_resourceGroupType, "Type of resource group supplied", false, false, "ResourceGroup" );
+    AddArgument( m_resourceGroupType, "Type of resource group supplied", false, false, "ResourceGroup", "ResourceGroup, PatchResourceGroup" );
 }
 
-bool CreateBundleCliOperation::Execute() const
+bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 {
 	CarbonResources::ResourceGroupImportFromFileParams resourceGroupParams;
 
@@ -59,22 +64,12 @@ bool CreateBundleCliOperation::Execute() const
 
 	std::string resourceSourceType = m_argumentParser->get(m_resourceSourceTypeArgumentId);
 
-	if( resourceSourceType == "LOCAL_CDN" )
-	{
-		bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
-	}
-	else if( resourceSourceType == "REMOTE_CDN" )
-	{
-		bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::REMOTE_CDN;
-	}
-	else if( resourceSourceType == "LOCAL_RELATIVE" )
-	{
-		bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
-	}
-	else
-	{
+    if( !StringToResourceSourceType( resourceSourceType, bundleCreateParams.resourceSourceSettings.sourceType ) )
+    {
+		returnErrorMessage = "Invalid resources source type";
+
 		return false;
-	}
+    }
 
     for (const std::string basePath : m_argumentParser->get<std::vector<std::string>>(m_resourceSourceBasePathArgumentId))
     {
@@ -83,43 +78,23 @@ bool CreateBundleCliOperation::Execute() const
 
 	std::string chunkDesinationType = m_argumentParser->get<std::string>( m_chunkDestinationTypeArgumentId );
 
-	if( chunkDesinationType == "LOCAL_CDN" )
-	{
-		bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
-	}
-	else if( chunkDesinationType == "REMOTE_CDN" )
-	{
-		bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::REMOTE_CDN;
-	}
-	else if( chunkDesinationType == "LOCAL_RELATIVE" )
-	{
-		bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
-	}
-	else
-	{
+    if (!StringToResourceDestinationType(chunkDesinationType, bundleCreateParams.chunkDestinationSettings.destinationType))
+    {
+		returnErrorMessage = "Invalid chunk destination type";
+
 		return false;
-	}
+    }
 
 	bundleCreateParams.chunkDestinationSettings.basePath = m_argumentParser->get<std::string>( m_chunkDestinationBasePathArgumentId );
 
 	std::string bundleResourceGroupDestinationType = m_argumentParser->get<std::string>( m_bundleResourceGroupDestinationTypeArgumentId );
 
-	if( bundleResourceGroupDestinationType == "LOCAL_CDN" )
-	{
-		bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
-	}
-	else if( bundleResourceGroupDestinationType == "REMOTE_CDN" )
-	{
-		bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::REMOTE_CDN;
-	}
-	else if( bundleResourceGroupDestinationType == "LOCAL_RELATIVE" )
-	{
-		bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
-	}
-	else
-	{
+    if (!StringToResourceDestinationType(bundleResourceGroupDestinationType, bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType))
+    {
+		returnErrorMessage = "Invalid Resource Group destination type";
+
 		return false;
-	}
+    }
 
 	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = m_argumentParser->get<std::string>( m_bundleResourceGroupDestinationBasePathArgumentId );
 
@@ -146,7 +121,7 @@ bool CreateBundleCliOperation::Execute() const
 
 void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const
 {
-	if( s_verbosityLevel <= 0 )
+	if( s_verbosityLevel == CarbonResources::STATUS_LEVEL::OFF )
 	{
 		return;
 	}
@@ -183,8 +158,15 @@ void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::Resource
 	std::cout << "----------------------------\n" << std::endl;
 }
 
-bool CreateBundleCliOperation::CreateBundle( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const
+bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const
 {
+	CarbonResources::StatusCallback statusCallback = GetStatusCallback();
+
+    if( statusCallback )
+	{
+		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Creating Bundle." );
+	}
+
 	// Import ResourceGroup
 	std::string inputResourceGroupType = m_argumentParser->get<std::string>( m_resourceGroupType );
 
@@ -205,6 +187,8 @@ bool CreateBundleCliOperation::CreateBundle( const CarbonResources::ResourceGrou
 		return false;
     }
 
+    resourceGroupParams.statusCallback = statusCallback;
+
     CarbonResources::Result importResourceGroupResult = resourceGroup->ImportFromFile( resourceGroupParams );
 
     if (importResourceGroupResult.type != CarbonResources::ResultType::SUCCESS)
@@ -216,6 +200,11 @@ bool CreateBundleCliOperation::CreateBundle( const CarbonResources::ResourceGrou
 
     bundleCreateParams.statusCallback = GetStatusCallback();
 
+    if( statusCallback )
+	{
+		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 50, "Processing bundle files." );
+	}
+
     CarbonResources::Result createBundleResult = resourceGroup->CreateBundle( bundleCreateParams );
 
     delete resourceGroup;
@@ -226,6 +215,11 @@ bool CreateBundleCliOperation::CreateBundle( const CarbonResources::ResourceGrou
 
         return false;
     }
+
+    if( statusCallback )
+	{
+		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Bundle created succesfully" );
+	}
 
     return true;
 }

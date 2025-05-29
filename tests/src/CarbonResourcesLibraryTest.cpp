@@ -283,9 +283,9 @@ TEST_F( CarbonResourcesLibraryTest, ApplyPatch )
     // Apply the patch
 	CarbonResources::PatchApplyParams patchApplyParams;
 
-    patchApplyParams.newBuildResourcesSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+    patchApplyParams.nextBuildResourcesSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-	patchApplyParams.newBuildResourcesSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Patch/NextBuildResources/" ) };
+	patchApplyParams.nextBuildResourcesSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Patch/NextBuildResources/" ) };
 
     patchApplyParams.patchBinarySourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
 
@@ -339,13 +339,13 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatch )
 
     patchCreateParams.resourceGroupPatchRelativePath = "PatchResourceGroup.yaml";
 
-    patchCreateParams.resourceSourceSettingsFrom.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+    patchCreateParams.resourceSourceSettingsPrevious.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-    patchCreateParams.resourceSourceSettingsFrom.basePaths = { GetTestFileFileAbsolutePath( "Patch/PreviousBuildResources" ) };
+    patchCreateParams.resourceSourceSettingsPrevious.basePaths = { GetTestFileFileAbsolutePath( "Patch/PreviousBuildResources" ) };
 
-    patchCreateParams.resourceSourceSettingsTo.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+    patchCreateParams.resourceSourceSettingsNext.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-    patchCreateParams.resourceSourceSettingsTo.basePaths = { GetTestFileFileAbsolutePath( "Patch/NextBuildResources" ) };
+    patchCreateParams.resourceSourceSettingsNext.basePaths = { GetTestFileFileAbsolutePath( "Patch/NextBuildResources" ) };
 
     patchCreateParams.resourcePatchBinaryDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
 
@@ -387,9 +387,9 @@ TEST_F( CarbonResourcesLibraryTest, ApplyPatchWithChunking )
 	// Apply the patch
 	CarbonResources::PatchApplyParams patchApplyParams;
 
-	patchApplyParams.newBuildResourcesSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+	patchApplyParams.nextBuildResourcesSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-	patchApplyParams.newBuildResourcesSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/" ) };
+	patchApplyParams.nextBuildResourcesSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/" ) };
 
 	patchApplyParams.patchBinarySourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
 
@@ -445,13 +445,13 @@ TEST_F( CarbonResourcesLibraryTest, CreatePatchWithChunking )
 
 	patchCreateParams.resourceGroupPatchRelativePath = "PatchResourceGroup_previousBuild_latestBuild.yaml";
 
-	patchCreateParams.resourceSourceSettingsFrom.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+	patchCreateParams.resourceSourceSettingsPrevious.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-	patchCreateParams.resourceSourceSettingsFrom.basePaths = { GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources" ) };
+	patchCreateParams.resourceSourceSettingsPrevious.basePaths = { GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources" ) };
 
-	patchCreateParams.resourceSourceSettingsTo.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+	patchCreateParams.resourceSourceSettingsNext.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-	patchCreateParams.resourceSourceSettingsTo.basePaths = { GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources" ) };
+	patchCreateParams.resourceSourceSettingsNext.basePaths = { GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources" ) };
 
 	patchCreateParams.resourcePatchBinaryDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
 

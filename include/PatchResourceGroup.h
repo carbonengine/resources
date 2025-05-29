@@ -45,15 +45,17 @@ namespace CarbonResources
     */
     struct API PatchApplyParams final
     {
-		ResourceSourceSettings newBuildResourcesSourceSettings;
+		ResourceSourceSettings nextBuildResourcesSourceSettings{ ResourceSourceType::LOCAL_RELATIVE };
 
-		ResourceSourceSettings patchBinarySourceSettings;
+		ResourceSourceSettings patchBinarySourceSettings{};
 
-        ResourceSourceSettings resourcesToPatchSourceSettings;
+        ResourceSourceSettings resourcesToPatchSourceSettings{ ResourceSourceType::LOCAL_RELATIVE };
 
-        ResourceDestinationSettings resourcesToPatchDestinationSettings;
+        ResourceDestinationSettings resourcesToPatchDestinationSettings{ ResourceDestinationType::LOCAL_RELATIVE };
 
         std::filesystem::path temporaryFilePath = "tempFile.resource";
+
+        StatusCallback statusCallback = nullptr;
     };
 
 	class PatchResourceGroupImpl;

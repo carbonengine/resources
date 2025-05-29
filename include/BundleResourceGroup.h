@@ -41,6 +41,8 @@ namespace CarbonResources
 		ResourceSourceSettings chunkSourceSettings;
 
         ResourceDestinationSettings resourceDestinationSettings;
+
+        StatusCallback statusCallback = nullptr;
     };
 
     class BundleResourceGroupImpl;

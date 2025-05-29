@@ -32,7 +32,7 @@ public:
 
 	CreatePatchCliOperation();
 
-	virtual bool Execute() const override;
+	virtual bool Execute( std::string& returnErrorMessage ) const override;
 
 private:
 

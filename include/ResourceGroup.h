@@ -38,22 +38,6 @@ namespace CarbonResources
     class BundleResourceGroup;
 	struct Result;
     
-    /** @enum ResourceSourceType
-    *  @brief Parameters to represent resource source location type
-    *  @var ResourceSourceType::LOCAL_RELATIVE
-    *  Paths are sourced via plain paths. Resource locations will be constructed by contactenation of base path and the resources' relative path.
-    *  @var ResourceSourceType::LOCAL_CDN
-    *  Paths are sourced via CDN style paths. Resource locations will be constructed by contactenation of base path and the resources' CDN location path.
-    *  @var ResourceSourceType::REMOTE_CDN
-    *  Resources are downloaded. They will then be processed as ResourceSourceType::LOCAL_CDN.
-    */
-    enum class ResourceSourceType
-    {
-        LOCAL_RELATIVE,
-        LOCAL_CDN,
-        REMOTE_CDN,
-    };
-
     /** @struct ResourceSourceSettings
     *  @brief Parameters to represent where and how a resource is sourced.
     *  @var ResourceSourceSettings::sourceType
@@ -66,22 +50,6 @@ namespace CarbonResources
 		ResourceSourceType sourceType = ResourceSourceType::LOCAL_CDN;
 
         std::vector<std::filesystem::path> basePaths;
-	};
-
-    /** @enum ResourceDestinationType
-    *  @brief Parameters to represent resource destinationlocation type.
-    *  @var ResourceDestinationType::LOCAL_RELATIVE
-    *  Paths are sourced via plain paths. Resource locations will be constructed by contactenation of base path and the resources' relative path.
-    *  @var ResourceDestinationType::LOCAL_CDN
-    *  Paths are sourced via CDN style paths. Resource locations will be constructed by contactenation of base path and the resources' CDN location path.
-    *  @var ResourceDestinationType::REMOTE_CDN
-    *  Resources are compressed. They will then be processed as LOCAL_CDN. Note that the library does not upload the resources, this functionality is external.
-    */
-    enum class ResourceDestinationType
-	{
-		LOCAL_RELATIVE,
-		LOCAL_CDN,
-        REMOTE_CDN,
 	};
 
     /** @struct ResourceDestinationSettings
@@ -119,9 +87,9 @@ namespace CarbonResources
     */
     struct API BundleCreateParams
 	{
-		ResourceSourceSettings resourceSourceSettings = { CarbonResources::ResourceSourceType::LOCAL_CDN };
+		ResourceSourceSettings resourceSourceSettings = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE };
 
-        ResourceDestinationSettings chunkDestinationSettings = { CarbonResources::ResourceDestinationType::REMOTE_CDN, "BundleOut/Chunks/" };
+        ResourceDestinationSettings chunkDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_CDN, "BundleOut/Chunks/" };
 
         std::filesystem::path resourceGroupRelativePath = "ResourceGroup.yaml";
 
@@ -173,9 +141,9 @@ namespace CarbonResources
 
         std::filesystem::path patchFileRelativePathPrefix = "Patches/Patch";
 
-		ResourceSourceSettings resourceSourceSettingsFrom = { CarbonResources::ResourceSourceType::REMOTE_CDN };
+		ResourceSourceSettings resourceSourceSettingsPrevious = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE };
 
-		ResourceSourceSettings resourceSourceSettingsTo = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE }; // TODO this is sometimes Previous/Next and sometimes From/To unify
+		ResourceSourceSettings resourceSourceSettingsNext = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE }; 
 
         ResourceDestinationSettings resourcePatchBinaryDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_CDN, "PatchOut/Patches/" };
 ;
@@ -211,7 +179,7 @@ namespace CarbonResources
     */
 	struct API ResourceGroupExportToFileParams
 	{
-		std::filesystem::path filename = "";
+		std::filesystem::path filename = "ResourceGroup.yaml";
 
 		Version outputDocumentVersion = S_DOCUMENT_VERSION;
 

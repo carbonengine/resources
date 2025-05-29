@@ -26,7 +26,11 @@ void Cli::PrintError()
 
     for (auto operation : m_operations)
     {
-		std::cout << "    " << operation->GetName() << std::endl;
+		std::string operationName = operation->GetName();
+
+		std::cout << "\t" << operation->GetName();
+
+		std::cout << "\t\t" << operation->GetDescription() << std::endl;
     }
 }
 
@@ -40,9 +44,11 @@ bool Cli::ProcessCommandLine( int argc, char** argv )
 		{
 			if( operation->ProcessCommandLine( argc, argv ) )
 			{
-				if( !operation->Execute() )
+				std::string optionalReturnMessage = "";
+
+				if( !operation->Execute( optionalReturnMessage ) )
 				{
-					operation->PrintError();
+					operation->PrintError( optionalReturnMessage );
 
                     return false;
 				}
@@ -53,7 +59,7 @@ bool Cli::ProcessCommandLine( int argc, char** argv )
 			}
             else
             {
-				operation->PrintError();
+				operation->PrintError("Error processing arguments.Ensure all required arguments are supplied.");
 
 				return false;
             }
@@ -71,13 +77,7 @@ void Cli::PrintCliHeader()
 {
 	std::cout << "====================" << std::endl;
 	std::cout << "carbon-resources-cli" << std::endl;
-
-    std::stringstream ss;
-
-	ss << CarbonResources::S_LIBRARY_VERSION.major << "." << CarbonResources::S_LIBRARY_VERSION.minor << "." << CarbonResources::S_LIBRARY_VERSION.patch;
-
-	std::cout << "carbon-resources version: " << ss.str() << std::endl;
-
+	std::cout << "Version: " << m_version << std::endl;
     std::cout << "====================\n" << std::endl;
 
 }

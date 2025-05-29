@@ -41,6 +41,11 @@ namespace CarbonResources
 
     Result BundleResourceGroupImpl::Unpack( const BundleUnpackParams& params )
     {
+		if( params.statusCallback )
+		{
+			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Unpacking" );
+		}
+
 		ResourceGroupInfo* resourceGroupResource = m_resourceGroupParameter.GetValue();
 
 
@@ -74,9 +79,34 @@ namespace CarbonResources
 
         auto chunkIterator = m_resourcesParameter.begin();
 
+        if( params.statusCallback )
+		{
+			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 20, "Rebuilding resources." );
+		}
+
         // Reconstitute the resources in the bundle
+		auto numResources = resourceGroup.GetSize();
+		int numProcessed = 0;
+        
         for( ResourceInfo* resource : resourceGroup )
 		{
+			if( params.statusCallback )
+			{
+				std::filesystem::path relativePath;
+
+                if (resource->GetRelativePath(relativePath).type != ResultType::SUCCESS)
+                {
+					return Result{ ResultType::FAIL };
+                }
+
+                float percentage = ( 100.0 / numResources ) * numProcessed;
+
+                std::string message = "Rebuilding: " + relativePath.string();
+
+				params.statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, percentage, message );
+
+                numProcessed++;
+			}
 
             uintmax_t resourceFileUncompressedSize;
 
