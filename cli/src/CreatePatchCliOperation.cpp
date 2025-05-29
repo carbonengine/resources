@@ -40,7 +40,7 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
 
 	AddArgument( m_patchBinaryDestinationTypeArgumentId, "Represents the type of repository where binary patches will be saved.", false, false, DestinationTypeToString( defaultParams.resourcePatchBinaryDestinationSettings.destinationType ), ResourceDestinationTypeChoicesAsString() );
 
-    AddArgument( m_resourceGroupRelativePathArgumentId, "Relative path for output resourceGroup which will contain the diff between the supplied previous ResourceGroup and next ResourceGroup.", false, false, defaultParams.resourceGroupPatchRelativePath.string() );
+    AddArgument( m_resourceGroupRelativePathArgumentId, "Relative path for output resourceGroup which will contain the diff between the supplied previous ResourceGroup and next ResourceGroup.", false, false, defaultParams.resourceGroupRelativePath.string() );
 
     AddArgument( m_patchResourceGroupRelativePathArgumentId, "Relative path for output PatchResourceGroup which will contain all the patches produced.", false, false, defaultParams.resourceGroupPatchRelativePath.string() );
 

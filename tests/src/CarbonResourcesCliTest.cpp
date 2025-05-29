@@ -120,7 +120,10 @@ TEST_F( CarbonResourcesCliTest, CreateBundle )
 	arguments.push_back( GetTestFileFileAbsolutePath( "Bundle/Res" ).string() );
 
 	arguments.push_back( "--bundle-resourcegroup-relative-path" );
-	arguments.push_back( "BundleOut/BundleResourceGroup.yaml" );
+	arguments.push_back( "BundleResourceGroup.yaml" );
+
+    arguments.push_back( "--bundle-resourcegroup-destination-path" );
+	arguments.push_back( "BundleOut/" );
 
 	arguments.push_back( "--bundle-resourcegroup-destination-type" );
 	arguments.push_back( "LOCAL_RELATIVE" );
