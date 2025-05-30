@@ -18,8 +18,8 @@ constexpr size_t BLOCKS_PER_FILE = TARGET_FILE_SIZE / CHUNK_BLOCK_SIZE;
 
 namespace ResourceTools
 {
- ChunkIndex::ChunkIndex( std::filesystem::path fileToIndex, size_t chunkSize, StatusCallback statusCallback ) :
-	m_fileToIndex( fileToIndex ), m_chunkSize( chunkSize ), m_currentIndexFile( 0 ), m_statusCallback( statusCallback )
+ ChunkIndex::ChunkIndex( std::filesystem::path fileToIndex, size_t chunkSize, const std::filesystem::path& indexFolder, StatusCallback statusCallback ) :
+	m_fileToIndex( fileToIndex ), m_chunkSize( chunkSize ), m_currentIndexFile( 0 ), m_indexFolder( indexFolder ), m_statusCallback( statusCallback )
 {
 }
 
@@ -41,6 +41,7 @@ bool ChunkIndex::Flush( std::vector<std::pair<uint32_t, uint32_t>>& index )
  		return true;
  	}
  	std::filesystem::path out = GenerateIndexPath();
+ 	++m_currentIndexFile;
 	std::filesystem::path directory = out.parent_path();
 
 	if( !m_currentIndexFile && directory != "" )
@@ -86,9 +87,9 @@ bool ChunkIndex::Flush( std::vector<std::pair<uint32_t, uint32_t>>& index )
 std::filesystem::path ChunkIndex::GenerateIndexPath()
  {
  	std::stringstream ss;
- 	ss << m_currentIndexFile++;
+ 	ss << m_currentIndexFile;
  	std::filesystem::path filename = m_fileToIndex.filename();
-	return std::filesystem::temp_directory_path() / "carbonResources" / "chunkIndexes" / (filename.string() + ss.str() + ".index");
+	return m_indexFolder / (filename.string() + ss.str() + ".index");
  }
 
 bool ChunkIndex::Generate()
@@ -99,6 +100,15 @@ bool ChunkIndex::Generate()
 	{
 		return result;
 	}
+
+ 	if( !std::filesystem::exists( m_indexFolder ) )
+ 	{
+ 		if( !std::filesystem::create_directories( m_indexFolder ) )
+ 		{
+			m_statusCallback( 0, "Failed to create index directory: " + m_indexFolder.string() );
+ 			return false;
+ 		}
+ 	}
 
  	size_t fileSize = std::filesystem::file_size( m_fileToIndex );
  	size_t indexFileCount = fileSize / BLOCKS_PER_FILE;
@@ -135,7 +145,10 @@ bool ChunkIndex::Generate()
 			{
 				if( m_statusCallback )
 				{
-					m_statusCallback( 100 * currentIndexFile / indexFileCount, "Generating index" );
+					std::filesystem::path filePath = GenerateIndexPath();
+					std::stringstream ss;
+					ss << "Generating index (" << currentIndexFile + 1 << "/" << indexFileCount << "): " << filePath;
+					m_statusCallback( 100 * currentIndexFile / indexFileCount, ss.str() );
 				}
 				Flush( chunkToOffsets );
 				++currentIndexFile;

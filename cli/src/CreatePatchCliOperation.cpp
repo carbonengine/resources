@@ -20,7 +20,8 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
 	m_patchResourceGroupDestinationBasePathArgumentId( "--patch-resourcegroup-destination-path" ),
 	m_patchFileRelativePathPrefixArgumentId( "--patch-prefix" ),
 	m_maxInputChunkSizeArgumentId( "--chunk-size" ),
-	m_downloadRetrySecondsArgumentId( "--download-retry" )
+	m_downloadRetrySecondsArgumentId( "--download-retry" ),
+	m_indexFolderArgumentId( "--index-folder" )
 {
 
 	AddRequiredPositionalArgument( m_previousResourceGroupPathArgumentId, "Filename to previous resourceGroup." );
@@ -57,6 +58,8 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
     AddArgument( m_maxInputChunkSizeArgumentId, "Files are processed in chunks, maxInputFileChunkSize indicate the size of this chunk. Files smaller than chunk will be processed in one pass.", false, false, SizeToString( defaultParams.maxInputFileChunkSize ) );
 
 	AddArgument( m_downloadRetrySecondsArgumentId, "The number of seconds before attempt to download a resource fails with a network related error", false, false, SecondsToString( defaultParams.downloadRetrySeconds ) );
+
+	AddArgument( m_indexFolderArgumentId, "The folder in which to place indexes generated for patch files.", false, false, defaultParams.indexFolder );
 }
 
 bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
@@ -170,6 +173,8 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 		PrintStartBanner( previousResourceGroupParams, nextResourceGroupParams, createPatchParams );
     }
 
+	createPatchParams.indexFolder = m_argumentParser->get( m_indexFolderArgumentId );
+
 	return CreatePatch( previousResourceGroupParams, nextResourceGroupParams, createPatchParams );
 }
 
@@ -214,6 +219,8 @@ void CreatePatchCliOperation::PrintStartBanner( const CarbonResources::ResourceG
 	std::cout << "Resource Patch Resource Group Destination Settings Destination Type: " << DestinationTypeToString( createPatchParams.resourcePatchResourceGroupDestinationSettings.destinationType ) << std::endl;
 
 	std::cout << "Download Retry Seconds: " <<  createPatchParams.downloadRetrySeconds.count() << std::endl;
+
+	std::cout << "Index File Folder: " << createPatchParams.indexFolder;
 
 	std::cout << "----------------------------\n" << std::endl;
 }

@@ -71,6 +71,8 @@ private:
     std::string m_maxInputChunkSizeArgumentId;
 
 	std::string m_downloadRetrySecondsArgumentId;
+
+	std::string m_indexFolderArgumentId;
 };
 
 #endif // CreatePatchCliOperation_H

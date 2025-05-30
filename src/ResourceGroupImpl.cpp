@@ -1286,7 +1286,7 @@ namespace CarbonResources
             			params.statusCallback( STATUS_LEVEL::DETAIL, STATUS_PROGRESS_TYPE::PERCENTAGE, percent, msg );
             		}
             	};
-        		ResourceTools::ChunkIndex index(previousFileDataStream.GetPath(), params.maxInputFileChunkSize, callback );
+        		ResourceTools::ChunkIndex index(previousFileDataStream.GetPath(), params.maxInputFileChunkSize, params.indexFolder, callback );
         		if( params.statusCallback )
         		{
         			std::string message = "Generating index for " + relativePath.string();

@@ -152,6 +152,8 @@ namespace CarbonResources
         StatusCallback statusCallback = nullptr;
 
     	std::chrono::seconds downloadRetrySeconds{120};
+
+    	std::filesystem::path indexFolder = std::filesystem::temp_directory_path() / "carbonResources" / "chunkIndexes";
     };
 
     /** @struct ResourceGroupImportFromFileParams
