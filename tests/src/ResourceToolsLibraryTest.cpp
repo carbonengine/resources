@@ -9,12 +9,14 @@
 #include <gtest/gtest.h>
 
 #include "CarbonResourcesTestFixture.h"
+#include "ChunkIndex.h"
 #include "FileDataStreamIn.h"
+#include "FileDataStreamOut.h"
 #include "GzipCompressionStream.h"
 #include "GzipDecompressionStream.h"
 #include "Md5ChecksumStream.h"
 #include "Patching.h"
-#include "FileDataStreamOut.h"
+#include "RollingChecksum.h"
 
 struct ResourceToolsTest : public CarbonResourcesTestFixture
 {
@@ -547,6 +549,48 @@ TEST_F( ResourceToolsTest, CountMatchingChunks )
 	ASSERT_EQ( ResourceTools::CountMatchingChunks( introMovieFilePath, 0, introMoviePatchedFilePath, 0, CHUNK_SIZE ), 0 );
 	ASSERT_EQ( ResourceTools::CountMatchingChunks( introMovieFilePath, 0, introMoviePatchedFilePath, PREFIX_SIZE, CHUNK_SIZE ), 19 );
 	ASSERT_EQ( ResourceTools::CountMatchingChunks( introMovieFilePath, CHUNK_SIZE, introMoviePatchedFilePath, CHUNK_SIZE + PREFIX_SIZE, 500 ), 18 );
+}
+
+TEST_F( ResourceToolsTest, GenerateChunkIndex )
+{
+	const char* testDataPathStr = TEST_DATA_BASE_PATH;
+	ASSERT_TRUE( testDataPathStr );
+	std::filesystem::path testDataPath(testDataPathStr);
+    std::filesystem::path introMovieFilePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
+	std::string data;
+	ResourceTools::GetLocalFileData( introMovieFilePath, data );
+
+	std::filesystem::path outputPath = std::filesystem::temp_directory_path() / "chunkIndexes" / "introMovieChunks";
+	if( std::filesystem::exists( outputPath ) )
+	{
+		std::filesystem::remove( outputPath );
+	}
+
+	size_t offset;
+
+	std::string notInFile = "Once upon a time, in a galaxy far, far away...";
+	ResourceTools::ChunkIndex notInFileIndex( introMovieFilePath, notInFile.size() );
+	notInFileIndex.Generate();
+	ASSERT_FALSE(notInFileIndex.FindMatchingChunk( notInFile, offset ));
+
+	std::string startOfFile = "TIME";
+	ResourceTools::ChunkIndex startOfFileIndex( introMovieFilePath, startOfFile.size() );
+	startOfFileIndex.Generate();
+	ASSERT_TRUE(startOfFileIndex.FindMatchingChunk( startOfFile, offset ) );
+	ASSERT_EQ( offset, 0 );
+
+	std::string early = "introseq.blue";
+	ResourceTools::ChunkIndex earlyIndex( introMovieFilePath, early.size() );
+	earlyIndex.Generate();
+	ASSERT_TRUE(earlyIndex.FindMatchingChunk( early, offset ) );
+	ASSERT_EQ( offset, data.find( early ) );
+
+	// Find the last 20 bytes of the file.
+	std::string final = data.substr( data.size() - 20 );
+	ResourceTools::ChunkIndex finalIndex( introMovieFilePath, final.size() );
+	finalIndex.Generate();
+	ASSERT_TRUE(finalIndex.FindMatchingChunk( final, offset ) );
+	ASSERT_EQ( offset, data.size() - 20 );
 }
 
 #if __APPLE__

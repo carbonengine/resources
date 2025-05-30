@@ -8,6 +8,7 @@ find_package(ZLIB REQUIRED)
 set(SRC_FILES
     include/BundleStreamIn.h
     include/BundleStreamOut.h
+    include/ChunkIndex.h
     include/Downloader.h
     include/FileDataStreamIn.h
     include/FileDataStreamOut.h
@@ -16,10 +17,13 @@ set(SRC_FILES
     include/Md5ChecksumStream.h
     include/Patching.h
     include/ResourceTools.h
+    include/RollingChecksum.h
     include/ScopedFile.h
-    
+    include/StatusCallback.h
+
     src/BundleStreamIn.cpp
     src/BundleStreamOut.cpp
+    src/ChunkIndex.cpp
     src/Downloader.cpp
     src/FileDataStreamIn.cpp
     src/FileDataStreamOut.cpp
@@ -29,6 +33,7 @@ set(SRC_FILES
     src/ResourceTools.cpp
     src/ScopedFile.cpp
     src/Patching.cpp
+    src/RollingChecksum.cpp
 )
 
 add_library(carbon-resources-tools STATIC ${SRC_FILES})

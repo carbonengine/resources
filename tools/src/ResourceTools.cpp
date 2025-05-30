@@ -16,9 +16,7 @@
 #include "Md5ChecksumStream.h"
 #include "FileDataStreamIn.h"
 #include "FileDataStreamOut.h"
-
-constexpr uint64_t ROLLING_CHECKSUM_MODULO = 2 << 15;
-
+#include "RollingChecksum.h"
 
 
 namespace ResourceTools
@@ -75,48 +73,7 @@ namespace ResourceTools
 	  return true;
   }
 
-  RollingChecksum GenerateRollingAdlerChecksum( const std::string& input, uint64_t start, uint64_t end )
-  {
-  	  uint64_t alpha = 0;
-  	  auto substring = input.substr( start, end-start );
-  	  for( auto c: substring )
-  	  {
-	  	  alpha += c;
-  	  }
-  	  alpha %= ROLLING_CHECKSUM_MODULO;
-
-  	  uint64_t beta = 0;
-  	  for( uint64_t i = start; i < end; ++i )
-  	  {
-	  	  beta += (end - i) * substring[ i - start ];
-  	  }
-  	  beta %= ROLLING_CHECKSUM_MODULO;
-
-  	  RollingChecksum rc;
-  	  rc.alpha = alpha;
-  	  rc.beta = beta;
-  	  rc.checksum = alpha + (beta * ROLLING_CHECKSUM_MODULO);
-
-	  return rc;
-  }
-
-  RollingChecksum GenerateRollingAdlerChecksum( const std::string& input, uint64_t start, uint64_t end, RollingChecksum previous )
-  {
-  	  uint64_t alpha = previous.alpha - input[start - 1] + input[end - 1];
-  	  alpha %= ROLLING_CHECKSUM_MODULO;
-
-  	  uint64_t beta = previous.beta + alpha - (end - start) * input[start - 1];
-  	  beta %= ROLLING_CHECKSUM_MODULO;
-
-  	  RollingChecksum rc;
-  	  rc.alpha = alpha;
-  	  rc.beta = beta;
-  	  rc.checksum = alpha + (beta * ROLLING_CHECKSUM_MODULO);
-
-	  return rc;
-  }
-
-  std::list<ChunkMatch> FindMatchingChunks( const std::string& source, std::string& destination )
+ std::list<ChunkMatch> FindMatchingChunks( const std::string& source, std::string& destination )
   {
 	  std::list<ChunkMatch> result;
 

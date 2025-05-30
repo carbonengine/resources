@@ -16,6 +16,7 @@
 #include "Patching.h"
 #include "PatchResourceGroupImpl.h"
 #include "BundleResourceGroupImpl.h"
+#include "ChunkIndex.h"
 
 namespace CarbonResources
 {
@@ -1264,6 +1265,24 @@ namespace CarbonResources
 				{
 					return getNextDataStreamResult;
 				}
+
+            	std::filesystem::path relativePath;
+				Result getRelativePathResult = resourcePrevious->GetRelativePath( relativePath );
+				if (getRelativePathResult.type != ResultType::SUCCESS)
+				{
+					return getRelativePathResult;
+            	}
+
+        		ResourceTools::ChunkIndex index(previousFileDataStream.GetPath(), params.maxInputFileChunkSize, params.statusCallback);
+        		if( params.statusCallback )
+        		{
+        			std::string message = "Generating index for " + relativePath.string();
+        			params.statusCallback( 2, -1, message );
+        		}
+        		if( !index.Generate() )
+        		{
+        			params.statusCallback(2, -1, "Index generation failed for " + relativePath.string());
+        		}
 
             	int chunkNumber = 0;
             	std::filesystem::path asdf;
