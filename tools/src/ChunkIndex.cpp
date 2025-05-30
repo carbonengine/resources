@@ -166,7 +166,7 @@ bool ChunkIndex::Generate()
 			backlog = backlog.substr( m_chunkSize );
 		}
 	}
- 	if( m_statusCallback )
+ 	if( m_statusCallback && indexFileCount > 0 )
  	{
  		m_statusCallback( currentIndexFile / indexFileCount, "Generating index" );
  	}
