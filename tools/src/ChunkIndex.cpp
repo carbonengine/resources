@@ -85,11 +85,41 @@ bool ChunkIndex::Flush( std::vector<std::pair<uint32_t, uint32_t>>& index )
 }
 
 std::filesystem::path ChunkIndex::GenerateIndexPath()
- {
+{
  	std::stringstream ss;
  	ss << m_currentIndexFile;
  	std::filesystem::path filename = m_fileToIndex.filename();
 	return m_indexFolder / (filename.string() + ss.str() + ".index");
+}
+
+bool ChunkIndex::GenerateChecksumFilter( const std::filesystem::path& targetFile)
+{
+ 	FileDataStreamIn targetIn( m_chunkSize );
+ 	targetIn.StartRead( targetFile );
+ 	size_t targetSize = std::filesystem::file_size( targetFile );
+	for( uintmax_t dataOffset = 0; dataOffset < targetSize; dataOffset += m_chunkSize )
+	{
+		std::string nextFileData;
+		if(!targetIn.IsFinished())
+		{
+			if(!(targetIn >> nextFileData))
+			{
+				return false;
+			}
+		}
+        uint32_t checksum = ResourceTools::GenerateRollingAdlerChecksum( nextFileData, 0, nextFileData.size() ).checksum;
+		m_checksumFilter.insert( checksum );
+	}
+	return true;
+ }
+
+bool ChunkIndex::IsRelevant( uint32_t checksum )
+ {
+ 	if( m_checksumFilter.empty() )
+ 	{
+ 		return true;
+ 	}
+	return m_checksumFilter.find( checksum ) != m_checksumFilter.end();
  }
 
 bool ChunkIndex::Generate()
@@ -140,6 +170,11 @@ bool ChunkIndex::Generate()
 			else
 			{
 				checksum = GenerateRollingAdlerChecksum( backlog, backlogOffset, backlogOffset + m_chunkSize, checksum );
+			}
+			if( !IsRelevant( checksum.checksum ) )
+			{
+				++backlogOffset;
+				continue;
 			}
 			chunkToOffsets.emplace_back( std::pair<uint32_t, uint32_t>(checksum.checksum, backlogOffset + fileOffset - m_currentIndexFile * BLOCKS_PER_FILE ) );
 			++cachedChunks;

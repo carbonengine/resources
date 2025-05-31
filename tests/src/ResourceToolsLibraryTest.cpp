@@ -595,6 +595,55 @@ TEST_F( ResourceToolsTest, GenerateChunkIndex )
 	ASSERT_EQ( offset, data.size() - 20 );
 }
 
+TEST_F( ResourceToolsTest, GenerateChunkIndexWithFilter )
+{
+	const char* testDataPathStr = TEST_DATA_BASE_PATH;
+	ASSERT_TRUE( testDataPathStr );
+	std::filesystem::path testDataPath(testDataPathStr);
+    std::filesystem::path introMovieFilePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
+	std::string data;
+	ResourceTools::GetLocalFileData( introMovieFilePath, data );
+
+	std::filesystem::path outputPath = std::filesystem::temp_directory_path() / "chunkIndexes" / "introMovieChunks";
+	if( std::filesystem::exists( outputPath ) )
+	{
+		std::filesystem::remove( outputPath );
+	}
+
+	size_t offset;
+	std::filesystem::path indexFolder = "./GenerateChunkIndex/Indexes";
+
+	std::string notInFile = "Once upon a time, in a galaxy far, far away...";
+	ResourceTools::ChunkIndex notInFileIndex( introMovieFilePath, notInFile.size(), indexFolder );
+	notInFileIndex.GenerateChecksumFilter( introMovieFilePath );
+	notInFileIndex.Generate();
+	ASSERT_FALSE(notInFileIndex.FindMatchingChunk( notInFile, offset ));
+
+	std::string startOfFile = "TIME";
+	ResourceTools::ChunkIndex startOfFileIndex( introMovieFilePath, startOfFile.size(), indexFolder );
+	startOfFileIndex.GenerateChecksumFilter( introMovieFilePath );
+	startOfFileIndex.Generate();
+	ASSERT_TRUE(startOfFileIndex.FindMatchingChunk( startOfFile, offset ) );
+	ASSERT_EQ( offset, 0 );
+
+	// Find a chunk early on in the file, that should be
+	// included in the index.
+	std::string early = data.substr( 100, 10 );
+	ResourceTools::ChunkIndex earlyIndex( introMovieFilePath, early.size(), indexFolder );
+	earlyIndex.GenerateChecksumFilter( introMovieFilePath );
+	earlyIndex.Generate();
+	ASSERT_TRUE(earlyIndex.FindMatchingChunk( early, offset ) );
+	ASSERT_EQ( data.substr( offset, 10 ), early );
+
+	// Find the last whole chunk in the file.
+	std::string final = data.substr( data.size() - 31, 20 );
+	ResourceTools::ChunkIndex finalIndex( introMovieFilePath, 20, indexFolder );
+	finalIndex.GenerateChecksumFilter( introMovieFilePath );
+	finalIndex.Generate();
+	ASSERT_TRUE(finalIndex.FindMatchingChunk( final.substr( 0, 20 ), offset ) );
+	ASSERT_EQ( offset, data.size() - 31 );
+}
+
 #if __APPLE__
 TEST_F( ResourceToolsTest, CalculateBinaryOperationMacOS )
 {

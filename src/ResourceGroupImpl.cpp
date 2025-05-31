@@ -1292,6 +1292,7 @@ namespace CarbonResources
         			std::string message = "Generating index for " + relativePath.string();
         			params.statusCallback( STATUS_LEVEL::DETAIL , STATUS_PROGRESS_TYPE::PERCENTAGE, 0, message );
         		}
+            	index.GenerateChecksumFilter( nextFileDataStream.GetPath() );
         		if( !index.Generate() )
         		{
 					std::string message = "Index generation failed for " + relativePath.string();
