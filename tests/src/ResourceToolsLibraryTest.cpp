@@ -640,7 +640,7 @@ TEST_F( ResourceToolsTest, GenerateChunkIndexWithFilter )
 	ResourceTools::ChunkIndex finalIndex( introMovieFilePath, 20, indexFolder );
 	finalIndex.GenerateChecksumFilter( introMovieFilePath );
 	finalIndex.Generate();
-	ASSERT_TRUE(finalIndex.FindMatchingChunk( final.substr( 0, 20 ), offset ) );
+	ASSERT_TRUE(finalIndex.FindMatchingChunk( final, offset ) );
 	ASSERT_EQ( offset, data.size() - 31 );
 }
 

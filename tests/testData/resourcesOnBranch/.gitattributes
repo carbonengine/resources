@@ -1,3 +1,0 @@
-# This file should have CRLF line endings, since it's used to test
-# our compression against data compressed with the old system
-introMovie.txt           text eol=crlf
