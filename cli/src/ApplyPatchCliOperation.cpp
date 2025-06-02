@@ -187,7 +187,10 @@ bool ApplyPatchCliOperation::ApplyPatch(CarbonResources::ResourceGroupImportFrom
 
     if (applyPatchResult.type != CarbonResources::ResultType::SUCCESS)
     {
-        return false;
+    	std::string out;
+    	CarbonResources::resultToString( applyPatchResult, out );
+    	std::cerr << "Failed to apply patch: " << out << std::endl;
+    	exit(1);
     }
 
     if( statusCallback )
