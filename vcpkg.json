@@ -1,3 +1,40 @@
 {
-  "dependencies": []
+  "dependencies": [
+    {
+      "name":"argparse",
+      "version>=":"2.2#0"
+    },
+
+    {
+      "name":"curl"
+    },
+
+    {
+      "name":"gtest"
+    },
+
+    {
+      "name":"cryptopp"
+    },
+
+    {
+      "name":"tiny-process-library"
+    },
+
+    {
+      "name":"yaml-cpp"
+    },
+
+    {
+      "name":"zlib"
+    },
+
+    {
+      "name":"bsdiff-drake127"
+    }
+  ],
+
+  "overrides": [
+    { "name": "argparse", "version": "2.2#0" }
+  ]
 }

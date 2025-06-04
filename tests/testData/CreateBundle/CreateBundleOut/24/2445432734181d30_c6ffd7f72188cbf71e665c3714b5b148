@@ -1,0 +1,1405 @@
+TIME
+"0"
+
+SEQUENCE
+"res:/Scene/introseq.blue"
+
+TEXTGROUP
+"4"
+
+SEGMENT
+0:0.0 - 4:48.86
+"boot"
+
+TCSAUDIO
+0:0.0 - 4:48.86
+"res:/sound/music/intro/intromusic.ogg"
+
+TRANSFORM
+# Noise speckles
+0:0.0 - 4:48.86
+"Overlay"
+
+
+
+SEGMENT
+0:0.0 - 0:18.6
+"Earth (Scene 1)"
+
+TRANSFORM
+0:0.0 - 0:22.6
+"Scene 1"
+
+AUDIO
+0:0.0 - 0:22.6
+"res:/sound/music/intro/s001.ogg"
+
+AUDIO
+0:3.69 - 0:15.31
+"res:/sound/music/intro/01_01.ogg"
+
+SUBTITLE
+# Earth
+0:3.72 - 0:0.48
+"G_EI_01_01"
+
+SUBTITLE
+# A world outgrown
+0:5.87 - 0:1.44
+"G_EI_01_02"
+
+SUBTITLE
+# scarred by war and burdened with the advance of our ancestors
+0:7.69 - 0:4.03
+"G_EI_01_03"
+
+SUBTITLE
+# compelled the first voyages across space
+0:12.69 - 0:2.49
+"G_EI_01_04"
+
+SUBTITLE
+# in a desperate quest to colonize other worlds
+0:15.19 - 0:3.14
+"G_EI_01_05"
+
+SEGMENT
+0:18.6 - 0:18.81
+"Jump gate (Scene 2)"
+
+TRANSFORM
+0:0.0 - 0:22.81
+"Scene 2"
+
+AUDIO
+0:0.0 - 0:22.81
+"res:/sound/music/intro/s002.ogg"
+
+AUDIO
+0:1.75 - 0:11.65
+"res:/sound/music/intro/02_01.ogg"
+
+SUBTITLE
+# Space.
+0:1.77 - 0:0.68
+"G_EI_02_01"
+
+SUBTITLE
+# Its timeless boundaries and infinite horizons
+0:3.84 - 0:2.9
+"G_EI_02_02"
+
+SUBTITLE
+# forged the creation of stargates
+0:7.27 - 0:2.0
+"G_EI_02_03"
+
+SUBTITLE
+# that could bridge the immense distances between the stars
+0:9.27 - 0:3.4
+"G_EI_02_04"
+
+SUBTITLE
+# Through mastery of this technology
+0:14.91 - 0:1.98
+"G_EI_03_01"
+
+SUBTITLE
+# mankind ventured deeper into the cosmos
+0:17.11 - 0:2.73
+"G_EI_03_02"
+
+AUDIO
+0:14.85 - 0:6.04
+"res:/sound/music/intro/03_01.ogg"
+
+
+
+SEGMENT
+0:37.41 - 0:21.52
+"Corp Meeting (Scene 3)"
+
+TRANSFORM
+0:0.0 - 0:25.52
+"Scene 3"
+
+AUDIO
+0:0.0 - 0:25.52
+"res:/sound/music/intro/s003.ogg"
+
+AUDIO
+0:3.21 - 0:6.38
+"res:/sound/music/intro/03_02.ogg"
+
+AUDIO
+0:11.27 - 0:8.82
+"res:/sound/music/intro/03_03.ogg"
+
+SUBTITLE
+# Ruthless corporations rose to power
+0:3.25 - 0:2.52
+"G_EI_03_03"
+
+SUBTITLE
+# seizing every world within their grasp
+0:6.27 - 0:2.37
+"G_EI_03_04"
+
+SUBTITLE
+# When the stargates could take them no further
+0:11.3 - 0:2.29
+"G_EI_03_05"
+
+SUBTITLE
+# they turned against each other
+0:13.91 - 0:1.55
+"G_EI_03_06"
+
+SUBTITLE
+# igniting conflicts that would last for centuries
+0:16.21 - 0:2.83
+"G_EI_03_07"
+
+
+
+SEGMENT
+0:58.93 - 0:32.09
+"Eve gate (Scene 4)"
+
+TRANSFORM
+0:0.0 - 0:36.09
+"Scene 4"
+
+AUDIO
+0:0.0 - 0:36.09
+"res:/sound/music/intro/s004.ogg"
+
+AUDIO
+0:0.1 - 0:9.97
+"res:/sound/music/intro/04_01.ogg"
+
+AUDIO
+0:11.68 - 0:12.38
+"res:/sound/music/intro/04_02.ogg"
+
+AUDIO
+0:24.87 - 0:9.2
+"res:/sound/music/intro/04_03.ogg"
+
+SUBTITLE
+# The battles raged until the historic discovery of a natural wormhole
+0:0.1 - 0:3.8
+"G_EI_04_01"
+
+SUBTITLE
+# A celestial womb through which civilization would be reborn
+0:5.36 - 0:3.77
+"G_EI_04_02"
+
+SUBTITLE
+# The first brave pioneers to enter this portal emerged unscathed
+0:11.68 - 0:4.23
+"G_EI_04_03"
+
+SUBTITLE
+# transported instantly across the universe
+0:17.14 - 0:2.51
+"G_EI_04_04"
+
+SUBTITLE
+# to a virgin system they called New Eden
+0:19.65 - 0:3.38
+"G_EI_04_05"
+
+SUBTITLE
+# Millions of colonists soon followed in their wake
+0:24.89 - 0:2.77
+"G_EI_04_06"
+
+SUBTITLE
+# lured by the vision of paradise
+0:28.75 - 0:1.89
+"G_EI_04_07"
+
+
+SUBTITLE
+#  through the astral gateway known as EVE
+0:30.44 - 0:3.4
+"G_EI_04_08"
+
+
+SEGMENT
+1:31.02 - 0:15.49
+"Map (Scene 5)"
+
+TRANSFORM
+0:0.0 - 0:19.49
+"Scene 5"
+
+AUDIO
+0:3.39 - 0:10.09
+"res:/sound/music/intro/05_01.ogg"
+
+AUDIO
+0:14.17 - 0:7.81
+"res:/sound/music/intro/05_02.ogg"
+
+SUBTITLE
+# Spreading outwards among the stars
+0:3.4 - 0:1.91
+"G_EI_05_01"
+
+SUBTITLE
+# they embraced EVE with the greatest of expectations
+0:5.96 - 0:2.95
+"G_EI_05_02"
+
+SUBTITLE
+# the highest of hopes and the boldest of dreams
+0:9.37 - 0:3.28
+"G_EI_05_03"
+
+SUBTITLE
+# When one day...
+0:14.19 - 0:0.89
+"G_EI_05_04"
+
+
+
+SEGMENT
+1:46.51 - 0:27.52
+"Destruction(Scene 6)"
+
+TRANSFORM
+0:0.0 - 0:31.52
+"Scene 6"
+
+AUDIO
+0:0.0 - 0:31.52
+"res:/sound/music/intro/s006.ogg"
+
+AUDIO
+0:7.6 - 0:16.17
+"res:/sound/music/intro/06_01.ogg"
+
+SUBTITLE
+# Nature conspired with fate...
+0:0.39 - 0:2.03
+"G_EI_05_05"
+
+SUBTITLE
+# to breed the cruelest nightmare of all
+0:3.36 - 0:2.11
+"G_EI_05_06"
+
+SUBTITLE
+# The wormhole leading to New Eden collapsed
+0:7.6 - 0:2.96
+"G_EI_06_01"
+
+SUBTITLE
+# severing young colonies from the home worlds which sustained them
+0:11.19 - 0:3.86
+"G_EI_06_02"
+
+SUBTITLE
+# It was the beginning of a dark age
+0:16.51 - 0:2.35
+"G_EI_06_03"
+
+SUBTITLE
+# that would erase civilization as it was known to be
+0:18.86 - 0:3.45
+"G_EI_06_04"
+
+
+
+
+SEGMENT
+2:14.03 - 0:19.9
+"Snow(Scene 7)"
+
+TRANSFORM
+0:0.0 - 0:23.9
+"Scene 7"
+
+AUDIO
+0:0.0 - 0:23.9
+"res:/sound/music/intro/s007.ogg"
+
+AUDIO
+0:1.88 - 0:9.8
+"res:/sound/music/intro/07_01.ogg"
+
+AUDIO
+0:12.15 - 0:8.11
+"res:/sound/music/intro/07_02.ogg"
+
+SUBTITLE
+# As the accumulated knowledge of millennia slowly eroded
+0:1.91 - 0:3.18
+"G_EI_07_01"
+
+SUBTITLE
+# the unfinished worlds of EVE became the graveyards of millions
+0:5.69 - 0:3.52
+"G_EI_07_02"
+
+SUBTITLE
+# On the few planets that could sustain life
+0:12.15 - 0:2.51
+"G_EI_07_03"
+
+SUBTITLE
+# the last remnants of our race struggled to adapt and survive
+0:15.07 - 0:3.66
+"G_EI_07_04"
+
+
+
+SEGMENT
+2:33.93 - 0:9.07
+"Planets(Scene 8)"
+
+TRANSFORM
+0:0.0 - 0:13.07
+"Scene 8"
+
+AUDIO
+0:2.03 - 0:7.76
+"res:/sound/music/intro/08_01.ogg"
+
+SUBTITLE
+# In time, society was reborn
+0:2.03 - 0:2.6
+"G_EI_08_01"
+
+SUBTITLE
+# and the memories of our past transformed into legend and myth
+0:4.63 - 0:4.0
+"G_EI_08_02"
+
+
+SEGMENT
+2:43.0 - 0:15.34
+"Amarr(Scene 9)"
+
+TRANSFORM
+0:0.0 - 0:19.34
+"Scene 9"
+
+AUDIO
+0:1.77 - 0:14.37
+"res:/sound/music/intro/09_01.ogg"
+
+SUBTITLE
+# The first to emerge from the darkness were the Amarr
+0:1.8 - 0:2.64
+"G_EI_09_01"
+
+SUBTITLE
+# a monotheistic race fervently committed to their faith
+0:5.58 - 0:3.08
+"G_EI_09_02"
+
+SUBTITLE
+# They reinvented space flight and soon discovered they were not alone
+0:10.44 - 0:3.8
+"G_EI_09_03"
+
+
+
+SEGMENT
+2:58.34 - 0:14.8
+"Minmatar(Scene 10)"
+
+TRANSFORM
+0:0.0 - 0:18.8
+"Scene 10"
+
+AUDIO
+0:1.0 - 0:15.23
+"res:/sound/music/intro/10_01.ogg"
+
+SUBTITLE
+# The Amarrians encountered the Minmatar race
+0:1.05 - 0:2.23
+"G_EI_10_01"
+
+SUBTITLE
+# dismissing them as primitive barbarians destined for a life of slavery
+0:3.78 - 0:3.98
+"G_EI_10_02"
+
+SUBTITLE
+# Moving quickly to subjugate them
+0:9.19 - 0:1.76
+"G_EI_10_03"
+
+SUBTITLE
+# they launched a merciless crusade against the Minmatar worlds
+0:11.29 - 0:3.02
+"G_EI_10_04"
+
+
+
+SEGMENT
+3:13.14 - 0:15.04
+"Gallente(Scene 11)"
+
+TRANSFORM
+0:0.0 - 0:19.04
+"Scene 11"
+
+AUDIO
+0:1.75 - 0:14.25
+"res:/sound/music/intro/11_01.ogg"
+
+SUBTITLE
+# At the same time, the Gallente race flourished nearby
+0:1.77 - 0:3.42
+"G_EI_11_01"
+
+SUBTITLE
+# They created the first democratic republic of the new era
+0:6.55 - 0:3.33
+"G_EI_11_02"
+
+SUBTITLE
+# and established a regional federation of independent states
+0:10.65 - 0:3.56
+"G_EI_11_03"
+
+
+
+SEGMENT
+3:28.18 - 0:12.63
+"Caldari(Scene 12)"
+
+TRANSFORM
+0:0.0 - 0:16.63
+"Scene 12"
+
+AUDIO
+0:1.01 - 0:13.66
+"res:/sound/music/intro/12_01.ogg"
+
+SUBTITLE
+# The Caldari emerged as the strongest state among them
+0:1.03 - 0:3.02
+"G_EI_12_01"
+
+SUBTITLE
+# driven by the relentless pursuit of economic and military might
+0:4.28 - 0:3.28
+"G_EI_12_02"
+
+SUBTITLE
+# Their nationalist ideals soon clashed with Gallente liberalism
+0:8.88 - 0:3.72
+"G_EI_12_03"
+
+
+
+
+SEGMENT
+3:40.81 - 0:27.41
+"Bombardment(Scene 13)"
+
+TRANSFORM
+0:0.0 - 0:31.41
+"Scene 13"
+
+AUDIO
+0:0.0 - 0:30.10
+"res:/sound/music/intro/s013.ogg"
+
+AUDIO
+0:2.04 - 0:6.86
+"res:/sound/music/intro/13_01.ogg"
+
+AUDIO
+0:10.67 - 0:5.95
+"res:/sound/music/intro/13_02.ogg"
+
+AUDIO
+0:19.91 - 0:9.57
+"res:/sound/music/intro/13_03.ogg"
+
+SUBTITLE
+# Destruction and suffering once again
+0:2.04 - 0:2.06
+"G_EI_13_01"
+
+SUBTITLE
+# became the defining essence of our civilization
+0:4.1 - 0:2.8
+"G_EI_13_02"
+
+SUBTITLE
+# Four races...
+0:10.83 - 0:0.69
+"G_EI_13_03"
+
+SUBTITLE
+# torn apart by two horrific wars
+0:12.54 - 0:2.28
+"G_EI_13_04"
+
+SUBTITLE
+# When all that remained were the smoldering ruins
+0:19.94 - 0:2.4
+"G_EI_13_05"
+
+SUBTITLE
+# of lost cities and shattered lives
+0:22.34 - 0:2.3
+"G_EI_13_06"
+
+SUBTITLE
+# a universal truce was declared to end the despair
+0:25.01 - 0:2.98
+"G_EI_13_07"
+
+
+
+
+SEGMENT
+4:8.22 - 0:11.18
+"Station(Scene 14)"
+
+TRANSFORM
+0:0.0 - 0:15.18
+"Scene 14"
+
+AUDIO
+0:3.19 - 0:10.88
+"res:/sound/music/intro/14_01.ogg"
+
+SUBTITLE
+# For more than a century the races of EVE have coexisted in relative peace
+0:3.22 - 0:3.97
+"G_EI_14_01"
+
+SUBTITLE
+# Prosperity and the pursuit of wealth govern the mission of mankind
+0:8.72 - 0:3.65
+"G_EI_14_02"
+
+
+
+
+SEGMENT
+4:19.4 - 0:29.07
+"Finale(Scene 15)"
+
+TRANSFORM
+0:0.0 - 0:29.07
+"Scene 15"
+
+AUDIO
+0:3.85 - 0:18.75
+"res:/sound/music/intro/15_01.ogg"
+
+SUBTITLE
+# We have a destiny to meet...
+0:3.85 - 0:1.43
+"G_EI_15_01"
+
+SUBTITLE
+# and the courage of our pilots will show us the path
+0:6.18 - 0:2.58
+"G_EI_15_02"
+
+SUBTITLE
+# On the strength of your wings the fate of empires
+0:10.62 - 0:2.66
+"G_EI_15_03"
+
+SUBTITLE
+and the hopes of worlds will be decided
+0:13.27 - 0:2.4
+"G_EI_15_04"
+
+SUBTITLE
+# Take control of the destiny that is rightfully yours
+0:16.75 - 0:4.394
+"G_EI_15_05"
+
+A_CHANGE_MADE_FOR_PATCHING# Format for the file is:
+# - [[vendor ID, device ID], class, comments]
+# where class is either high, medium or low; comments are ignored by the client.
+# Order or records is not important for the client, but let's keep it sorted for the sake of human beings.
+
+# High
+
+# Medium
+- [[4098, 26393], medium, AMD Radeon HD 6950]
+- [[4098, 26424], medium, AMD Radeon HD 6800 Series]
+- [[4098, 26425], medium, AMD Radeon HD 6800 Series]
+- [[4098, 26776], medium, ATI Radeon HD 5800 Series]
+- [[4098, 26777], medium, ATI Radeon HD 5800 Series]
+- [[4098, 26780], medium, ATI Radeon HD 5970 Series]
+- [[4098, 26782], medium, Radeon HD 5800 Series]
+- [[4098, 26784], medium, ATI Mobility Radeon HD 5800 Series]
+- [[4098, 26785], medium, ATI Mobility Radeon HD 5800 Series]
+- [[4098, 26808], medium, ATI Radeon HD 5700 Series]
+- [[4098, 26814], medium, ATI Radeon HD 5700 Series]
+- [[4318, 1504], medium, GeForce GTX 295]
+- [[4318, 1505], medium, NVIDIA GeForce GTX 280]
+- [[4318, 1507], medium, GeForce GTX 285]
+- [[4318, 1541], medium, NVIDIA GeForce 9800 GT]
+- [[4318, 1555], medium, NVIDIA GeForce 9800 GTX+]
+- [[4318, 1556], medium, NVIDIA GeForce 9800 GT]
+- [[4318, 1728], medium, GeForce GTX 480]
+- [[4318, 1732], medium, nVidia GTX 465]
+- [[4318, 1741], medium, Nvidia Gefore GTX 470]
+- [[4318, 3594], medium, NVIDIA GeForce GTX 680]
+- [[4318, 3618], medium, GTX 460]
+- [[4318, 4053], medium, NVIDIA GeForce GT 650M]
+- [[4318, 4056], medium, NVIDIA GeForce GT 640M]
+- [[4318, 4064], medium, NVIDIA GeForce GTX 660M]
+- [[4318, 4073], medium, NVIDIA GeForce GT 750M]
+- [[4318, 4074], medium, NVIDIA GeForce GT 755M]
+- [[4318, 4224], medium, NVIDIA GeForce GTX 580]
+- [[4318, 4225], medium, NVIDIA GeForce GTX 570]
+- [[4318, 4230], medium, NVIDIA GeForce GTX 570]
+- [[4318, 4480], medium, NVIDIA GeForce GTX 680]
+- [[4318, 4509], medium, NVIDIA GeForce GTX 775M]
+- [[4318, 4510], medium, NVIDIA GeForce GTX 780M]
+- [[4318, 4514], medium, NVIDIA GeForce GTX 675MX]
+- [[4318, 4515], medium, NVIDIA GeForce GTX 680MX]
+- [[4318, 4747], medium, NVIDIA GeForce GT 710]
+- [[4318, 7298], medium, NVIDIA GeForce GTX 1050 Ti]
+- [[32902, 3362], medium, Intel Iris Pro]
+- [[32902, 3366], medium, Intel Iris Pro]
+- [[32902, 5662], medium, Intel HD Graphics 5300]
+- [[32902, 5666], medium, Intel Iris Pro Graphics 6200]
+- [[32902, 6418], medium, Intel HD Graphics 530]
+- [[32902, 6422], medium, Intel HD Graphics 520]
+- [[32902, 6427], medium, Intel HD Graphics 530]
+- [[32902, 6430], medium, Intel HD Graphics 515]
+- [[32902, 6438], medium, Intel Iris Graphics 540]
+- [[32902, 6439], medium, Intel Iris Graphics 550]
+- [[32902, 16017], medium, Intel HD Graphics CFL]
+- [[32902, 16018], medium, Intel HD Graphics CFL]
+- [[32902, 16024], medium, Intel HD Graphics CFL]
+- [[32902, 16027], medium, Intel UHD Graphics 630]
+- [[32902, 16037], medium, Intel Iris Plus Graphics 655]
+- [[32902, 16038], medium, Intel Iris Plus Graphics 645]
+- [[32902, 22802], medium, Intel HD Graphics KBL]
+- [[32902, 22806], medium, Intel HD Graphics 620]
+- [[32902, 22811], medium, Intel HD Graphics 630]
+- [[32902, 22814], medium, Intel HD Graphics 615]
+- [[32902, 22822], medium, Intel Iris Plus Graphics 640]
+- [[32902, 22823], medium, Intel Iris Plus Graphics 650]
+- [[32902, 35409], medium, Intel Iris Plus Graphics]
+- [[32902, 35411], medium, Intel Iris Plus Graphics]
+- [[32902, 35420], medium, Intel Iris Plus Graphics]
+- [[32902, 39877], medium, Intel HD Graphics CFL]
+- [[32902, 39880], medium, Intel HD Graphics CFL]
+
+# Low
+- [[4098, 12624], low, ATI MOBILITY /ATI RADEON X600]
+- [[4098, 15952], low, ATI RADEON X600/X550 Series]
+- [[4098, 16708], low, ATI RADEON 9500]
+- [[4098, 16712], low, ATI RADEON 9800 SE]
+- [[4098, 16720], low, ATI RADEON 9600 Series]
+- [[4098, 16721], low, ATI RADEON 9600 Series]
+- [[4098, 16722], low, ATI RADEON 9600 Series]
+- [[4098, 16723], low, ATI RADEON 9550/X1050 Series]
+- [[4098, 16725], low, ATI RADEON 9600 Series]
+- [[4098, 16752], low, ATI RADEON 9600 Series Secondary]
+- [[4098, 16754], low, '']
+- [[4098, 16755], low, ATI RADEON 9550/X1050 Series Secondary]
+- [[4098, 19017], low, ATI RADEON X800 PRO]
+- [[4098, 19018], low, ATI RADEON X800 Series]
+- [[4098, 19019], low, ATI RADEON X800 XT]
+- [[4098, 19022], low, ATI MOBILITY /ATI RADEON 9800]
+- [[4098, 19024], low, ATI RADEON X800 XT Platinum Edition]
+- [[4098, 19028], low, ATI RADEON X800 VE]
+- [[4098, 19049], low, ATI RADEON X800 PRO Secondary]
+- [[4098, 19273], low, ATI RADEON X850 XT]
+- [[4098, 19275], low, ATI RADEON X850 PRO]
+- [[4098, 19276], low, ATI RADEON X850 XT Platinum Edition]
+- [[4098, 19307], low, '']
+- [[4098, 20036], low, ATI RADEON 9700 PRO]
+- [[4098, 20037], low, ATI RADEON 9500 PRO / 9700]
+- [[4098, 20038], low, ATI RADEON 9600 TX]
+- [[4098, 20039], low, ATI FireGL X1]
+- [[4098, 20040], low, ATI RADEON 9800 PRO]
+- [[4098, 20041], low, ATI RADEON 9800]
+- [[4098, 20042], low, ATI RADEON 9800 XT]
+- [[4098, 20048], low, ATI MOBILITY /ATI RADEON 9600/9700 Series]
+- [[4098, 20049], low, ATI RADEON 9600 Series]
+- [[4098, 20052], low, ATI MOBILITY FIRE GL T2/T2e]
+- [[4098, 20072], low, ATI RADEON 9800 PRO Secondary]
+- [[4098, 20812], low, Radeon 8500 / 8500LE]
+- [[4098, 21600], low, ATI MOBILITY /ATI RADEON X300]
+- [[4098, 21602], low, ATI MOBILITY /ATI RADEON X600 SE]
+- [[4098, 21833], low, ATI RADEON X800 GTO]
+- [[4098, 21835], low, ATI RADEON X800 GT]
+- [[4098, 21837], low, ATI RADEON X800 CrossFire Edition]
+- [[4098, 21839], low, ATI RADEON X800 GTO]
+- [[4098, 22095], low, ATI MOBILITY /ATI RADEON X700 XL]
+- [[4098, 22098], low, ATI MOBILITY /ATI RADEON X700]
+- [[4098, 22099], low, ATI MOBILITY/ATI RADEON X700]
+- [[4098, 22103], low, ATI RADEON X550/X700 Series]
+- [[4098, 22612], low, '']
+- [[4098, 22868], low, ATI RADEON Xpress Series]
+- [[4098, 22869], low, ATI RADEON Xpress Series]
+- [[4098, 22900], low, ATI RADEON Xpress Series]
+- [[4098, 22901], low, ATI RADEON Xpress Series]
+- [[4098, 23105], low, ATI RADEON Xpress Series]
+- [[4098, 23106], low, ATI RADEON Xpress Series]
+- [[4098, 23137], low, ATI Radeon Xpress 200]
+- [[4098, 23138], low, ATI RADEON Xpress Series]
+- [[4098, 23392], low, ATI RADEON X300/X550/X1050 Series]
+- [[4098, 23394], low, ATI RADEON X600 Series]
+- [[4098, 23395], low, ATI RADEON X300/X550/X1050 Series]
+- [[4098, 23396], low, ATI FireGL V3100]
+- [[4098, 23410], low, ATI RADEON X600 Series Secondary]
+- [[4098, 23411], low, ATI RADEON X300/X550/X1050 Series Secondary]
+- [[4098, 23882], low, ATI MOBILITY /ATI RADEON X800]
+- [[4098, 23885], low, ATI RADEON X850 XT Platinum Edition]
+- [[4098, 23887], low, ATI RADEON X800 GTO]
+- [[4098, 23890], low, ATI RADEON X850 XT]
+- [[4098, 23895], low, ATI RADEON X800 XT]
+- [[4098, 24139], low, ATI RADEON X700 PRO]
+- [[4098, 24140], low, ATI RADEON X700 SE]
+- [[4098, 24141], low, ATI RADEON X700]
+- [[4098, 24143], low, ATI RADEON X700/X550 Series]
+- [[4098, 24173], low, ATI RADEON X700 Secondary]
+- [[4098, 24175], low, ATI RADEON X700/X550 Series Secondary]
+- [[4098, 26392], low, '']
+- [[4098, 26397], low, '']
+- [[4098, 26400], low, '']
+- [[4098, 26430], low, '']
+- [[4098, 26432], low, '']
+- [[4098, 26433], low, '']
+- [[4098, 26456], low, '']
+- [[4098, 26457], low, '']
+- [[4098, 26464], low, '']
+- [[4098, 26489], low, '']
+- [[4098, 26760], low, '']
+- [[4098, 26761], low, '']
+- [[4098, 26792], low, '']
+- [[4098, 26793], low, '']
+- [[4098, 26809], low, '']
+- [[4098, 26810], low, '']
+- [[4098, 26815], low, '']
+- [[4098, 26816], low, '']
+- [[4098, 26817], low, '']
+- [[4098, 26823], low, '']
+- [[4098, 26824], low, '']
+- [[4098, 26825], low, '']
+- [[4098, 26840], low, '']
+- [[4098, 26841], low, HD 5570]
+- [[4098, 26842], low, '']
+- [[4098, 26848], low, ATI Mobility Radeon HD 5470]
+- [[4098, 26849], low, '']
+- [[4098, 26852], low, '']
+- [[4098, 26865], low, '']
+- [[4098, 26873], low, ATI Radeon HD 5470]
+- [[4098, 28928], low, ATI RADEON X1800 Series]
+- [[4098, 28930], low, ATI MOBILITY /ATI RADEON X1800]
+- [[4098, 28932], low, ATI FireGL V7200]
+- [[4098, 28937], low, ATI RADEON X1800 Series]
+- [[4098, 28938], low, ATI RADEON X1800 Series]
+- [[4098, 28942], low, ATI FireGL V7300]
+- [[4098, 28960], low, '']
+- [[4098, 28964], low, '']
+- [[4098, 28969], low, ATI RADEON X1800 Series Secondary]
+- [[4098, 28992], low, ATI RADEON X1600 Series]
+- [[4098, 28994], low, ATI RADEON X1300/X1550 Series]
+- [[4098, 28995], low, ATI RADEON X1550 Series]
+- [[4098, 28997], low, ATI MOBILITY /ATI RADEON X1400]
+- [[4098, 28998], low, ATI RADEON X1300 / X1550 Series]
+- [[4098, 28999], low, ATI RADEON X1550 64-bit]
+- [[4098, 29001], low, ATI MOBILITY /ATI RADEON X1300]
+- [[4098, 29002], low, ATI MOBILITY /ATI RADEON X1300]
+- [[4098, 29010], low, ATI FireGL V3300]
+- [[4098, 29011], low, ATI FireGL V3350]
+- [[4098, 29023], low, ATI RADEON X1550 64-bit]
+- [[4098, 29026], low, ATI RADEON X1300/X1550 Series Secondary]
+- [[4098, 29030], low, ATI RADEON X1300 / X1550 Series Secondary]
+- [[4098, 29031], low, ATI RADEON X1550 64-bit Secondary]
+- [[4098, 29057], low, ATI RADEON X1600 Series]
+- [[4098, 29059], low, ATI RADEON X1300/X1550 Series]
+- [[4098, 29062], low, ATI MOBILITY /ATI RADEON X1450]
+- [[4098, 29063], low, ATI RADEON X1300/X1550 Series]
+- [[4098, 29064], low, ATI MOBILITY /ATI RADEON X2300]
+- [[4098, 29066], low, ATI MOBILITY /ATI RADEON X2300]
+- [[4098, 29067], low, ATI MOBILITY /ATI RADEON X1350]
+- [[4098, 29071], low, '']
+- [[4098, 29078], low, ATI MOBILITY /ATI RADEON X1350]
+- [[4098, 29087], low, ATI RADEON X1550 64-bit]
+- [[4098, 29091], low, ATI RADEON X1300/X1550 Series Secondary]
+- [[4098, 29095], low, ATI RADEON X1300/X1550 Series Secondary]
+- [[4098, 29120], low, ATI RADEON X1600 Series]
+- [[4098, 29121], low, ATI RADEON X1650 Series]
+- [[4098, 29122], low, ATI RADEON X1600 Series]
+- [[4098, 29123], low, ATI RADEON X1650 Series]
+- [[4098, 29124], low, ATI MOBILITY FireGL V5200]
+- [[4098, 29125], low, ATI MOBILITY /ATI RADEON X1600]
+- [[4098, 29126], low, ATI RADEON X1650 Series]
+- [[4098, 29127], low, ATI RADEON X1650 Series]
+- [[4098, 29133], low, ATI RADEON X1600 Series]
+- [[4098, 29134], low, ATI RADEON X1600 Pro / ATI RADEON X1300 XT]
+- [[4098, 29138], low, ATI FireGL V3400]
+- [[4098, 29140], low, ATI MOBILITY FireGL V5250]
+- [[4098, 29141], low, ATI MOBILITY /ATI RADEON X1700]
+- [[4098, 29146], low, ATI FireGL V5200]
+- [[4098, 29150], low, ATI MOBILITY /ATI RADEON X1700]
+- [[4098, 29152], low, ATI RADEON X1600 Series Secondary]
+- [[4098, 29153], low, ATI RADEON X1650 Series Secondary]
+- [[4098, 29154], low, ATI RADEON X1600 Series Secondary]
+- [[4098, 29159], low, ATI RADEON X1650 Series Secondary]
+- [[4098, 29165], low, '']
+- [[4098, 29178], low, ATI FireGL V5200 Secondary]
+- [[4098, 29200], low, ATI MOBILITY /ATI RADEON HD 2300]
+- [[4098, 29201], low, ATI MOBILITY /ATI RADEON HD 2300]
+- [[4098, 29248], low, ATI RADEON X1950 Series]
+- [[4098, 29252], low, ATI RADEON X1950 Series]
+- [[4098, 29256], low, ATI RADEON X1900 Series]
+- [[4098, 29257], low, ATI RADEON X1900 Series]
+- [[4098, 29259], low, ATI RADEON X1900 Series]
+- [[4098, 29280], low, ATI RADEON X1950 Series Secondary]
+- [[4098, 29284], low, ATI RADEON X1950 Series Secondary]
+- [[4098, 29289], low, ATI RADEON X1900 Series Secondary]
+- [[4098, 29291], low, ATI RADEON X1900 Series Secondary]
+- [[4098, 29312], low, ATI RADEON X1950 Series]
+- [[4098, 29316], low, ATI MOBILITY /ATI RADEON X1900]
+- [[4098, 29320], low, ATI RADEON X1950 GT]
+- [[4098, 29329], low, ATI RADEON X1650 Series]
+- [[4098, 29344], low, ATI RADEON X1950 Series Secondary]
+- [[4098, 29352], low, ATI RADEON X1950 GT Secondary]
+- [[4098, 29361], low, ATI RADEON X1650 Series Secondary]
+- [[4098, 31006], low, ATI RADEON X1200 Series]
+- [[4098, 31007], low, ATI Mobility Radeon x1100]
+- [[4098, 31041], low, ATI RADEON Xpress 1200 Series]
+- [[4098, 31042], low, ATI RADEON Xpress 1200 Series]
+- [[4098, 31086], low, ATI RADEON 2100]
+- [[4098, 37888], low, ATI Radeon HD 2900 XT]
+- [[4098, 37891], low, ATI RADEON HD 2900 PRO]
+- [[4098, 37893], low, ATI RADEON HD 2900 GT]
+- [[4098, 37952], low, ATI Radeon HD 4870]
+- [[4098, 37953], low, ATI Radeon HD 4870 X2]
+- [[4098, 37954], low, ATI Radeon HD 4800 Series]
+- [[4098, 37955], low, ATI Radeon HD 4850 X2]
+- [[4098, 37956], low, ATI FirePro V8750 (FireGL)]
+- [[4098, 37962], low, ATI Mobility Radeon HD 4850]
+- [[4098, 37964], low, ATI Radeon HD 4800 Series]
+- [[4098, 37966], low, ATI Radeon HD 4700 Series]
+- [[4098, 37974], low, ATI FirePro V8700 (FireGL)]
+- [[4098, 37978], low, ATI Mobility Radeon HD 4870]
+- [[4098, 37984], low, ATI Radeon HD 4800 Series]
+- [[4098, 37986], low, ATI Mobility Radeon HD 5650]
+- [[4098, 38016], low, ATI Mobility Radeon HD 4650]
+- [[4098, 38024], low, ATI Mobility Radeon HD 4670]
+- [[4098, 38032], low, ATI Radeon HD 4600 Series]
+- [[4098, 38037], low, ATI RADEON HD4650]
+- [[4098, 38040], low, ATI Radeon HD 4650]
+- [[4098, 38044], low, '']
+- [[4098, 38046], low, ATI FirePro V5700 (FireGL)]
+- [[4098, 38047], low, ATI FirePro V3750 (FireGL)]
+- [[4098, 38048], low, ATI Mobility Radeon HD 4830]
+- [[4098, 38051], low, ATI FirePro M7740]
+- [[4098, 38067], low, ATI Radeon HD 4770]
+- [[4098, 38081], low, ATI Radeon HD 2400 XT]
+- [[4098, 38083], low, ATI Radeon HD 2400 PRO]
+- [[4098, 38084], low, ATI Radeon HD 2400 PRO AGP]
+- [[4098, 38087], low, ATI RADEON HD 2350]
+- [[4098, 38088], low, ATI MOBILITY /ATI RADEON HD 2400 XT]
+- [[4098, 38089], low, ATI MOBILITY /ATI RADEON HD 2400]
+- [[4098, 38092], low, ATI RADEON HD 2400]
+- [[4098, 38144], low, '']
+- [[4098, 38145], low, ATI Radeon HD 3870]
+- [[4098, 38148], low, ATI MOBILITY /ATI RADEON HD 3850]
+- [[4098, 38149], low, ATI RADEON HD 3850]
+- [[4098, 38152], low, ATI MOBILITY /ATI RADEON HD 3870]
+- [[4098, 38153], low, ATI MOBILITY /ATI RADEON HD 3870 X2]
+- [[4098, 38159], low, ATI RADEON HD 3870 X2]
+- [[4098, 38163], low, ATI Radeon HD 3850 X2]
+- [[4098, 38165], low, ATI Radeon HD 3850 AGP]
+- [[4098, 38208], low, ATI Radeon HD 4550]
+- [[4098, 38223], low, ATI Radeon HD 4350]
+- [[4098, 38226], low, ATI Mobility Radeon HD 4330 Series]
+- [[4098, 38227], low, ATI Mobility Radeon HD 4570 Series]
+- [[4098, 38229], low, ATI Mobility Radeon HD 4500 Series]
+- [[4098, 38272], low, '']
+- [[4098, 38273], low, ATI Mobility Radeon HD 2600]
+- [[4098, 38275], low, ATI MOBILITY /ATI RADEON HD 2600 XT]
+- [[4098, 38278], low, ATI RADEON HD 2600 XT AGP]
+- [[4098, 38279], low, ATI Radeon HD 2600 Pro AGP]
+- [[4098, 38280], low, ATI Radeon HD 2600 XT]
+- [[4098, 38281], low, ATI Radeon HD 2600 Pro]
+- [[4098, 38284], low, ATI FireGL V5600]
+- [[4098, 38285], low, ATI FireGL V3600]
+- [[4098, 38289], low, ATI Mobility Radeon HD 3650]
+- [[4098, 38291], low, ATI Mobility Radeon HD 3670]
+- [[4098, 38294], low, ATI RADEON HD 3600 Series]
+- [[4098, 38295], low, ATI RADEON HD 3600 Series]
+- [[4098, 38296], low, ATI Radeon HD 3600 Series]
+- [[4098, 38297], low, ATI RADEON HD 3600 Series]
+- [[4098, 38336], low, ATI RADEON HD 3470]
+- [[4098, 38338], low, ATI MOBILITY /ATI RADEON HD 3430]
+- [[4098, 38340], low, ATI Mobility Radeon HD 3450]
+- [[4098, 38341], low, ATI Radeon HD 3450]
+- [[4098, 38342], low, ATI Radeon HD 3450]
+- [[4098, 38348], low, ATI FirePRO V3700]
+- [[4098, 38351], low, ATI FireMV 2260]
+- [[4098, 38416], low, ATI Radeon HD 3200 Graphics]
+- [[4098, 38417], low, ATI RADEON 3100 Graphics]
+- [[4098, 38418], low, ATI RADEON HD 3200 Graphics]
+- [[4098, 38419], low, ATI RADEON 3100 Graphics]
+- [[4098, 38420], low, ATI RADEON HD 3300 Graphics]
+- [[4098, 38422], low, AMD 760G]
+- [[4098, 38432], low, '']
+- [[4098, 38672], low, ATI Radeon HD 4200]
+- [[4098, 38674], low, ATI Mobility Radeon HD 4290]
+- [[4098, 38675], low, ATI Mobility Radeon 4100]
+- [[4098, 38676], low, '']
+- [[4098, 38677], low, '']
+- [[4098, 38914], low, '']
+- [[4098, 38915], low, '']
+- [[4098, 38916], low, '']
+- [[4139, 1344], low, '']
+- [[4153, 25381], low, '']
+- [[4153, 25425], low, SiS IGP Graphics family SIS66x/SIS76x & SIS67x]
+- [[4318, 64], low, NVIDIA GeForce 6800 Ultra]
+- [[4318, 65], low, NVIDIA GeForce 6800]
+- [[4318, 66], low, NVIDIA GeForce 6800 LE]
+- [[4318, 68], low, NVIDIA GeForce 6800 XT]
+- [[4318, 69], low, NVIDIA GeForce 6800 GT]
+- [[4318, 71], low, NVIDIA GeForce 6800 GS]
+- [[4318, 72], low, NVIDIA GeForce 6800 XT]
+- [[4318, 144], low, NVIDIA GeForce 7800 GTX]
+- [[4318, 145], low, NVIDIA GeForce 7800 GTX]
+- [[4318, 146], low, NVIDIA GeForce 7800 GT]
+- [[4318, 152], low, NVIDIA GeForce Go 7800]
+- [[4318, 153], low, NVIDIA GeForce Go 7800 GTX]
+- [[4318, 157], low, NVIDIA Quadro FX 4500]
+- [[4318, 192], low, NVIDIA GeForce 6800 GS]
+- [[4318, 193], low, NVIDIA GeForce 6800]
+- [[4318, 194], low, NVIDIA GeForce 6800 LE]
+- [[4318, 195], low, NVIDIA GeForce 6800 XT]
+- [[4318, 200], low, NVIDIA GeForce Go 6800]
+- [[4318, 201], low, NVIDIA GeForce Go 6800 Ultra]
+- [[4318, 204], low, NVIDIA Quadro FX Go 1400]
+- [[4318, 205], low, NVIDIA Quadro FX 3450/4000 SDI]
+- [[4318, 206], low, NVIDIA Quadro FX 1400]
+- [[4318, 241], low, NVIDIA GeForce 6600 GT]
+- [[4318, 242], low, NVIDIA GeForce 6600]
+- [[4318, 243], low, NVIDIA GeForce 6200]
+- [[4318, 244], low, NVIDIA GeForce 6600 LE]
+- [[4318, 245], low, NVIDIA GeForce 7800 GS]
+- [[4318, 246], low, NVIDIA GeForce 6800 GS/XT]
+- [[4318, 248], low, NVIDIA Quadro FX 3400/4400]
+- [[4318, 249], low, NVIDIA GeForce 6800 Series GPU]
+- [[4318, 250], low, NVIDIA GeForce PCX 5750]
+- [[4318, 251], low, NVIDIA GeForce PCX 5900]
+- [[4318, 253], low, NVIDIA Quadro PCI-E Series]
+- [[4318, 254], low, NVIDIA Quadro FX 1300]
+- [[4318, 256], low, NVIDIA GeForce 256]
+- [[4318, 320], low, NVIDIA GeForce 6600 GT]
+- [[4318, 321], low, nVIDIA GeForce 6600 PCI-E Video Adapter]
+- [[4318, 322], low, NVIDIA GeForce 6600 LE]
+- [[4318, 324], low, NVIDIA GeForce Go 6600]
+- [[4318, 325], low, NVIDIA GeForce 6610 XL]
+- [[4318, 326], low, NVIDIA GeForce Go 6200 TE/6600 TE]
+- [[4318, 327], low, NVIDIA GeForce 6700 XL]
+- [[4318, 328], low, NVIDIA GeForce Go 6600]
+- [[4318, 333], low, NVIDIA Quadro FX 550]
+- [[4318, 334], low, NVIDIA Quadro FX 540]
+- [[4318, 335], low, NVIDIA GeForce 6200]
+- [[4318, 352], low, NVIDIA GeForce 6500]
+- [[4318, 353], low, GeForce 6200 TurboCache]
+- [[4318, 354], low, NVIDIA GeForce 6200SE TurboCache(TM)]
+- [[4318, 355], low, NVIDIA GeForce 6200 LE]
+- [[4318, 357], low, NVIDIA Quadro NVS 285]
+- [[4318, 359], low, NVIDIA GeForce Go 6200]
+- [[4318, 360], low, NVIDIA GeForce Go 6400]
+- [[4318, 362], low, NVIDIA GeForce 7100 GS]
+- [[4318, 401], low, NVIDIA GeForce 8800 GTX]
+- [[4318, 403], low, NVIDIA GeForce 8800 GTS]
+- [[4318, 404], low, NVIDIA GeForce 8800 Ultra]
+- [[4318, 413], low, NVIDIA Quadro FX 5600]
+- [[4318, 414], low, NVIDIA Quadro FX 4600]
+- [[4318, 464], low, NVIDIA GeForce 7350 LE]
+- [[4318, 465], low, NVIDIA GeForce 7300 LE]
+- [[4318, 467], low, NVIDIA GeForce 7300 SE/7200 GS]
+- [[4318, 470], low, '']
+- [[4318, 471], low, NVIDIA GeForce Go 7300]
+- [[4318, 472], low, NVIDIA GeForce Go 7400]
+- [[4318, 474], low, '']
+- [[4318, 476], low, NVIDIA Quadro FX 350M]
+- [[4318, 477], low, NVIDIA GeForce 7500 LE]
+- [[4318, 479], low, NVIDIA GeForce 7300 GS]
+- [[4318, 529], low, '']
+- [[4318, 533], low, NVIDIA GeForce 6800 GT]
+- [[4318, 545], low, NVIDIA GeForce 6200]
+- [[4318, 546], low, NVIDIA GeForce 6200 A-LE]
+- [[4318, 576], low, NVIDIA GeForce 6150]
+- [[4318, 577], low, NVIDIA GeForce 6150 LE]
+- [[4318, 578], low, NVIDIA GeForce 6100]
+- [[4318, 580], low, Geforce Go 6150]
+- [[4318, 581], low, NVIDIA Quadro NVS 210S / NVIDIA GeForce 6150LE]
+- [[4318, 583], low, Geforce 6100 Go]
+- [[4318, 595], low, NVIDIA GeForce4 Ti 4200]
+- [[4318, 656], low, NVIDIA GeForce 7900 GTX]
+- [[4318, 657], low, NVIDIA GeForce 7900 GT/GTO]
+- [[4318, 658], low, NVIDIA GeForce 7900 GS]
+- [[4318, 659], low, NVIDIA GeForce 7950 GX2]
+- [[4318, 660], low, NVIDIA GeForce 7950 GX2]
+- [[4318, 661], low, NVIDIA GeForce 7950 GT]
+- [[4318, 663], low, NVIDIA GeForce Go 7950 GTX]
+- [[4318, 664], low, NVIDIA GeForce Go 7900 GS]
+- [[4318, 665], low, NVIDIA GeForce Go 7900 GTX]
+- [[4318, 666], low, '']
+- [[4318, 667], low, '']
+- [[4318, 668], low, NVIDIA Quadro FX 5500]
+- [[4318, 669], low, NVIDIA Quadro FX 3500]
+- [[4318, 670], low, NVIDIA Quadro FX 1500]
+- [[4318, 736], low, NVIDIA GeForce 7600 GT]
+- [[4318, 737], low, NVIDIA GeForce 7600 GS]
+- [[4318, 738], low, NVIDIA GeForce 7300 GT]
+- [[4318, 739], low, NVIDIA GeForce 7900 GS]
+- [[4318, 740], low, NVIDIA GeForce 7950 GT]
+- [[4318, 770], low, NVIDIA GeForce FX 5800]
+- [[4318, 785], low, NVIDIA GeForce FX 5600 Ultra]
+- [[4318, 786], low, NVIDIA GeForce FX 5600]
+- [[4318, 788], low, NVIDIA GeForce FX 5600XT]
+- [[4318, 794], low, NVIDIA GeForce FX Go 5600]
+- [[4318, 800], low, NVIDIA GeForce FX 5200]
+- [[4318, 801], low, NVIDIA GeForce FX 5200 Ultra]
+- [[4318, 802], low, NVIDIA GeForce FX 5200]
+- [[4318, 804], low, NVIDIA GeForce FX Go 5200]
+- [[4318, 806], low, NVIDIA GeForce FX 5500]
+- [[4318, 811], low, NVIDIA Quadro FX 500/FX 600]
+- [[4318, 816], low, NVIDIA GeForce FX 5900 Ultra]
+- [[4318, 817], low, NVIDIA GeForce FX 5900]
+- [[4318, 818], low, NVIDIA GeForce FX 5900XT]
+- [[4318, 819], low, NVIDIA GeForce FX 5950 Ultra]
+- [[4318, 824], low, NVIDIA Quadro FX 3000]
+- [[4318, 833], low, NVIDIA GeForce FX 5700 Ultra]
+- [[4318, 834], low, NVIDIA GeForce FX 5700]
+- [[4318, 835], low, NVIDIA GeForce FX 5700LE]
+- [[4318, 836], low, NVIDIA GeForce FX 5700VE]
+- [[4318, 840], low, NVIDIA GeForce FX Go 5700]
+- [[4318, 912], low, NVIDIA GeForce 7650 GS]
+- [[4318, 913], low, NVIDIA GeForce 7600 GT]
+- [[4318, 914], low, NVIDIA GeForce 7600 GS]
+- [[4318, 915], low, NVIDIA GeForce 7300 GT]
+- [[4318, 916], low, NVIDIA GeForce 7600 LE]
+- [[4318, 917], low, NVIDIA GeForce 7300 GT]
+- [[4318, 918], low, '']
+- [[4318, 919], low, '']
+- [[4318, 920], low, NVIDIA GeForce Go 7600]
+- [[4318, 921], low, '']
+- [[4318, 926], low, NVIDIA Quadro FX 560]
+- [[4318, 976], low, NVIDIA GeForce 6150SE nForce 430]
+- [[4318, 977], low, NVIDIA GeForce 6100 nForce 405]
+- [[4318, 978], low, NVIDIA GeForce 6100 nForce 400]
+- [[4318, 981], low, NVIDIA GeForce 6100 nForce 420]
+- [[4318, 982], low, '']
+- [[4318, 1024], low, NVIDIA GeForce 8600 GTS]
+- [[4318, 1025], low, NVIDIA GeForce 8600 GT]
+- [[4318, 1026], low, NVIDIA GeForce 8600 GT]
+- [[4318, 1027], low, NVIDIA GeForce 8600GS]
+- [[4318, 1028], low, NVIDIA GeForce 8400 GS]
+- [[4318, 1029], low, GeForce 9500m GS]
+- [[4318, 1031], low, NVIDIA GeForce 8600M GT]
+- [[4318, 1032], low, '']
+- [[4318, 1033], low, '']
+- [[4318, 1034], low, NVIDIA Quadro FX 370]
+- [[4318, 1035], low, '']
+- [[4318, 1036], low, Mobile Quadro FX/NVS video card]
+- [[4318, 1037], low, '']
+- [[4318, 1038], low, NVIDIA Quadro FX 570]
+- [[4318, 1039], low, NVIDIA Quadro FX 1700]
+- [[4318, 1040], low, '']
+- [[4318, 1056], low, NVIDIA GeForce 8400 SE]
+- [[4318, 1057], low, NVIDIA GeForce 8500 GT]
+- [[4318, 1058], low, NVIDIA GeForce 8400 GS]
+- [[4318, 1059], low, NVIDIA GeForce 8300 GS]
+- [[4318, 1060], low, NVIDIA GeForce 8400 GS]
+- [[4318, 1061], low, NVIDIA 8600m GS]
+- [[4318, 1062], low, Geforce 8400M GT GPU]
+- [[4318, 1063], low, Geforce 8400M GS]
+- [[4318, 1064], low, NVIDIA GeForce 8400M G]
+- [[4318, 1065], low, nVidia Quadro NVS 135M or Quadro NVS 140M]
+- [[4318, 1066], low, '']
+- [[4318, 1067], low, NVIDIA Quadro NVS 135M]
+- [[4318, 1068], low, NVIDIA GeForce 9400 GT]
+- [[4318, 1069], low, Quadro FX 360 M (Mobile)]
+- [[4318, 1070], low, '']
+- [[4318, 1071], low, NVIDIA Quadro NVS 290]
+- [[4318, 1329], low, NVIDIA GeForce Go 7150M (UMA)]
+- [[4318, 1331], low, nVidia GeForce 7000M / nForce 610M]
+- [[4318, 1338], low, NVIDIA GeForce 7050 PV / NVIDIA nForce 630a]
+- [[4318, 1339], low, NVIDIA GeForce 7050 PV / NVIDIA nForce 630a]
+- [[4318, 1342], low, NVIDIA GeForce 7025 / NVIDIA nForce 630a]
+- [[4318, 1506], low, NVIDIA GeForce GTX 260]
+- [[4318, 1510], low, NVIDIA GeForce GT 240M]
+- [[4318, 1514], low, NVIDIA GeForce GTX 260]
+- [[4318, 1515], low, '']
+- [[4318, 1529], low, NVIDIA Quadro CX]
+- [[4318, 1533], low, NVIDIA Quadro FX 5800]
+- [[4318, 1534], low, NVIDIA Quadro FX 4800]
+- [[4318, 1535], low, '']
+- [[4318, 1536], low, NVIDIA GeForce 8800 GTS 512]
+- [[4318, 1537], low, NVIDIA GeForce 9800 GT]
+- [[4318, 1538], low, NVIDIA GeForce 8800 GT]
+- [[4318, 1539], low, '']
+- [[4318, 1540], low, NVIDIA GeForce 9800 GX2]
+- [[4318, 1542], low, NVIDIA GeForce 8800 GS]
+- [[4318, 1543], low, '']
+- [[4318, 1544], low, NVIDIA Geforce 9800M GTX]
+- [[4318, 1545], low, '']
+- [[4318, 1546], low, '']
+- [[4318, 1547], low, GeForce 9800M GT]
+- [[4318, 1548], low, '']
+- [[4318, 1551], low, '']
+- [[4318, 1552], low, NVIDIA GeForce 9600 GSO]
+- [[4318, 1553], low, NVIDIA GeForce 8800 GT]
+- [[4318, 1554], low, NVIDIA GeForce 9800 GTX/9800 GTX+]
+- [[4318, 1557], low, GeForce GTS 250]
+- [[4318, 1559], low, '']
+- [[4318, 1560], low, '']
+- [[4318, 1562], low, NVIDIA Quadro FX 3700]
+- [[4318, 1564], low, '']
+- [[4318, 1565], low, '']
+- [[4318, 1566], low, '']
+- [[4318, 1567], low, '']
+- [[4318, 1569], low, '']
+- [[4318, 1570], low, NVIDIA GeForce 9600 GT]
+- [[4318, 1571], low, NVIDIA GeForce 9600 GS]
+- [[4318, 1572], low, '']
+- [[4318, 1573], low, NVIDIA GeForce 9600 GSO 512]
+- [[4318, 1574], low, '']
+- [[4318, 1575], low, '']
+- [[4318, 1576], low, '']
+- [[4318, 1578], low, '']
+- [[4318, 1579], low, '']
+- [[4318, 1580], low, G-Force 9800M GTS]
+- [[4318, 1582], low, NVIDIA GeForce 9600 GT]
+- [[4318, 1583], low, '']
+- [[4318, 1585], low, '']
+- [[4318, 1587], low, '']
+- [[4318, 1592], low, NVIDIA Quadro FX 1800]
+- [[4318, 1594], low, '']
+- [[4318, 1600], low, NVIDIA GeForce 9500 GT]
+- [[4318, 1601], low, NVIDIA GeForce 9400 GT]
+- [[4318, 1603], low, NVIDIA GeForce 9500 GT]
+- [[4318, 1604], low, NVIDIA GeForce 9500 GS]
+- [[4318, 1605], low, NVIDIA GeForce 9500 GS]
+- [[4318, 1606], low, Geforce 9500GS]
+- [[4318, 1607], low, '']
+- [[4318, 1608], low, NVIDIA GeForce 9600M GS]
+- [[4318, 1609], low, nVidia GeForce 9600M GT]
+- [[4318, 1610], low, GeForce 9700M GT]
+- [[4318, 1611], low, '']
+- [[4318, 1612], low, '']
+- [[4318, 1614], low, '']
+- [[4318, 1617], low, '']
+- [[4318, 1618], low, Ge Force GT 130M]
+- [[4318, 1619], low, '']
+- [[4318, 1620], low, '']
+- [[4318, 1621], low, '']
+- [[4318, 1624], low, Quadro FX]
+- [[4318, 1625], low, '']
+- [[4318, 1626], low, '']
+- [[4318, 1627], low, '']
+- [[4318, 1628], low, Quadro FX 770M]
+- [[4318, 1738], low, '']
+- [[4318, 1752], low, '']
+- [[4318, 1753], low, '']
+- [[4318, 1754], low, '']
+- [[4318, 1757], low, nVidia Quadro 4000]
+- [[4318, 1760], low, NVIDIA GeForce 9300 GE]
+- [[4318, 1761], low, NVIDIA GeForce 9300 GS]
+- [[4318, 1762], low, NVIDIA GeForce 8400]
+- [[4318, 1764], low, NVIDIA GeForce 8400 GS]
+- [[4318, 1765], low, '']
+- [[4318, 1766], low, nVidia G100]
+- [[4318, 1768], low, '']
+- [[4318, 1769], low, NVIDIA GeForce 9300M GS]
+- [[4318, 1770], low, nvidia quadro nvs 150m]
+- [[4318, 1771], low, Quadro NVS 160M]
+- [[4318, 1772], low, Nvidia Corp]
+- [[4318, 1773], low, '']
+- [[4318, 1774], low, '']
+- [[4318, 1775], low, NVIDIA GeForce G 103M]
+- [[4318, 1777], low, '']
+- [[4318, 1784], low, NVIDIA Quadro NVS 420]
+- [[4318, 1785], low, NVIDIA Quadro FX 370 LP]
+- [[4318, 1786], low, NVIDIA Quadro NVS 450]
+- [[4318, 1787], low, '']
+- [[4318, 1789], low, NVidia NVS 295]
+- [[4318, 2016], low, NVIDIA GeForce 7150 / NVIDIA nForce 630i]
+- [[4318, 2017], low, NVIDIA GeForce 7100 / NVIDIA nForce 630i]
+- [[4318, 2018], low, NVIDIA GeForce 7050 / NVIDIA nForce 630i]
+- [[4318, 2019], low, NVIDIA GeForce 7050 / NVIDIA nForce 610i]
+- [[4318, 2021], low, NVIDIA GeForce 7050 / NVIDIA nForce 620i]
+- [[4318, 2116], low, '']
+- [[4318, 2117], low, '']
+- [[4318, 2119], low, '']
+- [[4318, 2120], low, NVIDIA GeForce 8300]
+- [[4318, 2121], low, NVIDIA GeForce 8200]
+- [[4318, 2123], low, NVIDIA GeForce 8200]
+- [[4318, 2124], low, NVIDIA nForce 780a SLI]
+- [[4318, 2125], low, NVIDIA nForce 750a SLI]
+- [[4318, 2127], low, NVIDIA GeForce 8100 / nForce 720a]
+- [[4318, 2144], low, NVIDIA GeForce 9300]
+- [[4318, 2145], low, NVIDIA GeForce 9400]
+- [[4318, 2146], low, '']
+- [[4318, 2147], low, NVIDIA GeForce 9400M]
+- [[4318, 2150], low, '']
+- [[4318, 2151], low, '']
+- [[4318, 2152], low, NVIDIA nForce 760i SLI]
+- [[4318, 2153], low, '']
+- [[4318, 2154], low, NVIDIA GeForce 9400]
+- [[4318, 2156], low, NVIDIA GeForce 9300 / nForce 730i]
+- [[4318, 2157], low, NVIDIA GeForce 9200]
+- [[4318, 2158], low, '']
+- [[4318, 2159], low, GeForce 8200M G]
+- [[4318, 2160], low, '']
+- [[4318, 2161], low, NVIDIA GeForce 9200]
+- [[4318, 2163], low, '']
+- [[4318, 2164], low, '']
+- [[4318, 2166], low, '']
+- [[4318, 2170], low, '']
+- [[4318, 2173], low, '']
+- [[4318, 2174], low, '']
+- [[4318, 2175], low, '']
+- [[4318, 2208], low, '']
+- [[4318, 2210], low, '']
+- [[4318, 2211], low, '']
+- [[4318, 2212], low, '']
+- [[4318, 2592], low, NVIDIA GeForce GT 220]
+- [[4318, 2594], low, GeForce 315]
+- [[4318, 2595], low, '']
+- [[4318, 2600], low, '']
+- [[4318, 2601], low, '']
+- [[4318, 2602], low, '']
+- [[4318, 2603], low, '']
+- [[4318, 2604], low, '']
+- [[4318, 2605], low, '']
+- [[4318, 2612], low, '']
+- [[4318, 2613], low, '']
+- [[4318, 2620], low, '']
+- [[4318, 2656], low, '']
+- [[4318, 2658], low, '']
+- [[4318, 2659], low, '']
+- [[4318, 2660], low, '']
+- [[4318, 2661], low, Nvidia 200 Series]
+- [[4318, 2662], low, '']
+- [[4318, 2663], low, '']
+- [[4318, 2664], low, '']
+- [[4318, 2665], low, '']
+- [[4318, 2666], low, '']
+- [[4318, 2668], low, '']
+- [[4318, 2670], low, '']
+- [[4318, 2671], low, '']
+- [[4318, 2672], low, '']
+- [[4318, 2674], low, '']
+- [[4318, 2676], low, '']
+- [[4318, 2677], low, GeForce 310M]
+- [[4318, 2678], low, '']
+- [[4318, 2680], low, '']
+- [[4318, 2682], low, '']
+- [[4318, 2684], low, '']
+- [[4318, 3232], low, '']
+- [[4318, 3234], low, '']
+- [[4318, 3235], low, GeForce GT 240]
+- [[4318, 3236], low, '']
+- [[4318, 3237], low, '']
+- [[4318, 3241], low, '']
+- [[4318, 3244], low, '']
+- [[4318, 3247], low, '']
+- [[4318, 3248], low, '']
+- [[4318, 3249], low, '']
+- [[4318, 3260], low, '']
+- [[4318, 3520], low, '']
+- [[4318, 3524], low, NVIDIA GeForce GTS 450]
+- [[4318, 3525], low, '']
+- [[4318, 3526], low, '']
+- [[4318, 3533], low, '']
+- [[4318, 3537], low, '']
+- [[4318, 3538], low, '']
+- [[4318, 3539], low, '']
+- [[4318, 3542], low, '']
+- [[4318, 3544], low, '']
+- [[4318, 3546], low, '']
+- [[4318, 3552], low, '']
+- [[4318, 3553], low, '']
+- [[4318, 3554], low, '']
+- [[4318, 3564], low, '']
+- [[4318, 3566], low, '']
+- [[4318, 3568], low, '']
+- [[4318, 3569], low, '']
+- [[4318, 3570], low, '']
+- [[4318, 3571], low, '']
+- [[4318, 3572], low, '']
+- [[4318, 3573], low, '']
+- [[4318, 3576], low, '']
+- [[4318, 3619], low, '']
+- [[4318, 3620], low, '']
+- [[4318, 3632], low, '']
+- [[4318, 3633], low, '']
+- [[4318, 4160], low, '']
+- [[4318, 4182], low, '']
+- [[4318, 4183], low, '']
+- [[4318, 4232], low, '']
+- [[4318, 4291], low, '']
+- [[4318, 4293], low, '']
+- [[4318, 4312], low, '']
+- [[4318, 4608], low, '']
+- [[4318, 4676], low, '']
+- [[4318, 4677], low, '']
+- [[4358, 12848], low, Integrated Graphics]
+- [[4358, 13169], low, VIA Chrome9 HC IGP]
+- [[5549, 1029], low, NVIDIA]
+- [[6840, 16389], low, '']
+- [[21299, 36933], low, '']
+- [[32902, 66], low, Intel Q57/H55 Clarkdale (Onboard on D2912-A1x)]
+- [[32902, 70], low, Intel Graphics Media Accelerator HD]
+- [[32902, 258], low, '']
+- [[32902, 274], low, '']
+- [[32902, 278], low, '']
+- [[32902, 290], low, '']
+- [[32902, 294], low, '']
+- [[32902, 338], low, Intel HD Graphics 4000]
+- [[32902, 354], low, Intel HD Graphics 4000]
+- [[32902, 358], low, Intel HD Graphics 4000]
+- [[32902, 1042], low, Intel Iris Pro]
+- [[32902, 2598], low, Intel HD Graphics 5000]
+- [[32902, 2606], low, Intel Iris]
+- [[32902, 5670], low, Intel HD Graphics 6000]
+- [[32902, 5675], low, Intel Iris Graphics 6100]
+- [[32902, 9586], low, Integrated Graphics Device]
+- [[32902, 9602], low, 82915g/gv/910gl Express Chipset Family]
+- [[32902, 9618], low, Graphic controller family]
+- [[32902, 10098], low, Chipset Intel 82945G Express]
+- [[32902, 10146], low, Mobile Intel(R) 945 Express Chipset Family]
+- [[32902, 10158], low, Mobile Intel(R) 945 Express Chipset Family]
+- [[32902, 10610], low, Onboard Video Device for 82946GZ chips]
+- [[32902, 10626], low, '']
+- [[32902, 10642], low, Intel(R) Express Chipset video]
+- [[32902, 10658], low, '']
+- [[32902, 10674], low, Intel(R) Q35 Express Chipset Family]
+- [[32902, 10690], low, Intel(R) G33 chipset GMA3100 video]
+- [[32902, 10706], low, '']
+- [[32902, 10754], low, "Intel GM965, Intel X3100"]
+- [[32902, 10770], low, Mobile Intel(R) 965 Express Chipset Family]
+- [[32902, 10818], low, Intel Mobile Graphic]
+- [[32902, 11794], low, '']
+- [[32902, 11810], low, '']
+- [[32902, 11826], low, Intel G41 express graphics]
+- [[32902, 2598], low, Intel HD Graphics 5000]
+- [[32902, 33032], low, Intel(R) Graphics Media Accelerator 500]
+- [[32902, 34752], low, Intel UHD Graphics 617]
+- [[32902, 40961], low, Intel Media Accelerator 3150]
+- [[32902, 40977], low, Intel(R) Graphics Media Accelerator 3150]
+- [[65535, 65535], low, '']This is another test resource

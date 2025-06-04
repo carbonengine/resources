@@ -1,0 +1,25 @@
+TLE
+# Take control of the destiny that is rightfully yours
+0:16.75 - 0:4.394
+"G_EI_15_05"
+
+A_CHANGE_MADE_FOR_PATCHING# Format for the file is:
+# - [[vendor ID, device ID], class, comments]
+# where class is either high, medium or low; comments are ignored by the client.
+# Order or records is not important for the client, but let's keep it sorted for the sake of human beings.
+
+# High
+
+# Medium
+- [[4098, 26393], medium, AMD Radeon HD 6950]
+- [[4098, 26424], medium, AMD Radeon HD 6800 Series]
+- [[4098, 26425], medium, AMD Radeon HD 6800 Series]
+- [[4098, 26776], medium, ATI Radeon HD 5800 Series]
+- [[4098, 26777], medium, ATI Radeon HD 5800 Series]
+- [[4098, 26780], medium, ATI Radeon HD 5970 Series]
+- [[4098, 26782], medium, Radeon HD 5800 Series]
+- [[4098, 26784], medium, ATI Mobility Radeon HD 5800 Series]
+- [[4098, 26785], medium, ATI Mobility Radeon HD 5800 Series]
+- [[4098, 26808], medium, ATI Radeon HD 5700 Series]
+- [[4098, 26814], medium, ATI Radeon HD 5700 Series]
+- [[4318, 1504]

@@ -1,0 +1,15 @@
+{
+  "default-registry": {
+    "kind": "git",
+    "baseline": "bea476a80218a581bcb5318595849520217c825e",
+    "repository": "https://github.com/microsoft/vcpkg.git"
+  },
+  "registries": [
+    {
+      "kind": "git",
+      "repository": "git@github.com:ccpgames/carbon-vcpkg-registry.git",
+      "baseline": "c276548bb7c5aee07311c8e00ff9d45323b00d76",
+      "packages": ["carbon-*", "bsdiff-drake127"]
+    }
+  ]
+}

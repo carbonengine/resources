@@ -28,7 +28,6 @@ __pycache__/
 ### CMake ###
 # User generated local cmake configuration
 CMakeUserPresets.json
-vcpkg-configuration.json
 
 
 ### IDE ###

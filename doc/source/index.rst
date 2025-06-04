@@ -1,28 +1,23 @@
-project_name Documentation
-==========================
+carbon-resources Documentation
+==============================
 
-*project_name* is generated from `carbon-template`.
+*carbon-resources* is a TODO
 
-..
-    Top-level table of contents
-    List documentation sources below
+See :doc:`installation` section for further installation information.
+
+Contents
+--------
 
 .. toctree::
-    :maxdepth: 1
-    :caption: Contents
+   :maxdepth: 1
 
-.. hint::
-    This project supports documentation authoring using *reStructuredText* and the *MyST* markdown language.
+   installation
+   api
+   cli
+   guides
+   examples
+   designDocuments
 
-    Python docstrings are pulled in automatically using *autodoc*
+.. note::
 
-.. seealso::
-
-    `reST usages`_
-        For authoring documentation using *reStructuredText*.
-
-    `MyST with Sphinx`_
-        For authoring documentation using *MyST* flavored markdown.
-
-.. _reST usages: https://www.sphinx-doc.org/en/master/usage/restructuredtext
-.. _MyST with Sphinx: https://myst-parser.readthedocs.io/en/v0.17.1/sphinx/index.html
+   This project is under active development.

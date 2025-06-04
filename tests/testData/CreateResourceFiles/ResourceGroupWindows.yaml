@@ -1,0 +1,27 @@
+Version: 0.1.0
+Type: ResourceGroup
+NumberOfResources: 3
+TotalResourcesSizeCompressed: 99
+TotalResourcesSizeUnCompressed: 39
+Resources:
+  - RelativePath: FileA.txt
+    Type: Resource
+    Location: b0/b07d8f2846fa3b42_5d0c6c965f253b05044b1d87de1fde5d
+    Checksum: 5d0c6c965f253b05044b1d87de1fde5d
+    UncompressedSize: 13
+    CompressedSize: 33
+    BinaryOperation: 33206
+  - RelativePath: FileB.txt
+    Type: Resource
+    Location: 2f/2fac434234a6f435_57a310234d1cb4a773d91daf3e85091b
+    Checksum: 57a310234d1cb4a773d91daf3e85091b
+    UncompressedSize: 13
+    CompressedSize: 33
+    BinaryOperation: 33206
+  - RelativePath: FileC.txt
+    Type: Resource
+    Location: b1/b1999339f17024f0_dd8183e495550bef57503b89e4c4aae4
+    Checksum: dd8183e495550bef57503b89e4c4aae4
+    UncompressedSize: 13
+    CompressedSize: 33
+    BinaryOperation: 33206

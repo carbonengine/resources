@@ -1,0 +1,65 @@
+ 0:2.03
+"G_EI_05_05"
+
+SUBTITLE
+# to breed the cruelest nightmare of all
+0:3.36 - 0:2.11
+"G_EI_05_06"
+
+SUBTITLE
+# The wormhole leading to New Eden collapsed
+0:7.6 - 0:2.96
+"G_EI_06_01"
+
+SUBTITLE
+# severing young colonies from the home worlds which sustained them
+0:11.19 - 0:3.86
+"G_EI_06_02"
+
+SUBTITLE
+# It was the beginning of a dark age
+0:16.51 - 0:2.35
+"G_EI_06_03"
+
+SUBTITLE
+# that would erase civilization as it was known to be
+0:18.86 - 0:3.45
+"G_EI_06_04"
+
+
+
+
+SEGMENT
+2:14.03 - 0:19.9
+"Snow(Scene 7)"
+
+TRANSFORM
+0:0.0 - 0:23.9
+"Scene 7"
+
+AUDIO
+0:0.0 - 0:23.9
+"res:/sound/music/intro/s007.ogg"
+
+AUDIO
+0:1.88 - 0:9.8
+"res:/sound/music/intro/07_01.ogg"
+
+AUDIO
+0:12.15 - 0:8.11
+"res:/sound/music/intro/07_02.ogg"
+
+SUBTITLE
+# As the accumulated knowledge of millennia slowly eroded
+0:1.91 - 0:3.18
+"G_EI_07_01"
+
+SUBTITLE
+# the unfinished worlds of EVE became the graveyards of millions
+0:5.69 - 0:3.52
+"G_EI_07_02"
+
+SUBTITLE
+# On the few planets that could sustain life
+0:12.15 - 0:2.51
+"G_EI_07_03
