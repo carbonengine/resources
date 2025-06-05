@@ -152,7 +152,7 @@ namespace CarbonResources
     		out << YAML::Value << YAML::BeginSeq;
     		for( auto path : *m_removedResources.GetValue() )
     		{
-    			out << path;
+    			out << path.string();
     		}
     		out << YAML::EndSeq;
     	}
