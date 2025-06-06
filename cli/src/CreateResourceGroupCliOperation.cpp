@@ -76,7 +76,7 @@ bool CreateResourceGroupCliOperation::Execute( std::string& returnErrorMessage )
 
 void CreateResourceGroupCliOperation::PrintStartBanner( const std::filesystem::path& inputDirectory, const std::filesystem::path& outputFile, const std::string& version, const std::string& resourcePrefix ) const
 {
-	if( s_verbosityLevel == CarbonResources::STATUS_LEVEL::OFF )
+	if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
 	{
 		return;
 	}
@@ -113,7 +113,7 @@ bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem
 
     if( createResourceGroupParams.statusCallback )
 	{
-		createResourceGroupParams.statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Creating Resource Group from directory" );
+		createResourceGroupParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Resource Group from directory" );
 	}
 
 	CarbonResources::Result createFromDirectoryResult = resourceGroup.CreateFromDirectory( createResourceGroupParams );
@@ -135,7 +135,7 @@ bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem
 
     if( exportParams.statusCallback )
 	{
-		exportParams.statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 50, "Exporting Resource Group to file." );
+		exportParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 50, "Exporting Resource Group to file." );
 	}
 
 	CarbonResources::Result exportToFileResult = resourceGroup.ExportToFile( exportParams );
@@ -149,7 +149,7 @@ bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem
 
     if( exportParams.statusCallback )
 	{
-		exportParams.statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Resource Group successfully created from directory." );
+		exportParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Resource Group successfully created from directory." );
 	}
 
 	return true;

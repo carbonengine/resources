@@ -53,7 +53,7 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
 
 	AddArgument( m_patchResourceGroupDestinationBasePathArgumentId, "Represents the base path where the patch ResourceGroup will be saved.", false, false, defaultParams.resourcePatchResourceGroupDestinationSettings.basePath.string() );
 
-    AddArgument( m_patchFileRelativePathPrefixArgumentId, "Relative path prefix for produced patch binaries. Default is “Patches/Patch” which will produce patches such as Patches/Patch.1 …", false, false, defaultParams.patchFileRelativePathPrefix.string() );
+    AddArgument( m_patchFileRelativePathPrefixArgumentId, "Relative path prefix for produced patch binaries. Default is 'Patches/Patch' which will produce patches such as Patches/Patch.1 ...", false, false, defaultParams.patchFileRelativePathPrefix.string() );
 
     AddArgument( m_maxInputChunkSizeArgumentId, "Files are processed in chunks, maxInputFileChunkSize indicate the size of this chunk. Files smaller than chunk will be processed in one pass.", false, false, SizeToString( defaultParams.maxInputFileChunkSize ) );
 
@@ -168,7 +168,7 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 
 	createPatchParams.downloadRetrySeconds = std::chrono::seconds( retrySeconds );
 
-    if( s_verbosityLevel == CarbonResources::STATUS_LEVEL::OFF )
+    if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
     {
 		PrintStartBanner( previousResourceGroupParams, nextResourceGroupParams, createPatchParams );
     }
@@ -235,7 +235,7 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 	// Previous ResourceGroup
 	if( createPatchParams.statusCallback )
 	{
-		createPatchParams.statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Loading previous resource group." );
+		createPatchParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Loading previous resource group." );
 	}
 
 	CarbonResources::ResourceGroup resourceGroupPrevious;
@@ -254,7 +254,7 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 	// Latest ResourceGroup
 	if( createPatchParams.statusCallback )
 	{
-		createPatchParams.statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 50, "Loading latest resource group." );
+		createPatchParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 50, "Loading latest resource group." );
 	}
 
 	CarbonResources::ResourceGroup resourceGroupLatest;
@@ -275,7 +275,7 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
     // Create Patch
 	if( createPatchParams.statusCallback )
 	{
-		createPatchParams.statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 75, "Creating Patch." );
+		createPatchParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 75, "Creating Patch." );
 	}
 
 	CarbonResources::Result createPatchResult = resourceGroupLatest.CreatePatch( createPatchParams );
@@ -289,7 +289,7 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 
     if( createPatchParams.statusCallback )
 	{
-		createPatchParams.statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Patch created succesfully." );
+		createPatchParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Patch created succesfully." );
 	}
 
     return true;

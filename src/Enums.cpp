@@ -2,10 +2,10 @@
 
 namespace CarbonResources
 {
-    bool resultToString( Result result, std::string& output )
+    bool ResultTypeToString( ResultType resultType, std::string& output )
     {
 
-	    switch( result.type )
+	    switch( resultType )
 	    {
 	    case ResultType::SUCCESS:
 		    output = "Operation was successful.";

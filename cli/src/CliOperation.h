@@ -57,9 +57,9 @@ public:
 
     std::string GetDescription() const;
 
-    std::string VerbosityLevelToString(CarbonResources::STATUS_LEVEL level) const;
+    std::string VerbosityLevelToString(CarbonResources::StatusLevel level) const;
 
-    static std::string GetVerbosityLevelIndent( CarbonResources::STATUS_LEVEL level );
+    static std::string GetVerbosityLevelIndent( CarbonResources::StatusLevel level );
 
 protected:
 
@@ -97,7 +97,7 @@ protected:
 
 private:
 
-    static void StatusUpdate( CarbonResources::STATUS_LEVEL level, CarbonResources::STATUS_PROGRESS_TYPE type, int progress, const std::string& info );
+    static void StatusUpdate( CarbonResources::StatusLevel level, CarbonResources::StatusProgressType type, int progress, const std::string& info );
 
     static char GetBusyChar();
 
@@ -105,7 +105,7 @@ private:
 
 protected:
 
-	static inline CarbonResources::STATUS_LEVEL s_verbosityLevel = CarbonResources::STATUS_LEVEL::OFF;
+	static inline CarbonResources::StatusLevel s_verbosityLevel = CarbonResources::StatusLevel::OFF;
 
 private:
 	std::string m_verbosityLevelId;

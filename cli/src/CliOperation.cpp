@@ -107,7 +107,7 @@ void CliOperation::PrintCarbonResourcesError( CarbonResources::Result result ) c
 {
 	std::string errorMessage;
 
-	bool ret = CarbonResources::resultToString( result, errorMessage );
+	bool ret = CarbonResources::ResultTypeToString( result.type, errorMessage );
 
 	std::cout << errorMessage << std::endl;
 
@@ -165,10 +165,10 @@ char CliOperation::GetBusyChar()
 
 CarbonResources::StatusCallback CliOperation::GetStatusCallback() const
 {
-	return s_verbosityLevel != CarbonResources::STATUS_LEVEL::OFF ? &StatusUpdate : nullptr;
+	return s_verbosityLevel != CarbonResources::StatusLevel::OFF ? &StatusUpdate : nullptr;
 }
 
-void CliOperation::StatusUpdate( CarbonResources::STATUS_LEVEL level, CarbonResources::STATUS_PROGRESS_TYPE type, int progress, const std::string& info )
+void CliOperation::StatusUpdate( CarbonResources::StatusLevel level, CarbonResources::StatusProgressType type, int progress, const std::string& info )
 {
     // No update is shown for status updates for layers greater than the verbosity level
 	if( level > s_verbosityLevel ) 
@@ -190,7 +190,7 @@ void CliOperation::StatusUpdate( CarbonResources::STATUS_LEVEL level, CarbonReso
 
         // If progress is unbounded then show busy
         // Else print percentage progress
-        if (type == CarbonResources::STATUS_PROGRESS_TYPE::UNBOUNDED)
+        if (type == CarbonResources::StatusProgressType::UNBOUNDED)
         {
 			ss << GetBusyChar();
         }
@@ -258,20 +258,20 @@ std::string CliOperation::GetDescription() const
 	return m_description;
 }
 
-std::string CliOperation::VerbosityLevelToString( CarbonResources::STATUS_LEVEL level ) const
+std::string CliOperation::VerbosityLevelToString( CarbonResources::StatusLevel level ) const
 {
     switch (level)
     {
-	case CarbonResources::STATUS_LEVEL::OFF:
+	case CarbonResources::StatusLevel::OFF:
 		return "0 - (Off)";
 
-	case CarbonResources::STATUS_LEVEL::OVERVIEW:
+	case CarbonResources::StatusLevel::OVERVIEW:
 		return "1 - (Overview)";
 
-	case CarbonResources::STATUS_LEVEL::PROCEDURE:
+	case CarbonResources::StatusLevel::PROCEDURE:
 		return "2 - (Procedure)";
 
-	case CarbonResources::STATUS_LEVEL::DETAIL:
+	case CarbonResources::StatusLevel::DETAIL:
 		return "3 - (Detail)";
 
 	default:
@@ -279,20 +279,20 @@ std::string CliOperation::VerbosityLevelToString( CarbonResources::STATUS_LEVEL 
     }
 }
 
-std::string CliOperation::GetVerbosityLevelIndent(CarbonResources::STATUS_LEVEL level)
+std::string CliOperation::GetVerbosityLevelIndent(CarbonResources::StatusLevel level)
 {
 	switch( level )
 	{
-	case CarbonResources::STATUS_LEVEL::OFF:
+	case CarbonResources::StatusLevel::OFF:
 		return "";
 
-	case CarbonResources::STATUS_LEVEL::OVERVIEW:
+	case CarbonResources::StatusLevel::OVERVIEW:
 		return "";
 
-	case CarbonResources::STATUS_LEVEL::PROCEDURE:
+	case CarbonResources::StatusLevel::PROCEDURE:
 		return "\t";
 
-	case CarbonResources::STATUS_LEVEL::DETAIL:
+	case CarbonResources::StatusLevel::DETAIL:
 		return "\t\t";
 
 	default:
@@ -454,19 +454,19 @@ bool CliOperation::SetVerbosityLevel()
 
     if( verbosityLevelString == "0" )
     {
-		s_verbosityLevel = CarbonResources::STATUS_LEVEL::OFF;
+		s_verbosityLevel = CarbonResources::StatusLevel::OFF;
     }
 	else if( verbosityLevelString == "1" )
     {
-		s_verbosityLevel = CarbonResources::STATUS_LEVEL::OVERVIEW;
+		s_verbosityLevel = CarbonResources::StatusLevel::OVERVIEW;
     }
 	else if( verbosityLevelString == "2" )
 	{
-		s_verbosityLevel = CarbonResources::STATUS_LEVEL::PROCEDURE;
+		s_verbosityLevel = CarbonResources::StatusLevel::PROCEDURE;
 	}
 	else if( verbosityLevelString == "3" )
 	{
-		s_verbosityLevel = CarbonResources::STATUS_LEVEL::DETAIL;
+		s_verbosityLevel = CarbonResources::StatusLevel::DETAIL;
 	}
     else
     {

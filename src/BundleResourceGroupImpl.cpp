@@ -43,7 +43,7 @@ namespace CarbonResources
     {
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Unpacking" );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Unpacking" );
 		}
 
 		ResourceGroupInfo* resourceGroupResource = m_resourceGroupParameter.GetValue();
@@ -81,7 +81,7 @@ namespace CarbonResources
 
         if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 20, "Rebuilding resources." );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 20, "Rebuilding resources." );
 		}
 
         // Reconstitute the resources in the bundle
@@ -103,7 +103,7 @@ namespace CarbonResources
 
                 std::string message = "Rebuilding: " + relativePath.string();
 
-				params.statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, percentage, message );
+				params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentage, message );
 
                 numProcessed++;
 			}

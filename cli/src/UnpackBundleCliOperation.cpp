@@ -81,7 +81,7 @@ bool UnpackBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 
 void UnpackBundleCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParams, const CarbonResources::BundleUnpackParams& unpackParams ) const
 {
-	if( s_verbosityLevel == CarbonResources::STATUS_LEVEL::OFF )
+	if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
 	{
 		return;
 	}
@@ -105,7 +105,7 @@ bool UnpackBundleCliOperation::Unpack( CarbonResources::ResourceGroupImportFromF
 
     if( statusCallback )
 	{
-		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Unpacking Bundle." );
+		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Unpacking Bundle." );
 	}
 
 	// Load the bundle file
@@ -120,7 +120,7 @@ bool UnpackBundleCliOperation::Unpack( CarbonResources::ResourceGroupImportFromF
 
     if( statusCallback )
 	{
-		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 50, "Unpacking" );
+		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 50, "Unpacking" );
 	}
 
     unpackParams.statusCallback = statusCallback;
@@ -134,7 +134,7 @@ bool UnpackBundleCliOperation::Unpack( CarbonResources::ResourceGroupImportFromF
 
     if( statusCallback )
 	{
-		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Successfully unpacked Bundle." );
+		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Successfully unpacked Bundle." );
 	}
 
 	return true;

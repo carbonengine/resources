@@ -3,7 +3,7 @@ BundleResourceGroup
 
 The BundleResourceGroup contains resources specifically of chunk type.
 
-See BundleResourceGroup file specification for more details.
+See :doc:`../../DesignDocuments/resourceGroupFileFormat` file specification for more details.
 
 .. doxygenclass:: CarbonResources::BundleResourceGroup
     :members:
@@ -11,5 +11,5 @@ See BundleResourceGroup file specification for more details.
 Input Parameters
 ----------------
 
-
-    
+.. doxygenstruct:: CarbonResources::BundleUnpackParams
+    :members:

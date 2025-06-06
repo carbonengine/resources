@@ -30,28 +30,45 @@
 namespace CarbonResources
 {
 
-    // TODO doxygen documentation
-    enum class STATUS_LEVEL
+    /** @enum StatusLevel
+    *  @brief Reports the granularity level of the reported update.
+    *  @var StatusLevel::OFF
+    *  No status level specified.
+    *  @var StatusLevel::OVERVIEW
+    *  Highest level status update
+    *  @var StatusLevel::PROCEDURE
+    *  Mid level status update
+    *  @var StatusLevel::DETAIL
+    *  Low level status update
+    */
+    enum class StatusLevel
     {
         OFF,
-
 	    OVERVIEW,
-
 	    PROCEDURE,
-
 	    DETAIL,
     };
 
-    // TODO doxygen documentation
-	enum class STATUS_PROGRESS_TYPE
+    /** @enum StatusProgressType
+    *  @brief Type of progress reported in callback
+    *  @var StatusProgressType::UNBOUNDED
+    *  Status update with unbounded progress. When set the progress integer doesn't report progress.
+    *  @var StatusProgressType::PERCENTAGE
+    *  Status update with accoumpanying percentage progress. When set the progress integer reports percentage complete.
+    */
+	enum class StatusProgressType
 	{
 		UNBOUNDED,
-
 		PERCENTAGE,
 	};
 
-    /** Status Callback function signature. */
-    using StatusCallback = std::function<void( STATUS_LEVEL, STATUS_PROGRESS_TYPE, unsigned int, const std::string& )>;
+    /** Status Callback function signature.
+    * @param statusLevel The status granularity level for the update.
+    * @param statusProgressType Type of progress update to expect in update. Affects how progress parameter may be interpreted.
+    * @param progress Progress, format is inferred from statusProgressType.
+    * @param info Update message string.
+    */
+    using StatusCallback = std::function<void( StatusLevel statusLevel, StatusProgressType statusProgressType, unsigned int progress, const std::string& info )>;
 
     /**
     * @enum CarbonResources::ResultType
@@ -114,6 +131,8 @@ namespace CarbonResources
     * Supplied input directory doesn't exist. Validate parameter inputs.
 	* @var RESOURCE_TYPE_MISSMATCH
     * Resource parameters were attempted to be set by a resource of a different type. This is an internal library error which shouldn't be encountered. If you encounter this error contact API addministrators.
+    * @var MALFORMED_RESOURCE_GROUP
+    * Resource group provided appears malformed.
     */
     enum class ResultType
     {
@@ -151,10 +170,10 @@ namespace CarbonResources
     };
 
     /** @struct Result
-    *  @brief Represents Version information. Version follows semantic versioning paradigm.
+    *  @brief Return structure for carbon-resources operations
     *  @var Result::type
     *  Type of result returned
-    *  @var Version::info
+    *  @var Result::info
     *  Optional further information on the return
     */
     struct API Result
@@ -164,8 +183,11 @@ namespace CarbonResources
 		std::string info = "";
     };
 	
-    //TODO doxy string
-	bool API resultToString( Result result, std::string& output );
+    /** Converts ResultType to string 
+    * @param resultType Result type to be converted.
+    * @param output Output to string conversion.
+    */
+	bool API ResultTypeToString( ResultType resultType, std::string& output );
 
     /** @enum ResourceSourceType
     *  @brief Parameters to represent resource source location type

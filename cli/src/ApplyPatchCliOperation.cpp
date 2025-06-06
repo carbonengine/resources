@@ -134,7 +134,7 @@ bool ApplyPatchCliOperation::Execute( std::string& returnErrorMessage ) const
 
 void ApplyPatchCliOperation::PrintStartBanner(const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams) const
 {
-	if( s_verbosityLevel == CarbonResources::STATUS_LEVEL::OFF )
+	if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
 	{
 		return;
 	}
@@ -162,7 +162,7 @@ bool ApplyPatchCliOperation::ApplyPatch(CarbonResources::ResourceGroupImportFrom
 
 	if( statusCallback )
 	{
-		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Applying Patch." );
+		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Applying Patch." );
 	}
 
 	// Load the patch file
@@ -177,7 +177,7 @@ bool ApplyPatchCliOperation::ApplyPatch(CarbonResources::ResourceGroupImportFrom
 
     if( statusCallback )
 	{
-		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 20, "Applying patches from resource group" );
+		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 20, "Applying patches from resource group" );
 	}
 
     patchApplyParams.statusCallback = statusCallback;
@@ -188,14 +188,14 @@ bool ApplyPatchCliOperation::ApplyPatch(CarbonResources::ResourceGroupImportFrom
     if (applyPatchResult.type != CarbonResources::ResultType::SUCCESS)
     {
     	std::string out;
-    	CarbonResources::resultToString( applyPatchResult, out );
+    	CarbonResources::ResultTypeToString( applyPatchResult.type, out );
     	std::cerr << "Failed to apply patch: " << out << std::endl;
     	exit(1);
     }
 
     if( statusCallback )
 	{
-		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Successfully applied patch" );
+		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Successfully applied patch" );
 	}
     
 	return true;

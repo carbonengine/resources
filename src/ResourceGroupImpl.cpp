@@ -45,7 +45,7 @@ namespace CarbonResources
 		// Update status
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Processing Files: " + params.directory.string() );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Processing Files: " + params.directory.string() );
 		}
 
         if (!std::filesystem::exists(params.directory))
@@ -71,7 +71,7 @@ namespace CarbonResources
                 // Update status
                 if (params.statusCallback)
                 {
-					params.statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::UNBOUNDED, 0, "Processing File: " + entry.path().string() );
+					params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::UNBOUNDED, 0, "Processing File: " + entry.path().string() );
                 }
 
                 // Create resource
@@ -149,7 +149,7 @@ namespace CarbonResources
 						if( params.statusCallback )
 						{
 							float percentage = (100.0 / fileStreamIn.Size()) * fileStreamIn.GetCurrentPosition();
-							params.statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, percentage, "Percentage Update" );
+							params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentage, "Percentage Update" );
 						}
 
 						std::string fileData;
@@ -227,7 +227,7 @@ namespace CarbonResources
 
         if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Resource group successfully created from directory" );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Resource group successfully created from directory" );
 		}
 
         return Result{ ResultType::SUCCESS };
@@ -254,7 +254,7 @@ namespace CarbonResources
         // Status update
         if (params.statusCallback)
         {
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Importing Resource Group from file." );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Importing Resource Group from file." );
         }
 
         if (params.filename.empty())
@@ -297,7 +297,7 @@ namespace CarbonResources
 		{
             if (importResult.type == ResultType::SUCCESS)
 			{
-				params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Successfully imported ResourceGroup" );
+				params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Successfully imported ResourceGroup" );
             }
 		}
 
@@ -309,7 +309,7 @@ namespace CarbonResources
 		// Update status
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Exporting Resource Group to file: " + params.filename.string() );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Exporting Resource Group to file: " + params.filename.string() );
 		}
 
 		std::string data = "";
@@ -339,7 +339,7 @@ namespace CarbonResources
 
         if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Resource group successfully exported." );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Resource group successfully exported." );
 		}
 
 		return Result{ ResultType::SUCCESS };
@@ -362,7 +362,7 @@ namespace CarbonResources
 		// Status update
 		if( statusCallback )
 		{
-			statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 5, "Importing Resource Group from CSV file." );
+			statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 5, "Importing Resource Group from CSV file." );
 		}
 
         std::stringstream inputStream;
@@ -454,7 +454,7 @@ namespace CarbonResources
 
             if( statusCallback )
 			{
-				statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::UNBOUNDED, 0, "Imported resource: " + resourceParams.relativePath.string() );
+				statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::UNBOUNDED, 0, "Imported resource: " + resourceParams.relativePath.string() );
 			}
 		}
 
@@ -741,7 +741,7 @@ namespace CarbonResources
 
                 std::string message = "Exporting: " + relativePath.string();
 
-				statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, percentage, message );
+				statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentage, message );
 
 				i++;
 			}
@@ -798,7 +798,7 @@ namespace CarbonResources
 			if( statusCallback )
 			{
 				float percentage = (100.0 / m_resourcesParameter.GetValue()->size()) * i;
-				statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, percentage, "Percentage Update" );
+				statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentage, "Percentage Update" );
 				i++;
 			}
 
@@ -879,7 +879,7 @@ namespace CarbonResources
 		// Update status
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Creating Bundle" );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Bundle" );
 		}
 
 		uintmax_t numberOfChunks = 0;
@@ -896,7 +896,7 @@ namespace CarbonResources
         // Update status
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 5, "Generating Chunks" );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 5, "Generating Chunks" );
 		}
 
         int i = 0;
@@ -920,7 +920,7 @@ namespace CarbonResources
 
                 i++;
 
-				params.statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, percentComplete, message );
+				params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, message );
 			}
 
             ResourceTools::FileDataStreamIn resourceDataStream(params.fileReadChunkSize);
@@ -975,7 +975,7 @@ namespace CarbonResources
 
 						ss << "Generating Chunk: " << chunkPath;
 
-						params.statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::UNBOUNDED, 0, ss.str() );
+						params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::UNBOUNDED, 0, ss.str() );
 					}
 
 					Result processChunkResult = ProcessChunk( chunkData, chunkPath, bundleResourceGroup, params.chunkDestinationSettings );
@@ -1021,7 +1021,7 @@ namespace CarbonResources
 		// Update status
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 75, "Exporting ResourceGroups" );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 75, "Exporting ResourceGroups" );
 		}
 
 		std::string resourceGroupData;
@@ -1097,7 +1097,7 @@ namespace CarbonResources
         // Update status
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Bundle Creation Complete." );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Bundle Creation Complete." );
 		}
 
         return Result{ ResultType::SUCCESS };
@@ -1129,7 +1129,7 @@ namespace CarbonResources
         // Update status
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Creating Patch" );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Patch" );
 		}
 
         if (params.previousResourceGroup->m_impl->GetType() != GetType())
@@ -1160,7 +1160,7 @@ namespace CarbonResources
         // Update status
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 20, "Calculaing resourceGroups delta." );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 20, "Calculaing resourceGroups delta." );
 		}
 
         Result subtractionResult = Diff( resourceGroupSubtractionParams );
@@ -1181,7 +1181,7 @@ namespace CarbonResources
         // Update status
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 40, "Generating Patches" );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 40, "Generating Patches" );
 		}
 
         for (int i = 0; i < resourceGroupSubtractionLatest.m_resourcesParameter.GetSize(); i++)
@@ -1206,7 +1206,7 @@ namespace CarbonResources
 
                 std::string message = "Creating patch for: " + relativePath.string();
 
-				params.statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, percentageComplete, message );
+				params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentageComplete, message );
 			}
 
         	size_t patchSourceOffset{0};
@@ -1283,20 +1283,20 @@ namespace CarbonResources
             	std::function<void(unsigned int, const std::string&)> callback = [params](unsigned int percent, const std::string& msg) {
             		if( params.statusCallback )
             		{
-            			params.statusCallback( STATUS_LEVEL::DETAIL, STATUS_PROGRESS_TYPE::PERCENTAGE, percent, msg );
+            			params.statusCallback( StatusLevel::DETAIL, StatusProgressType::PERCENTAGE, percent, msg );
             		}
             	};
         		ResourceTools::ChunkIndex index(previousFileDataStream.GetPath(), params.maxInputFileChunkSize, params.indexFolder, callback );
         		if( params.statusCallback )
         		{
         			std::string message = "Generating index for " + relativePath.string();
-        			params.statusCallback( STATUS_LEVEL::DETAIL , STATUS_PROGRESS_TYPE::PERCENTAGE, 0, message );
+        			params.statusCallback( StatusLevel::DETAIL , StatusProgressType::PERCENTAGE, 0, message );
         		}
             	index.GenerateChecksumFilter( nextFileDataStream.GetPath() );
         		if( !index.Generate() )
         		{
 					std::string message = "Index generation failed for " + relativePath.string();
-					params.statusCallback(STATUS_LEVEL::DETAIL, STATUS_PROGRESS_TYPE::PERCENTAGE, 0, message);
+					params.statusCallback(StatusLevel::DETAIL, StatusProgressType::PERCENTAGE, 0, message);
         		}
 
             	int chunkNumber = 0;
@@ -1365,7 +1365,7 @@ namespace CarbonResources
                     		size_t progress = dataOffset * 100 / nextUncompressedSize;
                     		std::stringstream ss;
                     		ss << "Generating patch files: " << relativePath.string();
-                    		params.statusCallback( STATUS_LEVEL::DETAIL, STATUS_PROGRESS_TYPE::PERCENTAGE, progress, ss.str() );
+                    		params.statusCallback( StatusLevel::DETAIL, StatusProgressType::PERCENTAGE, progress, ss.str() );
                     	}
 
                     	chunkMatchFound = index.FindMatchingChunk( nextFileData, patchSourceOffset );
@@ -1501,7 +1501,7 @@ namespace CarbonResources
         // Update status
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 60, "Exporting ResourceGroups." );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 60, "Exporting ResourceGroups." );
 		}
 
         // Export the subtraction ResourceGroup
@@ -1580,7 +1580,7 @@ namespace CarbonResources
         // Update status
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::PROCEDURE, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Patch Created" );
+			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Patch Created" );
 		}
 
         return Result{ ResultType::SUCCESS };
@@ -1624,7 +1624,7 @@ namespace CarbonResources
     {
 		if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Calculating diff between two resource groups." );
+			params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Calculating diff between two resource groups." );
 		}
 
 		DocumentParameterCollection<ResourceInfo*> subtractionResources = params.subtractResourceGroup->m_resourcesParameter;
@@ -1650,7 +1650,7 @@ namespace CarbonResources
 
                 float percentComplete = ( 100.0 / m_resourcesParameter.GetSize() ) * i;
 
-				params.statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, percentComplete, message );
+				params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, message );
 				
                 i++;
 			}
@@ -1757,7 +1757,7 @@ namespace CarbonResources
 
         if( params.statusCallback )
 		{
-			params.statusCallback( CarbonResources::STATUS_LEVEL::DETAIL, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Diff calculation complete." );
+			params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Diff calculation complete." );
 		}
 
         return Result{ ResultType::SUCCESS };

@@ -7,7 +7,7 @@ ResourceGroups represent a collection of Resources.
 
 They can be saved/loaded from a filetype which superseeds resfileindex files.
 
-See ResourceGroup file specification for more details.
+See :doc:`../../DesignDocuments/resourceGroupFileFormat` file specification for more details.
 
 .. doxygenclass:: CarbonResources::ResourceGroup
     :members:
@@ -26,16 +26,6 @@ Input Parameters
     :members:
 
 .. doxygenstruct:: CarbonResources::PatchCreateParams
-    :members:
-
-.. doxygenenum:: CarbonResources::ResourceSourceType
-
-.. doxygenstruct:: CarbonResources::ResourceSourceSettings
-    :members:
-
-.. doxygenenum:: CarbonResources::ResourceDestinationType
-
-.. doxygenstruct:: CarbonResources::ResourceDestinationSettings
     :members:
 
 .. doxygenstruct:: CarbonResources::BundleCreateParams

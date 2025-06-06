@@ -3,7 +3,7 @@ PatchResourceGroup
 
 The PatchResourceGroup contains resources specifically of patch type.
 
-See PatchResourceGroup file specification for more details.
+See :doc:`../../DesignDocuments/resourceGroupFileFormat` file specification for more details.
 
 .. doxygenclass:: CarbonResources::PatchResourceGroup
     :members:
@@ -11,6 +11,6 @@ See PatchResourceGroup file specification for more details.
 Input Parameters
 ----------------
 
-.. doxygenstruct:: CarbonResources::BundleUnpackParams
+.. doxygenstruct:: CarbonResources::PatchApplyParams
     :members:
     

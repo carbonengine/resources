@@ -121,7 +121,7 @@ bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 
 void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const
 {
-	if( s_verbosityLevel == CarbonResources::STATUS_LEVEL::OFF )
+	if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
 	{
 		return;
 	}
@@ -164,7 +164,7 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
 
     if( statusCallback )
 	{
-		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 0, "Creating Bundle." );
+		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Bundle." );
 	}
 
 	// Import ResourceGroup
@@ -202,7 +202,7 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
 
     if( statusCallback )
 	{
-		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 50, "Processing bundle files." );
+		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 50, "Processing bundle files." );
 	}
 
     CarbonResources::Result createBundleResult = resourceGroup->CreateBundle( bundleCreateParams );
@@ -218,7 +218,7 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
 
     if( statusCallback )
 	{
-		statusCallback( CarbonResources::STATUS_LEVEL::OVERVIEW, CarbonResources::STATUS_PROGRESS_TYPE::PERCENTAGE, 100, "Bundle created succesfully" );
+		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Bundle created succesfully" );
 	}
 
     return true;
