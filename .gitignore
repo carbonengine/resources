@@ -33,3 +33,7 @@ CMakeUserPresets.json
 ### IDE ###
 # User generated local IDE configuration
 .idea
+
+### VCPKG ###
+# Temporary measure which fixes build agent issue
+vcpkg_registry_cache/

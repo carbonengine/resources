@@ -8,8 +8,8 @@
     {
       "kind": "git",
       "repository": "git@github.com:ccpgames/carbon-vcpkg-registry.git",
-      "baseline": "c276548bb7c5aee07311c8e00ff9d45323b00d76",
-      "packages": ["carbon-*", "bsdiff-drake127"]
+      "baseline": "4089428d25208720dcf6451cb8b57816bbf9fb9d",
+      "packages": ["carbon-*", "python3-prebuilt", "bsdiff-drake127"]
     }
   ]
 }

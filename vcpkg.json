@@ -1,6 +1,11 @@
 {
   "dependencies": [
     {
+      "name": "python3-prebuilt",
+      "version>=": "3.12.3#2"
+    },
+    
+    {
       "name":"argparse",
       "version>=":"2.2#0"
     },
