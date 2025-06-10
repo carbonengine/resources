@@ -18,8 +18,10 @@ list(INSERT CMAKE_MODULE_PATH 0 ${BRANCH_ROOT_DIR}/cmake)
 
 include(cmake/CcpGlobalSettings.cmake)
 include(cmake/CcpTargetConfigurations.cmake)
+include(cmake/CcpDocsGenerator.cmake)
 
 find_package(yaml-cpp CONFIG REQUIRED) ## Can it be in tools?
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
 # Add subdirectory for resource tools static library
 add_subdirectory(tools)
@@ -122,57 +124,24 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     option(BUILD_DOCUMENTATION "Build Documentation" ${BUILD_DOCUMENTATION_DEFAULT_FLAG})
 
     if(BUILD_DOCUMENTATION)
-        # Find Doxygen, which is needed to parse C++ source files
-        find_package(Doxygen)
-
-        set(DOCUMENTATION_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/doc)
-
-        # Evaluate config file for Doxygen to input project values
-        set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in)
-        set(DOXYFILE_OUT ${DOCUMENTATION_OUT_DIR}/Doxyfile)
-        configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
-
-        set(DOXYGEN_OUT_DIR ${DOCUMENTATION_OUT_DIR}/xml)
-        set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUT_DIR}/index.xml)
-
-        # Regenerate with source changes
-        add_custom_command(OUTPUT ${DOXYGEN_INDEX_FILE}
-                DEPENDS ${_SOURCES}
-                COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
-                MAIN_DEPENDENCY ${DOXYFILE_OUT} ${DOXYFILE_IN}
-                COMMENT "Running Doxygen"
-                VERBATIM)
-
-        add_custom_target(Doxygen ALL DEPENDS ${DOXYGEN_INDEX_FILE})
-
-        # Set up sphinx build for Python autodoc comments.
+        # Run sphinx
         set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/doc/source)
-        set(SPHINX_BUILD ${DOCUMENTATION_OUT_DIR}/build)
+        set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/doc/build)
 
-        # Select the correct pythonInterpreter to use based on build system.
-        if(WIN32)
-            set(CCP_PYTHON_INTERPRETER "${BRANCH_ROOT_DIR}/eve/client/pythonInterpreter.bat")
-        elseif(APPLE)
-            set(CCP_PYTHON_INTERPRETER "${BRANCH_ROOT_DIR}/eve/client/pythonInterpreter.sh")
-        endif()
+        create_carbon_docs_sphinx_target(
+                PYTHON_EXE ${Python3_EXECUTABLE}
+                VENV_NAME docs_generation_venv
+                PYTHONPATH_ENV $ENV{PYTHONPATH}
+                SPHINX_SOURCE ${SPHINX_SOURCE}
+                SPHINX_BUILD ${SPHINX_BUILD}
+                DOXYGEN_SRC_FILES ${SRC_FILES}
+                SPHINX_TARGET_NAME Sphinx
+                DOXYGEN_TARGET_NAME Doxygen
+                INSTALL_DESTINATION documentation
+        )
 
-        # Run Sphinx against configuration file and Doxygen output
-        add_custom_target(Sphinx ALL
-                COMMAND ${CMAKE_COMMAND}
-                -E env
-                PYTHONPATH="$<TARGET_FILE_DIR:carbon-resources>\;${CMAKE_SOURCE_DIR}/python"
-                BUILDFLAVOR=$<LOWER_CASE:$<CONFIG>>
-                ${CCP_PYTHON_INTERPRETER}
-                -m sphinx build -E -b html
-                -Dbreathe_projects.doxygen=${DOXYGEN_OUT_DIR}
-                -c ${SPHINX_SOURCE}
-                ${SPHINX_SOURCE} ${SPHINX_BUILD}
-                WORKING_DIRECTORY ${BRANCH_ROOT_DIR}
-                DEPENDS ${DOXYGEN_INDEX_FILE}
-                COMMENT "Generating documentation with Sphinx")
-
-        # Install rule for documentation
-        install(DIRECTORY ${SPHINX_BUILD} DESTINATION documentation)
+        # Ensure that carbon-resources is built before Spinx target
+        add_dependencies(Sphinx carbon-resources)
     endif()
 
     set(INSTALL_BIN_ONLY OFF CACHE BOOL "Do not Install configuration files meant to be read by projects using this project as a dependency (Cmake Config/ header files etc . . .). Set this to ON when installing this component to the perforce vendor folder")
