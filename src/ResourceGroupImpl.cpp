@@ -241,7 +241,7 @@ namespace CarbonResources
 		case DocumentType::CSV:
 			return ImportFromCSV( data );
 		case DocumentType::YAML:
-			return ImportFromYaml( data );
+			return ImportFromYamlString( data );
 		default:
 			return Result{ ResultType::UNSUPPORTED_FILE_FORMAT };
         }
@@ -282,11 +282,11 @@ namespace CarbonResources
         }
 		else if( extension == ".yml" )
         {
-			importResult = ImportFromYaml( data, params.statusCallback );
+			importResult = ImportFromYamlString( data, params.statusCallback );
         }
 		else if( extension == ".yaml" )
 		{
-			importResult = ImportFromYaml( data, params.statusCallback );
+			importResult = ImportFromYamlString( data, params.statusCallback );
 		}
         else
         {
@@ -550,9 +550,9 @@ namespace CarbonResources
 
 	}
 
-    Result ResourceGroupImpl::ImportFromYaml( const std::string& data, StatusCallback statusCallback /* = nullptr */ )
+    Result ResourceGroupImpl::ImportFromYamlString( const std::string& data, StatusCallback statusCallback /* = nullptr */ )
     {
-    	YAML::Node resourceGroupFile;
+	    YAML::Node resourceGroupFile;
     	try
     	{
     		resourceGroupFile = YAML::Load( data );
@@ -561,7 +561,11 @@ namespace CarbonResources
     	{
     		return Result{ ResultType::FAILED_TO_PARSE_YAML };
     	}
+    	return ImportFromYaml( resourceGroupFile, statusCallback );
+    }
 
+	Result ResourceGroupImpl::ImportFromYaml( YAML::Node& resourceGroupFile, StatusCallback statusCallback )
+	{
 		YAML::Node typeNode = resourceGroupFile[m_type.GetTag()];
 		if( !typeNode.IsDefined() )
 		{

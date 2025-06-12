@@ -10,6 +10,8 @@
 
 #include <Md5ChecksumStream.h>
 
+#include "ResourceGroupFactory.h"
+
 namespace CarbonResources
 {
 
@@ -65,20 +67,18 @@ namespace CarbonResources
 			return resourceGroupGetDataResult;
 		}
 
-		ResourceGroupImpl resourceGroup;
-
-		Result resourceGroupImportFromDataResult = resourceGroup.ImportFromData( resourceGroupData );
-
-		if( resourceGroupImportFromDataResult.type != ResultType::SUCCESS )
-		{
+    	std::shared_ptr<ResourceGroupImpl> resourceGroup;
+    	Result createResult = CreateFromYamlString( resourceGroupData, resourceGroup );
+    	if( createResult.type != ResultType::SUCCESS )
+    	{
 			std::stringstream ss;
 			ss << "Failed to import resource group data from the following paths:";
 			for( auto path : resourceGroupDataParams.resourceSourceSettings.basePaths )
 			{
 				ss << " \"" << path.string() << "\"";
 			}
-			resourceGroupImportFromDataResult.info = ss.str();
-			return resourceGroupImportFromDataResult;
+			createResult.info = ss.str();
+			return createResult;
 		}
 
         // Create stream
@@ -92,10 +92,10 @@ namespace CarbonResources
 		}
 
         // Reconstitute the resources in the bundle
-		auto numResources = resourceGroup.GetSize();
+		auto numResources = resourceGroup->GetSize();
 		int numProcessed = 0;
         
-        for( ResourceInfo* resource : resourceGroup )
+        for( ResourceInfo* resource : *resourceGroup )
 		{
 			if( params.statusCallback )
 			{

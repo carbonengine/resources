@@ -40,6 +40,8 @@ set(SRC_FILES
     src/PatchResourceGroupImpl.cpp
     src/PatchResourceGroupImpl.h
     src/ResourceGroup.cpp
+    src/ResourceGroupFactory.h
+    src/ResourceGroupFactory.cpp
     src/ResourceGroupImpl.cpp
     src/ResourceGroupImpl.h
     src/Enums.cpp
