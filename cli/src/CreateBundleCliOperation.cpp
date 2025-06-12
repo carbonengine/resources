@@ -1,7 +1,10 @@
 #include "CreateBundleCliOperation.h"
 
 #include <string>
+
 #include <argparse/argparse.hpp>
+#include <yaml-cpp/yaml.h>
+
 #include <ResourceGroup.h>
 #include <PatchResourceGroup.h>
 
@@ -17,8 +20,7 @@ CreateBundleCliOperation::CreateBundleCliOperation() :
 	m_bundleResourceGroupDestinationTypeArgumentId( "--bundle-resourcegroup-destination-type" ),
 	m_bundleResourceGroupDestinationBasePathArgumentId( "--bundle-resourcegroup-destination-path" ),
 	m_chunkSizeArgumentId( "--chunk-size" ),
-	m_downloadRetrySecondsArgumentId( "--download-retry-seconds" ),
-	m_resourceGroupType( "--resourcegroup-type" )
+	m_downloadRetrySecondsArgumentId( "--download-retry-seconds" )
 {
 	AddRequiredPositionalArgument( m_inputResourceGroupPathArgumentId, "Path to ResourceGroup to bundle." );
 
@@ -46,8 +48,6 @@ CreateBundleCliOperation::CreateBundleCliOperation() :
     AddArgument( m_chunkSizeArgumentId, "Represents the maximum size of the produced chunks in bytes.", false, false, SizeToString( defaultParams.chunkSize ) );
 
 	AddArgument( m_downloadRetrySecondsArgumentId, "The number of seconds before attempt to download a resource fails with a network related error", false, false, SecondsToString( defaultParams.downloadRetrySeconds ) );
-
-    AddArgument( m_resourceGroupType, "Type of resource group supplied", false, false, "ResourceGroup", "ResourceGroup, PatchResourceGroup" );
 }
 
 bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
@@ -167,9 +167,39 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
 		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Bundle." );
 	}
 
-	// Import ResourceGroup
-	std::string inputResourceGroupType = m_argumentParser->get<std::string>( m_resourceGroupType );
+	std::string extension = resourceGroupParams.filename.extension().string();
+	std::string inputResourceGroupType;
+	if( extension == ".txt" )
+	{
+		inputResourceGroupType = "ResourceGroup";
+	}
+	else if( extension == ".yml" || extension == ".yaml" )
+	{
+		YAML::Node root;
+		try
+		{
+			root = YAML::LoadFile( resourceGroupParams.filename );
+		}
+		catch( YAML::ParserException& )
+		{
+			std::cerr << resourceGroupParams.filename << " does not contain valid YAML." << std::endl;
+			return false;
+		}
+		YAML::Node typeNode = root["Type"];
+		if( !typeNode.IsDefined() )
+		{
+			std::cerr << "Could not read type from resource group." <<std::endl;
+			return false;
+		}
+		inputResourceGroupType = typeNode.as<std::string>();
+	}
+	else
+	{
+		std::cerr << "Unexpected file extension for resource group '" << extension << "'." << std::endl;
+		return false;
+	}
 
+	// Import ResourceGroup
     CarbonResources::ResourceGroup* resourceGroup;
 
 	// Note: This information could be ascertained directly from file
@@ -177,13 +207,14 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
     {
 		resourceGroup = new CarbonResources::ResourceGroup();
     }
-    else if (inputResourceGroupType == "PatchResourceGroup")
+    else if (inputResourceGroupType == "PatchGroup")
     {
 		resourceGroup = new CarbonResources::PatchResourceGroup();
     }
     else
     {
         // Unknown resource group type provided
+    	std::cerr << "Unexpected resource group type : " << inputResourceGroupType << std::endl;
 		return false;
     }
 

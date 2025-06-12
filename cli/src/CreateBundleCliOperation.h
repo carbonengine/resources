@@ -61,8 +61,6 @@ private:
     std::string m_chunkSizeArgumentId;
 
 	std::string m_downloadRetrySecondsArgumentId;
-
-    std::string m_resourceGroupType;
 };
 
 #endif // CreateBundleCliOperation_H

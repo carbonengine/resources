@@ -24,8 +24,7 @@ Note: This document refers to filesystem types, see :doc:`../DesignDocuments/fil
 1. Positional argument - Path to the PatchResourceGroup.yaml that is to be bundled
 2. ``--resource-source-path`` - Source base path where resources referred to in the PatchResourceGroup can be sourced
 3. ``--resource-source-type`` - filesystem type that the resources adhere to. Create patch command used in the previous section outputted to LOCAL_CDN so this is used as an input here.
-4. ``--resourcegroup-type`` - Type of resource group supplied, here we are bundling a patch resource group so this is reflected in this setting.
-5. ``--chunk-destination`` - Destination filesystem type to output the chunks of the bundle to. REMOTE_CDN will output in a CDN friendly structure and also compress the files ready for upload.
+4. ``--chunk-destination`` - Destination filesystem type to output the chunks of the bundle to. REMOTE_CDN will output in a CDN friendly structure and also compress the files ready for upload.
 
 .. note::
     See CLI help for more information regarding options.
