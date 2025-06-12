@@ -109,7 +109,7 @@ void CliOperation::PrintCarbonResourcesError( CarbonResources::Result result ) c
 
 	bool ret = CarbonResources::ResultTypeToString( result.type, errorMessage );
 
-	std::cout << errorMessage << std::endl;
+	std::cerr << errorMessage << std::endl;
 
     if (result.info != "")
     {
