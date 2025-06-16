@@ -224,8 +224,10 @@ TEST_F( CarbonResourcesLibraryTest, UnpackBundle )
 
 	EXPECT_EQ( bundleResourceGroup.Unpack( bundleUnpackParams ).type, CarbonResources::ResultType::SUCCESS );
 
-	// TODO test the output of the applied patches
-    
+	EXPECT_TRUE( DirectoryIsSubset( GetTestFileFileAbsolutePath( "Bundle/Res" ), "UnpackBundleOut" ) );
+
+	EXPECT_TRUE( std::filesystem::exists( "UnpackBundleOut/ResourceGroup.yaml" ) );
+
 
 }
 

@@ -288,6 +288,22 @@ namespace CarbonResources
 
 		}
 
+    	// Export the resource group file.
+    	ResourceGroupExportToFileParams exportParams;
+    	std::filesystem::path resourceGroupRelativePath;
+    	Result getResourceGroupRelativePathResult = resourceGroupResource->GetRelativePath( resourceGroupRelativePath );
+    	if( getResourceGroupRelativePathResult.type != ResultType::SUCCESS )
+    	{
+    		return getResourceGroupRelativePathResult;
+    	}
+    	exportParams.filename = params.resourceDestinationSettings.basePath / resourceGroupRelativePath;
+    	exportParams.statusCallback = params.statusCallback;
+    	Result exportResult = resourceGroup->ExportToFile( exportParams );
+    	if( exportResult.type != ResultType::SUCCESS )
+    	{
+    		return exportResult;
+    	}
+
         return Result{ ResultType::SUCCESS };
 
     }
