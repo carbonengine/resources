@@ -140,8 +140,18 @@ TEST_F( CarbonResourcesLibraryTest, ResourceGroupHandleImportIncorrectlyFormatte
 {
 	CarbonResources::ResourceGroup resourceGroup;
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
+
+	// Should try to load the group but fail to parse the yaml
 	importParams.filename = GetTestFileFileAbsolutePath( "ResourcesRemote/a9/a9d1721dd5cc6d54_4d7a8d216f4c8c5c6379476c0668fe84" );
-	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::UNSUPPORTED_FILE_FORMAT );
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::FAILED_TO_PARSE_YAML);
+
+	// Load a file that does not exist
+	importParams.filename = GetTestFileFileAbsolutePath( "ResourcesRemote/a9/a9d1721dd5cc6d54_4d7a8d216f4c8c5c6379476c0668fe84.yaml" );
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::FAILED_TO_OPEN_FILE);
+
+	// Load a file with a file extension indicating an unsupported format
+	importParams.filename = GetTestFileFileAbsolutePath( "Bundle/TestResources/One.png" );
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::UNSUPPORTED_FILE_FORMAT);
 }
 
 // Import a ResourceGroup with version greater than current document minor version specified in enums.h
@@ -224,8 +234,10 @@ TEST_F( CarbonResourcesLibraryTest, UnpackBundle )
 
 	EXPECT_EQ( bundleResourceGroup.Unpack( bundleUnpackParams ).type, CarbonResources::ResultType::SUCCESS );
 
-	// TODO test the output of the applied patches
-    
+	EXPECT_TRUE( DirectoryIsSubset( GetTestFileFileAbsolutePath( "Bundle/Res" ), "UnpackBundleOut" ) );
+
+	EXPECT_TRUE( std::filesystem::exists( "UnpackBundleOut/ResourceGroup.yaml" ) );
+
 
 }
 

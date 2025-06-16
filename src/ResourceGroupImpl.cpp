@@ -280,11 +280,7 @@ namespace CarbonResources
         {
 			importResult = ImportFromCSV( data, params.statusCallback );
         }
-		else if( extension == ".yml" )
-        {
-			importResult = ImportFromYamlString( data, params.statusCallback );
-        }
-		else if( extension == ".yaml" )
+		else if( extension == ".yml" || extension == ".yaml" || extension.empty() )
 		{
 			importResult = ImportFromYamlString( data, params.statusCallback );
 		}

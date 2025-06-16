@@ -173,7 +173,7 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
 	{
 		inputResourceGroupType = "ResourceGroup";
 	}
-	else if( extension == ".yml" || extension == ".yaml" )
+	else if( extension == ".yml" || extension == ".yaml" || extension.empty() )
 	{
 		YAML::Node root;
 		try
