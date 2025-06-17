@@ -114,7 +114,10 @@ bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 	}
 	bundleCreateParams.downloadRetrySeconds = std::chrono::seconds( retrySeconds );
 
-	PrintStartBanner( resourceGroupParams, bundleCreateParams );
+    if( s_verbosityLevel != CarbonResources::StatusLevel::OFF )
+	{
+		PrintStartBanner( resourceGroupParams, bundleCreateParams );
+	}
 
 	return CreateBundle( resourceGroupParams, bundleCreateParams );
 }
