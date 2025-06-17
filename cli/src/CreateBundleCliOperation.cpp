@@ -119,7 +119,7 @@ bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 		PrintStartBanner( resourceGroupParams, bundleCreateParams );
 	}
 
-	return CreateBundle( resourceGroupParams, bundleCreateParams );
+	return CreateBundle( resourceGroupParams, bundleCreateParams, returnErrorMessage );
 }
 
 void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const
@@ -161,7 +161,7 @@ void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::Resource
 	std::cout << "----------------------------\n" << std::endl;
 }
 
-bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const
+bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams, std::string& returnErrorMessage ) const
 {
 	CarbonResources::StatusCallback statusCallback = GetStatusCallback();
 
@@ -169,6 +169,12 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
 	{
 		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Bundle." );
 	}
+
+    if (!std::filesystem::exists(resourceGroupParams.filename))
+    {
+		returnErrorMessage = resourceGroupParams.filename.string() + " not found";
+		return false;
+    }
 
 	std::string extension = resourceGroupParams.filename.extension().string();
 	std::string inputResourceGroupType;
@@ -185,20 +191,23 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
 		}
 		catch( YAML::ParserException& )
 		{
-			std::cerr << resourceGroupParams.filename << " does not contain valid YAML." << std::endl;
+			returnErrorMessage = resourceGroupParams.filename.string() + " does not contain valid YAML.";
 			return false;
 		}
 		YAML::Node typeNode = root["Type"];
 		if( !typeNode.IsDefined() )
 		{
-			std::cerr << "Could not read type from resource group." <<std::endl;
+			returnErrorMessage = "Could not read type from resource group.";
 			return false;
 		}
 		inputResourceGroupType = typeNode.as<std::string>();
 	}
 	else
 	{
-		std::cerr << "Unexpected file extension for resource group '" << extension << "'." << std::endl;
+		std::stringstream ss;
+
+        ss << "Unexpected file extension for resource group '" << extension << "'.";
+		returnErrorMessage = ss.str();
 		return false;
 	}
 
@@ -217,7 +226,7 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
     else
     {
         // Unknown resource group type provided
-    	std::cerr << "Unexpected resource group type : " << inputResourceGroupType << std::endl;
+		returnErrorMessage = "Unexpected resource group type : " + inputResourceGroupType;
 		return false;
     }
 

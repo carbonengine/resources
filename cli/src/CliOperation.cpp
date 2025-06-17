@@ -92,7 +92,7 @@ void CliOperation::PrintError(std::string message) const
 {
     if (message != "")
     {
-		std::cout << "[ERROR: " << message << "]\n\n";
+		std::cerr << "[ERROR: " << message << "]\n\n";
     }
 
 	std::cout << *m_argumentParser;
@@ -109,7 +109,7 @@ void CliOperation::PrintCarbonResourcesError( CarbonResources::Result result ) c
 
 	bool ret = CarbonResources::ResultTypeToString( result.type, errorMessage );
 
-	std::cerr << errorMessage << std::endl;
+	std::cerr << "[ERROR: " << errorMessage << "]\n\n";
 
     if (result.info != "")
     {
