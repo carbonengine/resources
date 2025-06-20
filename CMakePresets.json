@@ -15,6 +15,7 @@
         "value": "v141"
       },
       "cacheVariables": {
+        "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets",
         "VCPKG_TARGET_TRIPLET": "x64-windows-carbon"
       },
@@ -28,6 +29,7 @@
       "binaryDir": "./.cmake-build-${generator}-${presetName}",
       "generator": "Ninja Multi-Config",
       "cacheVariables": {
+        "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets",
         "VCPKG_TARGET_TRIPLET": "x64-windows-carbon"
       },
@@ -39,6 +41,7 @@
       "name": "carbon_windows_vcpkg_nmc_with_dev_features",
       "inherits": "carbon_windows_vcpkg_nmc",
       "cacheVariables": {
+        "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
         "DEV_FEATURES": "ON"
       }
     },
@@ -48,6 +51,7 @@
       "binaryDir": "./.cmake-build-${generator}-${presetName}",
       "generator": "Ninja Multi-Config",
       "cacheVariables": {
+        "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets",
         "VCPKG_TARGET_TRIPLET": "arm64-osx-carbon"
       },
