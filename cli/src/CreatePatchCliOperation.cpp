@@ -133,15 +133,15 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 	
 	try
 	{
-		createPatchParams.maxInputFileChunkSize = std::stoull( m_argumentParser->get( m_maxInputChunkSizeArgumentId ) );
+		createPatchParams.maxInputFileChunkSize = std::stoul( m_argumentParser->get( m_maxInputChunkSizeArgumentId ) );
 	}
-	catch( std::invalid_argument& e )
+	catch( std::invalid_argument& )
 	{
 		returnErrorMessage = "Invalid chunk size";
 
 		return false;
 	}
-	catch( std::out_of_range& e )
+	catch( std::out_of_range& )
 	{
 		returnErrorMessage = "Invalid chunk size";
 		return false;
@@ -153,13 +153,13 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 	{
 		retrySeconds = std::stoll( m_argumentParser->get( m_downloadRetrySecondsArgumentId ) );
 	}
-	catch( std::invalid_argument& e )
+	catch( std::invalid_argument& )
 	{
 		returnErrorMessage = "Invalid retry seconds";
 
 		return false;
 	}
-	catch( std::out_of_range& e )
+	catch( std::out_of_range& )
 	{
 		returnErrorMessage = "Invalid retry seconds";
 

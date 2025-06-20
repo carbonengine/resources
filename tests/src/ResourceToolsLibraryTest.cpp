@@ -571,25 +571,25 @@ TEST_F( ResourceToolsTest, GenerateChunkIndex )
 	std::filesystem::path indexFolder = "./GenerateChunkIndex/Indexes";
 
 	std::string notInFile = "Once upon a time, in a galaxy far, far away...";
-	ResourceTools::ChunkIndex notInFileIndex( introMovieFilePath, notInFile.size(), indexFolder );
+	ResourceTools::ChunkIndex notInFileIndex( introMovieFilePath, static_cast<uint32_t>( notInFile.size() ), indexFolder );
 	notInFileIndex.Generate();
 	ASSERT_FALSE(notInFileIndex.FindMatchingChunk( notInFile, offset ));
 
 	std::string startOfFile = "TIME";
-	ResourceTools::ChunkIndex startOfFileIndex( introMovieFilePath, startOfFile.size(), indexFolder );
+	ResourceTools::ChunkIndex startOfFileIndex( introMovieFilePath, static_cast<uint32_t>( startOfFile.size() ), indexFolder );
 	startOfFileIndex.Generate();
 	ASSERT_TRUE(startOfFileIndex.FindMatchingChunk( startOfFile, offset ) );
 	ASSERT_EQ( offset, 0 );
 
 	std::string early = "introseq.blue";
-	ResourceTools::ChunkIndex earlyIndex( introMovieFilePath, early.size(), indexFolder );
+	ResourceTools::ChunkIndex earlyIndex( introMovieFilePath, static_cast<uint32_t>( early.size() ), indexFolder );
 	earlyIndex.Generate();
 	ASSERT_TRUE(earlyIndex.FindMatchingChunk( early, offset ) );
 	ASSERT_EQ( offset, data.find( early ) );
 
 	// Find the last 20 bytes of the file.
 	std::string final = data.substr( data.size() - 20 );
-	ResourceTools::ChunkIndex finalIndex( introMovieFilePath, final.size(), indexFolder );
+	ResourceTools::ChunkIndex finalIndex( introMovieFilePath, static_cast<uint32_t>( final.size() ), indexFolder );
 	finalIndex.Generate();
 	ASSERT_TRUE(finalIndex.FindMatchingChunk( final, offset ) );
 	ASSERT_EQ( offset, data.size() - 20 );
@@ -614,13 +614,13 @@ TEST_F( ResourceToolsTest, GenerateChunkIndexWithFilter )
 	std::filesystem::path indexFolder = "./GenerateChunkIndex/Indexes";
 
 	std::string notInFile = "Once upon a time, in a galaxy far, far away...";
-	ResourceTools::ChunkIndex notInFileIndex( introMovieFilePath, notInFile.size(), indexFolder );
+	ResourceTools::ChunkIndex notInFileIndex( introMovieFilePath, static_cast<uint32_t>( notInFile.size() ), indexFolder );
 	notInFileIndex.GenerateChecksumFilter( introMovieFilePath );
 	notInFileIndex.Generate();
 	ASSERT_FALSE(notInFileIndex.FindMatchingChunk( notInFile, offset ));
 
 	std::string startOfFile = "TIME";
-	ResourceTools::ChunkIndex startOfFileIndex( introMovieFilePath, startOfFile.size(), indexFolder );
+	ResourceTools::ChunkIndex startOfFileIndex( introMovieFilePath, static_cast<uint32_t>( startOfFile.size() ), indexFolder );
 	startOfFileIndex.GenerateChecksumFilter( introMovieFilePath );
 	startOfFileIndex.Generate();
 	ASSERT_TRUE(startOfFileIndex.FindMatchingChunk( startOfFile, offset ) );
@@ -629,7 +629,7 @@ TEST_F( ResourceToolsTest, GenerateChunkIndexWithFilter )
 	// Find a chunk early on in the file, that should be
 	// included in the index.
 	std::string early = data.substr( 100, 10 );
-	ResourceTools::ChunkIndex earlyIndex( introMovieFilePath, early.size(), indexFolder );
+	ResourceTools::ChunkIndex earlyIndex( introMovieFilePath, static_cast<uint32_t>( early.size() ), indexFolder );
 	earlyIndex.GenerateChecksumFilter( introMovieFilePath );
 	earlyIndex.Generate();
 	ASSERT_TRUE(earlyIndex.FindMatchingChunk( early, offset ) );

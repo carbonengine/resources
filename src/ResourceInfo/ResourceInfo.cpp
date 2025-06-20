@@ -973,7 +973,6 @@ namespace CarbonResources
 	{
 		std::string chunk;
 		std::string checksum;
-    	size_t size;
 
     	m_uncompressedSize = matchSize;
 

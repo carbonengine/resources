@@ -248,7 +248,7 @@ namespace CarbonResources
 					return Result{ ResultType::FAIL };
 				}
 
-				float percentage = ( 100.0 / numResources ) * numProcessed;
+				auto percentage = static_cast<unsigned int>( ( 100 * numProcessed ) / numResources );
 
 				std::string message = "Patching: " + relativePath.string();
 

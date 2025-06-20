@@ -233,7 +233,7 @@ bool CliOperation::ProcessCommandLine( int argc, char** argv )
 		m_argumentParser->parse_args( arguments );
 
 	}
-	catch( const std::runtime_error& e )
+	catch( const std::runtime_error& )
 	{
 
 		return false;

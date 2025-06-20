@@ -45,7 +45,7 @@ namespace CarbonResources
     *  @var ResourceSourceSettings::basePaths
     *  The base paths to locate resources.
     */
-    struct API ResourceSourceSettings
+    struct ResourceSourceSettings
 	{
 		ResourceSourceType sourceType = ResourceSourceType::LOCAL_CDN;
 
@@ -59,7 +59,7 @@ namespace CarbonResources
     *  @var ResourceDestinationSettings::basePath
     *  The base path to save resources.
     */
-	struct API ResourceDestinationSettings
+	struct ResourceDestinationSettings
 	{
 		ResourceDestinationType destinationType = ResourceDestinationType::LOCAL_CDN;
 
@@ -85,7 +85,7 @@ namespace CarbonResources
     *  @var BundleCreateParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-    struct API BundleCreateParams
+    struct BundleCreateParams
 	{
 		ResourceSourceSettings resourceSourceSettings = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE };
 
@@ -129,9 +129,9 @@ namespace CarbonResources
     *  @var PatchCreateParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-    struct API PatchCreateParams
+    struct PatchCreateParams
 	{
-        uintmax_t maxInputFileChunkSize = 50000000;
+        uint32_t maxInputFileChunkSize = 50000000;
 
 		ResourceGroup* previousResourceGroup = nullptr;
 
@@ -163,7 +163,7 @@ namespace CarbonResources
     *  @var ResourceGroupImportFromFileParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-    struct API ResourceGroupImportFromFileParams
+    struct ResourceGroupImportFromFileParams
 	{
 		std::filesystem::path filename;
 
@@ -179,7 +179,7 @@ namespace CarbonResources
     *  @var ResourceGroupExportToFileParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-	struct API ResourceGroupExportToFileParams
+	struct ResourceGroupExportToFileParams
 	{
 		std::filesystem::path filename = "ResourceGroup.yaml";
 
@@ -199,7 +199,7 @@ namespace CarbonResources
     *  @var CreateResourceGroupFromDirectoryParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-	struct API CreateResourceGroupFromDirectoryParams
+	struct CreateResourceGroupFromDirectoryParams
 	{
 		std::filesystem::path directory = "";
 

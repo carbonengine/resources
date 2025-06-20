@@ -77,7 +77,7 @@ namespace ResourceTools
   {
 	  std::list<ChunkMatch> result;
 
-	  uint64_t window = 4; // The amount of bytes to use for the checksum.
+	  uint32_t window = 4; // The amount of bytes to use for the checksum.
 
 	  if( destination.size() < window || source.size() < window )
 	  {
@@ -85,8 +85,8 @@ namespace ResourceTools
 		  return result;
 	  }
 
-	  uint64_t start = 0;
-	  uint64_t end = window;
+	  uint32_t start = 0;
+	  uint32_t end = window;
 
 	  RollingChecksum sourceStartChecksum = GenerateRollingAdlerChecksum( source, 0, window );
 	  while( end < destination.size() )
@@ -98,14 +98,14 @@ namespace ResourceTools
 
 		  RollingChecksum destinationChecksum = GenerateRollingAdlerChecksum( destination, start, end );
 
-		  uint64_t length = 0;
-		  uint64_t maxLength = 0;
+		  uint32_t length = 0;
+		  uint32_t maxLength = 0;
 		  match.length = 0;
-		  uint64_t sourceStart = 0;
-		  uint64_t sourceEnd = sourceStart + window;
+		  uint32_t sourceStart = 0;
+		  uint32_t sourceEnd = sourceStart + window;
 		  RollingChecksum rollingDestinationChecksum = destinationChecksum;
 		  RollingChecksum rollingSourceChecksum = sourceStartChecksum;
-	  	  uint64_t sourceMatchStart = sourceStart;
+	  	  uint32_t sourceMatchStart = sourceStart;
 		  while( sourceEnd <= source.size() && end + length <= destination.size() )
 		  {
 			  if( length )
@@ -175,7 +175,11 @@ namespace ResourceTools
 
   bool FindMatchingChunk( const std::string& chunk, std::filesystem::path filePath, size_t& chunkOffset )
   {
-	  size_t chunkSize = chunk.size();
+  	  if( chunk.size() > std::numeric_limits<uint32_t>::max() )
+  	  {
+	  	  return false;
+  	  }
+	  uint32_t chunkSize = static_cast<uint32_t>( chunk.size() );
 	  FileDataStreamIn stream( chunkSize );
 	  stream.StartRead( filePath );
 	  std::string backlog;
@@ -183,7 +187,7 @@ namespace ResourceTools
 	  RollingChecksum chunkChecksum = GenerateRollingAdlerChecksum( chunk, 0, chunkSize );
 	  RollingChecksum lastChecksum;
 	  uint64_t fileOffset{ 0 };
-	  uint64_t backlogOffset{ 0 };
+	  uint32_t backlogOffset{ 0 };
 	  while( stream >> fileData )
 	  {
 		  backlog += fileData;
@@ -423,7 +427,7 @@ int FileAttributesToMode(DWORD attr)
   	return m;
   }
 
-void SetExecutableFlagByFileExtension(const wchar_t *path, BY_HANDLE_FILE_INFORMATION fileInfo, int64_t &result) {
+void SetExecutableFlagByFileExtension(const wchar_t *path, BY_HANDLE_FILE_INFORMATION fileInfo, unsigned int &result) {
   	const wchar_t *fileExtension = wcsrchr(path, '.');
   	if (fileExtension) {
   		if (_wcsicmp(fileExtension, L".exe") == 0 ||
@@ -435,13 +439,13 @@ void SetExecutableFlagByFileExtension(const wchar_t *path, BY_HANDLE_FILE_INFORM
   	}
   }
 
-int64_t CalculateBinaryOperation( const std::filesystem::path& path )
+unsigned int CalculateBinaryOperation( const std::filesystem::path& path )
 {
   	HANDLE hFile;
   	BY_HANDLE_FILE_INFORMATION fileInfo;
   	DWORD access = FILE_READ_ATTRIBUTES;
   	DWORD flags{0};
-  	int64_t result{0};
+  	unsigned int result{0};
   	hFile = CreateFileW(path.wstring().c_str(), access, 0, nullptr, OPEN_EXISTING, flags, nullptr);
 
   	if (hFile == INVALID_HANDLE_VALUE)

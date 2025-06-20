@@ -18,7 +18,7 @@ constexpr size_t BLOCKS_PER_FILE = TARGET_FILE_SIZE / CHUNK_BLOCK_SIZE;
 
 namespace ResourceTools
 {
- ChunkIndex::ChunkIndex( std::filesystem::path fileToIndex, size_t chunkSize, const std::filesystem::path& indexFolder, StatusCallback statusCallback ) :
+ ChunkIndex::ChunkIndex( std::filesystem::path fileToIndex, uint32_t chunkSize, const std::filesystem::path& indexFolder, StatusCallback statusCallback ) :
 	m_fileToIndex( fileToIndex ), m_chunkSize( chunkSize ), m_currentIndexFile( 0 ), m_indexFolder( indexFolder ), m_statusCallback( statusCallback )
 {
 }
@@ -58,7 +58,7 @@ bool ChunkIndex::Flush( std::vector<std::pair<uint32_t, uint32_t>>& index )
 				return false;
 			}
 		}
-		catch( std::filesystem::filesystem_error& e )
+		catch( std::filesystem::filesystem_error& )
 		{
 			return false;
 		}
@@ -107,7 +107,8 @@ bool ChunkIndex::GenerateChecksumFilter( const std::filesystem::path& targetFile
 				return false;
 			}
 		}
-        uint32_t checksum = ResourceTools::GenerateRollingAdlerChecksum( nextFileData, 0, nextFileData.size() ).checksum;
+		auto nextFileDataSize = static_cast<uint32_t>( nextFileData.size() );
+        uint32_t checksum = ResourceTools::GenerateRollingAdlerChecksum( nextFileData, 0, nextFileDataSize ).checksum;
 		m_checksumFilter.insert( checksum );
 	}
 	return true;
@@ -150,7 +151,7 @@ bool ChunkIndex::Generate()
 	std::string fileData;
 	std::string backlog;
 
-	uint64_t backlogOffset{ 0 };
+	uint32_t backlogOffset{ 0 };
 	uint64_t fileOffset{ 0 };
 	RollingChecksum checksum;
 
@@ -177,14 +178,16 @@ bool ChunkIndex::Generate()
 			{
 				std::stringstream ss;
 				ss << "Generating index: " << GenerateIndexPath();
-				m_statusCallback( ( backlogOffset + fileOffset ) * 100 / fileSize, ss.str() );
+				auto percentage = static_cast<unsigned int>( ( backlogOffset + fileOffset ) * 100 / fileSize );
+				m_statusCallback( percentage, ss.str() );
 			}
 			if( !IsRelevant( checksum.checksum ) )
 			{
 				++backlogOffset;
 				continue;
 			}
-			chunkToOffsets.emplace_back( std::pair<uint32_t, uint32_t>(checksum.checksum, backlogOffset + fileOffset - m_currentIndexFile * BLOCKS_PER_FILE ) );
+			auto offset = static_cast<uint32_t>( backlogOffset + fileOffset - m_currentIndexFile * BLOCKS_PER_FILE );
+			chunkToOffsets.emplace_back( std::pair<uint32_t, uint32_t>(checksum.checksum, offset ) );
 			++cachedChunks;
 			++backlogOffset;
 			if( cachedChunks >= BLOCKS_PER_FILE )
@@ -194,7 +197,8 @@ bool ChunkIndex::Generate()
 					std::filesystem::path filePath = GenerateIndexPath();
 					std::stringstream ss;
 					ss << "Generating index (" << currentIndexFile + 1 << "/" << indexFileCount << "): " << filePath;
-					m_statusCallback( 100 * currentIndexFile / indexFileCount, ss.str() );
+					auto percentage = static_cast<unsigned int>( 100 * currentIndexFile / indexFileCount );
+					m_statusCallback( percentage, ss.str() );
 				}
 				Flush( chunkToOffsets );
 				++currentIndexFile;
@@ -211,7 +215,8 @@ bool ChunkIndex::Generate()
 	}
  	if( m_statusCallback && indexFileCount > 0 )
  	{
- 		m_statusCallback( currentIndexFile / indexFileCount, "Generating index" );
+ 		auto percentage = static_cast<unsigned int>( currentIndexFile / indexFileCount );
+ 		m_statusCallback( percentage, "Generating index" );
  	}
 	Flush( chunkToOffsets );
  	if( m_statusCallback )
@@ -341,7 +346,8 @@ bool ChunkIndex::FindMatchingChunk( const std::string& chunk, size_t& chunkOffse
 	size_t baseOffset{0};
  	std::vector<size_t> offsets;
 
- 	RollingChecksum rollingChecksum = ResourceTools::GenerateRollingAdlerChecksum( chunk, 0, chunk.size() );
+ 	auto end = static_cast<uint32_t>( chunk.size() );
+ 	RollingChecksum rollingChecksum = ResourceTools::GenerateRollingAdlerChecksum( chunk, 0, end );
 
  	for( auto path : m_indexFiles )
  	{

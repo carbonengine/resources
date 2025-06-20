@@ -32,6 +32,7 @@ namespace ResourceTools
   		return false;
   	}
 	m_decompressionInProgress = true;
+  	return true;
   }
 
   bool GzipDecompressionStream::ProcessBuffer( bool finish )

@@ -288,8 +288,6 @@ namespace CarbonResources
 		std::string* data = nullptr;
 	};
 
-	class ResourcePutDataParams;
-
 
     class ResourceInfo
     {
