@@ -106,6 +106,7 @@ if (MSVC)
     set(CMAKE_C_FLAGS_TRINITYDEV "")
     set(CMAKE_SHARED_LINKER_FLAGS_TRINITYDEV "")
     set(CMAKE_EXE_LINKER_FLAGS_TRINITYDEV "")
+    set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "")
 
     add_compile_options($<IF:$<CONFIG:Debug>,/ZI,>)
     add_compile_options($<IF:$<CONFIG:Debug>,/Od,>)
