@@ -173,7 +173,7 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 
 	createPatchParams.downloadRetrySeconds = std::chrono::seconds( retrySeconds );
 
-    if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
+    if( s_verbosityLevel != CarbonResources::StatusLevel::OFF )
     {
 		PrintStartBanner( previousResourceGroupParams, nextResourceGroupParams, createPatchParams );
     }
@@ -225,7 +225,7 @@ void CreatePatchCliOperation::PrintStartBanner( const CarbonResources::ResourceG
 
 	std::cout << "Download Retry Seconds: " <<  createPatchParams.downloadRetrySeconds.count() << std::endl;
 
-	std::cout << "Index File Folder: " << createPatchParams.indexFolder;
+	std::cout << "Index File Folder: " << createPatchParams.indexFolder << std::endl;
 
 	std::cout << "----------------------------\n" << std::endl;
 }
@@ -270,7 +270,7 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 
 	if( importNextFromFileResult.type != CarbonResources::ResultType::SUCCESS )
 	{
-		PrintCarbonResourcesError( importPreviousFromFileResult );
+		PrintCarbonResourcesError( importNextFromFileResult );
 
 		return false;
 	}
