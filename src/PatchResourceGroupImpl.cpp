@@ -56,7 +56,7 @@ namespace CarbonResources
     		return result;
     	}
 
-    	const std::string extension = relativePath.extension();
+    	const std::string extension = relativePath.extension().string();
 
     	std::string relativePathString = relativePath.string();
 
