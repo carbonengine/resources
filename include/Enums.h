@@ -177,7 +177,7 @@ namespace CarbonResources
     *  @var Result::info
     *  Optional further information on the return
     */
-    struct API Result
+    struct Result
     {
 		ResultType type = ResultType::SUCCESS;
 

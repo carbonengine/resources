@@ -71,7 +71,7 @@ bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 		return false;
     }
 
-    for (const std::string basePath : m_argumentParser->get<std::vector<std::string>>(m_resourceSourceBasePathArgumentId))
+    for (const std::string& basePath : m_argumentParser->get<std::vector<std::string>>(m_resourceSourceBasePathArgumentId))
     {
 		bundleCreateParams.resourceSourceSettings.basePaths.push_back(basePath);
     }
@@ -104,11 +104,11 @@ bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 		bundleCreateParams.chunkSize = std::stoull( m_argumentParser->get( m_chunkSizeArgumentId ) );
 		retrySeconds = std::stoll( m_argumentParser->get( m_downloadRetrySecondsArgumentId ) );
 	}
-	catch( std::invalid_argument& e )
+	catch( std::invalid_argument& )
 	{
 		return false;
 	}
-	catch( std::out_of_range& e )
+	catch( std::out_of_range& )
 	{
 		return false;
 	}

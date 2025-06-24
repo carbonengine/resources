@@ -71,7 +71,7 @@ namespace ResourceTools
 
     bool SaveFile( const std::filesystem::path& path, const std::string& data );
 
-    int64_t CalculateBinaryOperation( const std::filesystem::path& path );
+    unsigned int CalculateBinaryOperation( const std::filesystem::path& path );
 }
 
 #endif // ResourceTools_H

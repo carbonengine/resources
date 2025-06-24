@@ -49,7 +49,7 @@ namespace ResourceTools
 				  return false;
 			  }
 		  }
-		  catch( std::filesystem::filesystem_error& e )
+		  catch( std::filesystem::filesystem_error& )
 		  {
 			  return false;
 		  }

@@ -61,7 +61,7 @@ namespace CarbonResources
     public:
 		ResourceGroupImpl();
 
-	    ~ResourceGroupImpl();
+	    virtual ~ResourceGroupImpl();
 
         Result CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params );
 

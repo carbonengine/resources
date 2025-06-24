@@ -682,7 +682,7 @@ namespace CarbonResources
     	{
     		if( YAML::Node parameter = resource[m_binaryOperation.GetTag()] )
     		{
-    			m_binaryOperation = parameter.as<unsigned long>();
+    			m_binaryOperation = parameter.as<unsigned int>();
     		}
     		else
     		{
@@ -973,7 +973,6 @@ namespace CarbonResources
 	{
 		std::string chunk;
 		std::string checksum;
-    	size_t size;
 
     	m_uncompressedSize = matchSize;
 

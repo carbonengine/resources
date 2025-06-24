@@ -12,7 +12,7 @@ namespace ResourceTools
 class ChunkIndex
 {
 public:
-	ChunkIndex( std::filesystem::path fileToIndex, size_t chunkSize, const std::filesystem::path& indexFolder, StatusCallback statusCallback=nullptr );
+	ChunkIndex( std::filesystem::path fileToIndex, uint32_t chunkSize, const std::filesystem::path& indexFolder, StatusCallback statusCallback=nullptr );
 	~ChunkIndex();
 	bool Generate();
 	bool FindChunkOffsets( uint32_t chunk, std::vector<size_t>& offsets );
@@ -24,7 +24,7 @@ private:
 	bool IsRelevant( uint32_t checksum );
 
 	std::filesystem::path m_fileToIndex;
-	size_t m_chunkSize;
+	uint32_t m_chunkSize;
 	std::vector<std::filesystem::path> m_indexFiles;
 	size_t m_currentIndexFile;
 	StatusCallback m_statusCallback;

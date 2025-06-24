@@ -148,7 +148,7 @@ namespace CarbonResources
 						// Update status
 						if( params.statusCallback )
 						{
-							float percentage = (100.0 / fileStreamIn.Size()) * fileStreamIn.GetCurrentPosition();
+							auto percentage = static_cast<unsigned int>( ( 100 * fileStreamIn.GetCurrentPosition() ) / fileStreamIn.Size() );
 							params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentage, "Percentage Update" );
 						}
 
@@ -239,7 +239,19 @@ namespace CarbonResources
         switch (documentType)
         {
 		case DocumentType::CSV:
+#ifdef _MSC_VER
+#pragma warning( push )
+#pragma warning( disable : 4996 ) // Suppress deprecation warning.
+#elif __APPLE__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
 			return ImportFromCSV( data );
+#ifdef _MSC_VER
+#pragma warning ( pop )
+#elif __APPLE__
+#pragma clang diagnostic pop
+#endif
 		case DocumentType::YAML:
 			return ImportFromYamlString( data );
 		default:
@@ -278,7 +290,19 @@ namespace CarbonResources
 
         if( extension == ".txt" )
         {
+#ifdef _MSC_VER
+#pragma warning( push )
+#pragma warning( disable : 4996 ) // Suppress deprecation warning.
+#elif __APPLE__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
 			importResult = ImportFromCSV( data, params.statusCallback );
+#ifdef _MSC_VER
+#pragma warning( pop )
+#elif __APPLE__
+#pragma clang diagnostic pop
+#endif
         }
 		else if( extension == ".yml" || extension == ".yaml" || extension.empty() )
 		{
@@ -432,7 +456,7 @@ namespace CarbonResources
 			}
 			else
 			{
-				resourceParams.binaryOperation = atol( value.c_str() );
+				resourceParams.binaryOperation = atoi( value.c_str() );
 			}
 
             // ResourceGroup gets upgraded to 0.1.0
@@ -745,7 +769,7 @@ namespace CarbonResources
 					return Result{ ResultType::FAIL };
                 }
 
-				float percentage = (100.0 / m_resourcesParameter.GetValue()->size()) * i;
+				auto percentage = static_cast<unsigned int>( ( 100 * i ) / m_resourcesParameter.GetValue()->size() );
 
                 std::string message = "Exporting: " + relativePath.string();
 
@@ -805,7 +829,7 @@ namespace CarbonResources
 			// Update status
 			if( statusCallback )
 			{
-				float percentage = (100.0 / m_resourcesParameter.GetValue()->size()) * i;
+				auto percentage = static_cast<unsigned int>( ( 100 * i ) / m_resourcesParameter.GetValue()->size() );
 				statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentage, "Percentage Update" );
 				i++;
 			}
@@ -954,7 +978,7 @@ namespace CarbonResources
 					message = "Processing: " + relativePath.string();
 				}
 
-				float percentComplete = ( 100.0 / toBundle.size() ) * i;
+				auto percentComplete = static_cast<unsigned int>( ( 100 * i ) / toBundle.size() );
 
                 i++;
 
@@ -1235,7 +1259,7 @@ namespace CarbonResources
 
             if( params.statusCallback )
 			{
-				float percentageComplete = ( 100.0 / resourceGroupSubtractionLatest.m_resourcesParameter.GetSize() ) * i;
+				auto percentageComplete = static_cast<unsigned int>( ( 100 * i ) / resourceGroupSubtractionLatest.m_resourcesParameter.GetSize() );
 
                 std::filesystem::path relativePath;
 
@@ -1341,13 +1365,9 @@ namespace CarbonResources
 					params.statusCallback(StatusLevel::DETAIL, StatusProgressType::PERCENTAGE, 0, message);
         		}
 
-            	int chunkNumber = 0;
-            	std::filesystem::path asdf;
-            	resourceNext->GetRelativePath( asdf );
                 // Process one chunk at a time
 				for( uintmax_t dataOffset = 0; dataOffset < nextUncompressedSize; dataOffset += params.maxInputFileChunkSize )
                 {
-					++chunkNumber;
 					std::string previousFileData = "";
 
 					if( previousFileDataStream.IsFinished() )
@@ -1404,7 +1424,7 @@ namespace CarbonResources
                     	// It should also handle small changes in moved parts of the file pretty well.
                     	if( params.statusCallback )
                     	{
-                    		size_t progress = dataOffset * 100 / nextUncompressedSize;
+                    		unsigned int progress = static_cast<uint32_t>( ( dataOffset * 100 ) / nextUncompressedSize );
                     		std::stringstream ss;
                     		ss << "Generating patch files: " << relativePath.string();
                     		params.statusCallback( StatusLevel::DETAIL, StatusProgressType::PERCENTAGE, progress, ss.str() );
@@ -1724,7 +1744,7 @@ namespace CarbonResources
 
 				std::string message = "Processing: " + relativePath.string();
 
-                float percentComplete = ( 100.0 / m_resourcesParameter.GetSize() ) * i;
+                auto percentComplete = static_cast<unsigned int>( ( 100 * i )  / m_resourcesParameter.GetSize() );
 
 				params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, message );
 				
@@ -1798,7 +1818,7 @@ namespace CarbonResources
 					return getRelativePathResult;
                 }
     			std::string message = "Processing new resource: " + relativePath.string();
-    			float percentComplete = ( 100.0 / m_resourcesParameter.GetSize() ) * i;
+    			auto percentComplete = static_cast<unsigned int>( ( 100 * i ) / m_resourcesParameter.GetSize() );
     			params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, message );
     			i++;
     		}
@@ -1844,7 +1864,7 @@ namespace CarbonResources
 					return getRelativePathResult;
                 }
     			std::string message = "Processing removed resource: " + relativePath.string();
-    			float percentComplete = ( 100.0 / m_resourcesParameter.GetSize() ) * i;
+    			auto percentComplete = static_cast<uint32_t>( ( 100 * i ) / m_resourcesParameter.GetSize() );
     			params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, message );
     			i++;
     		}

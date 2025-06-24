@@ -45,7 +45,7 @@ namespace CarbonResources
     *  @var PatchApplyParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-    struct API PatchApplyParams final
+    struct PatchApplyParams final
     {
 		ResourceSourceSettings nextBuildResourcesSourceSettings{ ResourceSourceType::LOCAL_RELATIVE };
 

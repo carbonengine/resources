@@ -137,7 +137,7 @@ namespace CarbonResources
 					message = "Rebuilding: " + relativePath.string();
 				}
 
-				float percentage = ( 100.0f / numResources ) * numProcessed;
+				auto percentage = static_cast<unsigned int>( ( 100 * numProcessed ) / numResources );
 
 				params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentage, message );
 
