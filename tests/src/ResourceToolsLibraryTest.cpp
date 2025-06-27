@@ -266,6 +266,11 @@ TEST_F( ResourceToolsTest, ResourceChunking )
 
 	ss << ".chunk";
 
+	if( !std::filesystem::exists( "Chunks" ) )
+	{
+		std::filesystem::create_directories( "Chunks" );
+	}
+
 	std::string chunkPath = ss.str();
 
 	std::filesystem::rename( chunk.uncompressedChunkIn->GetPath(), chunkPath );
