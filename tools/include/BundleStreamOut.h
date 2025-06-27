@@ -20,6 +20,10 @@
 #ifndef BundleStreamOut_H
 #define BundleStreamOut_H
 
+#include <FileDataStreamIn.h>
+#include <FileDataStreamOut.h>
+#include <ScopedFile.h>
+
 #include <string>
 #include "GzipCompressionStream.h"
 
@@ -28,28 +32,35 @@ namespace ResourceTools
 
     struct GetChunk
 	{
-		std::string* data = nullptr;
+    	std::shared_ptr<ResourceTools::FileDataStreamIn> uncompressedChunkIn;
 
-        bool clearCache = false;
+    	std::shared_ptr<ResourceTools::FileDataStreamIn> compressedChunkIn;
+
+        bool clearCache{false};
+
+    	bool outOfChunks{false};
 	};
 
     class BundleStreamOut
     {
 	public:
-		BundleStreamOut( uintmax_t chunkSize );
+		BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory );
 
 		~BundleStreamOut();
 
-        bool operator<<( const std::string& data ); 
+        bool operator<<( std::shared_ptr<ResourceTools::FileDataStreamIn> streamIn );
 
         // Outputs chunks
 		bool operator>>( GetChunk& data );
 
-    	uintmax_t GetChunkSize() const;
-
-    	bool ReadBytes( size_t n, std::string& data );
+		bool Flush();
 
     private:
+		bool AddChunkFilesToGetChunk( GetChunk& data );
+
+		bool InitializeOutputStreams();
+
+		std::vector<std::shared_ptr<ResourceTools::ScopedFile>> m_chunkFiles;
 
 		uintmax_t m_chunkSize;
 
@@ -57,10 +68,19 @@ namespace ResourceTools
 
         std::string m_uncompressedData;
 
-        std::string m_compressedData;
+		std::string m_compressedData;
 
-        GzipCompressionStream* m_compressionStream;
+		std::unique_ptr<GzipCompressionStream> m_compressionStream;
 
+		std::unique_ptr<ResourceTools::FileDataStreamOut> m_compressedOut;
+
+		std::unique_ptr<ResourceTools::FileDataStreamOut> m_uncompressedOut;
+
+		std::filesystem::path m_outputDirectory;
+
+		uint32_t m_chunksCreated{0};
+
+		uint32_t m_chunksExported{0};
     };
  
 }

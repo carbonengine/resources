@@ -41,6 +41,10 @@ namespace ResourceTools
 
         uintmax_t GetCacheSize();
 
+		uintmax_t GetChunkSize() const;
+
+		bool ReadBytes( size_t n, std::string& data );
+
 		bool operator<<( const std::string& chunkData );
 
 		bool operator>>( GetFile& fileData );

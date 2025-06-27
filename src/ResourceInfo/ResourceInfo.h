@@ -252,7 +252,7 @@ namespace CarbonResources
 	{
 		ResourceSourceSettings resourceSourceSettings;
 
-		ResourceTools::FileDataStreamIn* dataStream = nullptr;
+		std::shared_ptr<ResourceTools::FileDataStreamIn> dataStream;
 
         std::filesystem::path cacheBasePath = "cache";
 
@@ -330,6 +330,12 @@ namespace CarbonResources
 
     	Result SetParametersFromSourceStream( ResourceTools::FileDataStreamIn& stream, size_t matchSize );
 
+		void SetMd5Checksum( const std::string& checksum );
+
+    	void SetCompressedSize( uintmax_t compressedSize );
+
+    	void SetUncompressedSize( uintmax_t uncompressedSize );
+
         virtual Result SetParametersFromResource( const ResourceInfo* other, const VersionInternal& documentVersion );
 
         bool operator==( const ResourceInfo* other ) const;
@@ -360,6 +366,8 @@ namespace CarbonResources
 		Result PutDataStreamLocalCdn( ResourcePutDataStreamParams& params ) const;
 
         Result PutDataRemoteCdn( ResourcePutDataParams& params ) const;
+
+    	Result UpdateLocation(); // Regenerate location parameter after changing checksum or relative path.
 
     protected:
 

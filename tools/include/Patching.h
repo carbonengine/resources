@@ -5,6 +5,7 @@
 
 #include <string>
 #include <filesystem>
+#include <BundleStreamIn.h>
 
 
 namespace fs = std::filesystem;
@@ -22,18 +23,18 @@ bool CreatePatchFile( fs::path before, fs::path after, fs::path patch );
 
 bool ApplyPatchFile( fs::path target, fs::path patch );
 
-bool ApplyPatchFileChunked( fs::path target, BundleStreamOut patch );
+bool ApplyPatchFileChunked( fs::path target, BundleStreamIn& patch );
 
 class PatchData
 {
 public:
-	PatchData( BundleStreamOut* data, void* bufferStart, size_t outFileLength )
+	PatchData( BundleStreamIn* data, void* bufferStart, size_t outFileLength )
 	{
 		m_data = data;
 		m_bufferStart = bufferStart;
 		m_outFileLength = outFileLength;
 	}
-	BundleStreamOut* m_data;
+	BundleStreamIn* m_data;
 	void* m_bufferStart;
 	size_t m_outFileLength;
 };
