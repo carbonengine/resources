@@ -64,7 +64,7 @@ set(SRC_FILES
     src/ParameterVersion.cpp
 )
 
-add_library(carbon-resources SHARED ${SRC_FILES})
+ccp_add_library(carbon-resources SHARED ${SRC_FILES})
 
 target_compile_definitions(carbon-resources PRIVATE EXPORT_LIBRARY)
 
@@ -89,7 +89,7 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
 set_target_properties(carbon-resources PROPERTIES OUTPUT_NAME "_carbon-resources")
 
 # Static lib, exported and used for cli
-add_library(carbon-resources-static STATIC ${SRC_FILES})
+ccp_add_library(carbon-resources-static STATIC ${SRC_FILES})
 
 set_target_properties(carbon-resources-static PROPERTIES OUTPUT_NAME "_carbon-resources-static")
 
