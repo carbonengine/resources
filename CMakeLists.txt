@@ -97,7 +97,7 @@ if(WIN32)
     target_compile_definitions(carbon-resources-static PRIVATE NOMINMAX) # Do not define min/max macros.
 endif()
 
-target_link_libraries(carbon-resources-static PRIVATE carbon-resources-tools yaml-cpp::yaml-cpp)
+target_link_libraries(carbon-resources-static PRIVATE $<BUILD_LOCAL_INTERFACE:carbon-resources-tools> yaml-cpp::yaml-cpp)
 
 target_include_directories(carbon-resources-static
         PUBLIC
@@ -150,15 +150,17 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     if(INSTALL_BIN_ONLY)
         # Install rule to ensure that our runtime files are in the expected, platform-specific folder
         install(
-                TARGETS carbon-resources
+                TARGETS carbon-resources carbon-resources-static
                 EXPORT carbon-resourcesTarget
                 CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
+                LIBRARY DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
+                ARCHIVE DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
                 RUNTIME DESTINATION bin/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
         )
     else()
         # Install rule to ensure that our runtime and linker files are in the expected, platform-specific folders
         install(
-                TARGETS carbon-resources
+                TARGETS carbon-resources carbon-resources-static
                 EXPORT carbon-resourcesTarget
                 CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
                 LIBRARY DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
