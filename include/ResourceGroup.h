@@ -217,11 +217,12 @@ namespace CarbonResources
     /** @class ResourceGroup
     *  @brief Contains a collection of Resources
     */
-    // TODO lock down things like copy constructors for these public classes
     class API ResourceGroup
     {
 	protected:
         ResourceGroup( ResourceGroupImpl* impl );
+
+        ResourceGroup( const ResourceGroup& ) = delete;
 
 		ResourceGroupImpl* m_impl;
 

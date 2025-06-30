@@ -17,6 +17,7 @@
 #include "PatchResourceGroupImpl.h"
 #include "BundleResourceGroupImpl.h"
 #include "ChunkIndex.h"
+#include "ResourceGroupFactory.h"
 
 namespace CarbonResources
 {
@@ -37,7 +38,10 @@ namespace CarbonResources
 
     ResourceGroupImpl::~ResourceGroupImpl()
     {
-		m_resourcesParameter.Clear();
+        for (ResourceInfo* resourceInfo : m_resourcesParameter)
+        {
+			delete resourceInfo;
+        }
     }
 
     Result ResourceGroupImpl::CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params )
@@ -551,20 +555,19 @@ namespace CarbonResources
 
 	Result ResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut )
 	{
-		resourceOut = new ResourceInfo( ResourceInfoParams{} );
+		std::unique_ptr<ResourceInfo> resourceInfo;
+      
+		Result createResourceInfoResult = CreateResourceInfoFromYamlNode( resource, resourceInfo, m_versionParameter.GetValue() );
 
-		Result importFromYamlResult = resourceOut->ImportFromYaml( resource, m_versionParameter.GetValue() );
-
-        if( importFromYamlResult.type != ResultType::SUCCESS )
+        if( createResourceInfoResult.type != ResultType::SUCCESS )
 		{
-			delete resourceOut;
 
-			resourceOut = nullptr;
-
-			return importFromYamlResult;
+			return createResourceInfoResult;
 		}
         else
         {
+			resourceOut = resourceInfo.release();
+
 			return Result{ ResultType::SUCCESS };
         }
 
@@ -616,7 +619,10 @@ namespace CarbonResources
         // If version is greater than the max version supported at compile then ceil to that
         if (version > S_DOCUMENT_VERSION)
         {
-            //TODO there should perhaps be a warning that some data will be missed
+			if( statusCallback )
+            {
+				statusCallback( StatusLevel::OVERVIEW, StatusProgressType::WARNING, 0, "Supplied resource group version greater than carbon-resources build max version. Some data may be lost during import." );
+            }
 			version = S_DOCUMENT_VERSION;
         }
 
@@ -847,7 +853,7 @@ namespace CarbonResources
     Result ResourceGroupImpl::ProcessChunk( std::string& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const
     {
 		// Create resource from Patch Data
-		BundleResourceInfo* chunkResource = new BundleResourceInfo( { chunkRelativePath } ); // TODO it feels strange that this is a BundleResource but it is referred to as a chunk
+		BundleResourceInfo* chunkResource = new BundleResourceInfo( { chunkRelativePath } );
 
 		chunkResource->SetParametersFromData( chunkData );
 
@@ -880,32 +886,6 @@ namespace CarbonResources
         return Result{ ResultType::SUCCESS };
     }
 
-
-    // TODO - Create chunks based on compressed size
-	/*
-    * Currently the cache is built up with data (best uncompressed)
-    * Then chunks are created from the uncompressed data
-    * The chunks would then be compressed when saved for upload (external to this process)
-    * We could compress the data before sending it to bundle, but
-    * that would then incur double compression and so we don't get best compression
-    * 
-    * What we want to do is gather the cache as before using uncompressed data
-    * but when creating the chunk it wants to compress the output first to see if
-    * the resulting chunk is then over the chunk threshold, if not it should
-    * add chunks to the resulting chunk and then compress both chunks of uncompressed data together
-    * until the compressed size of the combined chunks matches or exceededs the target chunk size.
-    * However, the return data from this should return the uncompressed data.
-    * Which as stated before would be compressed before upload.
-    * 
-    * This would give chunks with a slight size variation.
-    * It would join files with great compression ratios together but also split large files.
-    * 
-    * It will give better compression when multiple files are joined. 
-    * eg. if a patchResourceGroup often contains lots of patch files with fantastic compression ratios
-    * Chunking just based on uncompressed size would result in compressed chunks that are also tiny.
-    * Chunking as above would join many patches into a single chunk that when compressed would likely create
-    * A better compression ratio of the joined data and also a file size which is closer to the requested chunk size of the bundle.
-    */
     Result ResourceGroupImpl::CreateBundle( const BundleCreateParams& params ) const
     {
 		// Update status
@@ -1110,7 +1090,7 @@ namespace CarbonResources
 
 		ResourcePutDataParams putDataParams;
 
-		putDataParams.resourceDestinationSettings = params.chunkDestinationSettings; // TODO the resource list is going where the chunks are, perhaps this is missleading
+		putDataParams.resourceDestinationSettings = params.chunkDestinationSettings;
 
 		putDataParams.data = &resourceGroupData;
 
@@ -1180,7 +1160,7 @@ namespace CarbonResources
     	}
 
 		PatchResourceInfoParams patchResourceInfoParams;
-		std::string patchFilename = params.patchFileRelativePathPrefix.string() + "." + std::to_string( patchId ); // TODO odd
+		std::string patchFilename = params.patchFileRelativePathPrefix.string() + "." + std::to_string( patchId );
 		patchResourceInfoParams.relativePath = patchFilename;
 		patchResourceInfoParams.targetResourceRelativePath = resourceLatestRelativePath;
 		patchResourceInfoParams.dataOffset = dataOffset;
@@ -1198,6 +1178,10 @@ namespace CarbonResources
 			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Patch" );
 		}
 
+        std::string previousGroupType = params.previousResourceGroup->m_impl->GetType();
+
+        std::string nextGroupType = GetType();
+
         if (params.previousResourceGroup->m_impl->GetType() != GetType())
         {
 			return Result{ ResultType::PATCH_RESOURCE_LIST_MISSMATCH };
@@ -1206,20 +1190,35 @@ namespace CarbonResources
         PatchResourceGroupImpl patchResourceGroup;
 
         patchResourceGroup.SetMaxInputChunkSize( params.maxInputFileChunkSize );
+        
+        // Created resource groups
 
-        // Subtraction //TODO this needs to match the format of the original input resource lists
-        // Put in place when there is a factory
-		ResourceGroupImpl resourceGroupSubtractionPrevious;
+        std::shared_ptr<ResourceGroupImpl> resourceGroupSubtractionPrevious;
 
-        ResourceGroupImpl resourceGroupSubtractionLatest;
+		Result createPreviousResourceGroupResult = CreateResourceGroupFromString( previousGroupType, resourceGroupSubtractionPrevious );
+
+        if (createPreviousResourceGroupResult.type != ResultType::SUCCESS)
+        {
+			return createPreviousResourceGroupResult;
+        }
+
+        std::shared_ptr<ResourceGroupImpl> resourceGroupSubtractionNext;
+
+		Result createNextResourceGroupResult = CreateResourceGroupFromString( nextGroupType, resourceGroupSubtractionNext );
+
+		if( createNextResourceGroupResult.type != ResultType::SUCCESS )
+		{
+			return createNextResourceGroupResult;
+		}
+
 
         ResourceGroupSubtractionParams resourceGroupSubtractionParams;
 
 		resourceGroupSubtractionParams.subtractResourceGroup = params.previousResourceGroup->m_impl;
 
-		resourceGroupSubtractionParams.result1 = &resourceGroupSubtractionPrevious;
+		resourceGroupSubtractionParams.result1 = resourceGroupSubtractionPrevious.get();
 
-        resourceGroupSubtractionParams.result2 = &resourceGroupSubtractionLatest;
+        resourceGroupSubtractionParams.result2 = resourceGroupSubtractionNext.get();
 
         resourceGroupSubtractionParams.statusCallback = params.statusCallback;
 
@@ -1237,7 +1236,7 @@ namespace CarbonResources
         }
 
         // Ensure that the diff results have the same number of members
-        if (resourceGroupSubtractionPrevious.m_resourcesParameter.GetSize() != resourceGroupSubtractionLatest.m_resourcesParameter.GetSize())
+        if (resourceGroupSubtractionPrevious->m_resourcesParameter.GetSize() != resourceGroupSubtractionNext->m_resourcesParameter.GetSize())
         {
 			return Result{ ResultType::UNEXPECTED_PATCH_DIFF_ENCOUNTERED };
         }
@@ -1250,16 +1249,16 @@ namespace CarbonResources
 			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 40, "Generating Patches" );
 		}
 
-        for (int i = 0; i < resourceGroupSubtractionLatest.m_resourcesParameter.GetSize(); i++)
+        for (int i = 0; i < resourceGroupSubtractionNext->m_resourcesParameter.GetSize(); i++)
         {
 			
-			ResourceInfo* resourcePrevious = resourceGroupSubtractionPrevious.m_resourcesParameter.At( i );
+			ResourceInfo* resourcePrevious = resourceGroupSubtractionPrevious->m_resourcesParameter.At( i );
 
-			ResourceInfo* resourceNext = resourceGroupSubtractionLatest.m_resourcesParameter.At( i );
+			ResourceInfo* resourceNext = resourceGroupSubtractionNext->m_resourcesParameter.At( i );
 
             if( params.statusCallback )
 			{
-				auto percentageComplete = static_cast<unsigned int>( ( 100 * i ) / resourceGroupSubtractionLatest.m_resourcesParameter.GetSize() );
+				auto percentageComplete = static_cast<unsigned int>( ( 100 * i ) / resourceGroupSubtractionNext->m_resourcesParameter.GetSize() );
 
                 std::filesystem::path relativePath;
 
@@ -1303,7 +1302,9 @@ namespace CarbonResources
 			}
 
 
-            if( previousUncompressedSize != 0 ) // TODO make a note of what is going on here, it is confusing
+            // If previous size is 0 this suggests that this is a new entry in latest
+			// In which case there is no reason to create a patch
+            if( previousUncompressedSize != 0 )
             {
 				// Get resource data previous
 				ResourceTools::FileDataStreamIn previousFileDataStream( params.maxInputFileChunkSize );
@@ -1505,12 +1506,6 @@ namespace CarbonResources
                     	}
                     	patchSourceOffsetDelta = nextFileData.size();
                     }
-					
-
-                    //TODO handle the case where previousFileData and nextFileData match, in this case don't create a patch
-
-
-
 
 					PatchResourceInfo* patchResource{nullptr};
 					ConstructPatchResourceInfo( params, patchId, dataOffset, patchSourceOffset, resourceNext, patchResource );
@@ -1571,7 +1566,7 @@ namespace CarbonResources
         // Export the subtraction ResourceGroup
         std::string resourceGroupData;
 
-        Result exportResourceGroupSubtractionLatestResult = resourceGroupSubtractionLatest.ExportToData( resourceGroupData );
+        Result exportResourceGroupSubtractionLatestResult = resourceGroupSubtractionNext->ExportToData( resourceGroupData );
 
         if (exportResourceGroupSubtractionLatestResult.type != ResultType::SUCCESS)
         {

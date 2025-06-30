@@ -34,7 +34,7 @@ namespace ResourceTools
 
         bool Start();
 
-		bool operator<<( std::string* toCompress );
+		bool operator<<( const std::string* toCompress );
 
         bool Finish();
 

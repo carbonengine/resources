@@ -71,6 +71,8 @@ namespace CarbonResources
     public:
 		PatchResourceGroup( );
 
+        PatchResourceGroup( const PatchResourceGroup& ) = delete;
+
 	    ~PatchResourceGroup();
 
         /// @brief Applies the Patches from the BundleResourceGroup.

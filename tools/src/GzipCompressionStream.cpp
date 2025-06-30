@@ -75,7 +75,7 @@ namespace ResourceTools
   	return true;
   }
 
-  bool GzipCompressionStream::operator<<( std::string* toCompress )
+  bool GzipCompressionStream::operator<<( const std::string* toCompress )
   {
       if (!m_compressionInProgress)
       {

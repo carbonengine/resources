@@ -18,11 +18,13 @@ namespace ResourceTools
 	  }
   }
 
-  void FileDataStreamOut::Finish()
+  bool FileDataStreamOut::Finish()
   {
 	  m_writeInProgress = false;
 
 	  m_outputStream.close();
+
+      return true;
   }
 
   bool FileDataStreamOut::IsFinished()

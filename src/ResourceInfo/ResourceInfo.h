@@ -114,11 +114,6 @@ namespace CarbonResources
 
         void Clear()
         {
-            for (T attribute : m_collection)
-            {
-				delete attribute;   //TODO T might not be a pointer
-            }
-
             m_collection.clear();
         }
 
@@ -224,6 +219,10 @@ namespace CarbonResources
         {
 			return location;
         }
+
+    private:
+
+        std::string CalculateLocationFromChecksums( const std::string& relativePathChecksum, const std::string& dataChecksum ) const;
 
 	private:
 
@@ -358,6 +357,8 @@ namespace CarbonResources
         Result PutDataStreamLocalRelative( ResourcePutDataStreamParams& params ) const;
 
 		Result PutDataStreamLocalCdn( ResourcePutDataStreamParams& params ) const;
+
+        Result PutDataStreamRemoteCdn( ResourcePutDataStreamParams& params ) const;
 
         Result PutDataRemoteCdn( ResourcePutDataParams& params ) const;
 

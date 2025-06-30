@@ -14,9 +14,23 @@
 
 #include "../ResourceGroupImpl.h"
 
+#include "CompressedFileDataStreamOut.h"
+
 namespace CarbonResources
 {
-    // TODO split this into own file
+
+    std::string Location::CalculateLocationFromChecksums( const std::string& relativePathChecksum, const std::string& dataChecksum ) const
+    {
+		std::stringstream ss; 
+		ss << relativePathChecksum.substr( 0, 2 );
+		ss << "/";
+		ss << relativePathChecksum;
+		ss << "_";
+		ss << dataChecksum;
+
+        return ss.str();
+    }
+
     Result Location::SetFromRelativePathAndDataChecksum(const std::filesystem::path& relativePath, const std::string& dataChecksum)
     {
 		std::string relativePathChecksum = "";
@@ -26,14 +40,7 @@ namespace CarbonResources
 			return Result{ ResultType::FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUM };
 		}
 
-		std::stringstream ss2;// TODO naming and pull out of here
-		ss2 << relativePathChecksum.substr( 0, 2 );
-		ss2 << "/";
-		ss2 << relativePathChecksum;
-		ss2 << "_";
-		ss2 << dataChecksum;
-
-		location = ss2.str();
+		location = CalculateLocationFromChecksums( relativePathChecksum, dataChecksum );
 
 		return Result{ ResultType::SUCCESS };
     }
@@ -199,8 +206,7 @@ namespace CarbonResources
 
         case ResourceDestinationType::REMOTE_CDN:
 
-            // TODO Requires chunked compression that is not yet implemented
-			return Result{ ResultType::FAILED_TO_SAVE_FILE };
+            return PutDataStreamRemoteCdn( params );
 
 		default:
 			return Result{ ResultType::FAILED_TO_SAVE_FILE };
@@ -338,6 +344,19 @@ namespace CarbonResources
 			return Result{ ResultType::FAILED_TO_SAVE_FILE };
 		}
     }
+
+    Result ResourceInfo::PutDataStreamRemoteCdn( ResourcePutDataStreamParams& params ) const
+	{
+        // Ensure the correct type has been passed to compress
+		ResourceTools::CompressedFileDataStreamOut* castTest = dynamic_cast<ResourceTools::CompressedFileDataStreamOut*>( params.dataStream );
+
+        if (!castTest)
+        {
+			return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
+        }
+
+        return PutDataStreamLocalCdn( params );
+	}
 
 
     Result ResourceInfo::GetDataStream( ResourceGetDataStreamParams& params ) const
@@ -532,7 +551,6 @@ namespace CarbonResources
         }
     }
 
-    // TODO this is where retry logic should reside
 	Result ResourceInfo::GetDataRemoteCdn( ResourceGetDataParams& params, const int basePathId ) const
     {
 		if( basePathId >= params.resourceSourceSettings.basePaths.size() )
