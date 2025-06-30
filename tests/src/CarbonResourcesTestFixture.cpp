@@ -20,22 +20,6 @@ void CarbonResourcesTestFixture::TearDown()
 	
 }
 
-bool CarbonResourcesTestFixture::BundleIsValid()
-{
-    // TODO - This will check that the bundleResourceGroup file is valid
-    // It will also check all the files in the list
-    // And check all their checksums
-    // Should it unbundle and check that too?
-	return false;
-}
-
-bool CarbonResourcesTestFixture::PatchIsValid()
-{
-    // TODO will do similar to above,
-    // Probably there should be a function for resourceGroup is valid too and these utilise that.
-	return false;
-}
-
 bool CarbonResourcesTestFixture::FilesMatch( const std::filesystem::path& file1Path, const std::filesystem::path& file2Path )
 {
     // Open files generate data checksums and compare

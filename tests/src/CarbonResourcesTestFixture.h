@@ -31,10 +31,6 @@ struct CarbonResourcesTestFixture : public ::testing::Test
 
 	void TearDown();
 
-    bool BundleIsValid();
-
-    bool PatchIsValid();
-
     std::filesystem::path GetTestFileFileAbsolutePath( const std::filesystem::path& relativePath );
 
     bool FilesMatch( const std::filesystem::path& file1Path, const std::filesystem::path& file2Path );

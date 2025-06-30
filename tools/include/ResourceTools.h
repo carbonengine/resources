@@ -41,9 +41,6 @@ namespace CryptoPP
 namespace ResourceTools
 {
 
-    // TODO expect all these signatures to move around, just made off the top of my head so far
-    // Not settled on correct approach to manage data etc
-
 	class BundleStreamOut;
 
 	struct ChunkMatch

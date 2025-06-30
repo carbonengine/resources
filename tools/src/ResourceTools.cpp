@@ -90,7 +90,7 @@ namespace ResourceTools
 	  checksum = ss.str();
 
 	  //Pad with zeros to get to correct size
-	  while( checksum.size() < 16 )// TODO constant
+	  while( checksum.size() < 16 )
 	  {
 		  checksum = "0" + checksum;
 	  }

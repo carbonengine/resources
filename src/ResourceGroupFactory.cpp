@@ -6,10 +6,17 @@
 #include "PatchResourceGroupImpl.h"
 #include "BundleResourceGroupImpl.h"
 
+#include "ResourceInfo/BundleResourceGroupInfo.h"
+#include "ResourceInfo/BundleResourceInfo.h"
+#include "ResourceInfo/PatchResourceGroupInfo.h"
+#include "ResourceInfo/PatchResourceInfo.h"
+#include "ResourceInfo/ResourceGroupInfo.h"
+#include "ResourceInfo/ResourceInfo.h"
+
 
 namespace CarbonResources
 {
-	Result CreateFromYamlString( const std::string& yamlString, std::shared_ptr<ResourceGroupImpl>& out )
+	Result CreateResourceGroupFromYamlString( const std::string& yamlString, std::shared_ptr<ResourceGroupImpl>& out )
 	{
 	    YAML::Node root;
     	try
@@ -27,22 +34,93 @@ namespace CarbonResources
 		}
 		auto resourceGroupTypeString = type.as<std::string>();
 
-		if( resourceGroupTypeString == ResourceGroupImpl::TypeId() )
+        Result createFromStringResult = CreateResourceGroupFromString( resourceGroupTypeString, out );
+
+        if( createFromStringResult.type != ResultType::SUCCESS )
+        {
+			return createFromStringResult;
+        }
+
+		return out->ImportFromYaml( root );
+	}
+
+    Result CreateResourceGroupFromString(std::string& string, std::shared_ptr<ResourceGroupImpl>& out)
+    {
+		if( string == ResourceGroupImpl::TypeId() )
 		{
 			out = std::make_shared<ResourceGroupImpl>();
 		}
-		else if( resourceGroupTypeString == PatchResourceGroupImpl::TypeId() )
+		else if( string == PatchResourceGroupImpl::TypeId() )
 		{
 			out = std::make_shared<PatchResourceGroupImpl>();
 		}
-		else if( resourceGroupTypeString == BundleResourceGroupImpl::TypeId() )
+		else if( string == BundleResourceGroupImpl::TypeId() )
 		{
 			out = std::make_shared<BundleResourceGroupImpl>();
 		}
 		else
 		{
-			return Result{ ResultType::MALFORMED_RESOURCE_GROUP, "Unexpected Resource Group Type: '" + resourceGroupTypeString + "'." };
+			return Result{ ResultType::MALFORMED_RESOURCE_GROUP, "Unexpected Resource Group Type: '" + string + "'." };
 		}
-		return out->ImportFromYaml( root );
+
+        return Result{ ResultType::SUCCESS };
+    }
+
+
+
+
+    Result CreateResourceInfoFromYamlNode( YAML::Node& resource, std::unique_ptr<ResourceInfo>& out, const VersionInternal& documentVersion )
+	{
+		YAML::Node type = resource["Type"];
+		if( !type.IsDefined() )
+		{
+			return Result{ ResultType::MALFORMED_RESOURCE, "Tried to load a resource info without a 'Type' attribute." };
+		}
+		auto resourceGroupTypeString = type.as<std::string>();
+
+		Result createFromStringResult = CreateResourceInfoFromString( resourceGroupTypeString, out );
+
+		if( createFromStringResult.type != ResultType::SUCCESS )
+		{
+			return createFromStringResult;
+		}
+
+		return out->ImportFromYaml( resource, documentVersion );
 	}
-}
+
+	Result CreateResourceInfoFromString( std::string& string, std::unique_ptr<ResourceInfo>& out )
+	{
+
+		if( string == BundleResourceGroupInfo::TypeId() )
+		{
+			out = std::make_unique<BundleResourceGroupInfo>( BundleResourceGroupInfoParams {});
+		}
+		else if( string == BundleResourceInfo::TypeId() )
+		{
+			out = std::make_unique<BundleResourceInfo>( BundleResourceInfoParams{} );
+		}
+		else if( string == PatchResourceGroupInfo::TypeId() )
+		{
+			out = std::make_unique<PatchResourceGroupInfo>( PatchResourceGroupInfoParams{} );
+		}
+		else if( string == PatchResourceInfo::TypeId() )
+		{
+			out = std::make_unique<PatchResourceInfo>( PatchResourceInfoParams{} );
+		}
+		else if( string == ResourceGroupInfo::TypeId() )
+		{
+			out = std::make_unique<ResourceGroupInfo>( ResourceGroupInfoParams{} );
+		}
+		else if( string == ResourceInfo::TypeId() )
+		{
+			out = std::make_unique<ResourceInfo>( ResourceInfoParams{} );
+		}
+		
+		else
+		{
+			return Result{ ResultType::MALFORMED_RESOURCE, "Unexpected Resource Info Type: '" + string + "'." };
+		}
+
+		return Result{ ResultType::SUCCESS };
+	}
+	}

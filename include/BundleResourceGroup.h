@@ -55,6 +55,8 @@ namespace CarbonResources
 
 	    BundleResourceGroup( );
 
+        BundleResourceGroup( const BundleResourceGroup& ) = delete;
+
 	    ~BundleResourceGroup();
 
         /// @brief Unpacks the Resoruces from the BundleResourceGroup.

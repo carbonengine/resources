@@ -32,13 +32,13 @@ namespace ResourceTools
 	public:
 		FileDataStreamOut( );
 
-		~FileDataStreamOut();
+		virtual ~FileDataStreamOut();
 
-		void Finish();
+		virtual bool Finish();
 
 		bool IsFinished();
 
-		bool StartWrite( std::filesystem::path filepath );
+		virtual bool StartWrite( std::filesystem::path filepath );
 
 		bool operator<<( const std::string& data );
 

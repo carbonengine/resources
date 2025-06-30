@@ -12,6 +12,7 @@
 #include "ChunkIndex.h"
 #include "FileDataStreamIn.h"
 #include "FileDataStreamOut.h"
+#include "CompressedFileDataStreamOut.h"
 #include "GzipCompressionStream.h"
 #include "GzipDecompressionStream.h"
 #include "Md5ChecksumStream.h"
@@ -164,6 +165,63 @@ TEST_F( ResourceToolsTest, GZipUncompressString )
 	std::string outputData = "";
 	EXPECT_TRUE( ResourceTools::GZipUncompressData( inputDataToUncompress, outputData ) );
 	EXPECT_EQ( outputData, "SomeData" );
+}
+
+TEST_F(ResourceToolsTest, FileDataStremOut)
+{
+	ResourceTools::FileDataStreamOut out;
+
+    std::filesystem::path outputPath = "FileDataStreamOut.txt";
+
+    EXPECT_TRUE( out.StartWrite( outputPath ) );
+
+    out << "Test1\n";
+
+    out << "Test2\n";
+
+    out << "Test3\n";
+
+    EXPECT_TRUE( out.Finish() );
+
+    EXPECT_TRUE( FilesMatch( outputPath, GetTestFileFileAbsolutePath( "FileStream/FileDataStreamOut.txt" ) ) );
+
+}
+
+TEST_F( ResourceToolsTest, CompressedFileDataStremOut )
+{
+	std::filesystem::path goldFileUncompressedPath = GetTestFileFileAbsolutePath( "FileStream/FileDataStreamOut.txt" );
+
+	ResourceTools::CompressedFileDataStreamOut out;
+
+	std::filesystem::path outputPath = "FileDataStreamOut.gz";
+
+	EXPECT_TRUE( out.StartWrite( outputPath ) );
+
+    std::ifstream goldFileUncompressedIn( goldFileUncompressedPath );
+
+    std::string line;
+	while( std::getline( goldFileUncompressedIn, line ) )
+	{
+		out << line;
+
+        out << "\n";
+	}
+
+	EXPECT_TRUE( out.Finish() );
+
+    std::string compressedData;
+
+    EXPECT_TRUE(ResourceTools::GetLocalFileData( outputPath, compressedData ));
+
+    std::string uncompressedData;
+
+    EXPECT_TRUE( ResourceTools::GZipUncompressData( compressedData, uncompressedData ) );
+    
+    std::filesystem::path outputPathUncompressed = "FileDataStreamOut.txt";
+
+    EXPECT_TRUE(ResourceTools::SaveFile( outputPathUncompressed, uncompressedData ));
+
+	EXPECT_TRUE( FilesMatch( outputPathUncompressed, GetTestFileFileAbsolutePath( "FileStream/FileDataStreamOut.txt" ) ) );
 }
 TEST_F( ResourceToolsTest, ResourceChunking )
 {

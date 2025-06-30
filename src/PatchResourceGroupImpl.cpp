@@ -2,6 +2,8 @@
 
 #include "Patching.h"
 
+#include "BundleResourceGroupImpl.h"
+
 #include <yaml-cpp/yaml.h>
 
 #include <ResourceTools.h>
@@ -86,7 +88,13 @@ namespace CarbonResources
 				return createResourceFromYaml;
             }
 
-            //TODO ensure that resource is of base type ResourceGroup
+            // Ensure that resource is of base type ResourceGroup
+			ResourceGroupInfo* resourceGroupInfo = dynamic_cast<ResourceGroupInfo*>( resource );
+
+			if( !resourceGroupInfo )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_GROUP };
+			}
 
 			m_resourceGroupParameter = reinterpret_cast<ResourceGroupInfo*>( resource );
 		}

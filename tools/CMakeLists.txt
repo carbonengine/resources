@@ -9,6 +9,7 @@ set(SRC_FILES
     include/BundleStreamIn.h
     include/BundleStreamOut.h
     include/ChunkIndex.h
+    include/CompressedFileDataStreamOut.h
     include/Downloader.h
     include/FileDataStreamIn.h
     include/FileDataStreamOut.h
@@ -24,6 +25,7 @@ set(SRC_FILES
     src/BundleStreamIn.cpp
     src/BundleStreamOut.cpp
     src/ChunkIndex.cpp
+    src/CompressedFileDataStreamOut.cpp
     src/Downloader.cpp
     src/FileDataStreamIn.cpp
     src/FileDataStreamOut.cpp
