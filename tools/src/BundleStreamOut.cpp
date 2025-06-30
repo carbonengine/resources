@@ -23,16 +23,16 @@ std::filesystem::path RawFilename( std::filesystem::path outputDirectory, uint32
 	return outputDirectory / filename;
 }
 
-std::filesystem::path GZippedFilename( std::filesystem::path outputDirectory, uint32_t chunkNumber )
+std::filesystem::path CompressedFilename( std::filesystem::path outputDirectory, uint32_t chunkNumber )
 {
-	std::string filename = "chunk" + std::to_string( chunkNumber ) + ".gzip";
+	std::string filename = "chunk" + std::to_string( chunkNumber ) + ".compressed";
 
 	return outputDirectory / filename;
 }
 
 bool BundleStreamOut::InitializeOutputStreams()
 {
-	std::filesystem::path gzippedPath = GZippedFilename( m_outputDirectory, m_chunksCreated );
+	std::filesystem::path compressedPath = CompressedFilename( m_outputDirectory, m_chunksCreated );
 
 	std::filesystem::path rawPath = RawFilename( m_outputDirectory, m_chunksCreated );
 
@@ -45,14 +45,14 @@ bool BundleStreamOut::InitializeOutputStreams()
 
 	m_compressedOut = std::make_unique<ResourceTools::FileDataStreamOut>();
 
-	if( !m_compressedOut->StartWrite( gzippedPath ) )
+	if( !m_compressedOut->StartWrite( compressedPath ) )
 	{
 		return false;
 	}
 
 	m_chunkFiles.push_back( std::make_shared<ScopedFile>( rawPath ) );
 
-	m_chunkFiles.push_back( std::make_shared<ScopedFile>( gzippedPath ) );
+	m_chunkFiles.push_back( std::make_shared<ScopedFile>( compressedPath ) );
 
 	return true;
 }
@@ -145,9 +145,9 @@ bool BundleStreamOut::AddChunkFilesToGetChunk( GetChunk& data )
 	// since FileDataStreamIn assumes filesize does not change once created.
 	auto rawDir = RawFilename( m_outputDirectory, m_chunksExported );
 
-	auto gzippedDir = GZippedFilename( m_outputDirectory, m_chunksExported );
+	auto compressedDir = CompressedFilename( m_outputDirectory, m_chunksExported );
 
-	if( !exists( rawDir ) || !exists( gzippedDir ) )
+	if( !exists( rawDir ) || !exists( compressedDir ) )
 	{
 		return false;
 	}
@@ -161,7 +161,7 @@ bool BundleStreamOut::AddChunkFilesToGetChunk( GetChunk& data )
 
 	data.compressedChunkIn = std::make_shared<FileDataStreamIn>();
 
-	if( !data.compressedChunkIn->StartRead( gzippedDir ) )
+	if( !data.compressedChunkIn->StartRead( compressedDir ) )
 	{
 		return false;
 	}

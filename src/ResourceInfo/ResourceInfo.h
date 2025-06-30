@@ -330,7 +330,7 @@ namespace CarbonResources
 
     	Result SetParametersFromSourceStream( ResourceTools::FileDataStreamIn& stream, size_t matchSize );
 
-		void SetMd5Checksum( const std::string& checksum );
+		void SetDataChecksum( const std::string& checksum );
 
     	void SetCompressedSize( uintmax_t compressedSize );
 

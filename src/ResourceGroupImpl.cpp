@@ -125,11 +125,11 @@ namespace CarbonResources
                     ResourceTools::Md5ChecksumStream checksumStream;
                 	std::string compressedData;
 
-                    ResourceTools::GzipCompressionStream gzipCompressionStream( &compressedData );
+                    ResourceTools::GzipCompressionStream compressionStream( &compressedData );
 
                     ResourceTools::FileDataStreamIn fileStreamIn( params.resourceStreamThreshold );
 
-                    if (!gzipCompressionStream.Start())
+                    if (!compressionStream.Start())
                     {
 						return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
                     }
@@ -162,7 +162,7 @@ namespace CarbonResources
 							return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
                         }
 
-                        if( !( gzipCompressionStream << &fileData ) )
+                        if( !( compressionStream << &fileData ) )
                         {
 							return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
                         }
@@ -171,7 +171,7 @@ namespace CarbonResources
                     	compressedData.clear();
                     }
 
-                    if (!gzipCompressionStream.Finish())
+                    if (!compressionStream.Finish())
                     {
 						return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
                     }
@@ -865,7 +865,7 @@ namespace CarbonResources
     		return Result( { ResultType::FAILED_TO_GENERATE_CHECKSUM } );
     	}
 
-    	chunkResource->SetMd5Checksum( checksum );
+    	chunkResource->SetDataChecksum( checksum );
 
     	// Compressed Size
     	chunkResource->SetCompressedSize( chunkFile.compressedChunkIn->Size() );

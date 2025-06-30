@@ -980,7 +980,7 @@ namespace CarbonResources
 			return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
 		}
 
-    	SetMd5Checksum( checksum );
+    	SetDataChecksum( checksum );
 
         std::string type;
 
@@ -1165,7 +1165,7 @@ namespace CarbonResources
 		return Result{ ResultType::SUCCESS };
 	}
 
-	void ResourceInfo::SetMd5Checksum( const std::string& checksum )
+	void ResourceInfo::SetDataChecksum( const std::string& checksum )
     {
 	    m_checksum = checksum;
 
