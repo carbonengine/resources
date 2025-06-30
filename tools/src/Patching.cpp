@@ -3,7 +3,7 @@
 #include <bsdiff.h>
 #include <bspatch.h>
 
-#include "BundleStreamOut.h"
+#include "BundleStreamIn.h"
 #include "ResourceTools.h"
 
 const char* BSDIFF_HEADER_STR = "ENDSLEY/BSDIFF43";
@@ -32,14 +32,12 @@ int bs_read_chunked(const struct bspatch_stream * stream, void * buffer,
 				 size_t length, enum bspatch_stream_type type)
 {
 	ResourceTools::PatchData* spd = reinterpret_cast<ResourceTools::PatchData*>(stream->opaque);
-	ResourceTools::BundleStreamOut * cs = spd->m_data;
+	ResourceTools::BundleStreamIn * cs = spd->m_data;
 
 	size_t remaining = length;
 	std::string out;
 	std::string data;
 	size_t chunkSize = cs->GetChunkSize();
-	ResourceTools::GetChunk gc;
-	gc.data = &data;
 	while( remaining )
 	{
 		size_t toRead = std::min( remaining, chunkSize );
@@ -100,7 +98,7 @@ bool ApplyPatch(const std::string& data, const std::string& patchData, std::stri
   	return true;
   }
 
-bool ApplyPatchChunked(const std::string& data, ResourceTools::BundleStreamOut& patchData, std::string& out)
+bool ApplyPatchChunked(const std::string& data, ResourceTools::BundleStreamIn& patchData, std::string& out)
   {
   	bspatch_stream stream;
   	std::string headerBytes;
@@ -177,7 +175,7 @@ bool ApplyPatchChunked(const std::string& data, ResourceTools::BundleStreamOut& 
 	  return true;
   }
 
-  bool ApplyPatchFileChunked( std::filesystem::path target, BundleStreamOut patch )
+  bool ApplyPatchFileChunked( std::filesystem::path target, BundleStreamIn& patch )
   {
 	  std::string targetData;
 	  if( !GetLocalFileData( target, targetData ) )

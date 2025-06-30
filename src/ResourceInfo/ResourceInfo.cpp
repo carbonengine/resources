@@ -965,26 +965,8 @@ namespace CarbonResources
 		return m_relativePath.GetValue() < other.m_relativePath.GetValue();
 	}
 
-    Result ResourceInfo::SetParametersFromData( const std::string& data )
-    {
-        std::string checksum;
-
-		if( !ResourceTools::GenerateMd5Checksum( data, checksum ) )
-		{
-			return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
-		}
-
-        m_checksum = checksum;
-
-        std::string type;
-
-        Result getTypeResult = GetType( type );
-
-        if( getTypeResult.type != ResultType::SUCCESS )
-        {
-			return getTypeResult;
-        }
-
+	Result ResourceInfo::UpdateLocation()
+	{
         std::filesystem::path relativePath;
 
         Result getRelativePathResult = GetRelativePath( relativePath );
@@ -996,7 +978,7 @@ namespace CarbonResources
 
         Location l;
 
-		Result setLocationResult = l.SetFromRelativePathAndDataChecksum( relativePath, checksum );
+		Result setLocationResult = l.SetFromRelativePathAndDataChecksum( relativePath, m_checksum.GetValue() );
 
         if (setLocationResult.type != ResultType::SUCCESS)
         {
@@ -1004,8 +986,30 @@ namespace CarbonResources
         }
 
 		m_location = l;
+    	return Result({ ResultType::SUCCESS } );
+	}
 
-        std::string compressedData = "";
+    Result ResourceInfo::SetParametersFromData( const std::string& data )
+    {
+        std::string checksum;
+
+		if( !ResourceTools::GenerateMd5Checksum( data, checksum ) )
+		{
+			return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+		}
+
+    	SetDataChecksum( checksum );
+
+        std::string type;
+
+        Result getTypeResult = GetType( type );
+
+        if( getTypeResult.type != ResultType::SUCCESS )
+        {
+			return getTypeResult;
+        }
+
+        std::string compressedData;
 
         if (!ResourceTools::GZipCompressData(data, compressedData))
         {
@@ -1178,6 +1182,24 @@ namespace CarbonResources
 
 		return Result{ ResultType::SUCCESS };
 	}
+
+	void ResourceInfo::SetDataChecksum( const std::string& checksum )
+    {
+	    m_checksum = checksum;
+
+    	UpdateLocation();
+    }
+
+	void ResourceInfo::SetCompressedSize( uintmax_t compressedSize )
+    {
+	    m_compressedSize = compressedSize;
+    }
+
+	void ResourceInfo::SetUncompressedSize( uintmax_t uncompressedSize )
+	{
+		m_uncompressedSize = uncompressedSize;
+	}
+
 
     Result ResourceInfo::ExportToCsv( std::string& out, const VersionInternal& documentVersion )
     {

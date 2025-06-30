@@ -1,12 +1,10 @@
 #include "ResourceGroupImpl.h"
 
-#include <fstream>
 #include <sstream>
 #include <yaml-cpp/yaml.h>
 #include <ResourceTools.h>
 #include <BundleStreamOut.h>
 #include <FileDataStreamIn.h>
-#include <ScopedFile.h>
 #include <Md5ChecksumStream.h>
 #include <GzipCompressionStream.h>
 #include "ResourceInfo/PatchResourceGroupInfo.h"
@@ -131,11 +129,11 @@ namespace CarbonResources
                     ResourceTools::Md5ChecksumStream checksumStream;
                 	std::string compressedData;
 
-                    ResourceTools::GzipCompressionStream gzipCompressionStream( &compressedData );
+                    ResourceTools::GzipCompressionStream compressionStream( &compressedData );
 
                     ResourceTools::FileDataStreamIn fileStreamIn( params.resourceStreamThreshold );
 
-                    if (!gzipCompressionStream.Start())
+                    if (!compressionStream.Start())
                     {
 						return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
                     }
@@ -168,7 +166,7 @@ namespace CarbonResources
 							return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
                         }
 
-                        if( !( gzipCompressionStream << &fileData ) )
+                        if( !( compressionStream << &fileData ) )
                         {
 							return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
                         }
@@ -177,7 +175,7 @@ namespace CarbonResources
                     	compressedData.clear();
                     }
 
-                    if (!gzipCompressionStream.Finish())
+                    if (!compressionStream.Finish())
                     {
 						return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
                     }
@@ -850,28 +848,86 @@ namespace CarbonResources
     	return Result{ ResultType::SUCCESS };
     }
 
-    Result ResourceGroupImpl::ProcessChunk( std::string& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const
+    Result ResourceGroupImpl::ProcessChunk( ResourceTools::GetChunk& chunkFile, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const
     {
 		// Create resource from Patch Data
 		BundleResourceInfo* chunkResource = new BundleResourceInfo( { chunkRelativePath } );
 
-		chunkResource->SetParametersFromData( chunkData );
+    	// md5 Checksum
+    	ResourceTools::Md5ChecksumStream checksumStream;
+
+    	std::string checksum;
+    	{
+    		std::string chunk;
+
+    		while( *chunkFile.uncompressedChunkIn >> chunk )
+    		{
+    			checksumStream << chunk;
+    		}
+    	}
+
+    	if( !checksumStream.FinishAndRetrieve( checksum ) )
+    	{
+    		return Result( { ResultType::FAILED_TO_GENERATE_CHECKSUM } );
+    	}
+
+    	chunkResource->SetDataChecksum( checksum );
+
+    	// Compressed Size
+    	chunkResource->SetCompressedSize( chunkFile.compressedChunkIn->Size() );
+
+    	// Uncompressed Size
+    	chunkResource->SetUncompressedSize( chunkFile.uncompressedChunkIn->Size() );
 
 		// Export chunk file
-		ResourcePutDataParams resourcePutDataParams;
+    	std::filesystem::path sourceFile;
 
-		resourcePutDataParams.resourceDestinationSettings = chunkDestinationSettings;
+    	if( chunkDestinationSettings.destinationType == ResourceDestinationType::REMOTE_CDN )
+    	{
+    		sourceFile = chunkFile.compressedChunkIn->GetPath();
+    	}
+    	else
+    	{
+    		sourceFile = chunkFile.uncompressedChunkIn->GetPath();
+    	}
 
-		resourcePutDataParams.data = &chunkData;
+    	std::filesystem::path targetFile;
 
-		Result putChunkDataResult = chunkResource->PutData( resourcePutDataParams );
+    	if( chunkDestinationSettings.destinationType == ResourceDestinationType::LOCAL_RELATIVE )
+    	{
+    		std::filesystem::path relativePath;
 
-		if( putChunkDataResult.type != ResultType::SUCCESS )
+    		chunkResource->GetRelativePath( relativePath );
+
+    		targetFile = chunkDestinationSettings.basePath / relativePath;
+    	}
+    	else
+    	{
+    		std::string location;
+
+    		chunkResource->GetLocation( location );
+
+    		targetFile = chunkDestinationSettings.basePath / location;
+    	}
+
+    	if( std::filesystem::exists( targetFile ) )
+    	{
+    		std::filesystem::remove( targetFile );
+    	}
+
+		if( !std::filesystem::exists( targetFile.parent_path() ) )
 		{
-			delete chunkResource;
-
-			return putChunkDataResult;
+			std::filesystem::create_directories( targetFile.parent_path() );
 		}
+
+    	try
+    	{
+    		std::filesystem::copy_file( sourceFile, targetFile );
+    	}
+    	catch( std::filesystem::filesystem_error& e )
+    	{
+    		return Result( { ResultType::FAILED_TO_SAVE_FILE, e.what() } );
+    	}
 
 		// Add the chunk resource to the bundleResourceGroup
 		Result addResourceResult = bundleResourceGroup.AddResource( chunkResource );
@@ -902,7 +958,7 @@ namespace CarbonResources
 
         bundleResourceGroup.SetChunkSize( params.chunkSize );
 
-		ResourceTools::BundleStreamOut bundleStream( params.chunkSize );
+		ResourceTools::BundleStreamOut bundleStream( params.chunkSize, params.chunkDestinationSettings.basePath );
 
 
         // Update status
@@ -969,45 +1025,42 @@ namespace CarbonResources
 				continue;
 			}
 
-            ResourceTools::FileDataStreamIn resourceDataStream(params.fileReadChunkSize);
+            auto resourceDataStream = std::make_shared<ResourceTools::FileDataStreamIn>( params.fileReadChunkSize );
 
             ResourceGetDataStreamParams resourceGetDataParams;
 
             resourceGetDataParams.resourceSourceSettings = params.resourceSourceSettings;
 
-            resourceGetDataParams.dataStream = &resourceDataStream;
+            resourceGetDataParams.dataStream = resourceDataStream;
 
         	resourceGetDataParams.downloadRetrySeconds = params.downloadRetrySeconds;
 
 			Result resourceGetDataResult = resource->GetDataStream( resourceGetDataParams );
+
+			bundleStream << resourceDataStream;
 
             if (resourceGetDataResult.type != ResultType::SUCCESS)
             {
 				return resourceGetDataResult;
             }
 			
-            while (!resourceDataStream.IsFinished() )
+            while (!resourceDataStream->IsFinished() )
             {
 				std::string resourceDataChunk;
 
-                if (!(resourceDataStream >> resourceDataChunk))
+                if (!(*resourceDataStream >> resourceDataChunk))
                 {
 					return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
                 }
 
-                // Add Resource chunk to bundle stream
-				bundleStream << resourceDataChunk;
-
                 // Loop through possible created chunks
-				std::string chunkData;
-
 				ResourceTools::GetChunk chunkFile;
-
-				chunkFile.data = &chunkData;
 
 				chunkFile.clearCache = false;
 
-                while( bundleStream >> chunkFile )
+            	bool bundleReadOk{true};
+
+                while( ( bundleReadOk = bundleStream >> chunkFile ) && !chunkFile.outOfChunks )
 				{
 					std::stringstream ss;
 					ss << chunkBaseName << numberOfChunks << ".chunk";
@@ -1024,7 +1077,7 @@ namespace CarbonResources
 						params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::UNBOUNDED, 0, ss.str() );
 					}
 
-					Result processChunkResult = ProcessChunk( chunkData, chunkPath, bundleResourceGroup, params.chunkDestinationSettings );
+					Result processChunkResult = ProcessChunk( chunkFile, chunkPath, bundleResourceGroup, params.chunkDestinationSettings );
 
 					if( processChunkResult.type != ResultType::SUCCESS )
 					{
@@ -1033,21 +1086,25 @@ namespace CarbonResources
 
 					numberOfChunks++;
 				}
+            	if( !bundleReadOk )
+            	{
+            		return Result( { ResultType::FAILED_TO_READ_FROM_STREAM } );
+            	}
             }
 
         }
 
         
-        // Create final incomplete chunk
-		std::string chunkData;
-
 		ResourceTools::GetChunk chunkFile;
-
-		chunkFile.data = &chunkData;
 
 		chunkFile.clearCache = true;
 
-		bundleStream >> chunkFile;
+    	bundleStream.Flush();
+
+		if( !( bundleStream >> chunkFile ) )
+		{
+			return Result( { ResultType::FAILED_TO_READ_FROM_STREAM } );
+		}
 
 		std::stringstream ss;
 		ss << chunkBaseName << numberOfChunks << ".chunk";
@@ -1055,7 +1112,7 @@ namespace CarbonResources
 
 		std::filesystem::path chunkPath = params.chunkDestinationSettings.basePath / ss.str();
 
-		Result processChunkResult = ProcessChunk( chunkData, chunkPath, bundleResourceGroup, params.chunkDestinationSettings );
+		Result processChunkResult = ProcessChunk( chunkFile, chunkPath, bundleResourceGroup, params.chunkDestinationSettings );
 
 		if( processChunkResult.type != ResultType::SUCCESS )
 		{
@@ -1307,7 +1364,7 @@ namespace CarbonResources
             if( previousUncompressedSize != 0 )
             {
 				// Get resource data previous
-				ResourceTools::FileDataStreamIn previousFileDataStream( params.maxInputFileChunkSize );
+            	auto previousFileDataStream = std::make_shared<ResourceTools::FileDataStreamIn>( params.maxInputFileChunkSize );
 
 				ResourceGetDataStreamParams previousResourceGetDataStreamParams;
 
@@ -1315,7 +1372,7 @@ namespace CarbonResources
 
             	previousResourceGetDataStreamParams.downloadRetrySeconds = params.downloadRetrySeconds;
 
-				previousResourceGetDataStreamParams.dataStream = &previousFileDataStream;
+				previousResourceGetDataStreamParams.dataStream = previousFileDataStream;
 
                 Result getPreviousDataStreamResult = resourcePrevious->GetDataStream( previousResourceGetDataStreamParams );
 
@@ -1325,13 +1382,13 @@ namespace CarbonResources
                 }
 
                 // Get resource data next
-				ResourceTools::FileDataStreamIn nextFileDataStream( params.maxInputFileChunkSize );
+				auto nextFileDataStream = std::make_shared<ResourceTools::FileDataStreamIn>( params.maxInputFileChunkSize );
 
 				ResourceGetDataStreamParams nextResourceGetDataStreamParams;
 
 				nextResourceGetDataStreamParams.resourceSourceSettings = params.resourceSourceSettingsNext;
 
-				nextResourceGetDataStreamParams.dataStream = &nextFileDataStream;
+				nextResourceGetDataStreamParams.dataStream = nextFileDataStream;
 
                 Result getNextDataStreamResult = resourceNext->GetDataStream( nextResourceGetDataStreamParams );
 
@@ -1348,18 +1405,18 @@ namespace CarbonResources
             	}
 
             	std::function<void(unsigned int, const std::string&)> callback = [params](unsigned int percent, const std::string& msg) {
-            		if( params.statusCallback )
+            	if( params.statusCallback )
             		{
             			params.statusCallback( StatusLevel::DETAIL, StatusProgressType::PERCENTAGE, percent, msg );
             		}
             	};
-        		ResourceTools::ChunkIndex index(previousFileDataStream.GetPath(), params.maxInputFileChunkSize, params.indexFolder, callback );
+        		ResourceTools::ChunkIndex index(previousFileDataStream->GetPath(), params.maxInputFileChunkSize, params.indexFolder, callback );
         		if( params.statusCallback )
         		{
         			std::string message = "Generating index for " + relativePath.string();
         			params.statusCallback( StatusLevel::DETAIL , StatusProgressType::PERCENTAGE, 0, message );
         		}
-            	index.GenerateChecksumFilter( nextFileDataStream.GetPath() );
+            	index.GenerateChecksumFilter( nextFileDataStream->GetPath() );
         		if( !index.Generate() )
         		{
 					std::string message = "Index generation failed for " + relativePath.string();
@@ -1371,36 +1428,36 @@ namespace CarbonResources
                 {
 					std::string previousFileData = "";
 
-					if( previousFileDataStream.IsFinished() )
+					if( previousFileDataStream->IsFinished() )
 					{
-						if( previousFileDataStream.Size() > nextFileDataStream.GetCurrentPosition() )
+						if( previousFileDataStream->Size() > nextFileDataStream->GetCurrentPosition() )
 						{
 							// We ran out of data because we found a chunk match later in the file,
 							// but we can rewind back to where the read stream is in hopes
 							// of getting a good diff, rather than just treating it as new data.
-							previousFileDataStream.StartRead( previousFileDataStream.GetPath() );
+							previousFileDataStream->StartRead( previousFileDataStream->GetPath() );
 						}
 					}
 
                     // Handling if previous file is smaller than next file
                     // If so then previousFileData will be nothing and
                     // All next data will be used for the patch
-                    if (!previousFileDataStream.IsFinished())
+                    if (!previousFileDataStream->IsFinished())
                     {
-						if( !( previousFileDataStream >> previousFileData ) )
+						if( !( *previousFileDataStream >> previousFileData ) )
 						{
 							return Result{ ResultType::FAILED_TO_RETRIEVE_CHUNK_DATA };
 						}
                     }
 
-					size_t nextStreamPosition = nextFileDataStream.GetCurrentPosition();
+					size_t nextStreamPosition = nextFileDataStream->GetCurrentPosition();
                     // Note: in the case that the next file is smaller than previous
                     // nothing is stored, application of the patch will chop off the extra file data
                     std::string nextFileData;
 
-					if(!nextFileDataStream.IsFinished())
+					if(!nextFileDataStream->IsFinished())
 					{
-						if(!(nextFileDataStream >> nextFileData))
+						if(!(*nextFileDataStream >> nextFileData))
 						{
 							return Result{ ResultType::FAILED_TO_RETRIEVE_CHUNK_DATA };
 						}
@@ -1437,22 +1494,26 @@ namespace CarbonResources
                     	{
                     		matchCount = 1;
                     		matchCount += ResourceTools::CountMatchingChunks(
-                    			nextFileDataStream.GetPath(),
-                    			nextFileDataStream.GetCurrentPosition(),
-                    			previousFileDataStream.GetPath(),
+                    			nextFileDataStream->GetPath(),
+                    			nextFileDataStream->GetCurrentPosition(),
+                    			previousFileDataStream->GetPath(),
                     			patchSourceOffset + params.maxInputFileChunkSize,
                     			params.maxInputFileChunkSize );
 
-                    		size_t matchSize = std::min(params.maxInputFileChunkSize * matchCount, previousFileDataStream.Size() - patchSourceOffset);
+                    		size_t matchSize = std::min(params.maxInputFileChunkSize * matchCount, previousFileDataStream->Size() - patchSourceOffset);
 
                     		PatchResourceInfo* patchResource{nullptr};
+
                     		ConstructPatchResourceInfo( params, patchId, dataOffset, patchSourceOffset, resourceNext, patchResource );
-                    		if( previousFileDataStream.IsFinished() )
+
+                    		if( previousFileDataStream->IsFinished() )
                     		{
-                    			previousFileDataStream.StartRead( previousFileDataStream.GetPath() );
+                    			previousFileDataStream->StartRead( previousFileDataStream->GetPath() );
                     		}
-                    		previousFileDataStream.Seek( patchSourceOffset );
-                    		patchResource->SetParametersFromSourceStream( previousFileDataStream, matchSize );
+
+                    		previousFileDataStream->Seek( patchSourceOffset );
+
+                    		patchResource->SetParametersFromSourceStream( *previousFileDataStream, matchSize );
 
                     		// Advance the first stream by the size of the matching data,
                     		// but move the point we generate patches from for the previous
@@ -1460,9 +1521,12 @@ namespace CarbonResources
                     		// It's hard to tell if it would be smarter to simply advance
                     		// the destination data by the same amount of the source data,
                     		// or perhaps even not to move it at all.
-                    		nextFileDataStream.Seek( std::min( nextFileDataStream.Size(), nextStreamPosition + matchSize ) );
-                    		previousFileDataStream.Seek( std::min(previousFileDataStream.Size(), patchSourceOffset + matchSize ) );
+                    		nextFileDataStream->Seek( std::min( nextFileDataStream->Size(), nextStreamPosition + matchSize ) );
+
+                    		previousFileDataStream->Seek( std::min(previousFileDataStream->Size(), patchSourceOffset + matchSize ) );
+
                     		dataOffset += matchSize - params.maxInputFileChunkSize;
+
                     		patchSourceOffset += matchSize;
 
                     		if( nextStreamPosition == 0 && patchSourceOffset == 0 )

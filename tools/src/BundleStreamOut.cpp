@@ -1,153 +1,202 @@
-
 #include "BundleStreamOut.h"
+#include "FileDataStreamIn.h"
 #include "ResourceTools.h"
+#include "ScopedFile.h"
 
 namespace ResourceTools
 {
-  
+BundleStreamOut::BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory ) :
+	m_chunkSize( chunkSize ),
+	m_outputDirectory( outputDirectory )
+{
+}
 
-  BundleStreamOut::BundleStreamOut( uintmax_t chunkSize ) :
-	  m_chunkSize(chunkSize),
-	  m_compressionStream( nullptr )
-  {
+BundleStreamOut::~BundleStreamOut()
+{
 
-  }
+}
 
-  BundleStreamOut::~BundleStreamOut()
-  {
+std::filesystem::path RawFilename( std::filesystem::path outputDirectory, uint32_t chunkNumber )
+{
+	std::string filename = "chunk" + std::to_string( chunkNumber ) + ".raw";
 
-  }
+	return outputDirectory / filename;
+}
 
-  bool BundleStreamOut::operator<<( const std::string& data )
-  {
-      m_cache.append( data );
+std::filesystem::path CompressedFilename( std::filesystem::path outputDirectory, uint32_t chunkNumber )
+{
+	std::string filename = "chunk" + std::to_string( chunkNumber ) + ".compressed";
 
-	  return true;
-  }
+	return outputDirectory / filename;
+}
 
-  bool BundleStreamOut::operator>>( GetChunk& data )
-  {
-	  size_t cacheSize = m_cache.size();
+bool BundleStreamOut::InitializeOutputStreams()
+{
+	std::filesystem::path compressedPath = CompressedFilename( m_outputDirectory, m_chunksCreated );
 
-      if (cacheSize == 0)
-      {
-          // No data in cache
-		  return false;
-      }
+	std::filesystem::path rawPath = RawFilename( m_outputDirectory, m_chunksCreated );
 
-      if (data.clearCache)
-      {
-          // Clear the cache to destination
-		  std::string& dataRef = *data.data;
+	m_uncompressedOut = std::make_unique<ResourceTools::FileDataStreamOut>();
 
-          dataRef = m_uncompressedData;
-	    
-          dataRef.append( m_cache );
+	if( !m_uncompressedOut->StartWrite( rawPath ) )
+	{
+		return false;
+	}
 
-          m_cache.clear();
+	m_compressedOut = std::make_unique<ResourceTools::FileDataStreamOut>();
 
-          return true;
-      }
+	if( !m_compressedOut->StartWrite( compressedPath ) )
+	{
+		return false;
+	}
 
-      if (m_cache.size() < m_chunkSize)
-      {
-          // Not enough data to create chunk
-		  return false;
-      }
-      else
-      {
+	m_chunkFiles.push_back( std::make_shared<ScopedFile>( rawPath ) );
 
-          if (!m_compressionStream)
-          {
-			  m_compressionStream = new GzipCompressionStream( &m_compressedData );
+	m_chunkFiles.push_back( std::make_shared<ScopedFile>( compressedPath ) );
 
-              m_compressedData.clear();
+	return true;
+}
 
-              m_uncompressedData.clear();
+bool BundleStreamOut::Flush()
+{
+	// Chunk size achieved after compression
+	if( !m_compressionStream )
+	{
+		return true;
+	}
 
-              if (!m_compressionStream->Start())
-              {
-                  // TODO: Return value is confused, sometimes it means failure sometimes it means not enough data
-                  // this needs refactoring along with changes to make procedure more stream friendly
-                  // Full chunk indication should be passed back as part of GetChunk struct
-                  // For streaming the uncompressed data should be outputted as chunk is being made
-                  // and streamed to file a bit at a time to keep memory usage down with large files
-				  return false;
-              }
-          }
+	if( !m_compressionStream->Finish() )
+	{
+		return false;
+	}
 
-          bool chunkSizeAchieved = false;
+	*m_compressedOut << m_compressedData;
 
-          while (m_compressedData.size() < m_chunkSize)
-          {
-              // Get chunk from cache
-			  std::string chunk = m_cache.substr( 0, m_chunkSize );
+	m_compressedData.clear();
 
-              if (!m_compressionStream->operator<<(&chunk))
-              {
-				  return false;
-              }
+	++m_chunksCreated;
 
-              m_uncompressedData.append( chunk );
+	m_compressionStream.release();
 
-              m_cache.erase( 0, m_chunkSize );
+	return true;
+}
 
-              if( m_compressedData.size() >= m_chunkSize )
-              {
-                  // Chunk size achieved after compression
-				  chunkSizeAchieved = true;
+bool BundleStreamOut::operator<<( std::shared_ptr<FileDataStreamIn> streamIn )
+{
+	std::string data;
 
-				  break;
-              }
+	while( *streamIn >> data )
+	{
+		if( !m_compressionStream )
+		{
+			m_compressionStream = std::make_unique<GzipCompressionStream>( &m_compressedData );
 
-              if( m_cache.size() < m_chunkSize )
-              {
-                  // Chunk not achieved, not enough data in cache to create chunk of requested size
-				  break;
-              }
-          }
-          if (chunkSizeAchieved)
-          {
-              // Remove the data from the cache and return the resulting uncompressed data
+			m_compressedData.clear();
 
-              std::string& dataRef = *data.data;
+			if( !m_compressionStream->Start() )
+			{
+				return false;
+			}
 
-              if (!m_compressionStream->Finish())
-              {
-				  return false;
-              }
+			if( !InitializeOutputStreams() )
+			{
+				return false;
+			}
+		}
 
-			  dataRef = m_uncompressedData;
+		while( !data.empty() )
+		{
+			std::string chunk = data.substr( 0, m_chunkSize );
 
-              delete m_compressionStream;
+			if( !m_compressionStream->operator<<( &chunk ) )
+			{
+				return false;
+			}
 
-              m_compressedData.clear();
+			*m_uncompressedOut << chunk;
 
-              m_uncompressedData.clear();
+			*m_compressedOut << m_compressedData;
 
-              return true;
-          }
-		  
-      }
+			m_compressedData.clear();
 
-      return false;
+			data.erase( 0, m_chunkSize );
 
-  }
+			if( m_compressedData.size() >= m_chunkSize )
+			{
+				if( !Flush() )
+				{
+					return false;
+				}
 
-  uintmax_t BundleStreamOut::GetChunkSize() const
-  {
-	  return m_chunkSize;
-  }
+				if( !InitializeOutputStreams() )
+				{
+					return false;
+				}
+			}
+		}
+	}
 
-  bool BundleStreamOut::ReadBytes( size_t n, std::string& out )
-  {
-	  if( m_cache.size() < n )
-	  {
-		  return false;
-	  }
-  	  out = m_cache.substr( 0, n );
-  	  m_cache.erase( 0, n );
-	  return true;
-  }
+	return true;
+}
 
+bool BundleStreamOut::AddChunkFilesToGetChunk( GetChunk& data )
+{
+	// Needs to be called after all changes have been made to the file,
+	// since FileDataStreamIn assumes filesize does not change once created.
+	auto rawDir = RawFilename( m_outputDirectory, m_chunksExported );
+
+	auto compressedDir = CompressedFilename( m_outputDirectory, m_chunksExported );
+
+	if( !exists( rawDir ) || !exists( compressedDir ) )
+	{
+		return false;
+	}
+
+	data.uncompressedChunkIn = std::make_shared<FileDataStreamIn>();
+
+	if( !data.uncompressedChunkIn->StartRead( rawDir ) )
+	{
+		return false;
+	}
+
+	data.compressedChunkIn = std::make_shared<FileDataStreamIn>();
+
+	if( !data.compressedChunkIn->StartRead( compressedDir ) )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool BundleStreamOut::operator>>( GetChunk& data )
+{
+	if( data.clearCache )
+	{
+		// Clear the cache to destination
+		Flush();
+
+		data.outOfChunks = true;
+
+		m_uncompressedOut->Finish();
+
+		m_compressedOut->Finish();
+
+		AddChunkFilesToGetChunk( data );
+
+		return true;
+	}
+
+	if( m_chunksCreated == m_chunksExported )
+	{
+		// Not enough data to create chunk
+		data.outOfChunks = true;
+	}
+	else
+	{
+		AddChunkFilesToGetChunk( data );
+	}
+
+	return true;
+}
 }

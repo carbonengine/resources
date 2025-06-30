@@ -292,13 +292,13 @@ namespace CarbonResources
 			if( patchesForResource.size() > 0 )
 			{
                 // Open stream for resource
-				ResourceTools::FileDataStreamIn resourceDataStreamIn( m_maxInputChunkSize.GetValue() );
+				auto resourceDataStreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( m_maxInputChunkSize.GetValue() );
 
 				ResourceGetDataStreamParams resourceDataStreamParams;
 
                 resourceDataStreamParams.resourceSourceSettings = params.resourcesToPatchSourceSettings;
 
-                resourceDataStreamParams.dataStream = &resourceDataStreamIn;
+                resourceDataStreamParams.dataStream = resourceDataStreamIn;
 
 				Result getResourceDataStream = resource->GetDataStream( resourceDataStreamParams );
 
@@ -370,7 +370,7 @@ namespace CarbonResources
 
                     if (dataOffset < previousUncompressedSize)
                     {
-                    	int64_t previousSourcePosition = resourceDataStreamIn.GetCurrentPosition();
+                    	int64_t previousSourcePosition = resourceDataStreamIn->GetCurrentPosition();
                         // Get to location of patch
                         while (temporaryResourceDataStreamOut.GetFileSize() < dataOffset)
                         {
@@ -378,12 +378,12 @@ namespace CarbonResources
 							uint64_t remaining = dataOffset - temporaryResourceDataStreamOut.GetFileSize();
 							if( remaining < m_maxInputChunkSize.GetValue() )
 							{
-								if( !resourceDataStreamIn.ReadBytes( remaining, dataChunk ) )
+								if( !resourceDataStreamIn->ReadBytes( remaining, dataChunk ) )
 								{
 									return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
 								}
 							}
-                            else if (!(resourceDataStreamIn >> dataChunk))
+                            else if (!(*resourceDataStreamIn >> dataChunk))
                             {
 								return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
                             }
@@ -400,11 +400,11 @@ namespace CarbonResources
                             }
                         	previousSourcePosition += dataChunk.size();
                         }
-                    	if( resourceDataStreamIn.IsFinished() )
+                    	if( resourceDataStreamIn->IsFinished() )
                     	{
-                    		resourceDataStreamIn.StartRead( resourceDataStreamIn.GetPath() );
+                    		resourceDataStreamIn->StartRead( resourceDataStreamIn->GetPath() );
                     	}
-                    	resourceDataStreamIn.Seek( previousSourcePosition );
+                    	resourceDataStreamIn->Seek( previousSourcePosition );
 
 
 						// Apply the patch to the previous data
@@ -413,8 +413,8 @@ namespace CarbonResources
                     	if( hasPatchFile )
                     	{
                     		// Apply patch to data
-                    		resourceDataStreamIn.Seek(sourceOffset);
-                    		if( !( resourceDataStreamIn >> previousResourceData ) )
+                    		resourceDataStreamIn->Seek(sourceOffset);
+                    		if( !( *resourceDataStreamIn >> previousResourceData ) )
                     		{
 								return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
                     		}
@@ -437,11 +437,11 @@ namespace CarbonResources
                     	else
                     	{
 
-                            ResourceTools::FileDataStreamIn sourceDataStreamIn( m_maxInputChunkSize.GetValue() );
+                            auto sourceDataStreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( m_maxInputChunkSize.GetValue() );
 
                             ResourceGetDataStreamParams getDataStreamParams;
 
-                            getDataStreamParams.dataStream = &sourceDataStreamIn;
+                            getDataStreamParams.dataStream = sourceDataStreamIn;
 
                             getDataStreamParams.resourceSourceSettings = params.resourcesToPatchSourceSettings;
 
@@ -464,24 +464,24 @@ namespace CarbonResources
                     		{
                     			return getUncompressedSizeResult;
                     		}
-                    		sourceDataStreamIn.Seek( sourceOffset );
+                    		sourceDataStreamIn->Seek( sourceOffset );
                     		while( unCompressedSize )
                     		{
                     			std::string sourceData;
                     			if(unCompressedSize >= m_maxInputChunkSize.GetValue())
                     			{
-                    				sourceDataStreamIn >> sourceData;
+                    				*sourceDataStreamIn >> sourceData;
                     			}
                     			else
                     			{
-                    				sourceDataStreamIn.ReadBytes( unCompressedSize, sourceData );
+                    				sourceDataStreamIn->ReadBytes( unCompressedSize, sourceData );
                     			}
 
                     			if( sourceData.empty() )
                     			{
 									return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
                     			}
-                    			resourceDataStreamIn >> previousResourceData;
+                    			*resourceDataStreamIn >> previousResourceData;
                     			if( sourceData.size() > unCompressedSize )
                     			{
                     				sourceData = sourceData.substr( unCompressedSize );
@@ -538,13 +538,13 @@ namespace CarbonResources
             {
                 // No Patch found, indicates this is just a new file
                 // Just replace file directly
-                ResourceTools::FileDataStreamIn resourceStreamIn(m_maxInputChunkSize.GetValue());
+                auto resourceStreamIn = std::make_shared<ResourceTools::FileDataStreamIn>(m_maxInputChunkSize.GetValue());
 
 				ResourceGetDataStreamParams resourceGetDataParams;
 
                 resourceGetDataParams.resourceSourceSettings = params.nextBuildResourcesSourceSettings;
 
-                resourceGetDataParams.dataStream = &resourceStreamIn;
+                resourceGetDataParams.dataStream = resourceStreamIn;
 
 				Result resourceGetDataResult = resource->GetDataStream( resourceGetDataParams );
 
@@ -553,11 +553,11 @@ namespace CarbonResources
 					return resourceGetDataResult;
                 }
 
-                while (!resourceStreamIn.IsFinished())
+                while (!resourceStreamIn->IsFinished())
                 {
 					std::string resourceData;
 
-                    if (!(resourceStreamIn >> resourceData))
+                    if (!(*resourceStreamIn >> resourceData))
                     {
 						return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
                     }

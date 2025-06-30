@@ -19,6 +19,7 @@
 #ifndef ResourceGroupImpl_H
 #define ResourceGroupImpl_H
 
+#include <BundleStreamOut.h>
 #include "ResourceGroup.h"
 #include "ResourceInfo/ResourceInfo.h"
 #include <vector>
@@ -126,7 +127,7 @@ namespace CarbonResources
 
 	    Result ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback = nullptr ) const;
 
-        Result ProcessChunk( std::string& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const;
+        Result ProcessChunk( ResourceTools::GetChunk& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const;
 
     protected:
 
