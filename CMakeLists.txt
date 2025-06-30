@@ -64,7 +64,7 @@ set(SRC_FILES
     src/ParameterVersion.cpp
 )
 
-add_library(carbon-resources SHARED ${SRC_FILES})
+ccp_add_library(carbon-resources SHARED ${SRC_FILES})
 
 target_compile_definitions(carbon-resources PRIVATE EXPORT_LIBRARY)
 
@@ -88,8 +88,10 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
 
 set_target_properties(carbon-resources PROPERTIES OUTPUT_NAME "_carbon-resources")
 
-# Static lib used for cli
-add_library(carbon-resources-static STATIC ${SRC_FILES})
+# Static lib, exported and used for cli
+ccp_add_library(carbon-resources-static STATIC ${SRC_FILES})
+
+set_target_properties(carbon-resources-static PROPERTIES OUTPUT_NAME "_carbon-resources-static")
 
 target_compile_definitions(carbon-resources-static PUBLIC CARBON_RESOURCES_STATIC)
 
@@ -97,7 +99,7 @@ if(WIN32)
     target_compile_definitions(carbon-resources-static PRIVATE NOMINMAX) # Do not define min/max macros.
 endif()
 
-target_link_libraries(carbon-resources-static PRIVATE carbon-resources-tools yaml-cpp::yaml-cpp)
+target_link_libraries(carbon-resources-static PRIVATE $<BUILD_LOCAL_INTERFACE:carbon-resources-tools> yaml-cpp::yaml-cpp)
 
 target_include_directories(carbon-resources-static
         PUBLIC
@@ -150,15 +152,17 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     if(INSTALL_BIN_ONLY)
         # Install rule to ensure that our runtime files are in the expected, platform-specific folder
         install(
-                TARGETS carbon-resources
+                TARGETS carbon-resources carbon-resources-static
                 EXPORT carbon-resourcesTarget
                 CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
+                LIBRARY DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
+                ARCHIVE DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
                 RUNTIME DESTINATION bin/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
         )
     else()
         # Install rule to ensure that our runtime and linker files are in the expected, platform-specific folders
         install(
-                TARGETS carbon-resources
+                TARGETS carbon-resources carbon-resources-static
                 EXPORT carbon-resourcesTarget
                 CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
                 LIBRARY DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
