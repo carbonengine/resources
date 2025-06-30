@@ -4,7 +4,7 @@ NumberOfResources: 2
 TotalResourcesSizeCompressed: 429
 TotalResourcesSizeUnCompressed: 18758
 ResourceGroupResource:
-  RelativePath: ResourceGroup.yaml
+  RelativePath: DiffResourceGroup_36ac35cc88a6806bcb0623f76722d759.yaml
   Type: ResourceGroup
   Location: cc/cc00d34500ea7a31_36ac35cc88a6806bcb0623f76722d759
   Checksum: 36ac35cc88a6806bcb0623f76722d759

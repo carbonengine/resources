@@ -29,7 +29,42 @@ namespace CarbonResources
     Result PatchResourceGroupImpl::SetResourceGroup( const ResourceGroupInfo& resourceGroup )
     {
         // Creates a deep copy
-		return m_resourceGroupParameter.GetValue()->SetParametersFromResource( &resourceGroup, m_versionParameter.GetValue() );
+    	ResourceGroupInfo* info = m_resourceGroupParameter.GetValue();
+
+		Result result = info->SetParametersFromResource( &resourceGroup, m_versionParameter.GetValue() );
+
+    	if( result.type != ResultType::SUCCESS )
+    	{
+    		return result;
+    	}
+
+    	// Change the relative path to include the checksum as part of the file name.
+    	// This should prevent issues with name collisions between files called "ResourceGroup.yaml"
+    	std::filesystem::path relativePath;
+
+    	result = info->GetRelativePath( relativePath );
+
+    	if( result.type != ResultType::SUCCESS )
+    	{
+    		return result;
+    	}
+
+    	std::string checksum;
+
+    	result = info->GetChecksum( checksum );
+
+    	if( result.type != ResultType::SUCCESS )
+    	{
+    		return result;
+    	}
+
+    	const std::string extension = relativePath.extension().string();
+
+    	relativePath.replace_filename( "DiffResourceGroup_" + checksum + extension );
+
+    	info->SetRelativePath( relativePath );
+
+    	return Result{ ResultType::SUCCESS };
     }
 
     void PatchResourceGroupImpl::SetMaxInputChunkSize( uintmax_t maxInputChunkSize )
