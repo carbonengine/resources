@@ -58,11 +58,7 @@ namespace CarbonResources
 
     	const std::string extension = relativePath.extension().string();
 
-    	std::string relativePathString = relativePath.string();
-
-    	relativePathString = relativePathString.substr( 0, relativePathString.size() - extension.size() );
-
-    	relativePath.replace_filename( relativePathString + "_" + checksum + extension );
+    	relativePath.replace_filename( "DiffResourceGroup_" + checksum + extension );
 
     	info->SetRelativePath( relativePath );
 
