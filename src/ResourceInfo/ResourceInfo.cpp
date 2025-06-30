@@ -208,8 +208,6 @@ namespace CarbonResources
 
             return PutDataStreamRemoteCdn( params );
 
-            break;
-
 		default:
 			return Result{ ResultType::FAILED_TO_SAVE_FILE };
 		}

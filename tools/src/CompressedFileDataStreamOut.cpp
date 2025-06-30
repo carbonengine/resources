@@ -4,22 +4,22 @@
 namespace ResourceTools
 {
 
-  CompressedFileDataStreamOut::CompressedFileDataStreamOut( ):
-	m_compressionStream(nullptr)
+  CompressedFileDataStreamOut::CompressedFileDataStreamOut( )
   {
   }
 
   CompressedFileDataStreamOut::~CompressedFileDataStreamOut()
   {
-      if (m_compressionStream)
-      {
-		  delete m_compressionStream;
-      }
   }
 
   bool CompressedFileDataStreamOut::StartWrite( std::filesystem::path filepath )
   {
-	  m_compressionStream = new GzipCompressionStream( &m_compressionBuffer );
+      if (m_compressionStream)
+      {
+		  return false;
+      }
+
+	  m_compressionStream = std::make_unique<GzipCompressionStream>( &m_compressionBuffer );
       
       if (!m_compressionStream->Start())
       {
@@ -49,9 +49,8 @@ namespace ResourceTools
           }
 	  }
 
-      delete m_compressionStream;
 
-      m_compressionStream = nullptr;
+      m_compressionStream.reset();
 
       m_compressionBuffer.clear();
 

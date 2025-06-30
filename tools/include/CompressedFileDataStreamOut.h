@@ -49,7 +49,7 @@ namespace ResourceTools
 
         std::string m_compressionBuffer;
 
-		GzipCompressionStream* m_compressionStream;
+        std::unique_ptr<GzipCompressionStream> m_compressionStream;
 	};
 
     
