@@ -27,6 +27,8 @@
 #include "VersionInternal.h"
 #include "ResourceInfo/PatchResourceInfo.h"
 
+#include "BundleResourceGroup.h"
+
 namespace YAML
 {
     class Emitter;
@@ -36,15 +38,13 @@ namespace YAML
 namespace CarbonResources
 {
 
-    class BundleResourceGroupImpl;
-
     struct ResourceGroupSubtractionParams
     {
-	    ResourceGroupImpl* subtractResourceGroup = nullptr;
+		ResourceGroup::ResourceGroupImpl* subtractResourceGroup = nullptr;
 
-	    ResourceGroupImpl* result1 = nullptr;
+	    ResourceGroup::ResourceGroupImpl* result1 = nullptr;
 
-	    ResourceGroupImpl* result2 = nullptr;
+	    ResourceGroup::ResourceGroupImpl* result2 = nullptr;
 
     	std::vector<std::filesystem::path> removedResources;
 
@@ -57,7 +57,7 @@ namespace CarbonResources
         YAML
     };
 
-    class ResourceGroupImpl
+    class ResourceGroup::ResourceGroupImpl
     {
     public:
 		ResourceGroupImpl();
@@ -127,7 +127,7 @@ namespace CarbonResources
 
 	    Result ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback = nullptr ) const;
 
-        Result ProcessChunk( ResourceTools::GetChunk& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const;
+        Result ProcessChunk( ResourceTools::GetChunk& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroup::BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const;
 
     protected:
 

@@ -16,7 +16,7 @@
 
 namespace CarbonResources
 {
-	Result CreateResourceGroupFromYamlString( const std::string& yamlString, std::shared_ptr<ResourceGroupImpl>& out )
+    Result CreateResourceGroupFromYamlString( const std::string& yamlString, std::shared_ptr<ResourceGroup::ResourceGroupImpl>& out )
 	{
 	    YAML::Node root;
     	try
@@ -44,19 +44,19 @@ namespace CarbonResources
 		return out->ImportFromYaml( root );
 	}
 
-    Result CreateResourceGroupFromString(std::string& string, std::shared_ptr<ResourceGroupImpl>& out)
+    Result CreateResourceGroupFromString( std::string& string, std::shared_ptr<ResourceGroup::ResourceGroupImpl>& out )
     {
-		if( string == ResourceGroupImpl::TypeId() )
+		if( string == ResourceGroup::ResourceGroupImpl::TypeId() )
 		{
-			out = std::make_shared<ResourceGroupImpl>();
+			out = std::make_shared<ResourceGroup::ResourceGroupImpl>();
 		}
-		else if( string == PatchResourceGroupImpl::TypeId() )
+		else if( string == PatchResourceGroup::PatchResourceGroupImpl::TypeId() )
 		{
-			out = std::make_shared<PatchResourceGroupImpl>();
+			out = std::make_shared<PatchResourceGroup::PatchResourceGroupImpl>();
 		}
-		else if( string == BundleResourceGroupImpl::TypeId() )
+		else if( string == BundleResourceGroup::BundleResourceGroupImpl::TypeId() )
 		{
-			out = std::make_shared<BundleResourceGroupImpl>();
+			out = std::make_shared<BundleResourceGroup::BundleResourceGroupImpl>();
 		}
 		else
 		{

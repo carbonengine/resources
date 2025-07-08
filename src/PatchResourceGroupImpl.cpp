@@ -18,7 +18,7 @@
 
 namespace CarbonResources
 {
-    PatchResourceGroupImpl::PatchResourceGroupImpl( ) :
+    PatchResourceGroup::PatchResourceGroupImpl::PatchResourceGroupImpl() :
 	    ResourceGroupImpl()
     {
 		m_resourceGroupParameter = new ResourceGroupInfo({});
@@ -26,7 +26,7 @@ namespace CarbonResources
 		m_type = TypeId();
     }
 
-    Result PatchResourceGroupImpl::SetResourceGroup( const ResourceGroupInfo& resourceGroup )
+    Result PatchResourceGroup::PatchResourceGroupImpl::SetResourceGroup( const ResourceGroupInfo& resourceGroup )
     {
         // Creates a deep copy
     	ResourceGroupInfo* info = m_resourceGroupParameter.GetValue();
@@ -67,27 +67,27 @@ namespace CarbonResources
     	return Result{ ResultType::SUCCESS };
     }
 
-    void PatchResourceGroupImpl::SetMaxInputChunkSize( uintmax_t maxInputChunkSize )
+    void PatchResourceGroup::PatchResourceGroupImpl::SetMaxInputChunkSize( uintmax_t maxInputChunkSize )
     {
 		m_maxInputChunkSize = maxInputChunkSize;
     }
 
-    PatchResourceGroupImpl::~PatchResourceGroupImpl()
+    PatchResourceGroup::PatchResourceGroupImpl::~PatchResourceGroupImpl()
     {
 		delete m_resourceGroupParameter.GetValue();
     }
 
-    std::string PatchResourceGroupImpl::GetType() const
+    std::string PatchResourceGroup::PatchResourceGroupImpl::GetType() const
 	{
 		return TypeId();
 	}
 
-    std::string PatchResourceGroupImpl::TypeId()
+    std::string PatchResourceGroup::PatchResourceGroupImpl::TypeId()
     {
 		return "PatchGroup";
     }
 
-	Result PatchResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut )
+	Result PatchResourceGroup::PatchResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut )
 	{
 		PatchResourceInfo* patchResource = new PatchResourceInfo( PatchResourceInfoParams{} );
 
@@ -108,7 +108,7 @@ namespace CarbonResources
 
 	}
 
-    Result PatchResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
+    Result PatchResourceGroup::PatchResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
     {
 		if( m_resourceGroupParameter.IsParameterExpectedInDocumentVersion( m_versionParameter.GetValue() ) )
 		{
@@ -163,7 +163,7 @@ namespace CarbonResources
 		return Result{ ResultType::SUCCESS };
     }
 
-    Result PatchResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const
+    Result PatchResourceGroup::PatchResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const
     {
         if (m_resourceGroupParameter.IsParameterExpectedInDocumentVersion(outputDocumentVersion))
         {
@@ -204,7 +204,7 @@ namespace CarbonResources
     }
 
 
-    Result PatchResourceGroupImpl::GetTargetResourcePatches( const ResourceInfo* resource, std::vector<const PatchResourceInfo*>& patches ) const
+    Result PatchResourceGroup::PatchResourceGroupImpl::GetTargetResourcePatches( const ResourceInfo* resource, std::vector<const PatchResourceInfo*>& patches ) const
     {
 		std::filesystem::path resourceRelativePath;
 
@@ -237,7 +237,7 @@ namespace CarbonResources
         return Result{ ResultType::SUCCESS };
     }
 
-    Result PatchResourceGroupImpl::Apply( const PatchApplyParams& params )
+    Result PatchResourceGroup::PatchResourceGroupImpl::Apply( const PatchApplyParams& params )
     {
 		if( params.statusCallback )
 		{
@@ -717,7 +717,16 @@ namespace CarbonResources
 
     }
 
-	Result PatchResourceGroupImpl::GetGroupSpecificResourcesToBundle( std::vector<ResourceInfo*>& toBundle ) const
+    Result PatchResourceGroup::PatchResourceGroupImpl::SetRemovedResourceRelativePaths( const std::vector<std::filesystem::path>& paths )
+	{
+		for( auto path : paths )
+		{
+			m_removedResources.PushBack( path );
+		}
+		return Result{ ResultType::SUCCESS };
+	}
+
+	Result PatchResourceGroup::PatchResourceGroupImpl::GetGroupSpecificResourcesToBundle( std::vector<ResourceInfo*>& toBundle ) const
 	{
 		if( m_resourceGroupParameter.HasValue() )
 		{

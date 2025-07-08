@@ -21,7 +21,7 @@ namespace CarbonResources
 {
     
 
-    ResourceGroupImpl::ResourceGroupImpl()
+    ResourceGroup::ResourceGroupImpl::ResourceGroupImpl()
     {
 		m_versionParameter = VersionInternal(S_DOCUMENT_VERSION);
 
@@ -34,7 +34,7 @@ namespace CarbonResources
         m_totalResourcesSizeUncompressed = 0;
     }
 
-    ResourceGroupImpl::~ResourceGroupImpl()
+    ResourceGroup::ResourceGroupImpl::~ResourceGroupImpl()
     {
         for (ResourceInfo* resourceInfo : m_resourcesParameter)
         {
@@ -42,7 +42,7 @@ namespace CarbonResources
         }
     }
 
-    Result ResourceGroupImpl::CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params )
+    Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params )
     {
 		// Update status
 		if( params.statusCallback )
@@ -236,7 +236,7 @@ namespace CarbonResources
 
     }
 
-    Result ResourceGroupImpl::ImportFromData( const std::string& data, DocumentType documentType /* = DocumentType::YAML */)
+    Result ResourceGroup::ResourceGroupImpl::ImportFromData( const std::string& data, DocumentType documentType /* = DocumentType::YAML */ )
     {
         switch (documentType)
         {
@@ -263,7 +263,7 @@ namespace CarbonResources
         return Result{ ResultType::FAIL };
     }
 
-    Result ResourceGroupImpl::ImportFromFile( const ResourceGroupImportFromFileParams& params )
+    Result ResourceGroup::ResourceGroupImpl::ImportFromFile( const ResourceGroupImportFromFileParams& params )
     {
         // Status update
         if (params.statusCallback)
@@ -326,7 +326,7 @@ namespace CarbonResources
         return importResult;
     }
 
-    Result ResourceGroupImpl::ExportToFile( const ResourceGroupExportToFileParams& params ) const
+    Result ResourceGroup::ResourceGroupImpl::ExportToFile( const ResourceGroupExportToFileParams& params ) const
     {
 		// Update status
 		if( params.statusCallback )
@@ -367,7 +367,7 @@ namespace CarbonResources
 		return Result{ ResultType::SUCCESS };
     }
 
-    Result ResourceGroupImpl::ExportToData( std::string& data,  VersionInternal outputDocumentVersion /* = S_DOCUMENT_VERSION*/) const
+    Result ResourceGroup::ResourceGroupImpl::ExportToData( std::string& data, VersionInternal outputDocumentVersion /* = S_DOCUMENT_VERSION*/ ) const
     {
 		Result exportYamlResult = ExportYaml( outputDocumentVersion, data );
 
@@ -379,7 +379,7 @@ namespace CarbonResources
         return Result{ ResultType::SUCCESS };
     }
 
-    Result ResourceGroupImpl::ImportFromCSV( const std::string& data, StatusCallback statusCallback /* = nullptr */ )
+    Result ResourceGroup::ResourceGroupImpl::ImportFromCSV( const std::string& data, StatusCallback statusCallback /* = nullptr */ )
     {
 		// Status update
 		if( statusCallback )
@@ -483,7 +483,7 @@ namespace CarbonResources
 		return Result{ ResultType::SUCCESS };
     }
 
-    Result ResourceGroupImpl::CreateResourceFromResource( const ResourceInfo& resourceIn, ResourceInfo*& resourceOut ) const
+    Result ResourceGroup::ResourceGroupImpl::CreateResourceFromResource( const ResourceInfo& resourceIn, ResourceInfo*& resourceOut ) const
     {
 		resourceOut = nullptr;
 
@@ -551,7 +551,7 @@ namespace CarbonResources
 
     }
 
-	Result ResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut )
+	Result ResourceGroup::ResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut )
 	{
 		std::unique_ptr<ResourceInfo> resourceInfo;
       
@@ -571,7 +571,7 @@ namespace CarbonResources
 
 	}
 
-    Result ResourceGroupImpl::ImportFromYamlString( const std::string& data, StatusCallback statusCallback /* = nullptr */ )
+    Result ResourceGroup::ResourceGroupImpl::ImportFromYamlString( const std::string& data, StatusCallback statusCallback /* = nullptr */ )
     {
 	    YAML::Node resourceGroupFile;
     	try
@@ -585,7 +585,7 @@ namespace CarbonResources
     	return ImportFromYaml( resourceGroupFile, statusCallback );
     }
 
-	Result ResourceGroupImpl::ImportFromYaml( YAML::Node& resourceGroupFile, StatusCallback statusCallback )
+	Result ResourceGroup::ResourceGroupImpl::ImportFromYaml( YAML::Node& resourceGroupFile, StatusCallback statusCallback )
 	{
 		YAML::Node typeNode = resourceGroupFile[m_type.GetTag()];
 		if( !typeNode.IsDefined() )
@@ -681,27 +681,27 @@ namespace CarbonResources
 		return Result{ ResultType::SUCCESS };
     }
 
-    std::string ResourceGroupImpl::GetType() const
+    std::string ResourceGroup::ResourceGroupImpl::GetType() const
 	{
 		return TypeId();
 	}
 
-    std::string ResourceGroupImpl::TypeId() 
+    std::string ResourceGroup::ResourceGroupImpl::TypeId() 
     {
 		return "ResourceGroup";
     }
 
-    Result ResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
+    Result ResourceGroup::ResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
     {
 		return Result{ ResultType::SUCCESS };
     }
 
-    Result ResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const
+    Result ResourceGroup::ResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const
     {
 		return Result{ ResultType::SUCCESS };
     } 
 
-    Result ResourceGroupImpl::ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback /*= nullptr*/ ) const
+    Result ResourceGroup::ResourceGroupImpl::ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback /*= nullptr*/ ) const
     {
 		
         YAML::Emitter out;
@@ -805,7 +805,7 @@ namespace CarbonResources
       
     }
 
-    Result ResourceGroupImpl::ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback /*= nullptr*/ ) const
+    Result ResourceGroup::ResourceGroupImpl::ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback /*= nullptr*/ ) const
     {
     	if( outputDocumentVersion.getMajor() > 0 || outputDocumentVersion.getMinor() > 0 || outputDocumentVersion.getPatch() > 0 )
     	{
@@ -848,7 +848,7 @@ namespace CarbonResources
     	return Result{ ResultType::SUCCESS };
     }
 
-    Result ResourceGroupImpl::ProcessChunk( ResourceTools::GetChunk& chunkFile, const std::filesystem::path& chunkRelativePath, BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const
+    Result ResourceGroup::ResourceGroupImpl::ProcessChunk( ResourceTools::GetChunk& chunkFile, const std::filesystem::path& chunkRelativePath, BundleResourceGroup::BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const
     {
 		// Create resource from Patch Data
 		BundleResourceInfo* chunkResource = new BundleResourceInfo( { chunkRelativePath } );
@@ -942,7 +942,7 @@ namespace CarbonResources
         return Result{ ResultType::SUCCESS };
     }
 
-    Result ResourceGroupImpl::CreateBundle( const BundleCreateParams& params ) const
+    Result ResourceGroup::ResourceGroupImpl::CreateBundle( const BundleCreateParams& params ) const
     {
 		// Update status
 		if( params.statusCallback )
@@ -954,7 +954,7 @@ namespace CarbonResources
 
         std::string chunkBaseName = params.resourceGroupRelativePath.filename().replace_extension().string();
 
-		BundleResourceGroupImpl bundleResourceGroup;
+		BundleResourceGroup::BundleResourceGroupImpl bundleResourceGroup;
 
         bundleResourceGroup.SetChunkSize( params.chunkSize );
 
@@ -1206,7 +1206,7 @@ namespace CarbonResources
         return Result{ ResultType::SUCCESS };
     }
 
-	Result ResourceGroupImpl::ConstructPatchResourceInfo( const PatchCreateParams& params, int patchId, uintmax_t dataOffset, uint64_t patchSourceOffset, ResourceInfo* resourceNext, PatchResourceInfo*& patchResource ) const
+	Result ResourceGroup::ResourceGroupImpl::ConstructPatchResourceInfo( const PatchCreateParams& params, int patchId, uintmax_t dataOffset, uint64_t patchSourceOffset, ResourceInfo* resourceNext, PatchResourceInfo*& patchResource ) const
 	{
     	// Create a resource from patch data
     	std::filesystem::path resourceLatestRelativePath;
@@ -1227,7 +1227,7 @@ namespace CarbonResources
     	return Result{ ResultType::SUCCESS };
 	}
 
-	Result ResourceGroupImpl::CreatePatch( const PatchCreateParams& params ) const
+	Result ResourceGroup::ResourceGroupImpl::CreatePatch( const PatchCreateParams& params ) const
     {
         // Update status
 		if( params.statusCallback )
@@ -1244,7 +1244,7 @@ namespace CarbonResources
 			return Result{ ResultType::PATCH_RESOURCE_LIST_MISSMATCH };
         }
 
-        PatchResourceGroupImpl patchResourceGroup;
+        PatchResourceGroup::PatchResourceGroupImpl patchResourceGroup;
 
         patchResourceGroup.SetMaxInputChunkSize( params.maxInputFileChunkSize );
         
@@ -1710,7 +1710,7 @@ namespace CarbonResources
     }
 
 
-    Result ResourceGroupImpl::AddResource( ResourceInfo* resource )
+    Result ResourceGroup::ResourceGroupImpl::AddResource( ResourceInfo* resource )
     {
 		m_resourcesParameter.PushBack( resource );
 
@@ -1741,16 +1741,9 @@ namespace CarbonResources
 		return Result{ ResultType::SUCCESS };
     }
 
-    Result PatchResourceGroupImpl::SetRemovedResourceRelativePaths( const std::vector<std::filesystem::path>& paths )
-    {
-    	for( auto path : paths )
-    	{
-    		m_removedResources.PushBack( path );
-    	}
-    	return Result{ ResultType::SUCCESS };
-    }
+    
 
-    Result ResourceGroupImpl::Diff( ResourceGroupSubtractionParams& params ) const
+    Result ResourceGroup::ResourceGroupImpl::Diff( ResourceGroupSubtractionParams& params ) const
     {
 		if( params.statusCallback )
 		{
@@ -1944,42 +1937,42 @@ namespace CarbonResources
         return Result{ ResultType::SUCCESS };
     }
 
-    std::vector<ResourceInfo*>::iterator ResourceGroupImpl::begin()
+    std::vector<ResourceInfo*>::iterator ResourceGroup::ResourceGroupImpl::begin()
 	{
 		return m_resourcesParameter.begin();
 	}
 
-	std::vector<ResourceInfo*>::const_iterator ResourceGroupImpl::begin() const
+	std::vector<ResourceInfo*>::const_iterator ResourceGroup::ResourceGroupImpl::begin() const
 	{
 		return m_resourcesParameter.begin();
 	}
 
-	std::vector<ResourceInfo*>::const_iterator ResourceGroupImpl::cbegin()
+	std::vector<ResourceInfo*>::const_iterator ResourceGroup::ResourceGroupImpl::cbegin()
 	{
 		return m_resourcesParameter.begin();
 	}
 
-	std::vector<ResourceInfo*>::iterator ResourceGroupImpl::end()
+	std::vector<ResourceInfo*>::iterator ResourceGroup::ResourceGroupImpl::end()
 	{
 		return m_resourcesParameter.end();
 	}
 
-	std::vector<ResourceInfo*>::const_iterator ResourceGroupImpl::end() const
+	std::vector<ResourceInfo*>::const_iterator ResourceGroup::ResourceGroupImpl::end() const
 	{
 		return m_resourcesParameter.end();
 	}
 
-	std::vector<ResourceInfo*>::const_iterator ResourceGroupImpl::cend()
+	std::vector<ResourceInfo*>::const_iterator ResourceGroup::ResourceGroupImpl::cend()
 	{
 		return m_resourcesParameter.end();
 	}
 
-    size_t ResourceGroupImpl::GetSize() const
+    size_t ResourceGroup::ResourceGroupImpl::GetSize() const
     {
 		return m_resourcesParameter.GetSize();
     }
 
-	Result ResourceGroupImpl::GetGroupSpecificResourcesToBundle( std::vector<ResourceInfo*>& toBundle ) const
+	Result ResourceGroup::ResourceGroupImpl::GetGroupSpecificResourcesToBundle( std::vector<ResourceInfo*>& toBundle ) const
 	{
 		return Result{ ResultType::SUCCESS };
 	}

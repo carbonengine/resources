@@ -5,9 +5,9 @@
 
 namespace CarbonResources
 {
-	Result CreateResourceGroupFromYamlString( const std::string& yamlString, std::shared_ptr<ResourceGroupImpl>& out );
+	Result CreateResourceGroupFromYamlString( const std::string& yamlString, std::shared_ptr<ResourceGroup::ResourceGroupImpl>& out );
 
-    Result CreateResourceGroupFromString( std::string& string, std::shared_ptr<ResourceGroupImpl>& out );
+    Result CreateResourceGroupFromString( std::string& string, std::shared_ptr<ResourceGroup::ResourceGroupImpl>& out );
 
     Result CreateResourceInfoFromYamlNode( YAML::Node& resource, std::unique_ptr<ResourceInfo>& out, const VersionInternal& documentVersion );
 

@@ -30,7 +30,7 @@
 namespace CarbonResources
 {
 
-    class PatchResourceGroupImpl : public ResourceGroupImpl
+    class PatchResourceGroup::PatchResourceGroupImpl : public ResourceGroup::ResourceGroupImpl
     {
     public:
 

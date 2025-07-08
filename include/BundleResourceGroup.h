@@ -47,11 +47,14 @@ namespace CarbonResources
         StatusCallback statusCallback = nullptr;
     };
 
-    class BundleResourceGroupImpl;
-
+    /** @class BundleResourceGroup
+    *  @brief Contains a collection of Chunk Resources
+    */
     class API BundleResourceGroup final: public ResourceGroup
     {
     public:
+
+        class BundleResourceGroupImpl;
 
 	    BundleResourceGroup( );
 

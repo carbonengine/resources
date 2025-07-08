@@ -60,8 +60,6 @@ namespace CarbonResources
         StatusCallback statusCallback = nullptr;
     };
 
-	class PatchResourceGroupImpl;
-
     /** @class PatchResourceGroup
     *  @brief Contains a collection of Patch Resources
     */
@@ -69,6 +67,8 @@ namespace CarbonResources
     {
 
     public:
+		class PatchResourceGroupImpl;
+
 		PatchResourceGroup( );
 
         PatchResourceGroup( const PatchResourceGroup& ) = delete;

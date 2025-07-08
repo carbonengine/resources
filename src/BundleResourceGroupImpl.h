@@ -32,7 +32,7 @@
 namespace CarbonResources
 {
 
-    class BundleResourceGroupImpl : public ResourceGroupImpl
+    class BundleResourceGroup::BundleResourceGroupImpl : public ResourceGroup::ResourceGroupImpl
     {
     public:
 

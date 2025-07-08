@@ -17,8 +17,8 @@
 namespace CarbonResources
 {
 
-    BundleResourceGroupImpl::BundleResourceGroupImpl( ) :
-	    ResourceGroupImpl()
+    BundleResourceGroup::BundleResourceGroupImpl::BundleResourceGroupImpl() :
+	    ResourceGroup::ResourceGroupImpl()
     {
 		m_chunkSize = 1000;
 
@@ -27,23 +27,23 @@ namespace CarbonResources
 		m_type = TypeId();
     }
 
-    BundleResourceGroupImpl::~BundleResourceGroupImpl()
+    BundleResourceGroup::BundleResourceGroupImpl::~BundleResourceGroupImpl()
     {
 		delete m_resourceGroupParameter.GetValue();
     }
 
-    void BundleResourceGroupImpl::SetChunkSize( uintmax_t size )
+    void BundleResourceGroup::BundleResourceGroupImpl::SetChunkSize( uintmax_t size )
     {
 		m_chunkSize = size;
     }
 
-    Result BundleResourceGroupImpl::SetResourceGroup( const ResourceGroupInfo& resourceGroup )
+    Result BundleResourceGroup::BundleResourceGroupImpl::SetResourceGroup( const ResourceGroupInfo& resourceGroup )
     {
 		// Creates a deep copy
 		return m_resourceGroupParameter.GetValue()->SetParametersFromResource( &resourceGroup, m_versionParameter.GetValue() );
     }
 
-    Result BundleResourceGroupImpl::Unpack( const BundleUnpackParams& params )
+    Result BundleResourceGroup::BundleResourceGroupImpl::Unpack( const BundleUnpackParams& params )
     {
 		if( params.statusCallback )
 		{
@@ -307,17 +307,17 @@ namespace CarbonResources
 
     }
 
-    std::string BundleResourceGroupImpl::GetType() const
+    std::string BundleResourceGroup::BundleResourceGroupImpl::GetType() const
 	{
 		return TypeId();
 	}
 
-    std::string BundleResourceGroupImpl::TypeId()
+    std::string BundleResourceGroup::BundleResourceGroupImpl::TypeId()
 	{
 		return "BundleGroup";
 	}
 
-    Result BundleResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut )
+    Result BundleResourceGroup::BundleResourceGroupImpl::CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut )
 	{
 		BundleResourceInfo* bundleResourceInfo = new BundleResourceInfo( BundleResourceInfoParams{} );
 
@@ -338,7 +338,7 @@ namespace CarbonResources
 
 	}
 
-    Result BundleResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
+    Result BundleResourceGroup::BundleResourceGroupImpl::ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile )
     {
 		if( m_resourceGroupParameter.IsParameterExpectedInDocumentVersion( m_versionParameter.GetValue() ) )
 		{
@@ -382,7 +382,7 @@ namespace CarbonResources
 		return Result{ ResultType::SUCCESS };
     }
 
-    Result BundleResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const
+    Result BundleResourceGroup::BundleResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const
     {
 		if( m_resourceGroupParameter.IsParameterExpectedInDocumentVersion( outputDocumentVersion ) )
 		{
