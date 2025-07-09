@@ -262,7 +262,6 @@ namespace CarbonResources
 		/// @note No file filtering supported
         Result CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params );
 
-        friend class ResourceGroupImpl;
     };
 
 }
