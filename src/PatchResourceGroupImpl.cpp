@@ -67,9 +67,16 @@ namespace CarbonResources
     	return Result{ ResultType::SUCCESS };
     }
 
-    void PatchResourceGroup::PatchResourceGroupImpl::SetMaxInputChunkSize( uintmax_t maxInputChunkSize )
+    Result PatchResourceGroup::PatchResourceGroupImpl::SetMaxInputChunkSize( uintmax_t maxInputChunkSize )
     {
+        if (maxInputChunkSize <= 0)
+        {
+			return Result{ ResultType::INVALID_CHUNK_SIZE };
+        }
+
 		m_maxInputChunkSize = maxInputChunkSize;
+
+        return Result{ ResultType::SUCCESS };
     }
 
     PatchResourceGroup::PatchResourceGroupImpl::~PatchResourceGroupImpl()

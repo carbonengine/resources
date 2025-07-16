@@ -48,7 +48,7 @@ namespace CarbonResources
 
         static std::string TypeId();
 
-        void SetChunkSize( uintmax_t size );
+        Result SetChunkSize( uintmax_t size );
 
     private:
 

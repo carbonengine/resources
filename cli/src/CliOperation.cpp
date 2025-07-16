@@ -88,7 +88,7 @@ argparse::ArgumentParser* CliOperation::GetParser() const
 	return m_argumentParser;
 }
 
-void CliOperation::PrintError(std::string message) const
+void CliOperation::PrintError( std::string message /*= ""*/ ) const
 {
     if (message != "")
     {

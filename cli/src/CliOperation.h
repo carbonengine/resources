@@ -47,7 +47,7 @@ public:
 
 	argparse::ArgumentParser* GetParser() const;
 
-	void PrintError( std::string message ) const;
+	void PrintError( std::string message = "" ) const;
 
 	virtual bool Execute( std::string& returnErrorMessage ) const = 0;
 

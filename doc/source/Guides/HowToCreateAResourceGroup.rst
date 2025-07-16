@@ -17,4 +17,4 @@ Resource Groups can be created via the lib or CLI. This example uses the CLI.
 
 This will create a ``ResourceGroup.yaml`` file representing the input directory ``C:\Build``.
 
-The resource group files are human readable yaml files and quite self explanatory. For more information see :doc:`../OverviewDocuments/filesystemDesign`
+The resource group files are human readable yaml files and quite self explanatory. For more information see :doc:`../DesignDocuments/filesystemDesign`

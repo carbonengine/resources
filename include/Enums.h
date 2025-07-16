@@ -26,6 +26,7 @@
 #include <functional>
 
 #include "Exports.h"
+#include "Version.h"
 
 namespace CarbonResources
 {
@@ -140,6 +141,8 @@ namespace CarbonResources
     * Resource provided appears malformed.
     * @var FAILED_TO_PARSE_YAML
     * Failed to parse provided yaml.
+    * @var INVALID_CHUNK_SIZE
+    * Chunk size must be > 0.
     */
     enum class ResultType
     {
@@ -174,7 +177,8 @@ namespace CarbonResources
 	    RESOURCE_TYPE_MISSMATCH,
     	MALFORMED_RESOURCE_GROUP,
 		MALFORMED_RESOURCE,
-    	FAILED_TO_PARSE_YAML
+    	FAILED_TO_PARSE_YAML,
+		INVALID_CHUNK_SIZE
         //NOTE: if adding to this enum, a complimentary entry must be added to resultToString.
     };
 
@@ -248,7 +252,7 @@ namespace CarbonResources
 		unsigned int patch;
     };
 
-    static const Version S_LIBRARY_VERSION = { 1, 0, 0 }; /*!< Current version of the carbon-resources */
+    static const Version S_LIBRARY_VERSION = { VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH }; /*!< Current version of the carbon-resources */
 
     static const Version S_DOCUMENT_VERSION = { 0, 1, 0 }; /*!< Maximum document version supported by carbon-resources */
 

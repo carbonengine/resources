@@ -17,6 +17,7 @@ set(SRC_FILES
     src/CreatePatchCliOperation.h
     src/CreateResourceGroupCliOperation.cpp
     src/CreateResourceGroupCliOperation.h
+    src/Defines.h
     src/main.cpp
     src/UnpackBundleCliOperation.cpp
     src/UnpackBundleCliOperation.h

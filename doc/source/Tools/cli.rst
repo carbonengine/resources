@@ -31,6 +31,25 @@ Detailed help refer to the CLI documentation.
 
 Alternatively as the operations map directly to the carbon-resources library, the :doc:`api` documentation can be referred to for further information.
 
+Return Values
+-------------
+
+The cli gives some insight into the failure through the return codes.
+
++---------------------------------------------------------+---------+
+| Return Description                                      |  Value  |
++=========================================================+=========+
+| Success                                                 |    0    | 
++---------------------------------------------------------+---------+
+| Failed: valid operation                                 |    1    | 
++---------------------------------------------------------+---------+
+| Failed: valid operation supplied with invalid arguments |    2    | 
++---------------------------------------------------------+---------+
+| Failed: invalid operation specified                     |    3    | 
++---------------------------------------------------------+---------+
+| Failed: no operation specified                          |    4    | 
++---------------------------------------------------------+---------+
+
 
 Extended CLI
 ------------

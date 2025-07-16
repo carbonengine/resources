@@ -2,6 +2,127 @@
 
 struct CarbonResourcesCliTest : public CliTestFixture{};
 
+TEST_F( CarbonResourcesCliTest, RunWithoutArguments )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	int res = RunCli( arguments, output );
+
+    // Expect 4 which indicates failed with no command specified
+    ASSERT_EQ( res, 4 );
+}
+
+TEST_F( CarbonResourcesCliTest, RunWithNonesenseArguments )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+    arguments.push_back( "Nonesense" );
+
+	int res = RunCli( arguments, output );
+
+    // Expect 3 which indicates failed due to invalid operation
+	ASSERT_EQ( res, 3 );
+}
+
+TEST_F( CarbonResourcesCliTest, RunCreateGroupWithNoArguments )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-group" );
+
+	int res = RunCli( arguments, output );
+
+    // Expect 2 which failed due to invalid operation arguments
+	ASSERT_EQ( res, 2 );
+}
+
+TEST_F( CarbonResourcesCliTest, RunCreatePatchWithNoArguments )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-patch" );
+
+	int res = RunCli( arguments, output );
+
+    // Expect 2 which failed due to invalid operation arguments
+	ASSERT_EQ( res, 2 );
+}
+
+TEST_F( CarbonResourcesCliTest, RunCreateBundleWithNoArguments )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-bundle" );
+
+	int res = RunCli( arguments, output );
+
+    // Expect 2 which failed due to invalid operation arguments
+	ASSERT_EQ( res, 2 );
+}
+
+#ifdef DEV_FEATURES
+
+TEST_F( CarbonResourcesCliTest, RunApplyPatchWithNoArguments )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "apply-patch" );
+
+	int res = RunCli( arguments, output );
+
+    // Expect 2 which failed due to invalid operation arguments
+	ASSERT_EQ( res, 2 );
+}
+
+TEST_F( CarbonResourcesCliTest, RunUnpackBundleWithNoArguments )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "unpack-bundle" );
+
+	int res = RunCli( arguments, output );
+
+    // Expect 2 which failed due to invalid operation arguments
+	ASSERT_EQ( res, 2 );
+}
+
+TEST_F( CarbonResourcesCliTest, CreateOperationWithInvalidInput )
+{
+
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-group" );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+
+	std::filesystem::path inputDirectory = "INVALID_PATH";
+	arguments.push_back( inputDirectory.string() );
+
+	int res = RunCli( arguments, output );
+
+    // Expect return 1 indicating failed during valid operation
+	ASSERT_EQ( res, 1 );
+
+}
+
+#endif
 TEST_F( CarbonResourcesCliTest, CreateResourceGroupFromDirectory )
 {
 	std::string output;
@@ -21,6 +142,8 @@ TEST_F( CarbonResourcesCliTest, CreateResourceGroupFromDirectory )
 	arguments.push_back( outputFile.string() );
 
 	int res = RunCli( arguments, output );
+
+    ASSERT_EQ( res, 0 );
 
 #if _WIN64
     std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
@@ -54,6 +177,8 @@ TEST_F( CarbonResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentForma
 	arguments.push_back( "0.0.0" );
 
 	int res = RunCli( arguments, output );
+
+    ASSERT_EQ( res, 0 );
 
 #if _WIN64
     std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.csv" );
@@ -205,3 +330,133 @@ TEST_F( CarbonResourcesCliTest, CreatePatch )
 	std::filesystem::path goldDirectory = GetTestFileFileAbsolutePath( "Patch/LocalCDNPatches" );
 	EXPECT_TRUE( DirectoryIsSubset( goldDirectory, "PatchOut/Patches" ) );
 }
+
+TEST_F( CarbonResourcesCliTest, CreateGroup )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-group" );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+
+	std::string directoryIn = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceFiles" ).string();
+
+	arguments.push_back( directoryIn );
+
+    arguments.push_back( "--output-file" );
+
+    std::string outputFilename = "CarbonResourcesCliTestResourceGroup.yaml";
+
+    arguments.push_back( outputFilename );
+
+	int res = RunCli( arguments, output );
+
+	EXPECT_EQ( res, 0 );
+
+    // Check expected outcome
+    #if _WIN64
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
+#elif __APPLE__
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupMacOS.yaml" );
+#else
+#error Unsupported platform
+#endif
+	EXPECT_TRUE( FilesMatch( goldFile, outputFilename ) );
+}
+
+#ifdef DEV_FEATURES
+
+TEST_F( CarbonResourcesCliTest, ApplyPatch )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "apply-patch" );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+
+	std::string directoryIn = GetTestFileFileAbsolutePath( "Patch/PatchResourceGroup.yaml" ).string();
+
+	arguments.push_back( directoryIn );
+
+    arguments.push_back( "--patch-binaries-base-path" );
+    
+    std::string patchBinariesBasePath = GetTestFileFileAbsolutePath( "Patch/LocalCDNPatches/" ).string();
+	
+    arguments.push_back( patchBinariesBasePath );
+
+    arguments.push_back( "--resources-to-patch-base-path" );
+    
+    std::string resourcesToPatchBasePath = GetTestFileFileAbsolutePath( "Patch/PreviousBuildResources/" ).string();
+
+    arguments.push_back( resourcesToPatchBasePath );
+
+    arguments.push_back( "--next-resources-base-path" );
+
+    std::string nextResourcesBasePath = GetTestFileFileAbsolutePath( "Patch/NextBuildResources/" ).string();
+
+    arguments.push_back( nextResourcesBasePath );
+
+    arguments.push_back( "--output-base-path" );
+
+    std::string outputBasePath = "ApplyPatchOut";
+
+    arguments.push_back( outputBasePath );
+    
+    if( std::filesystem::exists( outputBasePath ) )
+	{
+		std::filesystem::remove_all( outputBasePath );
+	}
+
+    std::filesystem::copy( resourcesToPatchBasePath, outputBasePath );
+
+	int res = RunCli( arguments, output );
+
+	EXPECT_EQ( res, 0 );
+
+    // Check expected outcome
+	std::filesystem::path goldDirectory = GetTestFileFileAbsolutePath( "Patch/NextBuildResources" );
+	EXPECT_TRUE( DirectoryIsSubset( outputBasePath, goldDirectory ) );
+}
+
+TEST_F( CarbonResourcesCliTest, UnpackBundle )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "unpack-bundle" );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+
+	std::string directoryIn = GetTestFileFileAbsolutePath( "Bundle/BundleResourceGroup.yaml" ).string();
+
+	arguments.push_back( directoryIn );
+
+    arguments.push_back( "--chunk-source-base-path" );
+
+    std::string chunkSourceBasePath = GetTestFileFileAbsolutePath( "Bundle/LocalRemoteChunks/" ).string();
+
+    arguments.push_back( chunkSourceBasePath );
+
+    arguments.push_back( "--resource-destination-type" );
+
+    arguments.push_back( "LOCAL_RELATIVE" );
+
+	int res = RunCli( arguments, output );
+
+	EXPECT_EQ( res, 0 );
+
+	// Check expected outcome
+	EXPECT_TRUE( DirectoryIsSubset( GetTestFileFileAbsolutePath( "Bundle/Res" ), "UnpackBundleOut" ) );
+
+	EXPECT_TRUE( std::filesystem::exists( "UnpackBundleOut/ResourceGroup.yaml" ) );
+}
+
+#endif

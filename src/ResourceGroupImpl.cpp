@@ -443,14 +443,36 @@ namespace CarbonResources
 				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
 			}
 
-			resourceParams.uncompressedSize = atol( value.c_str() );
+            try
+			{
+				resourceParams.uncompressedSize = std::stoull( value.c_str() );
+			}
+			catch( std::invalid_argument& )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+			}
+			catch( std::out_of_range& )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+			}
 
 			if( !std::getline( ss, value, delimiter ) )
 			{
 				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
 			}
 
-			resourceParams.compressedSize = atol( value.c_str() );
+            try
+			{
+				resourceParams.compressedSize = std::stoull( value.c_str() );
+			}
+			catch( std::invalid_argument& )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+			}
+			catch( std::out_of_range& )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+			}
 
 			if( !std::getline( ss, value, delimiter ) )
 			{
@@ -458,7 +480,25 @@ namespace CarbonResources
 			}
 			else
 			{
-				resourceParams.binaryOperation = atoi( value.c_str() );
+                try
+				{
+					resourceParams.binaryOperation = std::stoul( value.c_str() );
+
+					if( resourceParams.binaryOperation > std::numeric_limits<uint32_t>::max() )
+					{
+
+						return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+					}
+				}
+				catch( std::invalid_argument& )
+				{
+					return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+				}
+				catch( std::out_of_range& )
+				{
+					return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+				}
+
 			}
 
             // ResourceGroup gets upgraded to 0.1.0
@@ -956,7 +996,12 @@ namespace CarbonResources
 
 		BundleResourceGroup::BundleResourceGroupImpl bundleResourceGroup;
 
-        bundleResourceGroup.SetChunkSize( params.chunkSize );
+        Result setChunkSizeResult = bundleResourceGroup.SetChunkSize( params.chunkSize );
+
+        if (setChunkSizeResult.type != ResultType::SUCCESS)
+        {
+			return setChunkSizeResult;
+        }
 
 		ResourceTools::BundleStreamOut bundleStream( params.chunkSize, params.chunkDestinationSettings.basePath );
 
@@ -1246,7 +1291,12 @@ namespace CarbonResources
 
         PatchResourceGroup::PatchResourceGroupImpl patchResourceGroup;
 
-        patchResourceGroup.SetMaxInputChunkSize( params.maxInputFileChunkSize );
+        Result setMaxInputChunkSizeResult = patchResourceGroup.SetMaxInputChunkSize( params.maxInputFileChunkSize );
+
+        if (setMaxInputChunkSizeResult.type != ResultType::SUCCESS)
+        {
+			return setMaxInputChunkSizeResult;
+        }
         
         // Created resource groups
 

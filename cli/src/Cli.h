@@ -40,7 +40,7 @@ public:
 
 	void PrintError();
 
-	bool ProcessCommandLine( int argc, char** argv );
+	int ProcessCommandLine( int argc, char** argv );
 
 private:
 

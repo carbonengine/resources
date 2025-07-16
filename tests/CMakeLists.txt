@@ -31,6 +31,10 @@ target_include_directories(carbon-resources-test PRIVATE ${CMAKE_CURRENT_BINARY_
 
 target_link_libraries(carbon-resources-test PRIVATE GTest::gtest GTest::gtest_main tiny-process-library::tiny-process-library carbon-resources carbon-resources-tools)
 
+if(DEV_FEATURES)
+    target_compile_definitions( carbon-resources-test PRIVATE DEV_FEATURES )
+endif()
+
 if(WIN32)
 
     # Get CLI exe

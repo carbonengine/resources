@@ -1,0 +1,19 @@
+// Copyright © 2025 CCP ehf.
+
+// Generated file from src/Version.h.in
+// Project version set by top level CMakeLists.txt project version
+
+#pragma once
+#ifndef Version_H
+#define Version_H
+
+namespace CarbonResources
+{
+    const int VERSION_MAJOR = @PROJECT_VERSION_MAJOR@;
+
+    const int VERSION_MINOR = @PROJECT_VERSION_MINOR@;
+
+    const int VERSION_PATCH = @PROJECT_VERSION_PATCH@;
+}
+
+#endif // Version_H

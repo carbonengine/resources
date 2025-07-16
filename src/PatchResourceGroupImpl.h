@@ -40,7 +40,7 @@ namespace CarbonResources
 
         Result SetResourceGroup( const ResourceGroupInfo& resourceGroup );
 
-        void SetMaxInputChunkSize( uintmax_t maxInputChunkSize );
+        Result SetMaxInputChunkSize( uintmax_t maxInputChunkSize );
 
         Result Apply( const PatchApplyParams& params );
 
