@@ -227,7 +227,7 @@ namespace CarbonResources
 
 		uintmax_t uncompressedSize = 0;
 
-    	unsigned int binaryOperation = 0;
+    	uint32_t binaryOperation = 0;
 
     	std::string prefix;
 	};
