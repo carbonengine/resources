@@ -1,20 +1,5 @@
-/* 
-	*************************************************************************
+// Copyright © 2025 CCP ehf.
 
-	CarbonResourcesTestFixture.h
-
-	Author:    James Hawk
-	Created:   February. 2025
-	Project:   Carbon-Resources
-
-	Description:   
-
-	  
-
-	(c) CCP 2025
-
-	*************************************************************************
-*/
 #pragma once
 #ifndef CarbonResourcesTestFixture_H
 #define CarbonResourcesTestFixture_H

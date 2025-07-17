@@ -1,3 +1,5 @@
+# Copyright © 2025 CCP ehf.
+
 cmake_minimum_required(VERSION 3.18)
 
 project(carbon-resources-test)
@@ -30,6 +32,10 @@ target_include_directories(carbon-resources-test PUBLIC ${CMAKE_CURRENT_LIST_DIR
 target_include_directories(carbon-resources-test PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(carbon-resources-test PRIVATE GTest::gtest GTest::gtest_main tiny-process-library::tiny-process-library carbon-resources carbon-resources-tools)
+
+if(DEV_FEATURES)
+    target_compile_definitions( carbon-resources-test PRIVATE DEV_FEATURES )
+endif()
 
 if(WIN32)
 

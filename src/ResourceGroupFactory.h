@@ -1,3 +1,5 @@
+// Copyright © 2025 CCP ehf.
+
 #ifndef RESOURCEGROUPFACTORY_H
 #define RESOURCEGROUPFACTORY_H
 #include "ResourceGroup.h"

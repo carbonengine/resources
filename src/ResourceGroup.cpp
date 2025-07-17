@@ -1,3 +1,5 @@
+// Copyright © 2025 CCP ehf.
+
 #include "ResourceGroup.h"
 #include "ResourceGroupImpl.h"
 #include "Enums.h"

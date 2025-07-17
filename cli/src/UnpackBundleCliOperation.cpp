@@ -1,3 +1,5 @@
+// Copyright © 2025 CCP ehf.
+
 #include "UnpackBundleCliOperation.h"
 
 #include <iostream>

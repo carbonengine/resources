@@ -153,7 +153,7 @@ PatchResourceGroup Additional Fields
 
 
 Example BundleResourceGroup file
--------------------------------
+--------------------------------
 
 .. code-block:: yaml
 
@@ -180,7 +180,7 @@ Example BundleResourceGroup file
        ...
 
 BundleResourceGroup Additional Fields
-------------------------------------
+-------------------------------------
 
 Bundle Resource Groups extend Resource Groups and so contain all the base fields for a Resource Group.
 

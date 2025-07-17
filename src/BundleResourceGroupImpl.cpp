@@ -1,3 +1,5 @@
+// Copyright © 2025 CCP ehf.
+
 #include "BundleResourceGroupImpl.h"
 
 #include <yaml-cpp/yaml.h>
@@ -32,9 +34,16 @@ namespace CarbonResources
 		delete m_resourceGroupParameter.GetValue();
     }
 
-    void BundleResourceGroup::BundleResourceGroupImpl::SetChunkSize( uintmax_t size )
+    Result BundleResourceGroup::BundleResourceGroupImpl::SetChunkSize( uintmax_t size )
     {
+        if (size <= 0)
+        {
+			return Result{ ResultType::INVALID_CHUNK_SIZE };
+        }
+
 		m_chunkSize = size;
+
+        return Result{ ResultType::SUCCESS };
     }
 
     Result BundleResourceGroup::BundleResourceGroupImpl::SetResourceGroup( const ResourceGroupInfo& resourceGroup )

@@ -1,3 +1,5 @@
+// Copyright © 2025 CCP ehf.
+
 #pragma once
 #ifndef GzipDecompressionStream_H
 #define GzipDecompressionStream_H

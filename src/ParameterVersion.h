@@ -1,3 +1,5 @@
+// Copyright © 2025 CCP ehf.
+
 #pragma once
 #ifndef PARAMETERVERSION_H
 #define PARAMETERVERSION_H

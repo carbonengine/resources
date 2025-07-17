@@ -1,3 +1,5 @@
+// Copyright © 2025 CCP ehf.
+
 #include "Enums.h"
 
 namespace CarbonResources
@@ -134,6 +136,10 @@ namespace CarbonResources
 	    case ResultType::FAILED_TO_PARSE_YAML:
 	    	output = "Provided data is not valid YAML.";
 	    	return true;
+
+        case ResultType::INVALID_CHUNK_SIZE:
+			output = "Chunk size specified is invalid, must be > 0.";
+			return true;
 	    }
 
 	    output = "Error code unrecognised. This is an internal library error which shouldn't be encountered. If you encounter this error contact API addministrators.";

@@ -1,3 +1,5 @@
+# Copyright © 2025 CCP ehf.
+
 cmake_minimum_required(VERSION 3.31)
 project(carbon-resources-cli VERSION 1.0.0)
 
@@ -17,6 +19,7 @@ set(SRC_FILES
     src/CreatePatchCliOperation.h
     src/CreateResourceGroupCliOperation.cpp
     src/CreateResourceGroupCliOperation.h
+    src/Defines.h
     src/main.cpp
     src/UnpackBundleCliOperation.cpp
     src/UnpackBundleCliOperation.h

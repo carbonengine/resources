@@ -1,3 +1,5 @@
+// Copyright © 2025 CCP ehf.
+
 #include <iostream>
 #include <ResourceGroup.h>
 #include <BundleResourceGroup.h>
@@ -11,6 +13,7 @@
 #include "CreatePatchCliOperation.h"
 #include "CreateBundleCliOperation.h"
 #include "UnpackBundleCliOperation.h"
+#include "Defines.h"
 
 std::string CalculateVersionString()
 {
@@ -54,16 +57,20 @@ int main( int argc, char** argv )
     // Check no arguments
     if (argc == 1)
     {
+        // Prints help
+
 		cli.PrintError();
 
-		std::exit( 1 );
+		std::exit( FAILED_NO_OPERATION_SPECIFIED_RETURN );
     }
 
     // Process commandline
-	if( !cli.ProcessCommandLine( argc, argv ) )
-	{
-		std::exit( 1 );
-	}
+	int res = cli.ProcessCommandLine( argc, argv );
 
-    return 0;
+    if (res != 0)
+    {
+		std::exit( res );
+    }
+
+    return SUCCESSFUL_RETURN;
 }

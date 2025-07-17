@@ -1,20 +1,5 @@
-/* 
-	*************************************************************************
+// Copyright © 2025 CCP ehf.
 
-	ResourceGroupImpl.h
-
-	Author:    James Hawk
-	Created:   Feb. 2025
-	Project:   Resources
-
-	Description:   
-
-	  
-
-	(c) CCP 2025
-
-	*************************************************************************
-*/
 #pragma once
 #ifndef ResourceGroupImpl_H
 #define ResourceGroupImpl_H

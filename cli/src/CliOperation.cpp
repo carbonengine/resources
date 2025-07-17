@@ -1,3 +1,5 @@
+// Copyright © 2025 CCP ehf.
+
 #include "CliOperation.h"
 
 #include <argparse/argparse.hpp>
@@ -88,7 +90,7 @@ argparse::ArgumentParser* CliOperation::GetParser() const
 	return m_argumentParser;
 }
 
-void CliOperation::PrintError(std::string message) const
+void CliOperation::PrintError( std::string message /*= ""*/ ) const
 {
     if (message != "")
     {

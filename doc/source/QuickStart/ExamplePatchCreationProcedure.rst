@@ -28,7 +28,7 @@ These two commands will create two resource groups
 1. PreviousResourceGroup.yaml
 2. NextResourceGroup.yaml
 
-The resource group files are human readable yaml files and quite self explanatory. For more information see :doc:`../OverviewDocuments/filesystemDesign`
+The resource group files are human readable yaml files and quite self explanatory. For more information see :doc:`../DesignDocuments/filesystemDesign`
 
 Creating a Patch from the Resource Groups
 -----------------------------------------
@@ -44,7 +44,7 @@ The command is passed 4 required arguments
 1. Positional argument 1 - Path to previous resource group
 2. Positional argument 2 - Path to next resource group
 3. ``--resource-source-base-path-previous`` - base path to source resources for previous
-3. ``--resource-source-base-path-next`` - base path to source resources for next
+4. ``--resource-source-base-path-next`` - base path to source resources for next
 
 .. note::
 

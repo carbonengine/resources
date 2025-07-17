@@ -1,50 +1,77 @@
-# carbon-template
-GitHub Template Repository for Carbon C++ projects
+# carbon-resources
 
-Remember to rename everything!
+[![license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
 
+## Overview
 
-# CI Pipeline Documentation
+*carbon-resources* provides a suite of tools to manage/manipulate and deliver resources for Carbon titles.
 
-This pipeline automates handling open pull requests (PRs) when new commits are pushed to the repository.
+## 🛠️ Building
 
----
+Build using provided `CMakeLists` in the repository root.
 
-## **How It Works**
+## 🔍 Accessing the Documentation
 
-1. **Trigger on Commit**  
-   - The pipeline runs automatically every time a commit is pushed to any branch.
+Documentation provides:
+1. carbon-resources API.
+2. carbon-resources CLI Information.
+3. carbon-resources guides.
+4. carbon-resources usage examples.
 
-2. **Check for Open PRs**  
-   - It checks if the committed branch is the **target branch** of any open PRs.
+### Current requirements for documentation generation
 
-3. **Filter PRs**  
-   - The pipeline identifies and sorts PRs into two categories:
-     - **Domestic PRs**: Source branch belongs to the same repository.
-     - **International PRs**: Source branch comes from a forked repository.
+1. Documentation can be built on either Windows or macOS
+2. Uses our custom PythonInterpreter
+3. Doxygen 1.12.0 (or higher) installed on build machine
+4. Following libraries available in /carbon/common/lib on build branch:
+   - sphinx (7.4.7)
+   - docutils (0.20.1)
+   - pygments (2.18.0)
+   - babel (2.16.0)
+   - jinja2 (3.1.4)
+   - snowballstemmer (2.2.0)
+   - imagesize (1.4.1)
+   - alabaster (0.7.16)
+   - sphinxcontrib_applehelp (2.0.0)
+   - sphinxcontrib_devhelp (2.0.0)
+   - sphinxcontrib_htmlhelp (2.1.0)
+   - sphinxcontrib_jquery (4.1)
+   - sphinxcontrib_jsmath (1.0.1)
+   - sphinxcontrib_qthelp (2.0.0)
+   - sphinxcontrib_serializinghtml (2.0.0)
+   - breathe (4.35.0)
+   - sphinx_rtd_theme (2.0.0)
+   - myst_parser (4.0.0)
+   - markdown_it (3.0.0)
+   - mdurl (0.1.2)
+   - mdit_py_plugins (0.4.2)
 
-4. **Dynamic Builds**  
-   - For each PR, the pipeline creates a separate build step using GitHub Actions' **matrix logic** to handle PRs in parallel.
+### Building the documentation
 
-5. **Merge Logic**  
-   - Merges the latest changes from the **target branch** (committed branch) into the **source branch** of each PR.
-   - Pushes the updated source branch back:
-     - Domestic PRs: Push to the same repo.
-     - International PRs: Push to the forked repo.
+Documentation is built using the following defaults:
+- TeamCity build agents: ON
+- Local dev build: OFF
 
-6. **Conflict Handling**  
-   - If there are merge conflicts that require manual resolution, the specific PR build step fails.
+To override the default documentation build settings, turn the CMake option `BUILD_DOCUMENTATION` to `ON/OFF`.
 
----
+Building the `INSTALL` target will build all documentation and place it in the path specified by `CMAKE_INSTALL_PREFIX`.
 
-## **Notes**
+Entry point for the documentation is `documentation/index.html`.
 
-- The pipeline is dynamic and scales with the number of open PRs.
-- Conflicts must be resolved manually, and affected builds will display the failure in the CI logs.
-- Parallel builds ensure efficient processing of multiple PRs.
+Documentation can be built using either .rst (restructuredText) or .md (markdown) files as sources.
 
----
+## 🤝 Contributing
 
-This setup ensures all PRs remain up-to-date with the latest changes from the target branch.
+Contribution follows the standard GIT PR model.
 
+Update version in top CMakeLists.txt to match change following semantic versioning.
 
+When altering Python or C-API exposure ensure that docstrings and c++ documentation blocks reflect changes.
+
+By submitting a pull request or otherwise contributing to this project, you agree to license your contribution under the MIT Licence, and you confirm that you have the right to do so.
+
+## 📄 License and Legal Notices 
+
+This project is licensed under the [MIT Licence](LICENSE.txt). Nothing in the MIT License grants any rights to CCP Games' trademarks or game content.
+
+Copyright notice: Copyright © 2025 CCP ehf.

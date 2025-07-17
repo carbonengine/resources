@@ -1,5 +1,7 @@
+# Copyright © 2025 CCP ehf.
+
 cmake_minimum_required(VERSION 3.31)
-project(carbon-resources VERSION 1.0.0)
+project(carbon-resources VERSION 2.0.0)
 
 if(NOT DEFINED ENV{CCP_EVE_PERFORCE_BRANCH_PATH})
     message(FATAL_ERROR "Missing required environment variable CCP_EVE_PERFORCE_BRANCH_PATH")
@@ -32,6 +34,7 @@ set(SRC_FILES
     include/PatchResourceGroup.h
     include/ResourceGroup.h
     include/Enums.h
+    include/Version.h
 
     src/BundleResourceGroup.cpp
     src/BundleResourceGroupImpl.cpp
@@ -68,6 +71,10 @@ ccp_add_library(carbon-resources SHARED ${SRC_FILES})
 
 target_compile_definitions(carbon-resources PRIVATE EXPORT_LIBRARY)
 
+# Version is required in code
+# Added as config
+configure_file(src/Version.h.in include/Version.h @ONLY)
+
 if(WIN32)
     target_compile_definitions(carbon-resources PRIVATE NOMINMAX) # Do not define min/max macros.
 endif()
@@ -77,6 +84,7 @@ target_link_libraries(carbon-resources PRIVATE carbon-resources-tools yaml-cpp::
 target_include_directories(carbon-resources
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 
@@ -104,6 +112,7 @@ target_link_libraries(carbon-resources-static PRIVATE $<BUILD_LOCAL_INTERFACE:ca
 target_include_directories(carbon-resources-static
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 
@@ -172,6 +181,8 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         # Install rule for available public headers
         install(DIRECTORY include DESTINATION . FILES_MATCHING PATTERN "*.h")
 
+        install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include DESTINATION . FILES_MATCHING PATTERN "*.h")
+
         install(
                 EXPORT carbon-resourcesTarget
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/carbon-resources
@@ -181,18 +192,4 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/carbon-resources)
     endif()
 
-    #if(WIN32)
-    #    add_custom_command(
-    #        TARGET carbon-resources POST_BUILD
-    #        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:carbon-resources> $<TARGET_FILE_DIR:carbon-resources>
-    #        COMMAND_EXPAND_LISTS
-    #    )
-    #elseif(APPLE)
-    #        add_custom_command(
-    #        TARGET carbon-resources POST_BUILD
-    #        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    #        $<TARGET_FILE_DIR:ccp::log>/libCcpLog.dylib $<TARGET_FILE_DIR:carbon-resources>
-    #        COMMAND_EXPAND_LISTS
-    #)
-    #endif()
 endif()

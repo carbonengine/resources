@@ -1,20 +1,5 @@
-/* 
-	*************************************************************************
+// Copyright © 2025 CCP ehf.
 
-	CliOperation.h
-
-	Author:    James Hawk
-	Created:   Feb. 2025
-	Project:   Resources
-
-	Description:   
-
-	  
-
-	(c) CCP 2025
-
-	*************************************************************************
-*/
 #pragma once
 #ifndef CliOperation_H
 #define CliOperation_H
@@ -47,7 +32,7 @@ public:
 
 	argparse::ArgumentParser* GetParser() const;
 
-	void PrintError( std::string message ) const;
+	void PrintError( std::string message = "" ) const;
 
 	virtual bool Execute( std::string& returnErrorMessage ) const = 0;
 

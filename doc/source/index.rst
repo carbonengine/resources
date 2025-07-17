@@ -1,7 +1,7 @@
 carbon-resources Documentation
 ==============================
 
-*carbon-resources* provides tools for managing resources.
+*carbon-resources* provides a suite of tools to manage/manipulate and deliver resources for Carbon titles.
 
 See :doc:`installation` section for further installation information.
 

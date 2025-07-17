@@ -1,3 +1,5 @@
+// Copyright © 2025 CCP ehf.
+
 #include "ResourceGroupFactory.h"
 
 #include <yaml-cpp/yaml.h>

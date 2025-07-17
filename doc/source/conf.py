@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'carbon-resources'
-copyright = '2025, CCP Games'
+copyright = 'Copyright © 2025 CCP ehf'
 author = 'CCP Games'
 release = '0.1'
 

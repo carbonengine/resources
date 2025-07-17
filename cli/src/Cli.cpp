@@ -1,6 +1,10 @@
+// Copyright © 2025 CCP ehf.
+
 #include "Cli.h"
 
 #include <argparse/argparse.hpp>
+
+#include "Defines.h"
 
 Cli::Cli( const std::string& name, const std::string& version ):
 	m_version(version)
@@ -34,7 +38,7 @@ void Cli::PrintError()
     }
 }
 
-bool Cli::ProcessCommandLine( int argc, char** argv )
+int Cli::ProcessCommandLine( int argc, char** argv )
 {
 	std::string baseCommandName = argv[1];
 
@@ -42,6 +46,14 @@ bool Cli::ProcessCommandLine( int argc, char** argv )
     {
 		if( baseCommandName == operation->GetName() )
 		{
+            if (argc == 2)
+            {
+                // Command was used but no further arguments supplied
+				operation->PrintError( );
+
+				return FAILED_INVALID_OPERATION_ARGUMENTS_RETURN;
+            }
+
 			if( operation->ProcessCommandLine( argc, argv ) )
 			{
 				std::string optionalReturnMessage = "";
@@ -50,18 +62,18 @@ bool Cli::ProcessCommandLine( int argc, char** argv )
 				{
 					operation->PrintError( optionalReturnMessage );
 
-                    return false;
+                    return FAILED_OPERATION_RETURN;
 				}
                 else
                 {
-					return true;
+					return SUCCESSFUL_RETURN;
                 }
 			}
             else
             {
 				operation->PrintError("Error processing arguments.Ensure all required arguments are supplied.");
 
-				return false;
+				return FAILED_INVALID_OPERATION_ARGUMENTS_RETURN;
             }
 		}
     }
@@ -69,7 +81,7 @@ bool Cli::ProcessCommandLine( int argc, char** argv )
     // Print general error message
     PrintError();
 
-    return false;
+    return FAILED_INVALID_OPERATION_SPECIFIED_RETURN;
 
 }
 
