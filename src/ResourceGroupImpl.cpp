@@ -484,14 +484,14 @@ namespace CarbonResources
 			{
                 try
 				{
-					unsigned long valueToULong = std::stoul( value.c_str() );
+					unsigned long long valueToULongLong = std::stoull( value.c_str() );
 
-					if( valueToULong > std::numeric_limits<uint32_t>::max() )
+					if( valueToULongLong > std::numeric_limits<uint32_t>::max() )
 					{
 						return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
 					}
 
-                    resourceParams.binaryOperation = static_cast<uint32_t>( valueToULong );
+                    resourceParams.binaryOperation = static_cast<uint32_t>( valueToULongLong );
 				}
 				catch( std::invalid_argument& )
 				{

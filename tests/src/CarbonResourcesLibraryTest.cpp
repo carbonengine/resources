@@ -89,6 +89,14 @@ TEST_F( CarbonResourcesLibraryTest, ImportEmptyResourceGroup )
 	EXPECT_EQ(resourceGroup.ImportFromFile( importParams ).type,CarbonResources::ResultType::SUCCESS);
 }
 
+TEST_F( CarbonResourcesLibraryTest, ImportResourceGroupWithOutOfBoundsBinaryOperation )
+{
+	CarbonResources::ResourceGroup resourceGroup;
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+	importParams.filename = GetTestFileFileAbsolutePath( "Indicies/resFileIndex_v0_0_0-OutOfBoundsBinaryOp.txt" );
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::MALFORMED_RESOURCE_INPUT );
+}
+
 void CreateEmptyResourceGroupWithMissingParameter(std::filesystem::path emptyResourceGroupPath, std::filesystem::path outPath, const std::string& missingTagName)
 {
 	std::filesystem::path testDataFolder( TEST_DATA_BASE_PATH );
