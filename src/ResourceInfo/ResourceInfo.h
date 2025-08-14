@@ -290,6 +290,8 @@ namespace CarbonResources
 
         Result GetType(std::string& type) const;
 
+        Result GetPrefix( std::string& prefix ) const;
+
 	    Result GetChecksum(std::string& checksum) const;
 
 	    Result GetUncompressedSize( uintmax_t& uncompressedSize ) const;

@@ -143,6 +143,20 @@ namespace CarbonResources
 		}
     }
 
+    Result ResourceInfo::GetPrefix( std::string& prefix ) const
+    {
+		if( !m_prefix.HasValue() )
+		{
+			return Result{ ResultType::RESOURCE_VALUE_NOT_SET };
+		}
+		else
+		{
+			prefix = m_prefix.GetValue();
+
+			return Result{ ResultType::SUCCESS };
+		}
+    }
+
     Result ResourceInfo::GetChecksum(std::string& checksum) const
     {
 		if( !m_checksum.HasValue() )
@@ -910,6 +924,20 @@ namespace CarbonResources
 
 			m_compressedSize = compressedSize;
         }
+
+        if( m_prefix.IsParameterExpectedInDocumentVersion( documentVersion ) )
+		{
+			std::string prefix;
+
+			Result getPrefixResult = other->GetPrefix( prefix );
+
+			if( getPrefixResult.type != ResultType::SUCCESS )
+			{
+				return getPrefixResult;
+			}
+
+			m_prefix = prefix;
+		}
 
     	if (m_binaryOperation.IsParameterExpectedInDocumentVersion( documentVersion ))
     	{
