@@ -426,7 +426,7 @@ TEST_F( CarbonResourcesCliTest, DiffResourceGroupsWithTwoAdditions )
 
     arguments.push_back( "--diff-output-path" );
 
-    std::filesystem::path outputPath = "Diff.txt";
+    std::filesystem::path outputPath = "DiffWithTwoAdditions.txt";
 
     arguments.push_back( outputPath.string() );
 
@@ -461,7 +461,7 @@ TEST_F( CarbonResourcesCliTest, DiffResourceGroupsWithTwoChanges )
 
 	arguments.push_back( "--diff-output-path" );
 
-	std::filesystem::path outputPath = "Diff.txt";
+	std::filesystem::path outputPath = "DiffWithTwoChanges.txt";
 
 	arguments.push_back( outputPath.string() );
 
@@ -496,7 +496,7 @@ TEST_F( CarbonResourcesCliTest, DiffResourceGroupsWithTwoSubtractions )
 
 	arguments.push_back( "--diff-output-path" );
 
-	std::filesystem::path outputPath = "Diff.txt";
+	std::filesystem::path outputPath = "DiffWithTwoSubtractions.txt";
 
 	arguments.push_back( outputPath.string() );
 
