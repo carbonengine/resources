@@ -1855,8 +1855,6 @@ namespace CarbonResources
 			return resourceGetUncompressedSizeResult;
 		}
 
-		m_totalResourcesSizeUncompressed = m_totalResourcesSizeUncompressed.GetValue() - resourceUncompressedSize;
-
 		uintmax_t resourceCompressedSize;
 
 		Result resourceGetCompressedSizeResult = foundResource->GetCompressedSize( resourceCompressedSize );
@@ -1865,6 +1863,9 @@ namespace CarbonResources
 		{
 			return resourceGetCompressedSizeResult;
 		}
+
+        // Update sizes
+        m_totalResourcesSizeUncompressed = m_totalResourcesSizeUncompressed.GetValue() - resourceUncompressedSize;
 
 		m_totalResourcesSizeCompressed = m_totalResourcesSizeCompressed.GetValue() - resourceCompressedSize;
 
