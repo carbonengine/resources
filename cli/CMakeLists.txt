@@ -33,7 +33,7 @@ set(SRC_FILES
 
 ccp_add_executable(resources-cli ${SRC_FILES})
 
-target_link_libraries(resources-cli PRIVATE carbon-resources-static argparse::argparse yaml-cpp::yaml-cpp)
+target_link_libraries(resources-cli PRIVATE resources-static argparse::argparse yaml-cpp::yaml-cpp)
 
 get_target_property(_SOURCES resources-cli SOURCES)
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
