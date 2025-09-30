@@ -54,14 +54,14 @@ public:
 class ParameterInfo
 {
 public:
-	ParameterInfo(CarbonResources::Parameter id, std::string tag, std::vector<ParameterContext> context, bool isOptional=false);
+	ParameterInfo( CarbonResources::Parameter id, std::string tag, std::vector<ParameterContext> context, bool isOptional = false );
 	Parameter m_id;
 	std::string m_tag;
 	std::vector<ParameterContext> m_context;
 	bool m_isOptional;
 };
 
-const ParameterInfo* GetParameterInfo(Parameter param);
+const ParameterInfo* GetParameterInfo( Parameter param );
 bool IsParameterExpected( Parameter parameter, const std::string& context, VersionInternal version );
 bool IsParameterRequired( Parameter parameter, const std::string& context, VersionInternal version );
 

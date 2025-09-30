@@ -16,127 +16,124 @@
 
 namespace YAML
 {
-    class Emitter;
-    class Node;
+class Emitter;
+class Node;
 }
 
 namespace CarbonResources
 {
 
-    struct ResourceGroupSubtractionParams
-    {
-		ResourceGroup::ResourceGroupImpl* subtractResourceGroup = nullptr;
+struct ResourceGroupSubtractionParams
+{
+	ResourceGroup::ResourceGroupImpl* subtractResourceGroup = nullptr;
 
-	    ResourceGroup::ResourceGroupImpl* result1 = nullptr;
+	ResourceGroup::ResourceGroupImpl* result1 = nullptr;
 
-	    ResourceGroup::ResourceGroupImpl* result2 = nullptr;
+	ResourceGroup::ResourceGroupImpl* result2 = nullptr;
 
-    	std::vector<std::filesystem::path> removedResources;
+	std::vector<std::filesystem::path> removedResources;
 
-        StatusCallback statusCallback = nullptr;
-    };
+	StatusCallback statusCallback = nullptr;
+};
 
-    enum class DocumentType
-    {
-        CSV,
-        YAML
-    };
+enum class DocumentType
+{
+	CSV,
+	YAML
+};
 
-    class ResourceGroup::ResourceGroupImpl
-    {
-    public:
-		ResourceGroupImpl();
+class ResourceGroup::ResourceGroupImpl
+{
+public:
+	ResourceGroupImpl();
 
-	    virtual ~ResourceGroupImpl();
+	virtual ~ResourceGroupImpl();
 
-        Result CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params );
+	Result CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params );
 
-	    Result ImportFromFile( const ResourceGroupImportFromFileParams& params );
+	Result ImportFromFile( const ResourceGroupImportFromFileParams& params );
 
-        Result ImportFromData( const std::string& data, DocumentType documentType = DocumentType::YAML );
+	Result ImportFromData( const std::string& data, DocumentType documentType = DocumentType::YAML );
 
-	    Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
+	Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
 
-        Result ExportToData( std::string& data, VersionInternal outputDocumentVersion = S_DOCUMENT_VERSION ) const;
+	Result ExportToData( std::string& data, VersionInternal outputDocumentVersion = S_DOCUMENT_VERSION ) const;
 
-        Result CreateBundle( const BundleCreateParams& params ) const;
+	Result CreateBundle( const BundleCreateParams& params ) const;
 
-		Result ConstructPatchResourceInfo( const PatchCreateParams& params, int patchId, uintmax_t dataOffset, uint64_t patchSourceOffset, ResourceInfo* resourceNext, PatchResourceInfo*& patchResource ) const;
+	Result ConstructPatchResourceInfo( const PatchCreateParams& params, int patchId, uintmax_t dataOffset, uint64_t patchSourceOffset, ResourceInfo* resourceNext, PatchResourceInfo*& patchResource ) const;
 
-		Result CreatePatch( const PatchCreateParams& params ) const;
+	Result CreatePatch( const PatchCreateParams& params ) const;
 
-	    Result AddResource( ResourceInfo* resource );
+	Result AddResource( ResourceInfo* resource );
 
-        Result Diff( ResourceGroupSubtractionParams& params ) const;
+	Result Diff( ResourceGroupSubtractionParams& params ) const;
 
-        Result DiffChangesAsLists( const ResourceGroupDiffAgainstGroupParams& params ) const;
+	Result DiffChangesAsLists( const ResourceGroupDiffAgainstGroupParams& params ) const;
 
-        Result Merge( const ResourceGroupMergeParams& params );
+	Result Merge( const ResourceGroupMergeParams& params );
 
-        Result RemoveResources( const ResourceGroupRemoveResourcesParams& params );
-        
-        virtual std::string GetType() const;
+	Result RemoveResources( const ResourceGroupRemoveResourcesParams& params );
 
-        static std::string TypeId();
+	virtual std::string GetType() const;
 
-        std::vector<ResourceInfo*>::iterator begin();
+	static std::string TypeId();
 
-        std::vector<ResourceInfo*>::const_iterator begin() const;
+	std::vector<ResourceInfo*>::iterator begin();
 
-		std::vector<ResourceInfo*>::const_iterator cbegin();
+	std::vector<ResourceInfo*>::const_iterator begin() const;
 
-        std::vector<ResourceInfo*>::iterator end();
+	std::vector<ResourceInfo*>::const_iterator cbegin();
 
-		std::vector<ResourceInfo*>::const_iterator end() const;
+	std::vector<ResourceInfo*>::iterator end();
 
-		std::vector<ResourceInfo*>::const_iterator cend();
+	std::vector<ResourceInfo*>::const_iterator end() const;
 
-        size_t GetSize() const;
+	std::vector<ResourceInfo*>::const_iterator cend();
 
-	    Result ImportFromYamlString( const std::string& data, StatusCallback statusCallback = nullptr );
+	size_t GetSize() const;
 
-    	Result ImportFromYaml( YAML::Node& data, StatusCallback statusCallback = nullptr );
+	Result ImportFromYamlString( const std::string& data, StatusCallback statusCallback = nullptr );
 
-		virtual Result GetGroupSpecificResourcesToBundle( std::vector<ResourceInfo*>& toBundle ) const;
+	Result ImportFromYaml( YAML::Node& data, StatusCallback statusCallback = nullptr );
 
-    protected:
+	virtual Result GetGroupSpecificResourcesToBundle( std::vector<ResourceInfo*>& toBundle ) const;
 
-        virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut );
+protected:
+	virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut );
 
-    private:
+private:
+	virtual Result CreateResourceFromResource( const ResourceInfo& resourceIn, ResourceInfo*& resourceOut ) const;
 
-        virtual Result CreateResourceFromResource( const ResourceInfo& resourceIn, ResourceInfo*& resourceOut ) const;
+	virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile );
 
-	    virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile );
+	virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const;
 
-	    virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const;
+	[[deprecated( "Prefer yaml" )]]
+	virtual Result ImportFromCSV( const std::string& data, StatusCallback statusCallback = nullptr );
 
-    	[[deprecated( "Prefer yaml" )]]
-		virtual Result ImportFromCSV( const std::string& data, StatusCallback statusCallback = nullptr );
+	Result ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback = nullptr ) const;
 
-	    Result ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback = nullptr ) const;
+	Result ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback = nullptr ) const;
 
-	    Result ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback = nullptr ) const;
+	Result ProcessChunk( ResourceTools::GetChunk& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroup::BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const;
 
-        Result ProcessChunk( ResourceTools::GetChunk& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroup::BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const;
+	Result RemoveResource( ResourceInfo& relativePath );
 
-        Result RemoveResource( ResourceInfo& relativePath );
+protected:
+	// Document Parameters
+	DocumentParameter<VersionInternal> m_versionParameter = DocumentParameter<VersionInternal>( VERSION, TypeId() );
 
-    protected:
+	DocumentParameter<std::string> m_type = DocumentParameter<std::string>( TYPE, TypeId() );
 
-	    // Document Parameters
-	    DocumentParameter<VersionInternal> m_versionParameter = DocumentParameter<VersionInternal>( VERSION, TypeId() );
+	DocumentParameter<uintmax_t> m_numberOfResources = DocumentParameter<uintmax_t>( NUMBER_OF_RESOURCES, TypeId() );
 
-        DocumentParameter<std::string> m_type = DocumentParameter<std::string>( TYPE, TypeId() );
+	DocumentParameter<uintmax_t> m_totalResourcesSizeCompressed = DocumentParameter<uintmax_t>( TOTAL_RESOURCE_SIZE_COMPRESSED, TypeId() );
 
-        DocumentParameter<uintmax_t> m_numberOfResources = DocumentParameter<uintmax_t>( NUMBER_OF_RESOURCES, TypeId() );
+	DocumentParameter<uintmax_t> m_totalResourcesSizeUncompressed = DocumentParameter<uintmax_t>( TOTAL_RESOURCE_SIZE_UNCOMPRESSED, TypeId() );
 
-        DocumentParameter<uintmax_t> m_totalResourcesSizeCompressed = DocumentParameter<uintmax_t>( TOTAL_RESOURCE_SIZE_COMPRESSED, TypeId() );
-
-        DocumentParameter<uintmax_t> m_totalResourcesSizeUncompressed = DocumentParameter<uintmax_t>( TOTAL_RESOURCE_SIZE_UNCOMPRESSED, TypeId() );
-
-	    DocumentParameterCollection<ResourceInfo*> m_resourcesParameter = DocumentParameterCollection<ResourceInfo*>( RESOURCE, TypeId() );
-    };
+	DocumentParameterCollection<ResourceInfo*> m_resourcesParameter = DocumentParameterCollection<ResourceInfo*>( RESOURCE, TypeId() );
+};
 
 }
 

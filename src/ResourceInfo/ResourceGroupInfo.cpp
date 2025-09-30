@@ -9,20 +9,19 @@
 namespace CarbonResources
 {
 
-    ResourceGroupInfo::ResourceGroupInfo( const ResourceGroupInfoParams& params ) :
-      ResourceInfo(params)
-    {
-		m_type = TypeId();
-    }
+ResourceGroupInfo::ResourceGroupInfo( const ResourceGroupInfoParams& params ) :
+	ResourceInfo( params )
+{
+	m_type = TypeId();
+}
 
-    ResourceGroupInfo::~ResourceGroupInfo()
-    {
+ResourceGroupInfo::~ResourceGroupInfo()
+{
+}
 
-    }
-
-    std::string ResourceGroupInfo::TypeId()
-    {
-		return "ResourceGroup";
-    }
+std::string ResourceGroupInfo::TypeId()
+{
+	return "ResourceGroup";
+}
 
 }

@@ -5,82 +5,81 @@
 
 namespace ResourceTools
 {
-  
-  BundleStreamIn::BundleStreamIn( uintmax_t chunkSize ) :
-	  m_chunkSize(chunkSize),
-	  m_dataReadOfCurrentFile( 0 )
-  {
-  }
 
-  BundleStreamIn ::~BundleStreamIn()
-  {
-  }
+BundleStreamIn::BundleStreamIn( uintmax_t chunkSize ) :
+	m_chunkSize( chunkSize ),
+	m_dataReadOfCurrentFile( 0 )
+{
+}
 
-  uintmax_t BundleStreamIn::GetCacheSize()
-  {
-	  return m_cache.size();
-  }
+BundleStreamIn ::~BundleStreamIn()
+{
+}
 
-  bool BundleStreamIn::operator<<( const std::string& dataData )
-  {
-	  m_cache.append( dataData );
+uintmax_t BundleStreamIn::GetCacheSize()
+{
+	return m_cache.size();
+}
 
-	  return true;
-  }
+bool BundleStreamIn::operator<<( const std::string& dataData )
+{
+	m_cache.append( dataData );
 
-  bool BundleStreamIn::operator>>( GetFile& fileData )
-  {
-	  size_t cacheSize = m_cache.size();
+	return true;
+}
 
-	  if( cacheSize == 0 )
-	  {
-		  // No data in cache
-		  return false;
-	  }
+bool BundleStreamIn::operator>>( GetFile& fileData )
+{
+	size_t cacheSize = m_cache.size();
 
-	  
-	   std::string& dataRef = *fileData.data;
+	if( cacheSize == 0 )
+	{
+		// No data in cache
+		return false;
+	}
 
-        if( ( m_dataReadOfCurrentFile + m_chunkSize ) >= fileData.fileSize )
-        {
-			uintmax_t remainingDataSize = fileData.fileSize - m_dataReadOfCurrentFile;
 
-		    dataRef = m_cache.substr( 0, remainingDataSize );
+	std::string& dataRef = *fileData.data;
 
-            m_cache.erase( 0, remainingDataSize );
+	if( ( m_dataReadOfCurrentFile + m_chunkSize ) >= fileData.fileSize )
+	{
+		uintmax_t remainingDataSize = fileData.fileSize - m_dataReadOfCurrentFile;
 
-            m_dataReadOfCurrentFile = 0;
-        }
-        else
-        {
-		    dataRef = m_cache.substr( 0, m_chunkSize );
+		dataRef = m_cache.substr( 0, remainingDataSize );
 
-		    m_cache.erase( 0, m_chunkSize );
+		m_cache.erase( 0, remainingDataSize );
 
-            m_dataReadOfCurrentFile += m_chunkSize;
-        }
+		m_dataReadOfCurrentFile = 0;
+	}
+	else
+	{
+		dataRef = m_cache.substr( 0, m_chunkSize );
 
-        return true;
-	  
-  }
+		m_cache.erase( 0, m_chunkSize );
 
-  uintmax_t BundleStreamIn::GetChunkSize() const
-  {
-	  return m_chunkSize;
-  }
+		m_dataReadOfCurrentFile += m_chunkSize;
+	}
 
-  bool BundleStreamIn::ReadBytes( size_t n, std::string& out )
-  {
-	  if( m_cache.size() < n )
-	  {
-		  return false;
-	  }
+	return true;
+}
 
-  	  out = m_cache.substr( 0, n );
+uintmax_t BundleStreamIn::GetChunkSize() const
+{
+	return m_chunkSize;
+}
 
-  	  m_cache.erase( 0, n );
+bool BundleStreamIn::ReadBytes( size_t n, std::string& out )
+{
+	if( m_cache.size() < n )
+	{
+		return false;
+	}
 
-	  return true;
-  }
+	out = m_cache.substr( 0, n );
+
+	m_cache.erase( 0, n );
+
+	return true;
+}
 
 }

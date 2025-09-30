@@ -8,21 +8,19 @@
 
 namespace CarbonResources
 {
-    struct BundleResourceGroupInfoParams : public ResourceGroupInfoParams
-    {
+struct BundleResourceGroupInfoParams : public ResourceGroupInfoParams
+{
+};
 
-    };
+class BundleResourceGroupInfo : public ResourceInfo
+{
+public:
+	BundleResourceGroupInfo( const BundleResourceGroupInfoParams& params );
 
-    class BundleResourceGroupInfo : public ResourceInfo
-    {
-    public:
-	    BundleResourceGroupInfo( const BundleResourceGroupInfoParams& params );
+	~BundleResourceGroupInfo();
 
-        ~BundleResourceGroupInfo();
-
-        static std::string TypeId( );
-
-    };
+	static std::string TypeId();
+};
 
 }
 

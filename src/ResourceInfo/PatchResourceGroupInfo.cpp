@@ -9,20 +9,19 @@
 namespace CarbonResources
 {
 
-    PatchResourceGroupInfo::PatchResourceGroupInfo( const PatchResourceGroupInfoParams& params ):
-      ResourceInfo(params)
-    {
-		m_type = TypeId();
-    }
+PatchResourceGroupInfo::PatchResourceGroupInfo( const PatchResourceGroupInfoParams& params ) :
+	ResourceInfo( params )
+{
+	m_type = TypeId();
+}
 
-    PatchResourceGroupInfo::~PatchResourceGroupInfo()
-    {
+PatchResourceGroupInfo::~PatchResourceGroupInfo()
+{
+}
 
-    }
-
-    std::string PatchResourceGroupInfo::TypeId()
-    {
-		return "PatchResourceGroup";
-    }
+std::string PatchResourceGroupInfo::TypeId()
+{
+	return "PatchResourceGroup";
+}
 
 }

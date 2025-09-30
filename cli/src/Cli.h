@@ -28,14 +28,12 @@ public:
 	int ProcessCommandLine( int argc, char** argv );
 
 private:
-
-    void PrintCliHeader();
+	void PrintCliHeader();
 
 private:
+	std::string m_name;
 
-    std::string m_name;
-
-    std::string m_version;
+	std::string m_version;
 
 	std::vector<CliOperation*> m_operations;
 };

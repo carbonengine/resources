@@ -11,46 +11,45 @@
 namespace ResourceTools
 {
 
-    class FileDataStreamIn
-	{
-	public:
-		FileDataStreamIn( uintmax_t chunkSize = -1 );
+class FileDataStreamIn
+{
+public:
+	FileDataStreamIn( uintmax_t chunkSize = -1 );
 
-		~FileDataStreamIn();
+	~FileDataStreamIn();
 
-        void Finish();
+	void Finish();
 
-        bool IsFinished();
+	bool IsFinished();
 
-        bool StartRead( std::filesystem::path filepath );
+	bool StartRead( std::filesystem::path filepath );
 
-    	std::filesystem::path GetPath();
+	std::filesystem::path GetPath();
 
-        size_t GetCurrentPosition();
+	size_t GetCurrentPosition();
 
-		bool ReadBytes( size_t n, std::string& data );
+	bool ReadBytes( size_t n, std::string& data );
 
-    	void Seek( size_t position );
+	void Seek( size_t position );
 
-        size_t Size();
+	size_t Size();
 
-		bool operator>>( std::string& data );
+	bool operator>>( std::string& data );
 
 
-	private:
+private:
+	bool m_readInProgress;
 
-		bool m_readInProgress;
+	uintmax_t m_chunkSize;
 
-		uintmax_t m_chunkSize;
+	std::ifstream m_inputStream;
 
-        std::ifstream m_inputStream;
+	size_t m_currentPosition;
 
-        size_t m_currentPosition;
+	size_t m_fileSize;
 
-        size_t m_fileSize;
-
-    	std::filesystem::path m_path;
-	};
+	std::filesystem::path m_path;
+};
 
 }
 

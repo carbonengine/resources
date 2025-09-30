@@ -9,16 +9,16 @@
 
 namespace ResourceTools
 {
-    class ScopedFile
-	{
-	public:
-		ScopedFile( std::filesystem::path location );
+class ScopedFile
+{
+public:
+	ScopedFile( std::filesystem::path location );
 
-		~ScopedFile();
+	~ScopedFile();
 
-	private:
-		std::filesystem::path m_location;
-	}; 
+private:
+	std::filesystem::path m_location;
+};
 }
 
 #endif // ScopedFile_H

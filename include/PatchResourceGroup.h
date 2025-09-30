@@ -14,7 +14,7 @@
 namespace CarbonResources
 {
 
-    /** @struct PatchApplyParams
+/** @struct PatchApplyParams
     *  @brief Function Parameters required for CarbonResources::PatchResourceGroup::Apply
     *  @var PatchApplyParams::newBuildResourcesSourceSettings
     *  Location where new resources can be sourced. Resources will be sourced from here if there are no patches related to them, indicating they are completely new files.
@@ -29,47 +29,45 @@ namespace CarbonResources
     *  @var PatchApplyParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-    struct PatchApplyParams final
-    {
-		ResourceSourceSettings nextBuildResourcesSourceSettings{ ResourceSourceType::LOCAL_RELATIVE };
+struct PatchApplyParams final
+{
+	ResourceSourceSettings nextBuildResourcesSourceSettings{ ResourceSourceType::LOCAL_RELATIVE };
 
-		ResourceSourceSettings patchBinarySourceSettings{};
+	ResourceSourceSettings patchBinarySourceSettings{};
 
-        ResourceSourceSettings resourcesToPatchSourceSettings{ ResourceSourceType::LOCAL_RELATIVE };
+	ResourceSourceSettings resourcesToPatchSourceSettings{ ResourceSourceType::LOCAL_RELATIVE };
 
-        ResourceDestinationSettings resourcesToPatchDestinationSettings{ ResourceDestinationType::LOCAL_RELATIVE };
+	ResourceDestinationSettings resourcesToPatchDestinationSettings{ ResourceDestinationType::LOCAL_RELATIVE };
 
-        std::filesystem::path temporaryFilePath = "tempFile.resource";
+	std::filesystem::path temporaryFilePath = "tempFile.resource";
 
-        StatusCallback statusCallback = nullptr;
-    };
+	StatusCallback statusCallback = nullptr;
+};
 
-    /** @class PatchResourceGroup
+/** @class PatchResourceGroup
     *  @brief Contains a collection of Patch Resources
     */
-    class API PatchResourceGroup final: public ResourceGroup
-    {
+class API PatchResourceGroup final : public ResourceGroup
+{
 
-    public:
-		class PatchResourceGroupImpl;
+public:
+	class PatchResourceGroupImpl;
 
-		PatchResourceGroup( );
+	PatchResourceGroup();
 
-        PatchResourceGroup( const PatchResourceGroup& ) = delete;
+	PatchResourceGroup( const PatchResourceGroup& ) = delete;
 
-	    ~PatchResourceGroup();
+	~PatchResourceGroup();
 
-        /// @brief Applies the Patches from the BundleResourceGroup.
-		/// @param params input parameters, See PatchApplyParams for more details.
-        /// @see ResourceGroup::CreatePatch for information regarding patch creation.
-		/// @return Result see CarbonResources::Result for more details.
-        Result Apply( const PatchApplyParams& params );
+	/// @brief Applies the Patches from the BundleResourceGroup.
+	/// @param params input parameters, See PatchApplyParams for more details.
+	/// @see ResourceGroup::CreatePatch for information regarding patch creation.
+	/// @return Result see CarbonResources::Result for more details.
+	Result Apply( const PatchApplyParams& params );
 
-    private:
-
-		PatchResourceGroupImpl* m_impl;
-
-    };
+private:
+	PatchResourceGroupImpl* m_impl;
+};
 
 }
 

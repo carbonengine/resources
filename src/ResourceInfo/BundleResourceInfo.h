@@ -8,23 +8,21 @@
 
 namespace CarbonResources
 {
-    struct BundleResourceInfoParams : public ResourceInfoParams
-    {
+struct BundleResourceInfoParams : public ResourceInfoParams
+{
+};
 
-    };
+class BundleResourceInfo : public ResourceInfo
+{
+public:
+	BundleResourceInfo( const BundleResourceInfoParams& params );
 
-    class BundleResourceInfo : public ResourceInfo
-    {
-    public:
-	    BundleResourceInfo( const BundleResourceInfoParams& params );
+	~BundleResourceInfo();
 
-        ~BundleResourceInfo();
+	static std::string TypeId();
 
-        static std::string TypeId( );
-
-        virtual Result SetParametersFromResource( const ResourceInfo* other, const VersionInternal& documentVersion ) override;
-
-    };
+	virtual Result SetParametersFromResource( const ResourceInfo* other, const VersionInternal& documentVersion ) override;
+};
 
 }
 

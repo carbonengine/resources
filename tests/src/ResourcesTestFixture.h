@@ -16,11 +16,11 @@ struct ResourcesTestFixture : public ::testing::Test
 
 	void TearDown();
 
-    std::filesystem::path GetTestFileFileAbsolutePath( const std::filesystem::path& relativePath );
+	std::filesystem::path GetTestFileFileAbsolutePath( const std::filesystem::path& relativePath );
 
-    bool FileExists( const std::filesystem::path& filePath);
+	bool FileExists( const std::filesystem::path& filePath );
 
-    bool FilesMatch( const std::filesystem::path& file1Path, const std::filesystem::path& file2Path );
+	bool FilesMatch( const std::filesystem::path& file1Path, const std::filesystem::path& file2Path );
 
 	bool DirectoryIsSubset( const std::filesystem::path& dir1, const std::filesystem::path& dir2 ); // Test that all files in dir1 exist in dir2, and the contents of the files in both directories are the same.
 };

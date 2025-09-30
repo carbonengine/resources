@@ -17,39 +17,35 @@
 namespace CarbonResources
 {
 
-    class BundleResourceGroup::BundleResourceGroupImpl : public ResourceGroup::ResourceGroupImpl
-    {
-    public:
+class BundleResourceGroup::BundleResourceGroupImpl : public ResourceGroup::ResourceGroupImpl
+{
+public:
+	BundleResourceGroupImpl();
 
-	    BundleResourceGroupImpl();
+	~BundleResourceGroupImpl();
 
-        ~BundleResourceGroupImpl();
+	Result SetResourceGroup( const ResourceGroupInfo& resourceGroup );
 
-        Result SetResourceGroup( const ResourceGroupInfo& resourceGroup );
+	Result Unpack( const BundleUnpackParams& params );
 
-        Result Unpack( const BundleUnpackParams& params );
+	virtual std::string GetType() const override;
 
-        virtual std::string GetType() const override;
+	static std::string TypeId();
 
-        static std::string TypeId();
+	Result SetChunkSize( uintmax_t size );
 
-        Result SetChunkSize( uintmax_t size );
+private:
+	virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut ) override;
 
-    private:
+	virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
 
-        virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut ) override;
+	virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const override;
 
-        virtual Result ImportGroupSpecialisedYaml( YAML::Node& resourceGroupFile ) override;
+protected:
+	DocumentParameter<uintmax_t> m_chunkSize = DocumentParameter<uintmax_t>( CHUNK_SIZE, TypeId() );
 
-        virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const override;
-
-    protected:
-
-        DocumentParameter<uintmax_t> m_chunkSize = DocumentParameter<uintmax_t>( CHUNK_SIZE, TypeId() );
-
-		DocumentParameter<ResourceGroupInfo*> m_resourceGroupParameter = DocumentParameter<ResourceGroupInfo*>( RESOURCE_GROUP_RESOURCE, TypeId() );
-
-    };
+	DocumentParameter<ResourceGroupInfo*> m_resourceGroupParameter = DocumentParameter<ResourceGroupInfo*>( RESOURCE_GROUP_RESOURCE, TypeId() );
+};
 
 }
 

@@ -14,12 +14,10 @@
 
 void ResourcesTestFixture::SetUp()
 {
-
 }
 
 void ResourcesTestFixture::TearDown()
 {
-	
 }
 
 bool ResourcesTestFixture::FileExists( const std::filesystem::path& filePath )
@@ -29,40 +27,40 @@ bool ResourcesTestFixture::FileExists( const std::filesystem::path& filePath )
 
 bool ResourcesTestFixture::FilesMatch( const std::filesystem::path& file1Path, const std::filesystem::path& file2Path )
 {
-    // Open files generate data checksums and compare
+	// Open files generate data checksums and compare
 
-    // File 1
+	// File 1
 	std::ifstream inputStream1;
 
 	inputStream1.open( file1Path, std::ios::in | std::ios::binary );
 
-    if (!inputStream1)
-    {
+	if( !inputStream1 )
+	{
 		return false;
-    }
+	}
 
-    std::stringstream ss1;
+	std::stringstream ss1;
 
-    ss1 << inputStream1.rdbuf();
+	ss1 << inputStream1.rdbuf();
 
-    std::string file1Data = ss1.str();
+	std::string file1Data = ss1.str();
 
-    inputStream1.close();
+	inputStream1.close();
 
-    std::string file1Checksum = "";
+	std::string file1Checksum = "";
 
-    bool result1 = ResourceTools::GenerateMd5Checksum( file1Data, file1Checksum );
+	bool result1 = ResourceTools::GenerateMd5Checksum( file1Data, file1Checksum );
 
 
-    // File 2
-    std::ifstream inputStream2;
+	// File 2
+	std::ifstream inputStream2;
 
-	inputStream2.open( file2Path, std::ios::in | std::ios::binary ); 
+	inputStream2.open( file2Path, std::ios::in | std::ios::binary );
 
-    if (!inputStream2)
-    {
+	if( !inputStream2 )
+	{
 		return false;
-    }
+	}
 
 	std::stringstream ss2;
 
@@ -72,12 +70,11 @@ bool ResourcesTestFixture::FilesMatch( const std::filesystem::path& file1Path, c
 
 	inputStream2.close();
 
-    std::string file2Checksum = "";
+	std::string file2Checksum = "";
 
 	bool result2 = ResourceTools::GenerateMd5Checksum( file2Data, file2Checksum );
 
-    return file1Checksum == file2Checksum;
-    
+	return file1Checksum == file2Checksum;
 }
 
 bool ResourcesTestFixture::DirectoryIsSubset( const std::filesystem::path& dir1, const std::filesystem::path& dir2 )
@@ -98,7 +95,7 @@ bool ResourcesTestFixture::DirectoryIsSubset( const std::filesystem::path& dir1,
 
 std::filesystem::path ResourcesTestFixture::GetTestFileFileAbsolutePath( const std::filesystem::path& relativePath )
 {
-    std::filesystem::path basePath( TEST_DATA_BASE_PATH );
+	std::filesystem::path basePath( TEST_DATA_BASE_PATH );
 
-    return basePath / relativePath;
+	return basePath / relativePath;
 }

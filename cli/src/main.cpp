@@ -28,34 +28,34 @@ std::string CalculateVersionString()
 	ss << " [EXTENDED FEATURE DEVELOPMENT BUILD]";
 #endif
 
-    return ss.str();
+	return ss.str();
 }
 
 int main( int argc, char** argv )
 {
-    Cli cli( "resources", CalculateVersionString() );
+	Cli cli( "resources", CalculateVersionString() );
 
-    CreateResourceGroupCliOperation createResourceGroupOperation;
+	CreateResourceGroupCliOperation createResourceGroupOperation;
 
-    cli.AddOperation( &createResourceGroupOperation );
+	cli.AddOperation( &createResourceGroupOperation );
 
-    CreatePatchCliOperation createPatchOperation;
+	CreatePatchCliOperation createPatchOperation;
 
-    cli.AddOperation( &createPatchOperation );
+	cli.AddOperation( &createPatchOperation );
 
-    CreateBundleCliOperation createBundleOperation;
+	CreateBundleCliOperation createBundleOperation;
 
-    cli.AddOperation( &createBundleOperation );
+	cli.AddOperation( &createBundleOperation );
 
-    MergeResourceGroupCliOperation mergeResourceGroupOperation;
+	MergeResourceGroupCliOperation mergeResourceGroupOperation;
 
 	cli.AddOperation( &mergeResourceGroupOperation );
 
-    DiffResourceGroupCliOperation diffResourceGroupOperation;
+	DiffResourceGroupCliOperation diffResourceGroupOperation;
 
 	cli.AddOperation( &diffResourceGroupOperation );
 
-    RemoveResourcesCliOperation removeResourcesOperation;
+	RemoveResourcesCliOperation removeResourcesOperation;
 
 	cli.AddOperation( &removeResourcesOperation );
 
@@ -69,23 +69,23 @@ int main( int argc, char** argv )
 	cli.AddOperation( &unpackBundleCliOperation );
 #endif
 
-    // Check no arguments
-    if (argc == 1)
-    {
-        // Prints help
+	// Check no arguments
+	if( argc == 1 )
+	{
+		// Prints help
 
 		cli.PrintError();
 
 		std::exit( FAILED_NO_OPERATION_SPECIFIED_RETURN );
-    }
+	}
 
-    // Process commandline
+	// Process commandline
 	int res = cli.ProcessCommandLine( argc, argv );
 
-    if (res != 0)
-    {
+	if( res != 0 )
+	{
 		std::exit( res );
-    }
+	}
 
-    return SUCCESSFUL_RETURN;
+	return SUCCESSFUL_RETURN;
 }

@@ -11,17 +11,17 @@ CreateResourceGroupCliOperation::CreateResourceGroupCliOperation() :
 	m_createResourceGroupPathArgumentId( "input-directory" ),
 	m_createResourceGroupOutputFileArgumentId( "--output-file" ),
 	m_createResourceGroupDocumentVersionArgumentId( "--document-version" ),
-	m_createResourceGroupResourcePrefixArgumentId("--resource-prefix")
+	m_createResourceGroupResourcePrefixArgumentId( "--resource-prefix" )
 {
 
 	AddRequiredPositionalArgument( m_createResourceGroupPathArgumentId, "Base directory to create resource group from." );
 
-    // Struct is inspected to ascertain default values
+	// Struct is inspected to ascertain default values
 	// This keeps default value settings in one place
 	// Lib defaults matches CLI
 	CarbonResources::CreateResourceGroupFromDirectoryParams defaultImportParams;
 
-    CarbonResources::ResourceGroupExportToFileParams defaultExportParams;
+	CarbonResources::ResourceGroupExportToFileParams defaultExportParams;
 
 	AddArgument( m_createResourceGroupOutputFileArgumentId, "Filename for created resource group.", false, false, defaultExportParams.filename.string() );
 
@@ -44,11 +44,11 @@ bool CreateResourceGroupCliOperation::Execute( std::string& returnErrorMessage )
 
 	PrintStartBanner( inputDirectory, outputFile, version, resourcePrefix );
 
-	bool versionIsValid = ParseDocumentVersion( version, documentVersion);
+	bool versionIsValid = ParseDocumentVersion( version, documentVersion );
 
 	if( !versionIsValid )
 	{
-        returnErrorMessage = "Invalid document version";
+		returnErrorMessage = "Invalid document version";
 
 		return false;
 	}
@@ -64,17 +64,18 @@ void CreateResourceGroupCliOperation::PrintStartBanner( const std::filesystem::p
 
 	std::cout << "---Creating Resource Group---" << std::endl;
 
-    PrintCommonOperationHeaderInformation();
+	PrintCommonOperationHeaderInformation();
 
 	std::cout << "Input Directory: " << inputDirectory << std::endl;
 
-	std::cout << "Output File: " << outputFile<< std::endl;
+	std::cout << "Output File: " << outputFile << std::endl;
 
 	std::cout << "Output Document Version: " << version << std::endl;
 
 	std::cout << "Resource Prefix: " << resourcePrefix << std::endl;
 
-	std::cout << "----------------------------\n" << std::endl;
+	std::cout << "----------------------------\n"
+			  << std::endl;
 }
 
 bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem::path& inputDirectory, const std::filesystem::path& resourceGroupOutputFile, CarbonResources::Version documentVersion, const std::string& resourcePrefix ) const
@@ -92,7 +93,7 @@ bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem
 	createResourceGroupParams.statusCallback = GetStatusCallback();
 
 
-    if( createResourceGroupParams.statusCallback )
+	if( createResourceGroupParams.statusCallback )
 	{
 		createResourceGroupParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Resource Group from directory" );
 	}
@@ -114,7 +115,7 @@ bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem
 
 	exportParams.statusCallback = GetStatusCallback();
 
-    if( exportParams.statusCallback )
+	if( exportParams.statusCallback )
 	{
 		exportParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 50, "Exporting Resource Group to file." );
 	}
@@ -128,7 +129,7 @@ bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem
 		return false;
 	}
 
-    if( exportParams.statusCallback )
+	if( exportParams.statusCallback )
 	{
 		exportParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Resource Group successfully created from directory." );
 	}

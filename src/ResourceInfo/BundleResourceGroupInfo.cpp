@@ -9,20 +9,19 @@
 namespace CarbonResources
 {
 
-    BundleResourceGroupInfo::BundleResourceGroupInfo( const BundleResourceGroupInfoParams& params ) :
-      ResourceInfo(params)
-    {
-		m_type = TypeId();
-    }
+BundleResourceGroupInfo::BundleResourceGroupInfo( const BundleResourceGroupInfoParams& params ) :
+	ResourceInfo( params )
+{
+	m_type = TypeId();
+}
 
-    BundleResourceGroupInfo::~BundleResourceGroupInfo()
-    {
+BundleResourceGroupInfo::~BundleResourceGroupInfo()
+{
+}
 
-    }
-
-    std::string BundleResourceGroupInfo::TypeId()
-    {
-		return "BundleResourceGroup";
-    }
+std::string BundleResourceGroupInfo::TypeId()
+{
+	return "BundleResourceGroup";
+}
 
 }

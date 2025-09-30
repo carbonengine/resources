@@ -9,29 +9,28 @@
 
 namespace ResourceTools
 {
-    class GzipDecompressionStream
-	{
-	public:
-		GzipDecompressionStream( std::string* out);
+class GzipDecompressionStream
+{
+public:
+	GzipDecompressionStream( std::string* out );
 
-		~GzipDecompressionStream();
+	~GzipDecompressionStream();
 
-        bool Start();
+	bool Start();
 
-		bool operator<<( std::string* toDecompress );
+	bool operator<<( std::string* toDecompress );
 
-        bool Finish();
+	bool Finish();
 
 
-	private:
+private:
+	bool m_decompressionInProgress;
+	z_stream m_stream;
+	std::string m_buffer;
+	std::string* m_out;
 
-        bool m_decompressionInProgress;
-        z_stream m_stream;
-    	std::string m_buffer;
-    	std::string* m_out;
-
-    	bool ProcessBuffer( bool finish );
-	};
+	bool ProcessBuffer( bool finish );
+};
 
 
 }

@@ -9,41 +9,38 @@
 
 namespace CryptoPP
 {
-    class HexEncoder;
+class HexEncoder;
 
-    namespace Weak1
-    {
-	    class MD5;
-    }
+namespace Weak1
+{
+class MD5;
+}
 }
 
 namespace ResourceTools
 {
 
-    class Md5ChecksumStream
-	{
-	public:
-		Md5ChecksumStream();
+class Md5ChecksumStream
+{
+public:
+	Md5ChecksumStream();
 
-		~Md5ChecksumStream();
+	~Md5ChecksumStream();
 
-        bool FinishAndRetrieve(std::string& checksum);
-		
-		bool operator<<( const std::string& data );
+	bool FinishAndRetrieve( std::string& checksum );
 
-    private:
+	bool operator<<( const std::string& data );
 
-        void Finish();
+private:
+	void Finish();
 
-	private:
+private:
+	std::stringstream m_ss;
 
-		std::stringstream m_ss;
+	CryptoPP::HexEncoder* m_encoder;
 
-        CryptoPP::HexEncoder* m_encoder;
-
-        CryptoPP::Weak1::MD5* m_hash;
-
-	};
+	CryptoPP::Weak1::MD5* m_hash;
+};
 
 
 }

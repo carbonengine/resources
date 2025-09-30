@@ -12,48 +12,46 @@
 
 namespace CarbonResources
 {
-    struct Version;
+struct Version;
 
-    class VersionInternal
-    {
-	public:
-		VersionInternal();
+class VersionInternal
+{
+public:
+	VersionInternal();
 
-        VersionInternal( const Version& v );
+	VersionInternal( const Version& v );
 
-        VersionInternal( unsigned int major, unsigned int minor, unsigned int patch );
+	VersionInternal( unsigned int major, unsigned int minor, unsigned int patch );
 
-		bool operator>( const VersionInternal& value ) const;
+	bool operator>( const VersionInternal& value ) const;
 
-        bool operator<( const VersionInternal& value ) const;
+	bool operator<( const VersionInternal& value ) const;
 
-        bool operator>=( const VersionInternal& value ) const;
+	bool operator>=( const VersionInternal& value ) const;
 
-        bool operator<=( const VersionInternal& value ) const;
+	bool operator<=( const VersionInternal& value ) const;
 
-        bool operator==( const VersionInternal& value ) const;
+	bool operator==( const VersionInternal& value ) const;
 
-        std::string ToString() const;
+	std::string ToString() const;
 
-		bool FromString( std::string versionString );
+	bool FromString( std::string versionString );
 
-        unsigned int getMajor() const;
+	unsigned int getMajor() const;
 
-        unsigned int getMinor() const;
+	unsigned int getMinor() const;
 
-        unsigned int getPatch() const;
+	unsigned int getPatch() const;
 
-        bool isVersionValid() const;
+	bool isVersionValid() const;
 
-    private:
+private:
+	unsigned int m_major;
 
-		unsigned int m_major;
+	unsigned int m_minor;
 
-        unsigned int m_minor;
-
-        unsigned int m_patch;
-        
-    };
+	unsigned int m_patch;
+};
 
 }
 

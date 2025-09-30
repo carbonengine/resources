@@ -4,135 +4,133 @@
 
 namespace ResourceTools
 {
-  
-  FileDataStreamIn::FileDataStreamIn( uintmax_t chunkSize /*= -1*/ ) :
-	  m_chunkSize( chunkSize ),
-	  m_fileSize(0),
-	  m_currentPosition(0)
-  {
-	  
-  }
 
-  FileDataStreamIn::~FileDataStreamIn()
-  {
-      if (m_readInProgress)
-      {
-		  Finish();
-      }
-  }
+FileDataStreamIn::FileDataStreamIn( uintmax_t chunkSize /*= -1*/ ) :
+	m_chunkSize( chunkSize ),
+	m_fileSize( 0 ),
+	m_currentPosition( 0 )
+{
+}
 
-  void FileDataStreamIn::Finish()
-  {
-	  m_readInProgress = false;
+FileDataStreamIn::~FileDataStreamIn()
+{
+	if( m_readInProgress )
+	{
+		Finish();
+	}
+}
 
-	  m_inputStream.close();
-  }
+void FileDataStreamIn::Finish()
+{
+	m_readInProgress = false;
 
-  bool FileDataStreamIn::IsFinished()
-  {
-	  return !m_readInProgress;
-  }
+	m_inputStream.close();
+}
 
-  std::filesystem::path FileDataStreamIn::GetPath()
-  {
-	  return m_path;
-  }
+bool FileDataStreamIn::IsFinished()
+{
+	return !m_readInProgress;
+}
 
-  size_t FileDataStreamIn::GetCurrentPosition()
-  {
-	  return m_currentPosition;
-  }
+std::filesystem::path FileDataStreamIn::GetPath()
+{
+	return m_path;
+}
 
-  size_t FileDataStreamIn::Size()
-  {
-	  return m_fileSize;
-  }
+size_t FileDataStreamIn::GetCurrentPosition()
+{
+	return m_currentPosition;
+}
 
-  bool FileDataStreamIn::ReadBytes( size_t readSize, std::string& out )
-  {
-	  if( ( m_currentPosition + readSize ) > m_fileSize )
-	  {
-		  return false;
-	  }
-	  out.resize( readSize );
-	  if( !m_inputStream.read( out.data(), static_cast<std::streamsize>( readSize ) ) )
-	  {
-		  return false;
-	  }
-	  m_currentPosition += readSize;
-	  if( m_currentPosition == m_fileSize )
-	  {
-		  Finish();
-	  }
-	  return true;
-  }
+size_t FileDataStreamIn::Size()
+{
+	return m_fileSize;
+}
 
-  void FileDataStreamIn::Seek( size_t position )
-  {
-	  m_inputStream.seekg( static_cast<std::streamoff>( position ) );
-  	  m_currentPosition = position;
-  }
+bool FileDataStreamIn::ReadBytes( size_t readSize, std::string& out )
+{
+	if( ( m_currentPosition + readSize ) > m_fileSize )
+	{
+		return false;
+	}
+	out.resize( readSize );
+	if( !m_inputStream.read( out.data(), static_cast<std::streamsize>( readSize ) ) )
+	{
+		return false;
+	}
+	m_currentPosition += readSize;
+	if( m_currentPosition == m_fileSize )
+	{
+		Finish();
+	}
+	return true;
+}
 
-  bool FileDataStreamIn::StartRead( std::filesystem::path filepath )
-  {
-      m_inputStream.open( filepath, std::ios::in | std::ios::binary );
+void FileDataStreamIn::Seek( size_t position )
+{
+	m_inputStream.seekg( static_cast<std::streamoff>( position ) );
+	m_currentPosition = position;
+}
 
-      if( !m_inputStream )
-	  {
-		  return false;
-	  }
+bool FileDataStreamIn::StartRead( std::filesystem::path filepath )
+{
+	m_inputStream.open( filepath, std::ios::in | std::ios::binary );
 
-	  m_path = filepath;
+	if( !m_inputStream )
+	{
+		return false;
+	}
 
-      m_inputStream.seekg( 0, std::ios::end );
+	m_path = filepath;
 
-      m_currentPosition = 0;
+	m_inputStream.seekg( 0, std::ios::end );
 
-      m_fileSize = m_inputStream.tellg();
+	m_currentPosition = 0;
 
-      m_inputStream.seekg( 0, std::ios::beg );
+	m_fileSize = m_inputStream.tellg();
 
-      m_readInProgress = true;
+	m_inputStream.seekg( 0, std::ios::beg );
 
-	  return true;
-      
-  }
+	m_readInProgress = true;
 
-  bool FileDataStreamIn::operator>>( std::string& data )
-  {
-      if (!m_readInProgress)
-      {
-		  return false;
-      }
+	return true;
+}
 
-      // If -1 is passed as chunk size then read entire file
-      if (m_chunkSize == -1)
-      {
-		  m_chunkSize = m_fileSize;
-      }
+bool FileDataStreamIn::operator>>( std::string& data )
+{
+	if( !m_readInProgress )
+	{
+		return false;
+	}
 
-	  uintmax_t readSize = m_chunkSize;
+	// If -1 is passed as chunk size then read entire file
+	if( m_chunkSize == -1 )
+	{
+		m_chunkSize = m_fileSize;
+	}
 
-      if( ( m_currentPosition + readSize ) > m_fileSize )
-      {
-		  readSize = m_fileSize - std::min(m_fileSize, m_currentPosition);
-      }
+	uintmax_t readSize = m_chunkSize;
 
-	  data.resize( readSize );
+	if( ( m_currentPosition + readSize ) > m_fileSize )
+	{
+		readSize = m_fileSize - std::min( m_fileSize, m_currentPosition );
+	}
 
-      if( !m_inputStream.read( data.data(), readSize ) )
-      {
-		  return false;
-      }
+	data.resize( readSize );
 
-      m_currentPosition += readSize;
+	if( !m_inputStream.read( data.data(), readSize ) )
+	{
+		return false;
+	}
 
-      if (m_currentPosition == m_fileSize)
-      {
-		  Finish();
-      }
+	m_currentPosition += readSize;
 
-      return true;
-  }
+	if( m_currentPosition == m_fileSize )
+	{
+		Finish();
+	}
+
+	return true;
+}
 
 }

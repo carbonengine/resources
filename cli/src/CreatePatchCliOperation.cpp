@@ -28,36 +28,36 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
 
 	AddRequiredPositionalArgument( m_previousResourceGroupPathArgumentId, "Filename to previous resourceGroup." );
 
-    AddRequiredPositionalArgument( m_nextResourceGroupPathArgumentId, "Filename to next resourceGroup." );
+	AddRequiredPositionalArgument( m_nextResourceGroupPathArgumentId, "Filename to next resourceGroup." );
 
-    // Struct is inspected to ascertain default values
+	// Struct is inspected to ascertain default values
 	// This keeps default value settings in one place
 	// Lib defaults matches CLI
-    CarbonResources::PatchCreateParams defaultParams;
+	CarbonResources::PatchCreateParams defaultParams;
 
-    AddArgument( m_resourceSourceBasePathPreviousArgumentId, "Represents the base path to source resources for previous.", true, true, PathListToString( defaultParams.resourceSourceSettingsPrevious.basePaths ) );
+	AddArgument( m_resourceSourceBasePathPreviousArgumentId, "Represents the base path to source resources for previous.", true, true, PathListToString( defaultParams.resourceSourceSettingsPrevious.basePaths ) );
 
-    AddArgument( m_resourceSourceBasePathNextArgumentId, "Represents the base path to source resources for next.", true, true, PathListToString( defaultParams.resourceSourceSettingsNext.basePaths ) );
+	AddArgument( m_resourceSourceBasePathNextArgumentId, "Represents the base path to source resources for next.", true, true, PathListToString( defaultParams.resourceSourceSettingsNext.basePaths ) );
 
-    AddArgument( m_resourceSourceTypeNextArgumentId, "Represents the type of repository to source resources for next.", false, false, SourceTypeToString( defaultParams.resourceSourceSettingsNext.sourceType ), ResourceSourceTypeChoicesAsString() );
+	AddArgument( m_resourceSourceTypeNextArgumentId, "Represents the type of repository to source resources for next.", false, false, SourceTypeToString( defaultParams.resourceSourceSettingsNext.sourceType ), ResourceSourceTypeChoicesAsString() );
 
 	AddArgument( m_patchBinaryDestinationTypeArgumentId, "Represents the type of repository where binary patches will be saved.", false, false, DestinationTypeToString( defaultParams.resourcePatchBinaryDestinationSettings.destinationType ), ResourceDestinationTypeChoicesAsString() );
 
-    AddArgument( m_resourceGroupRelativePathArgumentId, "Relative path for output resourceGroup which will contain the diff between the supplied previous ResourceGroup and next ResourceGroup.", false, false, defaultParams.resourceGroupRelativePath.string() );
+	AddArgument( m_resourceGroupRelativePathArgumentId, "Relative path for output resourceGroup which will contain the diff between the supplied previous ResourceGroup and next ResourceGroup.", false, false, defaultParams.resourceGroupRelativePath.string() );
 
-    AddArgument( m_patchResourceGroupRelativePathArgumentId, "Relative path for output PatchResourceGroup which will contain all the patches produced.", false, false, defaultParams.resourceGroupPatchRelativePath.string() );
+	AddArgument( m_patchResourceGroupRelativePathArgumentId, "Relative path for output PatchResourceGroup which will contain all the patches produced.", false, false, defaultParams.resourceGroupPatchRelativePath.string() );
 
-    AddArgument( m_resourceSourceTypePreviousArgumentId, "Represents the type of repository to source resources for previous.", false, false, SourceTypeToString( defaultParams.resourceSourceSettingsPrevious.sourceType ), ResourceSourceTypeChoicesAsString() );
+	AddArgument( m_resourceSourceTypePreviousArgumentId, "Represents the type of repository to source resources for previous.", false, false, SourceTypeToString( defaultParams.resourceSourceSettingsPrevious.sourceType ), ResourceSourceTypeChoicesAsString() );
 
 	AddArgument( m_patchBinaryDestinationBasePathArgumentId, "Represents the base path where binary patches will be saved.", false, false, defaultParams.resourcePatchBinaryDestinationSettings.basePath.string() );
 
-    AddArgument( m_patchResourceGroupDestinationTypeArgumentId, "Represents the type of repository where the patch ResourceGroup will be saved.", false, false, DestinationTypeToString( defaultParams.resourcePatchResourceGroupDestinationSettings.destinationType ), ResourceDestinationTypeChoicesAsString() );
+	AddArgument( m_patchResourceGroupDestinationTypeArgumentId, "Represents the type of repository where the patch ResourceGroup will be saved.", false, false, DestinationTypeToString( defaultParams.resourcePatchResourceGroupDestinationSettings.destinationType ), ResourceDestinationTypeChoicesAsString() );
 
 	AddArgument( m_patchResourceGroupDestinationBasePathArgumentId, "Represents the base path where the patch ResourceGroup will be saved.", false, false, defaultParams.resourcePatchResourceGroupDestinationSettings.basePath.string() );
 
-    AddArgument( m_patchFileRelativePathPrefixArgumentId, "Relative path prefix for produced patch binaries. Default is 'Patches/Patch' which will produce patches such as Patches/Patch.1 ...", false, false, defaultParams.patchFileRelativePathPrefix.string() );
+	AddArgument( m_patchFileRelativePathPrefixArgumentId, "Relative path prefix for produced patch binaries. Default is 'Patches/Patch' which will produce patches such as Patches/Patch.1 ...", false, false, defaultParams.patchFileRelativePathPrefix.string() );
 
-    AddArgument( m_maxInputChunkSizeArgumentId, "Files are processed in chunks, maxInputFileChunkSize indicate the size of this chunk. Files smaller than chunk will be processed in one pass.", false, false, SizeToString( defaultParams.maxInputFileChunkSize ) );
+	AddArgument( m_maxInputChunkSizeArgumentId, "Files are processed in chunks, maxInputFileChunkSize indicate the size of this chunk. Files smaller than chunk will be processed in one pass.", false, false, SizeToString( defaultParams.maxInputFileChunkSize ) );
 
 	AddArgument( m_downloadRetrySecondsArgumentId, "The number of seconds before attempt to download a resource fails with a network related error", false, false, SecondsToString( defaultParams.downloadRetrySeconds ) );
 
@@ -68,13 +68,13 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 {
 	CarbonResources::ResourceGroupImportFromFileParams previousResourceGroupParams;
 
-    previousResourceGroupParams.filename = m_argumentParser->get<std::string>( m_previousResourceGroupPathArgumentId );
+	previousResourceGroupParams.filename = m_argumentParser->get<std::string>( m_previousResourceGroupPathArgumentId );
 
-    CarbonResources::ResourceGroupImportFromFileParams nextResourceGroupParams;
+	CarbonResources::ResourceGroupImportFromFileParams nextResourceGroupParams;
 
-    nextResourceGroupParams.filename = m_argumentParser->get<std::string>( m_nextResourceGroupPathArgumentId );
+	nextResourceGroupParams.filename = m_argumentParser->get<std::string>( m_nextResourceGroupPathArgumentId );
 
-    CarbonResources::PatchCreateParams createPatchParams;
+	CarbonResources::PatchCreateParams createPatchParams;
 
 	createPatchParams.resourceGroupRelativePath = m_argumentParser->get<std::string>( m_resourceGroupRelativePathArgumentId );
 
@@ -82,57 +82,57 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 
 	std::string resourceSourceTypePrevious = m_argumentParser->get<std::string>( m_resourceSourceTypePreviousArgumentId );
 
-    if (!StringToResourceSourceType(resourceSourceTypePrevious, createPatchParams.resourceSourceSettingsPrevious.sourceType))
-    {
+	if( !StringToResourceSourceType( resourceSourceTypePrevious, createPatchParams.resourceSourceSettingsPrevious.sourceType ) )
+	{
 		returnErrorMessage = "Invalid resource source previous type";
 
 		return false;
-    }
+	}
 
-    for (std::string basePath : m_argumentParser->get<std::vector<std::string>>(m_resourceSourceBasePathPreviousArgumentId))
-    {
+	for( std::string basePath : m_argumentParser->get<std::vector<std::string>>( m_resourceSourceBasePathPreviousArgumentId ) )
+	{
 		createPatchParams.resourceSourceSettingsPrevious.basePaths.push_back( basePath );
-    }
+	}
 
 	std::string resourceSourceTypeNext = m_argumentParser->get<std::string>( m_resourceSourceTypeNextArgumentId );
 
-    if (!StringToResourceSourceType(resourceSourceTypeNext, createPatchParams.resourceSourceSettingsNext.sourceType))
-    {
+	if( !StringToResourceSourceType( resourceSourceTypeNext, createPatchParams.resourceSourceSettingsNext.sourceType ) )
+	{
 		returnErrorMessage = "Invalid resource source next type";
 
 		return false;
-    }
+	}
 
-    for (std::string basePath : m_argumentParser->get<std::vector<std::string>>(m_resourceSourceBasePathNextArgumentId))
-    {
+	for( std::string basePath : m_argumentParser->get<std::vector<std::string>>( m_resourceSourceBasePathNextArgumentId ) )
+	{
 		createPatchParams.resourceSourceSettingsNext.basePaths.push_back( basePath );
-    }
+	}
 
 	std::string patchBinaryDestinationType = m_argumentParser->get<std::string>( m_patchBinaryDestinationTypeArgumentId );
 
-    if (!StringToResourceDestinationType(patchBinaryDestinationType, createPatchParams.resourcePatchBinaryDestinationSettings.destinationType))
-    {
+	if( !StringToResourceDestinationType( patchBinaryDestinationType, createPatchParams.resourcePatchBinaryDestinationSettings.destinationType ) )
+	{
 		returnErrorMessage = "Invalid patch binary destination type";
 
 		return false;
-    }
+	}
 
 	createPatchParams.resourcePatchBinaryDestinationSettings.basePath = m_argumentParser->get<std::string>( m_patchBinaryDestinationBasePathArgumentId );
 
 	std::string patchResourceGroupDestinationType = m_argumentParser->get<std::string>( m_patchResourceGroupDestinationTypeArgumentId );
 
-    if (!StringToResourceDestinationType(patchResourceGroupDestinationType, createPatchParams.resourcePatchResourceGroupDestinationSettings.destinationType))
-    {
+	if( !StringToResourceDestinationType( patchResourceGroupDestinationType, createPatchParams.resourcePatchResourceGroupDestinationSettings.destinationType ) )
+	{
 		returnErrorMessage = "Invalid resource group destination type";
 
 		return false;
-    }
+	}
 
 	createPatchParams.resourcePatchResourceGroupDestinationSettings.basePath = m_argumentParser->get<std::string>( m_patchResourceGroupDestinationBasePathArgumentId );
 
 	createPatchParams.patchFileRelativePathPrefix = m_argumentParser->get<std::string>( m_patchFileRelativePathPrefixArgumentId );
 
-	
+
 	try
 	{
 		unsigned long in = std::stoul( m_argumentParser->get( m_maxInputChunkSizeArgumentId ) );
@@ -154,9 +154,9 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 		return false;
 	}
 
-    long long retrySeconds{ 120 };
+	long long retrySeconds{ 120 };
 
-    try
+	try
 	{
 		retrySeconds = std::stoll( m_argumentParser->get( m_downloadRetrySecondsArgumentId ) );
 	}
@@ -175,10 +175,10 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 
 	createPatchParams.downloadRetrySeconds = std::chrono::seconds( retrySeconds );
 
-    if( s_verbosityLevel != CarbonResources::StatusLevel::OFF )
-    {
+	if( s_verbosityLevel != CarbonResources::StatusLevel::OFF )
+	{
 		PrintStartBanner( previousResourceGroupParams, nextResourceGroupParams, createPatchParams );
-    }
+	}
 
 	createPatchParams.indexFolder = m_argumentParser->get( m_indexFolderArgumentId );
 
@@ -189,7 +189,7 @@ void CreatePatchCliOperation::PrintStartBanner( const CarbonResources::ResourceG
 {
 	std::cout << "---Running Patch Creation---" << std::endl;
 
-    PrintCommonOperationHeaderInformation();
+	PrintCommonOperationHeaderInformation();
 
 	std::cout << "Previous Resource Group: " << previousResourceGroupParams.filename << std::endl;
 
@@ -203,14 +203,14 @@ void CreatePatchCliOperation::PrintStartBanner( const CarbonResources::ResourceG
 
 	std::cout << "Patch File Relative Path Prefix: " << createPatchParams.patchFileRelativePathPrefix << std::endl;
 
-    for( std::filesystem::path basePath : createPatchParams.resourceSourceSettingsPrevious.basePaths )
+	for( std::filesystem::path basePath : createPatchParams.resourceSourceSettingsPrevious.basePaths )
 	{
 		std::cout << "Resource Source Settings From Base Path: " << basePath << std::endl;
 	}
 
 	std::cout << "Resource Source Settings From Source Type: " << SourceTypeToString( createPatchParams.resourceSourceSettingsPrevious.sourceType ) << std::endl;
 
-    for( std::filesystem::path basePath : createPatchParams.resourceSourceSettingsNext.basePaths )
+	for( std::filesystem::path basePath : createPatchParams.resourceSourceSettingsNext.basePaths )
 	{
 		std::cout << "Resource Source Settings To Base Path: " << basePath << std::endl;
 	}
@@ -225,18 +225,19 @@ void CreatePatchCliOperation::PrintStartBanner( const CarbonResources::ResourceG
 
 	std::cout << "Resource Patch Resource Group Destination Settings Destination Type: " << DestinationTypeToString( createPatchParams.resourcePatchResourceGroupDestinationSettings.destinationType ) << std::endl;
 
-	std::cout << "Download Retry Seconds: " <<  createPatchParams.downloadRetrySeconds.count() << std::endl;
+	std::cout << "Download Retry Seconds: " << createPatchParams.downloadRetrySeconds.count() << std::endl;
 
 	std::cout << "Index File Folder: " << createPatchParams.indexFolder << std::endl;
 
-	std::cout << "----------------------------\n" << std::endl;
+	std::cout << "----------------------------\n"
+			  << std::endl;
 }
 
 bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportFromFileParams& previousResourceGroupParams, CarbonResources::ResourceGroupImportFromFileParams& nextResourceGroupParams, CarbonResources::PatchCreateParams& createPatchParams ) const
 {
 	CarbonResources::StatusCallback statusCallback = GetStatusCallback();
 
-    // Get status callback relevant to verbosity level
+	// Get status callback relevant to verbosity level
 	createPatchParams.statusCallback = statusCallback;
 
 	// Previous ResourceGroup
@@ -247,7 +248,7 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 
 	CarbonResources::ResourceGroup resourceGroupPrevious;
 
-    previousResourceGroupParams.statusCallback = statusCallback;
+	previousResourceGroupParams.statusCallback = statusCallback;
 
 	CarbonResources::Result importPreviousFromFileResult = resourceGroupPrevious.ImportFromFile( previousResourceGroupParams );
 
@@ -266,7 +267,7 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 
 	CarbonResources::ResourceGroup resourceGroupLatest;
 
-    nextResourceGroupParams.statusCallback = statusCallback;
+	nextResourceGroupParams.statusCallback = statusCallback;
 
 	CarbonResources::Result importNextFromFileResult = resourceGroupLatest.ImportFromFile( nextResourceGroupParams );
 
@@ -277,9 +278,9 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 		return false;
 	}
 
-    createPatchParams.previousResourceGroup = &resourceGroupPrevious;
+	createPatchParams.previousResourceGroup = &resourceGroupPrevious;
 
-    // Create Patch
+	// Create Patch
 	if( createPatchParams.statusCallback )
 	{
 		createPatchParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 75, "Creating Patch." );
@@ -294,10 +295,10 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 		return false;
 	}
 
-    if( createPatchParams.statusCallback )
+	if( createPatchParams.statusCallback )
 	{
 		createPatchParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Patch created succesfully." );
 	}
 
-    return true;
+	return true;
 }

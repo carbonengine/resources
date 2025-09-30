@@ -23,4 +23,3 @@ private:
 	std::string m_resourceDestinationBasePathArgumentId;
 	std::string m_resourceDestinationTypeArgumentId;
 };
-

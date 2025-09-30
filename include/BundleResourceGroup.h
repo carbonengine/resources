@@ -13,7 +13,7 @@
 namespace CarbonResources
 {
 
-    /** @struct BundleUnpackParams
+/** @struct BundleUnpackParams
     *  @brief Function Parameters required for CarbonResources::BundleResourceGroup::Unpack
     *  @var BundleUnpackParams::chunkSourceSettings
     *  Location where chunks can be sourced.
@@ -22,41 +22,38 @@ namespace CarbonResources
     *  @var BundleUnpackParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-    struct BundleUnpackParams final
-    {
-		ResourceSourceSettings chunkSourceSettings;
+struct BundleUnpackParams final
+{
+	ResourceSourceSettings chunkSourceSettings;
 
-        ResourceDestinationSettings resourceDestinationSettings;
+	ResourceDestinationSettings resourceDestinationSettings;
 
-        StatusCallback statusCallback = nullptr;
-    };
+	StatusCallback statusCallback = nullptr;
+};
 
-    /** @class BundleResourceGroup
+/** @class BundleResourceGroup
     *  @brief Contains a collection of Chunk Resources
     */
-    class API BundleResourceGroup final: public ResourceGroup
-    {
-    public:
+class API BundleResourceGroup final : public ResourceGroup
+{
+public:
+	class BundleResourceGroupImpl;
 
-        class BundleResourceGroupImpl;
+	BundleResourceGroup();
 
-	    BundleResourceGroup( );
+	BundleResourceGroup( const BundleResourceGroup& ) = delete;
 
-        BundleResourceGroup( const BundleResourceGroup& ) = delete;
+	~BundleResourceGroup();
 
-	    ~BundleResourceGroup();
+	/// @brief Unpacks the Resoruces from the BundleResourceGroup.
+	/// @param params input parameters, See BundleUnpackParams for more details.
+	/// @see ResourceGroup::CreateBundle for information regarding bundle creation.
+	/// @return Result see CarbonResources::Result for more details.
+	Result Unpack( const BundleUnpackParams& params );
 
-        /// @brief Unpacks the Resoruces from the BundleResourceGroup.
-		/// @param params input parameters, See BundleUnpackParams for more details.
-		/// @see ResourceGroup::CreateBundle for information regarding bundle creation.
-		/// @return Result see CarbonResources::Result for more details.
-        Result Unpack( const BundleUnpackParams& params );
-
-    private:
-
-		BundleResourceGroupImpl* m_impl;
-
-    };
+private:
+	BundleResourceGroupImpl* m_impl;
+};
 
 }
 

@@ -9,39 +9,38 @@
 namespace ResourceTools
 {
 
-    struct GetFile
-    {
-		uintmax_t fileSize = 0;
+struct GetFile
+{
+	uintmax_t fileSize = 0;
 
-        std::string* data = nullptr;
-    };
+	std::string* data = nullptr;
+};
 
-    class BundleStreamIn
-	{
-	public:
-		BundleStreamIn( uintmax_t chunkSize );
+class BundleStreamIn
+{
+public:
+	BundleStreamIn( uintmax_t chunkSize );
 
-		~BundleStreamIn();
+	~BundleStreamIn();
 
-        uintmax_t GetCacheSize();
+	uintmax_t GetCacheSize();
 
-		uintmax_t GetChunkSize() const;
+	uintmax_t GetChunkSize() const;
 
-		bool ReadBytes( size_t n, std::string& data );
+	bool ReadBytes( size_t n, std::string& data );
 
-		bool operator<<( const std::string& chunkData );
+	bool operator<<( const std::string& chunkData );
 
-		bool operator>>( GetFile& fileData );
+	bool operator>>( GetFile& fileData );
 
 
-	private:
+private:
+	uintmax_t m_chunkSize;
 
-        uintmax_t m_chunkSize;
+	std::string m_cache;
 
-		std::string m_cache;
-
-        uintmax_t m_dataReadOfCurrentFile;
-	};
+	uintmax_t m_dataReadOfCurrentFile;
+};
 
 
 }

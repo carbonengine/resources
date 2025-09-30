@@ -9,7 +9,7 @@
 #include <fstream>
 
 RemoveResourcesCliOperation::RemoveResourcesCliOperation() :
-	CliOperation("remove-resources", "Remove resources from a ResourceGroup identified by supplied text file containing a list of RelativePaths to remove."),
+	CliOperation( "remove-resources", "Remove resources from a ResourceGroup identified by supplied text file containing a list of RelativePaths to remove." ),
 	m_resourceGroupPathArgumentId( "resource-group-path" ),
 	m_resourceListPath( "resource-list-path" ),
 	m_outputResourceGroupDocumentVersionArgumentId( "--document-version" ),
@@ -20,13 +20,13 @@ RemoveResourcesCliOperation::RemoveResourcesCliOperation() :
 
 	AddRequiredPositionalArgument( m_resourceListPath, "Path to text file containing list of RelativePaths of resources to remove, separated by newlines." );
 
-    CarbonResources::ResourceGroupExportToFileParams defaultParams;
+	CarbonResources::ResourceGroupExportToFileParams defaultParams;
 
-    AddArgument( m_outputResourceGroupDocumentVersionArgumentId, "Document version for created resource group.", false, false, VersionToString( defaultParams.outputDocumentVersion ) );
+	AddArgument( m_outputResourceGroupDocumentVersionArgumentId, "Document version for created resource group.", false, false, VersionToString( defaultParams.outputDocumentVersion ) );
 
-    AddArgument( m_outputResourceGroupPath, "Filename for created resource group.", false, false, defaultParams.filename.string() );
+	AddArgument( m_outputResourceGroupPath, "Filename for created resource group.", false, false, defaultParams.filename.string() );
 
-    AddArgumentFlag( m_ignoreMissingResources, "Set to ignore 'resource not found' errors caused by supplying a list with Resources not present in ResourceGroup." );
+	AddArgumentFlag( m_ignoreMissingResources, "Set to ignore 'resource not found' errors caused by supplying a list with Resources not present in ResourceGroup." );
 }
 
 bool RemoveResourcesCliOperation::Execute( std::string& returnErrorMessage ) const
@@ -51,28 +51,28 @@ bool RemoveResourcesCliOperation::Execute( std::string& returnErrorMessage ) con
 	}
 	std::filesystem::path resourcesToRemovePath = resourceListFilepath.value();
 
-    CarbonResources::ResourceGroupExportToFileParams exportParams;
+	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-    std::string outResourceGroupFilename = m_argumentParser->get<std::string>( m_outputResourceGroupPath );
+	std::string outResourceGroupFilename = m_argumentParser->get<std::string>( m_outputResourceGroupPath );
 
 	exportParams.filename = outResourceGroupFilename;
 
-    std::string version = m_argumentParser->get( m_outputResourceGroupDocumentVersionArgumentId );
+	std::string version = m_argumentParser->get( m_outputResourceGroupDocumentVersionArgumentId );
 
-    CarbonResources::Version documentVersion;
+	CarbonResources::Version documentVersion;
 
 	bool versionIsValid = ParseDocumentVersion( version, documentVersion );
 
-    if( !versionIsValid )
+	if( !versionIsValid )
 	{
 		returnErrorMessage = "Invalid document version";
 
 		return false;
 	}
 
-    exportParams.outputDocumentVersion = documentVersion;
+	exportParams.outputDocumentVersion = documentVersion;
 
-    bool ignoreMissingResources =  m_argumentParser->get<bool>( m_ignoreMissingResources );
+	bool ignoreMissingResources = m_argumentParser->get<bool>( m_ignoreMissingResources );
 
 	PrintStartBanner( importParams, resourcesToRemovePath, exportParams, ignoreMissingResources, version );
 
@@ -88,92 +88,93 @@ void RemoveResourcesCliOperation::PrintStartBanner( const CarbonResources::Resou
 
 	std::cout << "---Removing Resources---" << std::endl;
 
-    PrintCommonOperationHeaderInformation();
+	PrintCommonOperationHeaderInformation();
 
 	std::cout << "Resource Group: " << importParams.filename << std::endl;
 	std::cout << "Resources to remove Path: " << resourcesToRemoveFile << std::endl;
 	std::cout << "Output Resource Group Path: " << exportParams.filename << std::endl;
 	std::cout << "Output Document Version: " << version << std::endl;
-    if (ignoreMissingResources)
-    {
-	    std::cout << "Ignore missing Resources: On" << exportParams.filename << std::endl;
-    }
-    else
-    {
+	if( ignoreMissingResources )
+	{
+		std::cout << "Ignore missing Resources: On" << exportParams.filename << std::endl;
+	}
+	else
+	{
 		std::cout << "Ignore missing Resources: Off" << exportParams.filename << std::endl;
-    }
+	}
 
-	std::cout << "----------------------------\n" << std::endl;
+	std::cout << "----------------------------\n"
+			  << std::endl;
 }
 
 bool RemoveResourcesCliOperation::ReadResourcesToRemoveFile( std::filesystem::path& pathToResourcesToRemoveFile, std::vector<std::filesystem::path>& resourcesToRemoveOut ) const
 {
 	std::ifstream removeListFile( pathToResourcesToRemoveFile );
 
-    if( !removeListFile )
+	if( !removeListFile )
 	{
 		return false;
 	}
 
-    std::string line;
-    while (std::getline(removeListFile, line))
-    {
+	std::string line;
+	while( std::getline( removeListFile, line ) )
+	{
 		resourcesToRemoveOut.push_back( line );
-    }
+	}
 
-    removeListFile.close();
+	removeListFile.close();
 
-    return true;
+	return true;
 }
 
 bool RemoveResourcesCliOperation::RemoveResources( const CarbonResources::ResourceGroupImportFromFileParams& importParams, std::filesystem::path& resourcesToRemoveFile, CarbonResources::ResourceGroupExportToFileParams& exportParams, bool ignoreMissingResources ) const
 {
-    // Import base Resource Group
+	// Import base Resource Group
 	CarbonResources::ResourceGroup resourceGroup;
 
-    CarbonResources::Result importResourceGroupResult = resourceGroup.ImportFromFile( importParams );
+	CarbonResources::Result importResourceGroupResult = resourceGroup.ImportFromFile( importParams );
 
-    if (importResourceGroupResult.type != CarbonResources::ResultType::SUCCESS)
-    {
+	if( importResourceGroupResult.type != CarbonResources::ResultType::SUCCESS )
+	{
 		PrintCarbonResourcesError( importResourceGroupResult );
 
 		return false;
-    }
+	}
 
-    // Get resources to remove
+	// Get resources to remove
 	std::vector<std::filesystem::path> resourcesToRemove;
 
-    if (!ReadResourcesToRemoveFile(resourcesToRemoveFile, resourcesToRemove))
-    {
+	if( !ReadResourcesToRemoveFile( resourcesToRemoveFile, resourcesToRemove ) )
+	{
 		std::cerr << "Failed to read resources to remove file." << std::endl;
 
 		return false;
-    }
+	}
 
-    CarbonResources::ResourceGroupRemoveResourcesParams removeParams;
+	CarbonResources::ResourceGroupRemoveResourcesParams removeParams;
 
-    removeParams.resourcesToRemove = &resourcesToRemove;
+	removeParams.resourcesToRemove = &resourcesToRemove;
 
-    removeParams.errorIfResourceNotFound = !ignoreMissingResources; 
+	removeParams.errorIfResourceNotFound = !ignoreMissingResources;
 
 
-    CarbonResources::Result removeResult = resourceGroup.RemoveResources( removeParams );
+	CarbonResources::Result removeResult = resourceGroup.RemoveResources( removeParams );
 
-    if (removeResult.type != CarbonResources::ResultType::SUCCESS)
-    {
+	if( removeResult.type != CarbonResources::ResultType::SUCCESS )
+	{
 		PrintCarbonResourcesError( removeResult );
 
-        return false;
-    }
+		return false;
+	}
 
-    CarbonResources::Result exportResult = resourceGroup.ExportToFile( exportParams );
+	CarbonResources::Result exportResult = resourceGroup.ExportToFile( exportParams );
 
-    if (exportResult.type != CarbonResources::ResultType::SUCCESS)
-    {
+	if( exportResult.type != CarbonResources::ResultType::SUCCESS )
+	{
 		PrintCarbonResourcesError( exportResult );
 
-        return false;
-    }
+		return false;
+	}
 
-    return true;
+	return true;
 }

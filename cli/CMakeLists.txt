@@ -7,28 +7,28 @@ find_package(argparse CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 
 set(SRC_FILES
-    src/ApplyPatchCliOperation.h
-    src/ApplyPatchCliOperation.cpp
-    src/Cli.cpp
-    src/Cli.h
-    src/CliOperation.cpp
-    src/CliOperation.h
-    src/CreateBundleCliOperation.cpp
-    src/CreateBundleCliOperation.h
-    src/CreatePatchCliOperation.cpp
-    src/CreatePatchCliOperation.h
-    src/CreateResourceGroupCliOperation.cpp
-    src/CreateResourceGroupCliOperation.h
-    src/Defines.h
-    src/DiffResourceGroupCliOperation.cpp
-    src/DiffResourceGroupCliOperation.h
-    src/main.cpp
-    src/MergeResourceGroupCliOperation.cpp
-    src/MergeResourceGroupCliOperation.h
-    src/RemoveResourcesCliOperation.cpp
-    src/RemoveResourcesCliOperation.h
-    src/UnpackBundleCliOperation.cpp
-    src/UnpackBundleCliOperation.h
+        src/ApplyPatchCliOperation.h
+        src/ApplyPatchCliOperation.cpp
+        src/Cli.cpp
+        src/Cli.h
+        src/CliOperation.cpp
+        src/CliOperation.h
+        src/CreateBundleCliOperation.cpp
+        src/CreateBundleCliOperation.h
+        src/CreatePatchCliOperation.cpp
+        src/CreatePatchCliOperation.h
+        src/CreateResourceGroupCliOperation.cpp
+        src/CreateResourceGroupCliOperation.h
+        src/Defines.h
+        src/DiffResourceGroupCliOperation.cpp
+        src/DiffResourceGroupCliOperation.h
+        src/main.cpp
+        src/MergeResourceGroupCliOperation.cpp
+        src/MergeResourceGroupCliOperation.h
+        src/RemoveResourcesCliOperation.cpp
+        src/RemoveResourcesCliOperation.h
+        src/UnpackBundleCliOperation.cpp
+        src/UnpackBundleCliOperation.h
 )
 
 ccp_add_executable(resources-cli ${SRC_FILES})
@@ -43,9 +43,9 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
 
 option(DEV_FEATURES "Expose unsupported features")
 
-if(DEV_FEATURES)
-    target_compile_definitions( resources-cli PRIVATE DEV_FEATURES )
-endif()
+if (DEV_FEATURES)
+    target_compile_definitions(resources-cli PRIVATE DEV_FEATURES)
+endif ()
 
 set_target_properties(resources-cli PROPERTIES OUTPUT_NAME "resources")
 

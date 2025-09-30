@@ -13,10 +13,9 @@ public:
 	bool Execute( std::string& returnErrorMessage ) const final;
 
 private:
+	void PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams ) const;
 
-	void PrintStartBanner(const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams) const;
-
-	bool ApplyPatch(CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, CarbonResources::PatchApplyParams patchApplyParams) const;
+	bool ApplyPatch( CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, CarbonResources::PatchApplyParams patchApplyParams ) const;
 
 	std::string m_patchResourceGroupPathArgumentId;
 	std::string m_patchBinariesSourceBasePathsArgumentId;
@@ -28,4 +27,3 @@ private:
 	std::string m_resourcesToPatchDestinationPathArgumentId;
 	std::string m_resourcesToPatchDestinationTypeArgumentId;
 };
-

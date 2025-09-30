@@ -11,33 +11,33 @@
 namespace ResourceTools
 {
 
-    class FileDataStreamOut
-	{
-	public:
-		FileDataStreamOut( );
+class FileDataStreamOut
+{
+public:
+	FileDataStreamOut();
 
-		virtual ~FileDataStreamOut();
+	virtual ~FileDataStreamOut();
 
-		virtual bool Finish();
+	virtual bool Finish();
 
-		bool IsFinished();
+	bool IsFinished();
 
-		virtual bool StartWrite( std::filesystem::path filepath );
+	virtual bool StartWrite( std::filesystem::path filepath );
 
-		bool operator<<( const std::string& data );
+	bool operator<<( const std::string& data );
 
-        size_t GetFileSize();
+	size_t GetFileSize();
 
 
-	private:
-		bool m_writeInProgress;
+private:
+	bool m_writeInProgress;
 
-		std::ofstream m_outputStream;
+	std::ofstream m_outputStream;
 
-		size_t m_fileSize;
-	};
+	size_t m_fileSize;
+};
 
-    
+
 }
 
 #endif // FileDataStreamOut_H

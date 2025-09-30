@@ -14,59 +14,59 @@
 namespace ResourceTools
 {
 
-    struct GetChunk
-	{
-    	std::shared_ptr<ResourceTools::FileDataStreamIn> uncompressedChunkIn;
+struct GetChunk
+{
+	std::shared_ptr<ResourceTools::FileDataStreamIn> uncompressedChunkIn;
 
-    	std::shared_ptr<ResourceTools::FileDataStreamIn> compressedChunkIn;
+	std::shared_ptr<ResourceTools::FileDataStreamIn> compressedChunkIn;
 
-        bool clearCache{false};
+	bool clearCache{ false };
 
-    	bool outOfChunks{false};
-	};
+	bool outOfChunks{ false };
+};
 
-    class BundleStreamOut
-    {
-	public:
-		BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory );
+class BundleStreamOut
+{
+public:
+	BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory );
 
-		~BundleStreamOut();
+	~BundleStreamOut();
 
-        bool operator<<( std::shared_ptr<ResourceTools::FileDataStreamIn> streamIn );
+	bool operator<<( std::shared_ptr<ResourceTools::FileDataStreamIn> streamIn );
 
-        // Outputs chunks
-		bool operator>>( GetChunk& data );
+	// Outputs chunks
+	bool operator>>( GetChunk& data );
 
-		bool Flush();
+	bool Flush();
 
-    private:
-		bool AddChunkFilesToGetChunk( GetChunk& data );
+private:
+	bool AddChunkFilesToGetChunk( GetChunk& data );
 
-		bool InitializeOutputStreams();
+	bool InitializeOutputStreams();
 
-		std::vector<std::shared_ptr<ResourceTools::ScopedFile>> m_chunkFiles;
+	std::vector<std::shared_ptr<ResourceTools::ScopedFile>> m_chunkFiles;
 
-		uintmax_t m_chunkSize;
+	uintmax_t m_chunkSize;
 
-        std::string m_cache;
+	std::string m_cache;
 
-        std::string m_uncompressedData;
+	std::string m_uncompressedData;
 
-		std::string m_compressedData;
+	std::string m_compressedData;
 
-		std::unique_ptr<GzipCompressionStream> m_compressionStream;
+	std::unique_ptr<GzipCompressionStream> m_compressionStream;
 
-		std::unique_ptr<ResourceTools::FileDataStreamOut> m_compressedOut;
+	std::unique_ptr<ResourceTools::FileDataStreamOut> m_compressedOut;
 
-		std::unique_ptr<ResourceTools::FileDataStreamOut> m_uncompressedOut;
+	std::unique_ptr<ResourceTools::FileDataStreamOut> m_uncompressedOut;
 
-		std::filesystem::path m_outputDirectory;
+	std::filesystem::path m_outputDirectory;
 
-		uint32_t m_chunksCreated{0};
+	uint32_t m_chunksCreated{ 0 };
 
-		uint32_t m_chunksExported{0};
-    };
- 
+	uint32_t m_chunksExported{ 0 };
+};
+
 }
 
 #endif // BundleStreamOut_H

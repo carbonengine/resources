@@ -15,28 +15,26 @@
 namespace ResourceTools
 {
 
-    class CompressedFileDataStreamOut : public FileDataStreamOut
-	{
-	public:
+class CompressedFileDataStreamOut : public FileDataStreamOut
+{
+public:
+	CompressedFileDataStreamOut();
 
-		CompressedFileDataStreamOut( );
+	virtual ~CompressedFileDataStreamOut();
 
-		virtual ~CompressedFileDataStreamOut();
+	bool StartWrite( std::filesystem::path filepath ) override;
 
-        bool StartWrite( std::filesystem::path filepath ) override;
+	virtual bool Finish() override;
 
-        virtual bool Finish() override;
+	bool operator<<( const std::string& data );
 
-        bool operator<<( const std::string& data );
+private:
+	std::string m_compressionBuffer;
 
-	private:
+	std::unique_ptr<GzipCompressionStream> m_compressionStream;
+};
 
-        std::string m_compressionBuffer;
 
-        std::unique_ptr<GzipCompressionStream> m_compressionStream;
-	};
-
-    
 }
 
 #endif // CompressedFileDataStreamOut_H

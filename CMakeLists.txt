@@ -3,17 +3,17 @@
 cmake_minimum_required(VERSION 3.31)
 project(resources VERSION 3.0.0)
 
-if(NOT DEFINED ENV{CCP_EVE_PERFORCE_BRANCH_PATH})
+if (NOT DEFINED ENV{CCP_EVE_PERFORCE_BRANCH_PATH})
     message(FATAL_ERROR "Missing required environment variable CCP_EVE_PERFORCE_BRANCH_PATH")
-elseif(NOT IS_ABSOLUTE $ENV{CCP_EVE_PERFORCE_BRANCH_PATH})
+elseif (NOT IS_ABSOLUTE $ENV{CCP_EVE_PERFORCE_BRANCH_PATH})
     message(FATAL_ERROR "CCP_EVE_PERFORCE_BRANCH_PATH needs to be an absolute path")
-elseif(NOT EXISTS $ENV{CCP_EVE_PERFORCE_BRANCH_PATH})
+elseif (NOT EXISTS $ENV{CCP_EVE_PERFORCE_BRANCH_PATH})
     message(FATAL_ERROR "CCP_EVE_PERFORCE_BRANCH_PATH is pointing at a non-existing location $ENV{CCP_EVE_PERFORCE_BRANCH_PATH}")
-elseif(NOT IS_DIRECTORY $ENV{CCP_EVE_PERFORCE_BRANCH_PATH})
+elseif (NOT IS_DIRECTORY $ENV{CCP_EVE_PERFORCE_BRANCH_PATH})
     message(FATAL_ERROR "CCP_EVE_PERFORCE_BRANCH_PATH needs to be a directory")
-else()
+else ()
     message(STATUS "Using CCP_EVE_PERFORCE_BRANCH_PATH located at $ENV{CCP_EVE_PERFORCE_BRANCH_PATH}")
-endif()
+endif ()
 
 file(TO_CMAKE_PATH "$ENV{CCP_EVE_PERFORCE_BRANCH_PATH}" BRANCH_ROOT_DIR)
 list(INSERT CMAKE_MODULE_PATH 0 ${BRANCH_ROOT_DIR}/cmake)
@@ -29,42 +29,42 @@ find_package(Python3 COMPONENTS Interpreter REQUIRED)
 add_subdirectory(tools)
 
 set(SRC_FILES
-    include/BundleResourceGroup.h
-    include/Exports.h
-    include/PatchResourceGroup.h
-    include/ResourceGroup.h
-    include/Enums.h
-    include/Version.h
+        include/BundleResourceGroup.h
+        include/Exports.h
+        include/PatchResourceGroup.h
+        include/ResourceGroup.h
+        include/Enums.h
+        include/Version.h
 
-    src/BundleResourceGroup.cpp
-    src/BundleResourceGroupImpl.cpp
-    src/BundleResourceGroupImpl.h
-    src/PatchResourceGroup.cpp
-    src/PatchResourceGroupImpl.cpp
-    src/PatchResourceGroupImpl.h
-    src/ResourceGroup.cpp
-    src/ResourceGroupFactory.h
-    src/ResourceGroupFactory.cpp
-    src/ResourceGroupImpl.cpp
-    src/ResourceGroupImpl.h
-    src/Enums.cpp
-    src/VersionInternal.h
-    src/VersionInternal.cpp
+        src/BundleResourceGroup.cpp
+        src/BundleResourceGroupImpl.cpp
+        src/BundleResourceGroupImpl.h
+        src/PatchResourceGroup.cpp
+        src/PatchResourceGroupImpl.cpp
+        src/PatchResourceGroupImpl.h
+        src/ResourceGroup.cpp
+        src/ResourceGroupFactory.h
+        src/ResourceGroupFactory.cpp
+        src/ResourceGroupImpl.cpp
+        src/ResourceGroupImpl.h
+        src/Enums.cpp
+        src/VersionInternal.h
+        src/VersionInternal.cpp
 
-    src/ResourceInfo/BundleResourceInfo.cpp
-    src/ResourceInfo/BundleResourceInfo.h
-    src/ResourceInfo/PatchResourceInfo.cpp
-    src/ResourceInfo/PatchResourceInfo.h
-    src/ResourceInfo/ResourceInfo.cpp
-    src/ResourceInfo/ResourceInfo.h
-    src/ResourceInfo/ResourceGroupInfo.h
-    src/ResourceInfo/ResourceGroupInfo.cpp
-    src/ResourceInfo/PatchResourceGroupInfo.h
-    src/ResourceInfo/PatchResourceGroupInfo.cpp
-    src/ResourceInfo/BundleResourceGroupInfo.h
-    src/ResourceInfo/BundleResourceGroupInfo.cpp
-    src/ParameterVersion.h
-    src/ParameterVersion.cpp
+        src/ResourceInfo/BundleResourceInfo.cpp
+        src/ResourceInfo/BundleResourceInfo.h
+        src/ResourceInfo/PatchResourceInfo.cpp
+        src/ResourceInfo/PatchResourceInfo.h
+        src/ResourceInfo/ResourceInfo.cpp
+        src/ResourceInfo/ResourceInfo.h
+        src/ResourceInfo/ResourceGroupInfo.h
+        src/ResourceInfo/ResourceGroupInfo.cpp
+        src/ResourceInfo/PatchResourceGroupInfo.h
+        src/ResourceInfo/PatchResourceGroupInfo.cpp
+        src/ResourceInfo/BundleResourceGroupInfo.h
+        src/ResourceInfo/BundleResourceGroupInfo.cpp
+        src/ParameterVersion.h
+        src/ParameterVersion.cpp
 )
 
 ccp_add_library(resources SHARED ${SRC_FILES})
@@ -75,9 +75,9 @@ target_compile_definitions(resources PRIVATE EXPORT_LIBRARY)
 # Added as config
 configure_file(src/Version.h.in include/Version.h @ONLY)
 
-if(WIN32)
+if (WIN32)
     target_compile_definitions(resources PRIVATE NOMINMAX) # Do not define min/max macros.
-endif()
+endif ()
 
 target_link_libraries(resources PRIVATE resources-tools yaml-cpp::yaml-cpp)
 
@@ -103,9 +103,9 @@ set_target_properties(resources-static PROPERTIES OUTPUT_NAME "_resources-static
 
 target_compile_definitions(resources-static PUBLIC CARBON_RESOURCES_STATIC)
 
-if(WIN32)
+if (WIN32)
     target_compile_definitions(resources-static PRIVATE NOMINMAX) # Do not define min/max macros.
-endif()
+endif ()
 
 target_link_libraries(resources-static PRIVATE $<BUILD_LOCAL_INTERFACE:resources-tools> yaml-cpp::yaml-cpp)
 
@@ -124,19 +124,19 @@ add_subdirectory(tests)
 
 
 # Provide an install target if this is the top level project only
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # Determine if/when to generate/build documentation. The rules are as follows:
     # - If running locally - Build documentation is OFF by default
     # - If running on a build agent (TeamCity) - Build documentation is ON by default
     # - If -DBUILD_DOCUMENTATION=ON/OFF flag is explicitly set, use it.
     set(BUILD_DOCUMENTATION_DEFAULT_FLAG OFF)
-    if(DEFINED ENV{TEAMCITY_VERSION})
+    if (DEFINED ENV{TEAMCITY_VERSION})
         set(BUILD_DOCUMENTATION_DEFAULT_FLAG ON)
-    endif()
+    endif ()
     message(STATUS "Document generation settings: default=${BUILD_DOCUMENTATION_DEFAULT_FLAG}, option BUILD_DOCUMENTATION=${BUILD_DOCUMENTATION}")
     option(BUILD_DOCUMENTATION "Build Documentation" ${BUILD_DOCUMENTATION_DEFAULT_FLAG})
 
-    if(BUILD_DOCUMENTATION)
+    if (BUILD_DOCUMENTATION)
         # Run sphinx
         set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/doc/source)
         set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/doc/build)
@@ -155,10 +155,10 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
         # Ensure that resources is built before Spinx target
         add_dependencies(Sphinx resources)
-    endif()
+    endif ()
 
     set(INSTALL_BIN_ONLY OFF CACHE BOOL "Do not Install configuration files meant to be read by projects using this project as a dependency (Cmake Config/ header files etc . . .). Set this to ON when installing this component to the perforce vendor folder")
-    if(INSTALL_BIN_ONLY)
+    if (INSTALL_BIN_ONLY)
         # Install rule to ensure that our runtime files are in the expected, platform-specific folder
         install(
                 TARGETS resources resources-static
@@ -168,7 +168,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
                 ARCHIVE DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
                 RUNTIME DESTINATION bin/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
         )
-    else()
+    else ()
         # Install rule to ensure that our runtime and linker files are in the expected, platform-specific folders
         install(
                 TARGETS resources resources-static
@@ -190,6 +190,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         install(
                 FILES resourcesConfig.cmake
                 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/resources)
-    endif()
+    endif ()
 
-endif()
+endif ()

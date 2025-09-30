@@ -9,75 +9,75 @@
 
 namespace ResourceTools
 {
- 
-  Md5ChecksumStream::Md5ChecksumStream()
-  {
-      m_encoder = new CryptoPP::HexEncoder( new CryptoPP::FileSink( m_ss ), false );
 
-      m_hash = new CryptoPP::Weak1::MD5();
-  }
+Md5ChecksumStream::Md5ChecksumStream()
+{
+	m_encoder = new CryptoPP::HexEncoder( new CryptoPP::FileSink( m_ss ), false );
 
-  Md5ChecksumStream::~Md5ChecksumStream()
-  {
-	  Finish();
-  }
+	m_hash = new CryptoPP::Weak1::MD5();
+}
 
-  void Md5ChecksumStream::Finish()
-  {
-      if (m_encoder)
-      {
-		  delete m_encoder;
+Md5ChecksumStream::~Md5ChecksumStream()
+{
+	Finish();
+}
 
-          m_encoder = nullptr;
-      }
-	  
-      if (m_hash)
-      {
-		  delete m_hash;
+void Md5ChecksumStream::Finish()
+{
+	if( m_encoder )
+	{
+		delete m_encoder;
 
-          m_hash = nullptr;
-      }
+		m_encoder = nullptr;
+	}
 
-      return;
-  }
+	if( m_hash )
+	{
+		delete m_hash;
+
+		m_hash = nullptr;
+	}
+
+	return;
+}
 
 
-  bool Md5ChecksumStream::operator<<( const std::string& data )
-  {
-      if (!m_hash)
-      {
-		  return false;
-      }
+bool Md5ChecksumStream::operator<<( const std::string& data )
+{
+	if( !m_hash )
+	{
+		return false;
+	}
 
-	  m_hash->Update( (const CryptoPP::byte*)data.data(), data.size() );
+	m_hash->Update( (const CryptoPP::byte*)data.data(), data.size() );
 
-	  return true;
-  }
+	return true;
+}
 
-  bool Md5ChecksumStream::FinishAndRetrieve( std::string& checksum )
-  {
-      if (!m_hash || !m_encoder)
-      {
-		  return false;
-      }
+bool Md5ChecksumStream::FinishAndRetrieve( std::string& checksum )
+{
+	if( !m_hash || !m_encoder )
+	{
+		return false;
+	}
 
-	  std::string digest;
+	std::string digest;
 
-	  digest.resize( m_hash->DigestSize() );
+	digest.resize( m_hash->DigestSize() );
 
-	  m_hash->Final( (CryptoPP::byte*)&digest[0] );
+	m_hash->Final( (CryptoPP::byte*)&digest[0] );
 
-	  CryptoPP::StringSource stringSource( digest, true, new CryptoPP::Redirector( *m_encoder ) );
+	CryptoPP::StringSource stringSource( digest, true, new CryptoPP::Redirector( *m_encoder ) );
 
-	  checksum = m_ss.str();
+	checksum = m_ss.str();
 
-	  while( checksum.size() < 32 )
-	  {
-		  checksum = "0" + checksum;
-	  }
+	while( checksum.size() < 32 )
+	{
+		checksum = "0" + checksum;
+	}
 
-      Finish();
-  	  return true;
-  }
+	Finish();
+	return true;
+}
 
 }

@@ -13,7 +13,6 @@ public:
 	bool Execute( std::string& returnErrorMessage ) const final;
 
 private:
-
 	void PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, const CarbonResources::ResourceGroupImportFromFileParams& importParamsDiff, std::filesystem::path& outputPath ) const;
 
 	bool Diff( const CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, const CarbonResources::ResourceGroupImportFromFileParams& importParamsDiff, std::filesystem::path& outputPath ) const;
@@ -21,6 +20,4 @@ private:
 	std::string m_baseResourceGroupPathArgumentId;
 	std::string m_diffResourceGroupPathArgumentId;
 	std::string m_diffOutputPath;
-	
 };
-

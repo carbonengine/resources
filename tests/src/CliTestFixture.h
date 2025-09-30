@@ -12,8 +12,7 @@
 struct CliTestFixture : public ResourcesTestFixture
 {
 
-    int RunCli( std::vector<std::string> &arguments, std::string &output );
-
+	int RunCli( std::vector<std::string>& arguments, std::string& output );
 };
 
 #endif // CliTestFixture_H

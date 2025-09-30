@@ -10,7 +10,9 @@
 
 #include <FileDataStreamOut.h>
 
-struct ResourcesLibraryTest : public ResourcesTestFixture{};
+struct ResourcesLibraryTest : public ResourcesTestFixture
+{
+};
 
 // Import ResourceGroup V0.0.0
 // Export should output as V0.1.0
@@ -22,17 +24,17 @@ TEST_F( ResourcesLibraryTest, BinaryGroupImportExport_V_0_0_0_To_V_0_1_0 )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.filename = GetTestFileFileAbsolutePath( "Indicies/binaryFileIndex_v0_0_0.txt" );
+	importParams.filename = GetTestFileFileAbsolutePath( "Indicies/binaryFileIndex_v0_0_0.txt" );
 
-	EXPECT_EQ(binaryResourceGroup.ImportFromFile( importParams ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( binaryResourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-    exportParams.filename = "resPath/BinaryResourceGroup_v0_1_0.yaml";
+	exportParams.filename = "resPath/BinaryResourceGroup_v0_1_0.yaml";
 
-	EXPECT_EQ(binaryResourceGroup.ExportToFile( exportParams ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( binaryResourceGroup.ExportToFile( exportParams ).type, CarbonResources::ResultType::SUCCESS );
 
-    std::filesystem::path goldStandardFilename = GetTestFileFileAbsolutePath( "Indicies/BinaryResourceGroup_v0_1_0.yaml" );
+	std::filesystem::path goldStandardFilename = GetTestFileFileAbsolutePath( "Indicies/BinaryResourceGroup_v0_1_0.yaml" );
 
 	EXPECT_TRUE( FilesMatch( exportParams.filename, goldStandardFilename ) );
 }
@@ -44,20 +46,20 @@ TEST_F( ResourcesLibraryTest, BinaryGroupImportExport_V_0_1_0 )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.filename = GetTestFileFileAbsolutePath( "Indicies/BinaryResourceGroup_v0_1_0.yaml" );
+	importParams.filename = GetTestFileFileAbsolutePath( "Indicies/BinaryResourceGroup_v0_1_0.yaml" );
 
-	EXPECT_EQ(binaryResourceGroup.ImportFromFile( importParams ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( binaryResourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-    exportParams.filename = "resPath/BinaryResourceGroup_v0_1_0.yaml";
+	exportParams.filename = "resPath/BinaryResourceGroup_v0_1_0.yaml";
 
-	EXPECT_EQ(binaryResourceGroup.ExportToFile( exportParams ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( binaryResourceGroup.ExportToFile( exportParams ).type, CarbonResources::ResultType::SUCCESS );
 
 	EXPECT_TRUE( FilesMatch( importParams.filename, exportParams.filename ) );
 }
 
-// Import ResourceGroup V0.0.0 
+// Import ResourceGroup V0.0.0
 // Export should output as V0.1.0
 // This is the only instance that exporting a file of a lower version results in a version bump
 TEST_F( ResourcesLibraryTest, ResourceGroupImportExport_V_0_0_0_To_V_0_1_0 )
@@ -66,17 +68,17 @@ TEST_F( ResourcesLibraryTest, ResourceGroupImportExport_V_0_0_0_To_V_0_1_0 )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.filename = GetTestFileFileAbsolutePath( "Indicies/resFileIndex_v0_0_0.txt" );
+	importParams.filename = GetTestFileFileAbsolutePath( "Indicies/resFileIndex_v0_0_0.txt" );
 
-	EXPECT_EQ(resourceGroup.ImportFromFile( importParams ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-    exportParams.filename = "resPath/ResourceGroup_v0_1_0.yaml";
+	exportParams.filename = "resPath/ResourceGroup_v0_1_0.yaml";
 
-	EXPECT_EQ(resourceGroup.ExportToFile( exportParams ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( resourceGroup.ExportToFile( exportParams ).type, CarbonResources::ResultType::SUCCESS );
 
-    std::filesystem::path goldStandardFilename = GetTestFileFileAbsolutePath( "Indicies/ResourceGroup_v0_1_0.yaml" );
+	std::filesystem::path goldStandardFilename = GetTestFileFileAbsolutePath( "Indicies/ResourceGroup_v0_1_0.yaml" );
 
 	EXPECT_TRUE( FilesMatch( exportParams.filename, goldStandardFilename ) );
 }
@@ -86,7 +88,7 @@ TEST_F( ResourcesLibraryTest, ImportEmptyResourceGroup )
 	CarbonResources::ResourceGroup resourceGroup;
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 	importParams.filename = GetTestFileFileAbsolutePath( "ResourceGroups/EmptyResourceGroup.yaml" );
-	EXPECT_EQ(resourceGroup.ImportFromFile( importParams ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
 }
 
 TEST_F( ResourcesLibraryTest, ImportResourceGroupWithOutOfBoundsBinaryOperation )
@@ -97,15 +99,15 @@ TEST_F( ResourcesLibraryTest, ImportResourceGroupWithOutOfBoundsBinaryOperation 
 	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::MALFORMED_RESOURCE_INPUT );
 }
 
-void CreateEmptyResourceGroupWithMissingParameter(std::filesystem::path emptyResourceGroupPath, std::filesystem::path outPath, const std::string& missingTagName)
+void CreateEmptyResourceGroupWithMissingParameter( std::filesystem::path emptyResourceGroupPath, std::filesystem::path outPath, const std::string& missingTagName )
 {
 	std::filesystem::path testDataFolder( TEST_DATA_BASE_PATH );
 	std::ifstream fileIn( emptyResourceGroupPath );
 	create_directories( outPath.parent_path() );
-	std::ofstream fileOut( outPath, std::ios::out);
+	std::ofstream fileOut( outPath, std::ios::out );
 	ASSERT_TRUE( fileOut.is_open() );
 	std::string line;
-	while(std::getline( fileIn, line ))
+	while( std::getline( fileIn, line ) )
 	{
 		std::string formattedTag = missingTagName + ":";
 		std::string startOfLine = line.substr( 0, missingTagName.size() + 1 );
@@ -118,7 +120,7 @@ void CreateEmptyResourceGroupWithMissingParameter(std::filesystem::path emptyRes
 
 CarbonResources::Result AttemptImportResourceGroupMissingParameter( const std::string& tag, std::filesystem::path emptyResourceGroupPath )
 {
-	std::filesystem::path outPath(std::filesystem::current_path() / "ResourceGroups" / ("Missing" + tag + ".yaml"));
+	std::filesystem::path outPath( std::filesystem::current_path() / "ResourceGroups" / ( "Missing" + tag + ".yaml" ) );
 	CreateEmptyResourceGroupWithMissingParameter( emptyResourceGroupPath, outPath, tag );
 	CarbonResources::ResourceGroup resourceGroup;
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
@@ -159,7 +161,6 @@ TEST_F( ResourcesLibraryTest, ResourceGroupLoadInvalidCsv )
 	// Try and load group but fail to parse csv
 	importParams.filename = GetTestFileFileAbsolutePath( "Indicies/resFileIndex_v0_0_0_NONESENSE.txt" );
 	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::MALFORMED_RESOURCE_INPUT );
-
 }
 
 TEST_F( ResourcesLibraryTest, ResourceGroupLoadCsvWithInvalidCompressedSizeField )
@@ -182,7 +183,6 @@ TEST_F( ResourcesLibraryTest, ResourceGroupLoadEmptyCsv )
 	// Try and load group, results in success but empty list
 	importParams.filename = GetTestFileFileAbsolutePath( "Indicies/resFileIndex_v0_0_0_EMPTY.txt" );
 	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
-
 }
 
 TEST_F( ResourcesLibraryTest, ResourceGroupLoadNonexistantFileFails )
@@ -248,15 +248,15 @@ TEST_F( ResourcesLibraryTest, ResourceGroupImportExport_V_0_1_0 )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.filename = GetTestFileFileAbsolutePath( "Indicies/ResourceGroup_v0_1_0.yaml" );
+	importParams.filename = GetTestFileFileAbsolutePath( "Indicies/ResourceGroup_v0_1_0.yaml" );
 
-	EXPECT_EQ(resourceGroup.ImportFromFile( importParams ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
 
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-    exportParams.filename = "resPath/ResourceGroup_v0_1_0.yaml";
+	exportParams.filename = "resPath/ResourceGroup_v0_1_0.yaml";
 
-	EXPECT_EQ(resourceGroup.ExportToFile( exportParams ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( resourceGroup.ExportToFile( exportParams ).type, CarbonResources::ResultType::SUCCESS );
 
 	EXPECT_TRUE( FilesMatch( importParams.filename, exportParams.filename ) );
 }
@@ -273,9 +273,9 @@ TEST_F( ResourcesLibraryTest, UnpackBundle )
 	EXPECT_EQ( bundleResourceGroup.ImportFromFile( importParamsPrevious ).type, CarbonResources::ResultType::SUCCESS );
 
 
-    // Unpack the bundle
+	// Unpack the bundle
 	CarbonResources::BundleUnpackParams bundleUnpackParams;
-	
+
 	bundleUnpackParams.chunkSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
 
 	bundleUnpackParams.chunkSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Bundle/LocalRemoteChunks/" ) };
@@ -289,8 +289,6 @@ TEST_F( ResourcesLibraryTest, UnpackBundle )
 	EXPECT_TRUE( DirectoryIsSubset( GetTestFileFileAbsolutePath( "Bundle/Res" ), "UnpackBundleOut" ) );
 
 	EXPECT_TRUE( std::filesystem::exists( "UnpackBundleOut/ResourceGroup.yaml" ) );
-
-
 }
 
 TEST_F( ResourcesLibraryTest, UnpackBundleExpectingRemoteCdnButPassedLocalCdn )
@@ -308,7 +306,7 @@ TEST_F( ResourcesLibraryTest, UnpackBundleExpectingRemoteCdnButPassedLocalCdn )
 	// Unpack the bundle
 	CarbonResources::BundleUnpackParams bundleUnpackParams;
 
-	bundleUnpackParams.chunkSourceSettings.sourceType = CarbonResources::ResourceSourceType::REMOTE_CDN;    // source is LOCAL_CDN
+	bundleUnpackParams.chunkSourceSettings.sourceType = CarbonResources::ResourceSourceType::REMOTE_CDN; // source is LOCAL_CDN
 
 	bundleUnpackParams.chunkSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Bundle/LocalRemoteChunks/" ) };
 
@@ -316,9 +314,8 @@ TEST_F( ResourcesLibraryTest, UnpackBundleExpectingRemoteCdnButPassedLocalCdn )
 
 	bundleUnpackParams.resourceDestinationSettings.basePath = "UnpackBundleOut/";
 
-    // Should fail
+	// Should fail
 	EXPECT_EQ( bundleResourceGroup.Unpack( bundleUnpackParams ).type, CarbonResources::ResultType::FAILED_TO_OPEN_FILE );
-
 }
 
 TEST_F( ResourcesLibraryTest, UnpackRemoteBundleAsLocal )
@@ -329,18 +326,18 @@ TEST_F( ResourcesLibraryTest, UnpackRemoteBundleAsLocal )
 	importParams.filename = GetTestFileFileAbsolutePath( "Bundle/resfileindexShort.txt" );
 	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
 
-    // Create a bundle from the ResourceGroup
+	// Create a bundle from the ResourceGroup
 	CarbonResources::BundleCreateParams bundleCreateParams;
-    bundleCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
+	bundleCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
 	bundleCreateParams.resourceGroupBundleRelativePath = "BundleResourceGroup.yaml";
 	bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
-    bundleCreateParams.resourceSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Bundle/Res/" ) };
-    bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::REMOTE_CDN;
-    bundleCreateParams.chunkDestinationSettings.basePath = "UnpackRemoteBundleAsLocal/Chunks";
-    bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+	bundleCreateParams.resourceSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Bundle/Res/" ) };
+	bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::REMOTE_CDN;
+	bundleCreateParams.chunkDestinationSettings.basePath = "UnpackRemoteBundleAsLocal/Chunks";
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
 	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = "UnpackRemoteBundleAsLocal";
-    bundleCreateParams.chunkSize = 1000000000;
-	EXPECT_EQ(resourceGroup.CreateBundle( bundleCreateParams ).type,CarbonResources::ResultType::SUCCESS);
+	bundleCreateParams.chunkSize = 1000000000;
+	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::SUCCESS );
 
 	// Load the bundle file
 	CarbonResources::BundleResourceGroup bundleResourceGroup;
@@ -348,7 +345,7 @@ TEST_F( ResourcesLibraryTest, UnpackRemoteBundleAsLocal )
 	importParamsPrevious.filename = "UnpackRemoteBundleAsLocal/BundleResourceGroup.yaml";
 	EXPECT_EQ( bundleResourceGroup.ImportFromFile( importParamsPrevious ).type, CarbonResources::ResultType::SUCCESS );
 
-    // Attempt to unpack the bundle
+	// Attempt to unpack the bundle
 	CarbonResources::BundleUnpackParams bundleUnpackParams;
 	bundleUnpackParams.chunkSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
 	bundleUnpackParams.chunkSourceSettings.basePaths = { "UnpackRemoteBundleAsLocal/Chunks/" };
@@ -393,7 +390,6 @@ TEST_F( ResourcesLibraryTest, CreateBundleWithZeroChunkSize )
 	bundleCreateParams.chunkSize = 0;
 
 	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::INVALID_CHUNK_SIZE );
-
 }
 
 TEST_F( ResourcesLibraryTest, CreateBundle )
@@ -408,32 +404,31 @@ TEST_F( ResourcesLibraryTest, CreateBundle )
 	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
 
 
-    // Create a bundle from the ResourceGroup
+	// Create a bundle from the ResourceGroup
 	CarbonResources::BundleCreateParams bundleCreateParams;
 
-    bundleCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
+	bundleCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
 
 	bundleCreateParams.resourceGroupBundleRelativePath = "BundleResourceGroup.yaml";
 
 	bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-    bundleCreateParams.resourceSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Bundle/Res/" ) };
+	bundleCreateParams.resourceSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Bundle/Res/" ) };
 
-    bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+	bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
 
-    bundleCreateParams.chunkDestinationSettings.basePath = "CreateBundleOut";
+	bundleCreateParams.chunkDestinationSettings.basePath = "CreateBundleOut";
 
-    bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
 
 	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = "resPath";
 
-    bundleCreateParams.chunkSize = 1000;
+	bundleCreateParams.chunkSize = 1000;
 
-	EXPECT_EQ(resourceGroup.CreateBundle( bundleCreateParams ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::SUCCESS );
 
-	EXPECT_TRUE( FilesMatch( "resPath/BundleResourceGroup.yaml" , GetTestFileFileAbsolutePath( "CreateBundle/BundleResourceGroup.yaml" ) ) );
+	EXPECT_TRUE( FilesMatch( "resPath/BundleResourceGroup.yaml", GetTestFileFileAbsolutePath( "CreateBundle/BundleResourceGroup.yaml" ) ) );
 	EXPECT_TRUE( DirectoryIsSubset( "CreateBundleOut", GetTestFileFileAbsolutePath( "CreateBundle/CreateBundleOut" ) ) );
-
 }
 
 TEST_F( ResourcesLibraryTest, CreateAndUnpackBundle )
@@ -496,9 +491,9 @@ TEST_F( ResourcesLibraryTest, CreateAndUnpackBundle )
 
 	EXPECT_EQ( bundleResourceGroup.Unpack( bundleUnpackParams ).type, CarbonResources::ResultType::SUCCESS );
 
-	EXPECT_TRUE( DirectoryIsSubset( bundleCreateParams.resourceSourceSettings.basePaths.at(0), bundleUnpackParams.resourceDestinationSettings.basePath ) );
+	EXPECT_TRUE( DirectoryIsSubset( bundleCreateParams.resourceSourceSettings.basePaths.at( 0 ), bundleUnpackParams.resourceDestinationSettings.basePath ) );
 
-    std::filesystem::path unpackedGroupPath = bundleUnpackParams.resourceDestinationSettings.basePath / "ResourceGroup.yaml";
+	std::filesystem::path unpackedGroupPath = bundleUnpackParams.resourceDestinationSettings.basePath / "ResourceGroup.yaml";
 
 	EXPECT_TRUE( std::filesystem::exists( unpackedGroupPath ) );
 }
@@ -508,33 +503,33 @@ TEST_F( ResourcesLibraryTest, ApplyPatch )
 	// Load the patch file
 	CarbonResources::PatchResourceGroup patchResourceGroup;
 
-    CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
+	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
-    importParamsPrevious.filename = GetTestFileFileAbsolutePath( "Patch/PatchResourceGroup.yaml" );
+	importParamsPrevious.filename = GetTestFileFileAbsolutePath( "Patch/PatchResourceGroup.yaml" );
 
 	EXPECT_EQ( patchResourceGroup.ImportFromFile( importParamsPrevious ).type, CarbonResources::ResultType::SUCCESS );
 
 
-    // Apply the patch
+	// Apply the patch
 	CarbonResources::PatchApplyParams patchApplyParams;
 
-    patchApplyParams.nextBuildResourcesSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+	patchApplyParams.nextBuildResourcesSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
 	patchApplyParams.nextBuildResourcesSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Patch/NextBuildResources/" ) };
 
-    patchApplyParams.patchBinarySourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
+	patchApplyParams.patchBinarySourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
 
-    patchApplyParams.patchBinarySourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Patch/LocalCDNPatches/" ) };
+	patchApplyParams.patchBinarySourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Patch/LocalCDNPatches/" ) };
 
-    patchApplyParams.resourcesToPatchSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+	patchApplyParams.resourcesToPatchSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-    patchApplyParams.resourcesToPatchSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Patch/PreviousBuildResources/" ) };
+	patchApplyParams.resourcesToPatchSourceSettings.basePaths = { GetTestFileFileAbsolutePath( "Patch/PreviousBuildResources/" ) };
 
-    patchApplyParams.resourcesToPatchDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+	patchApplyParams.resourcesToPatchDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
 
-    patchApplyParams.resourcesToPatchDestinationSettings.basePath = "ApplyPatchOut";
+	patchApplyParams.resourcesToPatchDestinationSettings.basePath = "ApplyPatchOut";
 
-    patchApplyParams.temporaryFilePath = "tempFile.resource";
+	patchApplyParams.temporaryFilePath = "tempFile.resource";
 
 	if( std::filesystem::exists( patchApplyParams.resourcesToPatchDestinationSettings.basePath ) )
 	{
@@ -543,12 +538,11 @@ TEST_F( ResourcesLibraryTest, ApplyPatch )
 
 	std::filesystem::copy( patchApplyParams.resourcesToPatchSourceSettings.basePaths[0], patchApplyParams.resourcesToPatchDestinationSettings.basePath );
 
-    EXPECT_EQ(patchResourceGroup.Apply( patchApplyParams ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( patchResourceGroup.Apply( patchApplyParams ).type, CarbonResources::ResultType::SUCCESS );
 
-    // Check Expected Outcome
+	// Check Expected Outcome
 	std::filesystem::path goldDirectory = GetTestFileFileAbsolutePath( "Patch/NextBuildResources" );
-	EXPECT_TRUE( DirectoryIsSubset( patchApplyParams.resourcesToPatchDestinationSettings.basePath , goldDirectory ));
-
+	EXPECT_TRUE( DirectoryIsSubset( patchApplyParams.resourcesToPatchDestinationSettings.basePath, goldDirectory ) );
 }
 TEST_F( ResourcesLibraryTest, CreatePatchWhereBuildsHaveNoChanges )
 {
@@ -603,68 +597,66 @@ TEST_F( ResourcesLibraryTest, CreatePatchWhereBuildsHaveNoChanges )
 	EXPECT_EQ( resourceGroupLatest.CreatePatch( patchCreateParams ).type, CarbonResources::ResultType::SUCCESS );
 
 	// Check expected outcome
-
 }
 
 TEST_F( ResourcesLibraryTest, CreatePatch )
 {
-    // Previous ResourceGroup
+	// Previous ResourceGroup
 	CarbonResources::ResourceGroup resourceGroupPrevious;
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
-    importParamsPrevious.filename = GetTestFileFileAbsolutePath( "Patch/resfileindexShort_build_previous.txt" );
+	importParamsPrevious.filename = GetTestFileFileAbsolutePath( "Patch/resfileindexShort_build_previous.txt" );
 
-	EXPECT_EQ(resourceGroupPrevious.ImportFromFile( importParamsPrevious ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( resourceGroupPrevious.ImportFromFile( importParamsPrevious ).type, CarbonResources::ResultType::SUCCESS );
 
 
-    // Latest ResourceGroup
+	// Latest ResourceGroup
 	CarbonResources::ResourceGroup resourceGroupLatest;
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsLatest;
 
-    importParamsLatest.filename = GetTestFileFileAbsolutePath( "Patch/resfileindexShort_build_next.txt" );
+	importParamsLatest.filename = GetTestFileFileAbsolutePath( "Patch/resfileindexShort_build_next.txt" );
 
-	EXPECT_EQ(resourceGroupLatest.ImportFromFile( importParamsLatest ).type,CarbonResources::ResultType::SUCCESS);
+	EXPECT_EQ( resourceGroupLatest.ImportFromFile( importParamsLatest ).type, CarbonResources::ResultType::SUCCESS );
 
-    // Create a patch from the subtraction index
+	// Create a patch from the subtraction index
 	CarbonResources::PatchCreateParams patchCreateParams;
 
-    patchCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
+	patchCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
 
-    patchCreateParams.resourceGroupPatchRelativePath = "PatchResourceGroup.yaml";
+	patchCreateParams.resourceGroupPatchRelativePath = "PatchResourceGroup.yaml";
 
-    patchCreateParams.resourceSourceSettingsPrevious.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+	patchCreateParams.resourceSourceSettingsPrevious.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-    patchCreateParams.resourceSourceSettingsPrevious.basePaths = { GetTestFileFileAbsolutePath( "Patch/PreviousBuildResources" ) };
+	patchCreateParams.resourceSourceSettingsPrevious.basePaths = { GetTestFileFileAbsolutePath( "Patch/PreviousBuildResources" ) };
 
-    patchCreateParams.resourceSourceSettingsNext.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+	patchCreateParams.resourceSourceSettingsNext.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
-    patchCreateParams.resourceSourceSettingsNext.basePaths = { GetTestFileFileAbsolutePath( "Patch/NextBuildResources" ) };
+	patchCreateParams.resourceSourceSettingsNext.basePaths = { GetTestFileFileAbsolutePath( "Patch/NextBuildResources" ) };
 
-    patchCreateParams.resourcePatchBinaryDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+	patchCreateParams.resourcePatchBinaryDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
 
-    patchCreateParams.resourcePatchBinaryDestinationSettings.basePath = "SharedCache";
+	patchCreateParams.resourcePatchBinaryDestinationSettings.basePath = "SharedCache";
 
-    patchCreateParams.resourcePatchResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+	patchCreateParams.resourcePatchResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
 
-    patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath = "resPath";
+	patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath = "resPath";
 
-    patchCreateParams.patchFileRelativePathPrefix = "Patches/Patch";
+	patchCreateParams.patchFileRelativePathPrefix = "Patches/Patch";
 
-    patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
+	patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
 
-    patchCreateParams.maxInputFileChunkSize = 50000000;
-    
-	EXPECT_EQ(resourceGroupLatest.CreatePatch( patchCreateParams ).type,CarbonResources::ResultType::SUCCESS);
+	patchCreateParams.maxInputFileChunkSize = 50000000;
 
-    // Check expected outcome
+	EXPECT_EQ( resourceGroupLatest.CreatePatch( patchCreateParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	// Check expected outcome
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "Patch/PatchResourceGroup.yaml" );
 	EXPECT_TRUE( FilesMatch( goldFile, patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath / "PatchResourceGroup.yaml" ) );
 
 	std::filesystem::path goldDirectory = GetTestFileFileAbsolutePath( "Patch/LocalCDNPatches" );
 	EXPECT_TRUE( DirectoryIsSubset( goldDirectory, patchCreateParams.resourcePatchBinaryDestinationSettings.basePath ) );
-    
 }
 
 TEST_F( ResourcesLibraryTest, CreatePatchZeroInputChunkSize )
@@ -718,7 +710,6 @@ TEST_F( ResourcesLibraryTest, CreatePatchZeroInputChunkSize )
 	patchCreateParams.maxInputFileChunkSize = 0;
 
 	EXPECT_EQ( resourceGroupLatest.CreatePatch( patchCreateParams ).type, CarbonResources::ResultType::INVALID_CHUNK_SIZE );
-
 }
 
 TEST_F( ResourcesLibraryTest, ApplyPatchWithChunking )
@@ -822,7 +813,7 @@ TEST_F( ResourcesLibraryTest, CreatePatchWithChunking )
 	EXPECT_TRUE( FilesMatch( goldFile, patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath / "PatchResourceGroup_previousBuild_latestBuild.yaml" ) );
 
 	std::filesystem::path goldDirectory = GetTestFileFileAbsolutePath( "PatchWithInputChunk/LocalCDNPatches" );
-	EXPECT_TRUE( DirectoryIsSubset(  goldDirectory, patchCreateParams.resourcePatchBinaryDestinationSettings.basePath ) );
+	EXPECT_TRUE( DirectoryIsSubset( goldDirectory, patchCreateParams.resourcePatchBinaryDestinationSettings.basePath ) );
 }
 
 TEST_F( ResourcesLibraryTest, CreateResourceGroupFromDirectory )
@@ -842,13 +833,13 @@ TEST_F( ResourcesLibraryTest, CreateResourceGroupFromDirectory )
 	EXPECT_EQ( resourceGroup.ExportToFile( exportParams ).type, CarbonResources::ResultType::SUCCESS );
 
 #if _WIN64
-    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
 #elif __APPLE__
-    std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupMacOS.yaml" );
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupMacOS.yaml" );
 #else
 #error Unsupported platform
 #endif
-    EXPECT_TRUE( FilesMatch( goldFile, exportParams.filename ) );
+	EXPECT_TRUE( FilesMatch( goldFile, exportParams.filename ) );
 }
 
 TEST_F( ResourcesLibraryTest, CreateResourceGroupFromDirectoryOutputPathIsInvalid )
@@ -866,7 +857,6 @@ TEST_F( ResourcesLibraryTest, CreateResourceGroupFromDirectoryOutputPathIsInvali
 	exportParams.filename = "///";
 
 	EXPECT_EQ( resourceGroup.ExportToFile( exportParams ).type, CarbonResources::ResultType::FAILED_TO_SAVE_FILE );
-
 }
 
 TEST_F( ResourcesLibraryTest, CreateResourceGroupFailsWithInvalidInputDirectory )
@@ -877,12 +867,12 @@ TEST_F( ResourcesLibraryTest, CreateResourceGroupFailsWithInvalidInputDirectory 
 
 	createResourceGroupParams.directory = "INVALID_PATH";
 
-	EXPECT_EQ( resourceGroup.CreateFromDirectory( createResourceGroupParams ).type, CarbonResources::ResultType::INPUT_DIRECTORY_DOESNT_EXIST);
+	EXPECT_EQ( resourceGroup.CreateFromDirectory( createResourceGroupParams ).type, CarbonResources::ResultType::INPUT_DIRECTORY_DOESNT_EXIST );
 }
 
 TEST_F( ResourcesLibraryTest, DiffResourceGroupsWithTwoAdditions )
 {
-    // Load base group
+	// Load base group
 	CarbonResources::ResourceGroup baseResourceGroup;
 
 	CarbonResources::ResourceGroupImportFromFileParams importFromFileParams;
@@ -894,8 +884,8 @@ TEST_F( ResourcesLibraryTest, DiffResourceGroupsWithTwoAdditions )
 	EXPECT_EQ( importFromFileResult.type, CarbonResources::ResultType::SUCCESS );
 
 
-    // Load group with additions
-    CarbonResources::ResourceGroup resourceGroupWithAdditions;
+	// Load group with additions
+	CarbonResources::ResourceGroup resourceGroupWithAdditions;
 
 	CarbonResources::ResourceGroupImportFromFileParams importFromFileParamsWithAdditions;
 
@@ -906,27 +896,26 @@ TEST_F( ResourcesLibraryTest, DiffResourceGroupsWithTwoAdditions )
 	EXPECT_EQ( importFromFileResultAdditions.type, CarbonResources::ResultType::SUCCESS );
 
 
-    // Perform diff
-    CarbonResources::ResourceGroupDiffAgainstGroupParams diffAgainstGroupParams;
+	// Perform diff
+	CarbonResources::ResourceGroupDiffAgainstGroupParams diffAgainstGroupParams;
 
-    diffAgainstGroupParams.resourceGroupToDiffAgainst = &baseResourceGroup;
+	diffAgainstGroupParams.resourceGroupToDiffAgainst = &baseResourceGroup;
 
-    std::vector<std::filesystem::path> additions;
+	std::vector<std::filesystem::path> additions;
 
-    std::vector<std::filesystem::path> subtractions;
+	std::vector<std::filesystem::path> subtractions;
 
-    diffAgainstGroupParams.additions = &additions;
+	diffAgainstGroupParams.additions = &additions;
 
-    diffAgainstGroupParams.subtractions = &subtractions;
+	diffAgainstGroupParams.subtractions = &subtractions;
 
-    CarbonResources::Result diffResult = resourceGroupWithAdditions.DiffAgainstGroup( diffAgainstGroupParams );
+	CarbonResources::Result diffResult = resourceGroupWithAdditions.DiffAgainstGroup( diffAgainstGroupParams );
 
-    EXPECT_EQ( diffResult.type, CarbonResources::ResultType::SUCCESS );
+	EXPECT_EQ( diffResult.type, CarbonResources::ResultType::SUCCESS );
 
 
-    // Test the result
+	// Test the result
 	EXPECT_EQ( additions.size(), 2 );
-
 }
 
 TEST_F( ResourcesLibraryTest, DiffResourceGroupsWithTwoChanges )
@@ -1035,42 +1024,42 @@ TEST_F( ResourcesLibraryTest, MergeResourceGroupsAdditive )
 
 	CarbonResources::Result importFromFileResult = resourceGroup.ImportFromFile( importFromFileParams );
 
-    EXPECT_EQ( importFromFileResult.type, CarbonResources::ResultType::SUCCESS );
+	EXPECT_EQ( importFromFileResult.type, CarbonResources::ResultType::SUCCESS );
 
-    // Load merge group
-    CarbonResources::ResourceGroup resourceGroupToMerge;
+	// Load merge group
+	CarbonResources::ResourceGroup resourceGroupToMerge;
 
-    CarbonResources::ResourceGroupImportFromFileParams mergeImportFromFileParams;
+	CarbonResources::ResourceGroupImportFromFileParams mergeImportFromFileParams;
 
-    mergeImportFromFileParams.filename = GetTestFileFileAbsolutePath( "MergeGroups/YamlAdditive/MergeResourceGroup.yaml" );
+	mergeImportFromFileParams.filename = GetTestFileFileAbsolutePath( "MergeGroups/YamlAdditive/MergeResourceGroup.yaml" );
 
-    CarbonResources::Result mergeImportFromFileResult = resourceGroupToMerge.ImportFromFile( mergeImportFromFileParams );
+	CarbonResources::Result mergeImportFromFileResult = resourceGroupToMerge.ImportFromFile( mergeImportFromFileParams );
 
-    EXPECT_EQ( mergeImportFromFileResult.type, CarbonResources::ResultType::SUCCESS );
+	EXPECT_EQ( mergeImportFromFileResult.type, CarbonResources::ResultType::SUCCESS );
 
-    // Merge resource groups
+	// Merge resource groups
 	CarbonResources::ResourceGroup mergedResourceGroup;
 
 	CarbonResources::ResourceGroupMergeParams mergeParams;
 
-    mergeParams.resourceGroupToMerge = &resourceGroupToMerge;
+	mergeParams.resourceGroupToMerge = &resourceGroupToMerge;
 
-    mergeParams.mergedResourceGroup = &mergedResourceGroup;
+	mergeParams.mergedResourceGroup = &mergedResourceGroup;
 
 	CarbonResources::Result mergeResult = resourceGroup.Merge( mergeParams );
 
-    EXPECT_EQ( mergeResult.type, CarbonResources::ResultType::SUCCESS );
+	EXPECT_EQ( mergeResult.type, CarbonResources::ResultType::SUCCESS );
 
-    // Export the merged result
+	// Export the merged result
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-    exportParams.filename = "Merge/mergedResourceGroup.yaml";
+	exportParams.filename = "Merge/mergedResourceGroup.yaml";
 
 	CarbonResources::Result exportResult = mergedResourceGroup.ExportToFile( exportParams );
 
-    EXPECT_EQ( exportResult.type, CarbonResources::ResultType::SUCCESS );
+	EXPECT_EQ( exportResult.type, CarbonResources::ResultType::SUCCESS );
 
-    // Check output matches expected
+	// Check output matches expected
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "MergeGroups/YamlAdditive/ExpectedMergedResourceGroup.yaml" );
 
 	EXPECT_TRUE( FilesMatch( goldFile, exportParams.filename ) );
@@ -1168,7 +1157,7 @@ TEST_F( ResourcesLibraryTest, MergeResourceGroupsWithIntersect_V_0_0_0 )
 
 	exportParams.filename = "Merge/mergedResourceGroup.txt";
 
-    exportParams.outputDocumentVersion = CarbonResources::Version{ 0, 0, 0 };
+	exportParams.outputDocumentVersion = CarbonResources::Version{ 0, 0, 0 };
 
 	CarbonResources::Result exportResult = mergedResourceGroup.ExportToFile( exportParams );
 
@@ -1221,7 +1210,7 @@ TEST_F( ResourcesLibraryTest, MergeResourceGroupsAdditive_V_0_0_0 )
 
 	exportParams.filename = "Merge/mergedResourceGroup.txt";
 
-    exportParams.outputDocumentVersion = CarbonResources::Version{ 0, 0, 0 };
+	exportParams.outputDocumentVersion = CarbonResources::Version{ 0, 0, 0 };
 
 	CarbonResources::Result exportResult = mergedResourceGroup.ExportToFile( exportParams );
 
@@ -1237,44 +1226,42 @@ TEST_F( ResourcesLibraryTest, RemoveResource )
 {
 	CarbonResources::ResourceGroup resourceGroup;
 
-    // Import ResourceGroup
-    CarbonResources::ResourceGroupImportFromFileParams importParams;
+	// Import ResourceGroup
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-    importParams.filename = GetTestFileFileAbsolutePath( "RemoveResource/BaseResourceGroup.yaml" );
+	importParams.filename = GetTestFileFileAbsolutePath( "RemoveResource/BaseResourceGroup.yaml" );
 
-    CarbonResources::Result importResult = resourceGroup.ImportFromFile( importParams );
+	CarbonResources::Result importResult = resourceGroup.ImportFromFile( importParams );
 
-    EXPECT_EQ( importResult.type, CarbonResources::ResultType::SUCCESS );
+	EXPECT_EQ( importResult.type, CarbonResources::ResultType::SUCCESS );
 
-    // Remove resource B.txt
+	// Remove resource B.txt
 	CarbonResources::ResourceGroupRemoveResourcesParams removeParams;
 
-    std::vector<std::filesystem::path> resourcesToRemove;
+	std::vector<std::filesystem::path> resourcesToRemove;
 
-    resourcesToRemove.push_back( "B.txt" );
+	resourcesToRemove.push_back( "B.txt" );
 
-    removeParams.resourcesToRemove = &resourcesToRemove;
+	removeParams.resourcesToRemove = &resourcesToRemove;
 
-    removeParams.errorIfResourceNotFound = true;
+	removeParams.errorIfResourceNotFound = true;
 
 	CarbonResources::Result removeResult = resourceGroup.RemoveResources( removeParams );
 
-    EXPECT_EQ( removeResult.type, CarbonResources::ResultType::SUCCESS );
+	EXPECT_EQ( removeResult.type, CarbonResources::ResultType::SUCCESS );
 
-    // Export the ResourceGroup
+	// Export the ResourceGroup
 	CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-    exportParams.filename = "RemoveResource/ResourceGroup.yaml";
+	exportParams.filename = "RemoveResource/ResourceGroup.yaml";
 
 	CarbonResources::Result exportResult = resourceGroup.ExportToFile( exportParams );
 
-    EXPECT_EQ( exportResult.type, CarbonResources::ResultType::SUCCESS );
+	EXPECT_EQ( exportResult.type, CarbonResources::ResultType::SUCCESS );
 
 
-    // Check output matches expected
+	// Check output matches expected
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "RemoveResource/ResourceGroupAfterRemove.yaml" );
 
 	EXPECT_TRUE( FilesMatch( goldFile, exportParams.filename ) );
-
-
 }

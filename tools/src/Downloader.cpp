@@ -18,7 +18,7 @@ std::set<int> s_curl_retry_errors{
 };
 
 // Retry curl operation for up to 2 minutes.
-std::chrono::seconds RETRY_PERIOD_SECONDS{120};
+std::chrono::seconds RETRY_PERIOD_SECONDS{ 120 };
 
 bool InitializeCurl()
 {
@@ -83,8 +83,8 @@ bool Downloader::DownloadFile( const std::string& url, const std::filesystem::pa
 	curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, &out );
 	curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, WriteToFileStreamCallback );
 	curl_easy_setopt( m_curlHandle, CURLOPT_ACCEPT_ENCODING, "gzip" );
-	CURLcode cc{CURLE_OK};
-	std::chrono::seconds sleepSeconds{1};
+	CURLcode cc{ CURLE_OK };
+	std::chrono::seconds sleepSeconds{ 1 };
 	auto startTime = std::chrono::steady_clock::now();
 	do
 	{

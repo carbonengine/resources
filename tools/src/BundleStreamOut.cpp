@@ -15,7 +15,6 @@ BundleStreamOut::BundleStreamOut( uintmax_t chunkSize, std::filesystem::path out
 
 BundleStreamOut::~BundleStreamOut()
 {
-
 }
 
 std::filesystem::path RawFilename( std::filesystem::path outputDirectory, uint32_t chunkNumber )

@@ -15,7 +15,7 @@
 namespace CarbonResources
 {
 
-    /** @enum StatusLevel
+/** @enum StatusLevel
     *  @brief Reports the granularity level of the reported update.
     *  @var StatusLevel::OFF
     *  No status level specified.
@@ -26,15 +26,15 @@ namespace CarbonResources
     *  @var StatusLevel::DETAIL
     *  Low level status update
     */
-    enum class StatusLevel
-    {
-        OFF,
-	    OVERVIEW,
-	    PROCEDURE,
-	    DETAIL,
-    };
+enum class StatusLevel
+{
+	OFF,
+	OVERVIEW,
+	PROCEDURE,
+	DETAIL,
+};
 
-    /** @enum StatusProgressType
+/** @enum StatusProgressType
     *  @brief Type of progress reported in callback
     *  @var StatusProgressType::UNBOUNDED
     *  Status update with unbounded progress. When set the progress integer doesn't report progress.
@@ -43,22 +43,22 @@ namespace CarbonResources
     *  @var StatusProgressType::WARNING
     *  Warning message. When set the progress integer doesn't report progress
     */
-	enum class StatusProgressType
-	{
-		UNBOUNDED,
-		PERCENTAGE,
-        WARNING
-	};
+enum class StatusProgressType
+{
+	UNBOUNDED,
+	PERCENTAGE,
+	WARNING
+};
 
-    /** Status Callback function signature.
+/** Status Callback function signature.
     * @param statusLevel The status granularity level for the update.
     * @param statusProgressType Type of progress update to expect in update. Affects how progress parameter may be interpreted.
     * @param progress Progress, format is inferred from statusProgressType.
     * @param info Update message string.
     */
-    using StatusCallback = std::function<void( StatusLevel statusLevel, StatusProgressType statusProgressType, unsigned int progress, const std::string& info )>;
+using StatusCallback = std::function<void( StatusLevel statusLevel, StatusProgressType statusProgressType, unsigned int progress, const std::string& info )>;
 
-    /**
+/**
     * @enum CarbonResources::ResultType
     * @brief Error return type codes.
     * @var SUCCESS
@@ -136,69 +136,69 @@ namespace CarbonResources
     * @var REQUIRED_INPUT_PARAMETER_NOT_SET
     * A required input parameter was not set
     */
-    enum class ResultType
-    {
-	    SUCCESS,
-	    FAIL,
-	    UNSUPPORTED_FILE_FORMAT,
-	    FAILED_TO_OPEN_FILE,
-	    MALFORMED_RESOURCE_INPUT,
-	    FILE_TYPE_MISMATCH,
-		DOCUMENT_VERSION_UNSUPPORTED,
-		REQUIRED_RESOURCE_PARAMETER_NOT_SET,
-		FAILED_TO_OPEN_FILE_STREAM,
-        FAILED_TO_READ_FROM_STREAM,
-		FAILED_TO_WRITE_TO_STREAM,
-	    FAILED_TO_DOWNLOAD_FILE,
-		FAILED_TO_CREATE_PATCH,
-		FAILED_TO_SAVE_FILE,
-		FAILED_TO_GENERATE_CHECKSUM,
-		FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUM,
-		FAILED_TO_COMPRESS_DATA,
-		PATCH_RESOURCE_LIST_MISSMATCH,
-		FAILED_TO_APPLY_PATCH,
-		UNEXPECTED_PATCH_CHECKSUM_RESULT,
-		UNEXPECTED_PATCH_DIFF_ENCOUNTERED,
-		FILE_NOT_FOUND,
-		FAILED_TO_RETRIEVE_CHUNK_DATA,
-		RESOURCE_VALUE_NOT_SET,
-		UNEXPECTED_END_OF_CHUNKS,
-		UNEXPECTED_CHUNK_CHECKSUM_RESULT,
-		FAILED_TO_SAVE_TO_STREAM,
-		INPUT_DIRECTORY_DOESNT_EXIST,
-	    RESOURCE_TYPE_MISSMATCH,
-    	MALFORMED_RESOURCE_GROUP,
-		MALFORMED_RESOURCE,
-    	FAILED_TO_PARSE_YAML,
-		INVALID_CHUNK_SIZE,
-        RESOURCE_GROUP_NOT_SET,
-        RESOURCE_LIST_NOT_SET,
-        RESOURCE_NOT_FOUND,
-		REQUIRED_INPUT_PARAMETER_NOT_SET,
-        //NOTE: if adding to this enum, a complimentary entry must be added to resultToString.
-    };
+enum class ResultType
+{
+	SUCCESS,
+	FAIL,
+	UNSUPPORTED_FILE_FORMAT,
+	FAILED_TO_OPEN_FILE,
+	MALFORMED_RESOURCE_INPUT,
+	FILE_TYPE_MISMATCH,
+	DOCUMENT_VERSION_UNSUPPORTED,
+	REQUIRED_RESOURCE_PARAMETER_NOT_SET,
+	FAILED_TO_OPEN_FILE_STREAM,
+	FAILED_TO_READ_FROM_STREAM,
+	FAILED_TO_WRITE_TO_STREAM,
+	FAILED_TO_DOWNLOAD_FILE,
+	FAILED_TO_CREATE_PATCH,
+	FAILED_TO_SAVE_FILE,
+	FAILED_TO_GENERATE_CHECKSUM,
+	FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUM,
+	FAILED_TO_COMPRESS_DATA,
+	PATCH_RESOURCE_LIST_MISSMATCH,
+	FAILED_TO_APPLY_PATCH,
+	UNEXPECTED_PATCH_CHECKSUM_RESULT,
+	UNEXPECTED_PATCH_DIFF_ENCOUNTERED,
+	FILE_NOT_FOUND,
+	FAILED_TO_RETRIEVE_CHUNK_DATA,
+	RESOURCE_VALUE_NOT_SET,
+	UNEXPECTED_END_OF_CHUNKS,
+	UNEXPECTED_CHUNK_CHECKSUM_RESULT,
+	FAILED_TO_SAVE_TO_STREAM,
+	INPUT_DIRECTORY_DOESNT_EXIST,
+	RESOURCE_TYPE_MISSMATCH,
+	MALFORMED_RESOURCE_GROUP,
+	MALFORMED_RESOURCE,
+	FAILED_TO_PARSE_YAML,
+	INVALID_CHUNK_SIZE,
+	RESOURCE_GROUP_NOT_SET,
+	RESOURCE_LIST_NOT_SET,
+	RESOURCE_NOT_FOUND,
+	REQUIRED_INPUT_PARAMETER_NOT_SET,
+	//NOTE: if adding to this enum, a complimentary entry must be added to resultToString.
+};
 
-    /** @struct Result
+/** @struct Result
     *  @brief Return structure for resources operations
     *  @var Result::type
     *  Type of result returned
     *  @var Result::info
     *  Optional further information on the return
     */
-    struct Result
-    {
-		ResultType type = ResultType::SUCCESS;
+struct Result
+{
+	ResultType type = ResultType::SUCCESS;
 
-		std::string info = "";
-    };
-	
-    /** Converts ResultType to string 
+	std::string info = "";
+};
+
+/** Converts ResultType to string 
     * @param resultType Result type to be converted.
     * @param output Output to string conversion.
     */
-	bool API ResultTypeToString( ResultType resultType, std::string& output );
+bool API ResultTypeToString( ResultType resultType, std::string& output );
 
-    /** @enum ResourceSourceType
+/** @enum ResourceSourceType
     *  @brief Parameters to represent resource source location type
     *  @var ResourceSourceType::LOCAL_RELATIVE
     *  Paths are sourced via plain paths. Resource locations will be constructed by contactenation of base path and the resources' relative path.
@@ -207,15 +207,15 @@ namespace CarbonResources
     *  @var ResourceSourceType::REMOTE_CDN
     *  Resources are downloaded. They will then be processed as ResourceSourceType::LOCAL_CDN.
     */
-	enum class ResourceSourceType
-	{
-		LOCAL_RELATIVE,
-		LOCAL_CDN,
-		REMOTE_CDN,
-		//Note: If altering this enum, ensure that Enums::resourceSourceTypeChoicesAsString reflects update.
-	};
+enum class ResourceSourceType
+{
+	LOCAL_RELATIVE,
+	LOCAL_CDN,
+	REMOTE_CDN,
+	//Note: If altering this enum, ensure that Enums::resourceSourceTypeChoicesAsString reflects update.
+};
 
-    /** @enum ResourceDestinationType
+/** @enum ResourceDestinationType
     *  @brief Parameters to represent resource destinationlocation type.
     *  @var ResourceDestinationType::LOCAL_RELATIVE
     *  Paths are sourced via plain paths. Resource locations will be constructed by contactenation of base path and the resources' relative path.
@@ -224,15 +224,15 @@ namespace CarbonResources
     *  @var ResourceDestinationType::REMOTE_CDN
     *  Resources are compressed. They will then be processed as LOCAL_CDN. Note that the library does not upload the resources, this functionality is external.
     */
-	enum class ResourceDestinationType
-	{
-		LOCAL_RELATIVE,
-		LOCAL_CDN,
-		REMOTE_CDN,
-		//Note: If altering this enum, ensure that Enums::resourceDestinationTypeChoicesAsString reflects update.
-	};
+enum class ResourceDestinationType
+{
+	LOCAL_RELATIVE,
+	LOCAL_CDN,
+	REMOTE_CDN,
+	//Note: If altering this enum, ensure that Enums::resourceDestinationTypeChoicesAsString reflects update.
+};
 
-    /** @struct Version
+/** @struct Version
     *  @brief Represents Version information. Version follows semantic versioning paradigm.
     *  @var Version::major
     *  Major version.
@@ -241,21 +241,21 @@ namespace CarbonResources
     *  @var Version::patch
     *  Patch version
     */
-    struct Version
-    {
-		unsigned int major;
-		unsigned int minor;
-		unsigned int patch;
-    };
+struct Version
+{
+	unsigned int major;
+	unsigned int minor;
+	unsigned int patch;
+};
 
-    static const Version S_LIBRARY_VERSION = { VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH }; /*!< Current version of the resources */
+static const Version S_LIBRARY_VERSION = { VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH }; /*!< Current version of the resources */
 
-    static const Version S_DOCUMENT_VERSION = { 0, 1, 0 }; /*!< Maximum document version supported by resources */
+static const Version S_DOCUMENT_VERSION = { 0, 1, 0 }; /*!< Maximum document version supported by resources */
 
-    static const std::vector S_VALID_DOCUMENT_VERSIONS = { 
-                                                            Version{ 0, 0, 0 },
-														    Version{ 0, 1, 0 }
-                                                         }; /*!< List of valid document version supported by resources */
+static const std::vector S_VALID_DOCUMENT_VERSIONS = {
+	Version{ 0, 0, 0 },
+	Version{ 0, 1, 0 }
+}; /*!< List of valid document version supported by resources */
 
 }
 

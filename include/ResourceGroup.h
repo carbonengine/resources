@@ -12,45 +12,43 @@
 #include <functional>
 
 
-
-
 namespace CarbonResources
 {
-    
-    class ResourceGroup;
-    class PatchResourceGroup;
-    class BundleResourceGroup;
-	struct Result;
-    
-    /** @struct ResourceSourceSettings
+
+class ResourceGroup;
+class PatchResourceGroup;
+class BundleResourceGroup;
+struct Result;
+
+/** @struct ResourceSourceSettings
     *  @brief Parameters to represent where and how a resource is sourced.
     *  @var ResourceSourceSettings::sourceType
     *  Specifies the type of resource location. See ResourceSourceType for more info.
     *  @var ResourceSourceSettings::basePaths
     *  The base paths to locate resources.
     */
-    struct ResourceSourceSettings
-	{
-		ResourceSourceType sourceType = ResourceSourceType::LOCAL_CDN;
+struct ResourceSourceSettings
+{
+	ResourceSourceType sourceType = ResourceSourceType::LOCAL_CDN;
 
-        std::vector<std::filesystem::path> basePaths;
-	};
+	std::vector<std::filesystem::path> basePaths;
+};
 
-    /** @struct ResourceDestinationSettings
+/** @struct ResourceDestinationSettings
     *  @brief Parameters to represent where and how a resource is saved.
     *  @var ResourceDestinationSettings::destinationType
     *  Specifies the type of resource location. See ResourceDestinationType for more info.
     *  @var ResourceDestinationSettings::basePath
     *  The base path to save resources.
     */
-	struct ResourceDestinationSettings
-	{
-		ResourceDestinationType destinationType = ResourceDestinationType::LOCAL_CDN;
+struct ResourceDestinationSettings
+{
+	ResourceDestinationType destinationType = ResourceDestinationType::LOCAL_CDN;
 
-        std::filesystem::path basePath = "";
-	};
+	std::filesystem::path basePath = "";
+};
 
-    /** @struct BundleCreateParams
+/** @struct BundleCreateParams
     *  @brief Function Parameters required for CarbonResources::ResourceGroup::CreatePatch
     *  @var BundleCreateParams::resourceSourceSettings
     *  Where resources related to ResourceGroup are to be be sourced.
@@ -69,28 +67,28 @@ namespace CarbonResources
     *  @var BundleCreateParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-    struct BundleCreateParams
-	{
-		ResourceSourceSettings resourceSourceSettings = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE };
+struct BundleCreateParams
+{
+	ResourceSourceSettings resourceSourceSettings = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE };
 
-        ResourceDestinationSettings chunkDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_CDN, "BundleOut/Chunks/" };
+	ResourceDestinationSettings chunkDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_CDN, "BundleOut/Chunks/" };
 
-        std::filesystem::path resourceGroupRelativePath = "ResourceGroup.yaml";
+	std::filesystem::path resourceGroupRelativePath = "ResourceGroup.yaml";
 
-		std::filesystem::path resourceGroupBundleRelativePath = "BundleResourceGroup.yaml";
+	std::filesystem::path resourceGroupBundleRelativePath = "BundleResourceGroup.yaml";
 
-        uintmax_t chunkSize = 50000000;
+	uintmax_t chunkSize = 50000000;
 
-        uintmax_t fileReadChunkSize = 10000000;
+	uintmax_t fileReadChunkSize = 10000000;
 
-        ResourceDestinationSettings resourceBundleResourceGroupDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_RELATIVE, "BundleOut/" };
-		
-        StatusCallback statusCallback = nullptr;
+	ResourceDestinationSettings resourceBundleResourceGroupDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_RELATIVE, "BundleOut/" };
 
-    	std::chrono::seconds downloadRetrySeconds{120};
-	};
+	StatusCallback statusCallback = nullptr;
 
-    /** @struct PatchCreateParams
+	std::chrono::seconds downloadRetrySeconds{ 120 };
+};
+
+/** @struct PatchCreateParams
     *  @brief Function Parameters required for CarbonResources::ResourceGroup::CreatePatch
     *  @var PatchCreateParams::maxInputFileChunkSize
     *  Files are processed in chunks, maxInputFileChunkSize indicate the size of this chunk. Files smaller than chunk will be processed in one pass.
@@ -113,48 +111,48 @@ namespace CarbonResources
     *  @var PatchCreateParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-    struct PatchCreateParams
-	{
-        uint32_t maxInputFileChunkSize = 50000000;
+struct PatchCreateParams
+{
+	uint32_t maxInputFileChunkSize = 50000000;
 
-		ResourceGroup* previousResourceGroup = nullptr;
+	ResourceGroup* previousResourceGroup = nullptr;
 
-        std::filesystem::path resourceGroupRelativePath = "ResourceGroup.yaml";
+	std::filesystem::path resourceGroupRelativePath = "ResourceGroup.yaml";
 
-        std::filesystem::path resourceGroupPatchRelativePath = "PatchResourceGroup.yaml";
+	std::filesystem::path resourceGroupPatchRelativePath = "PatchResourceGroup.yaml";
 
-        std::filesystem::path patchFileRelativePathPrefix = "Patches/Patch";
+	std::filesystem::path patchFileRelativePathPrefix = "Patches/Patch";
 
-		ResourceSourceSettings resourceSourceSettingsPrevious = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE };
+	ResourceSourceSettings resourceSourceSettingsPrevious = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE };
 
-		ResourceSourceSettings resourceSourceSettingsNext = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE }; 
+	ResourceSourceSettings resourceSourceSettingsNext = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE };
 
-        ResourceDestinationSettings resourcePatchBinaryDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_CDN, "PatchOut/Patches/" };
-;
-        ResourceDestinationSettings resourcePatchResourceGroupDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_RELATIVE, "PatchOut/" };
-	
-        StatusCallback statusCallback = nullptr;
+	ResourceDestinationSettings resourcePatchBinaryDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_CDN, "PatchOut/Patches/" };
+	;
+	ResourceDestinationSettings resourcePatchResourceGroupDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_RELATIVE, "PatchOut/" };
 
-    	std::chrono::seconds downloadRetrySeconds{120};
+	StatusCallback statusCallback = nullptr;
 
-    	std::filesystem::path indexFolder = std::filesystem::temp_directory_path() / "carbonResources" / "chunkIndexes";
-    };
+	std::chrono::seconds downloadRetrySeconds{ 120 };
 
-    /** @struct ResourceGroupImportFromFileParams
+	std::filesystem::path indexFolder = std::filesystem::temp_directory_path() / "carbonResources" / "chunkIndexes";
+};
+
+/** @struct ResourceGroupImportFromFileParams
     *  @brief Function Parameters required for CarbonResources::ResourceGroup::ImportFromFile
     *  @var ResourceGroupImportFromFileParams::filename
     *  Full filename of input file.
     *  @var ResourceGroupImportFromFileParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-    struct ResourceGroupImportFromFileParams
-	{
-		std::filesystem::path filename;
+struct ResourceGroupImportFromFileParams
+{
+	std::filesystem::path filename;
 
-        StatusCallback statusCallback = nullptr;
-	};
+	StatusCallback statusCallback = nullptr;
+};
 
-    /** @struct ResourceGroupExportToFileParams
+/** @struct ResourceGroupExportToFileParams
     *  @brief Function Parameters required for CarbonResources::ResourceGroup::ExportToFile
     *  @var ResourceGroupExportToFileParams::filename
     *  Full filename of output file. If directory doesn't exist it will be created.
@@ -163,16 +161,16 @@ namespace CarbonResources
     *  @var ResourceGroupExportToFileParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-	struct ResourceGroupExportToFileParams
-	{
-		std::filesystem::path filename = "ResourceGroup.yaml";
+struct ResourceGroupExportToFileParams
+{
+	std::filesystem::path filename = "ResourceGroup.yaml";
 
-		Version outputDocumentVersion = S_DOCUMENT_VERSION;
+	Version outputDocumentVersion = S_DOCUMENT_VERSION;
 
-        StatusCallback statusCallback = nullptr;
-	};
+	StatusCallback statusCallback = nullptr;
+};
 
-	/** @struct CreateResourceGroupFromDirectoryParams
+/** @struct CreateResourceGroupFromDirectoryParams
     *  @brief Function Parameters required for CarbonResources::ResourceGroup::CreateFromDirectory
     *  @var CreateResourceGroupFromDirectoryParams::directory
     *  Input directory for which to find files.
@@ -183,48 +181,48 @@ namespace CarbonResources
     *  @var CreateResourceGroupFromDirectoryParams::statusCallback
     *  Optional status function callback. Callback is triggered at key status update events.
     */
-	struct CreateResourceGroupFromDirectoryParams
-	{
-		std::filesystem::path directory = "";
+struct CreateResourceGroupFromDirectoryParams
+{
+	std::filesystem::path directory = "";
 
-		uintmax_t resourceStreamThreshold = 10000000;
+	uintmax_t resourceStreamThreshold = 10000000;
 
-		Version outputDocumentVersion = S_DOCUMENT_VERSION;
+	Version outputDocumentVersion = S_DOCUMENT_VERSION;
 
-        StatusCallback statusCallback = nullptr;
+	StatusCallback statusCallback = nullptr;
 
-		std::string resourcePrefix;
-	};
+	std::string resourcePrefix;
+};
 
-    /** @struct ResourceGroupMergeParams
+/** @struct ResourceGroupMergeParams
     *  @brief Function Parameters required for CarbonResources::ResourceGroup::Merge
     *  @var ResourceGroupMergeParams::resourceGroupToMerge
     *  ResourceGroup to merge
     *  @var ResourceGroupMergeParams::mergedResourceGroup
     *  Resulting ResourceGroup after merge
     */
-	struct ResourceGroupMergeParams
-	{
-		ResourceGroup* resourceGroupToMerge = nullptr;
+struct ResourceGroupMergeParams
+{
+	ResourceGroup* resourceGroupToMerge = nullptr;
 
-        ResourceGroup* mergedResourceGroup = nullptr;
-	};
+	ResourceGroup* mergedResourceGroup = nullptr;
+};
 
-    /** @struct ResourceGroupRemoveResourcesParams
+/** @struct ResourceGroupRemoveResourcesParams
     *  @brief Function Parameters required for CarbonResources::ResourceGroup::RemoveResources
     *  @var ResourceGroupRemoveResourcesParams::resourcesToRemove
     *  List of Resources to remove identified by RelativePath.
     *  @var ResourceGroupRemoveResourcesParams::errorIfResourceNotFound
     *  If true the function will return an error state if supplied Resource is not present in ResourceGroup
     */
-	struct ResourceGroupRemoveResourcesParams
-	{
-		std::vector<std::filesystem::path>* resourcesToRemove = nullptr;
+struct ResourceGroupRemoveResourcesParams
+{
+	std::vector<std::filesystem::path>* resourcesToRemove = nullptr;
 
-        bool errorIfResourceNotFound = true;
-	};
+	bool errorIfResourceNotFound = true;
+};
 
-    /** @struct ResourceGroupDiffAgainstGroupParams
+/** @struct ResourceGroupDiffAgainstGroupParams
     *  @brief Function Parameters required for CarbonResources::ResourceGroup::DiffAgainstGroup
     *  @var ResourceGroupDiffAgainstGroupParams::resourceGroupToDiffAgainst
     *  Resource group to diff against
@@ -233,82 +231,80 @@ namespace CarbonResources
     *  @var ResourceGroupDiffAgainstGroupParams::subtractions
     *  Output list of relative paths that have been removed on second group.
     */
-	struct ResourceGroupDiffAgainstGroupParams
-	{
-		ResourceGroup* resourceGroupToDiffAgainst = nullptr;
+struct ResourceGroupDiffAgainstGroupParams
+{
+	ResourceGroup* resourceGroupToDiffAgainst = nullptr;
 
-		std::vector<std::filesystem::path>* additions = nullptr;
+	std::vector<std::filesystem::path>* additions = nullptr;
 
-        std::vector<std::filesystem::path>* subtractions = nullptr;
-	};
+	std::vector<std::filesystem::path>* subtractions = nullptr;
+};
 
-    /** @class ResourceGroup
+/** @class ResourceGroup
     *  @brief Contains a collection of Resources
     */
-    class API ResourceGroup
-    {
-	public:
-		class ResourceGroupImpl;
+class API ResourceGroup
+{
+public:
+	class ResourceGroupImpl;
 
-	protected:
-		
-        ResourceGroup( ResourceGroupImpl* impl );
+protected:
+	ResourceGroup( ResourceGroupImpl* impl );
 
-        ResourceGroup( const ResourceGroup& ) = delete;
+	ResourceGroup( const ResourceGroup& ) = delete;
 
-		ResourceGroupImpl* m_impl;
+	ResourceGroupImpl* m_impl;
 
-    public:
-	    ResourceGroup();
+public:
+	ResourceGroup();
 
-	    virtual ~ResourceGroup();
+	virtual ~ResourceGroup();
 
-        /// @brief Creates a Bundle from the ResourceGroup.
-		/// @param params input parameters, See BundleCreateParams for more details.
-        /// @see BundleResourceGroup::Unpack for information regarding bundle unpacking.
-		/// @return Result see CarbonResources::Result for more details.
-        Result CreateBundle( const BundleCreateParams& params ) const;
+	/// @brief Creates a Bundle from the ResourceGroup.
+	/// @param params input parameters, See BundleCreateParams for more details.
+	/// @see BundleResourceGroup::Unpack for information regarding bundle unpacking.
+	/// @return Result see CarbonResources::Result for more details.
+	Result CreateBundle( const BundleCreateParams& params ) const;
 
-        /// @brief Creates a Patch from the ResourceGroup. This ResourceGroup is expected to be latest.
-		/// @param params input parameters, See PatchCreateParams for more details.
-        /// @see PatchResourceGroup::Apply for information regarding patch application.
-		/// @return Result see CarbonResources::Result for more details.
-        Result CreatePatch( const PatchCreateParams& params ) const;
+	/// @brief Creates a Patch from the ResourceGroup. This ResourceGroup is expected to be latest.
+	/// @param params input parameters, See PatchCreateParams for more details.
+	/// @see PatchResourceGroup::Apply for information regarding patch application.
+	/// @return Result see CarbonResources::Result for more details.
+	Result CreatePatch( const PatchCreateParams& params ) const;
 
-        /// @brief Imports resource data from file.
-		/// @param params input parameters, See ResourceGroupImportFromFileParams for more details.
-		/// @return Result see CarbonResources::Result for more details.
-        /// @note Legacy support for importing from resfileindex CSV files is included.
-        Result ImportFromFile( const ResourceGroupImportFromFileParams& params ) const;
+	/// @brief Imports resource data from file.
+	/// @param params input parameters, See ResourceGroupImportFromFileParams for more details.
+	/// @return Result see CarbonResources::Result for more details.
+	/// @note Legacy support for importing from resfileindex CSV files is included.
+	Result ImportFromFile( const ResourceGroupImportFromFileParams& params ) const;
 
-        /// @brief Exports ResourceGroup to file.
-		/// @param params input parameters, See ResourceGroupExportToFileParams for more details.
-		/// @return Result see CarbonResources::Result for more details.
-        Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
+	/// @brief Exports ResourceGroup to file.
+	/// @param params input parameters, See ResourceGroupExportToFileParams for more details.
+	/// @return Result see CarbonResources::Result for more details.
+	Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
 
-        /// @brief Creates a ResourceGroup from a supplied directory.
-		/// @param params input parameters, See CreateResourceGroupFromDirectoryParams for more details.
-		/// @return Result see CarbonResources::Result for more details.
-		/// @note No file filtering supported
-        Result CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params );
+	/// @brief Creates a ResourceGroup from a supplied directory.
+	/// @param params input parameters, See CreateResourceGroupFromDirectoryParams for more details.
+	/// @return Result see CarbonResources::Result for more details.
+	/// @note No file filtering supported
+	Result CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params );
 
-        /// @brief Merges a supplied ResourceGroup with this one. Merge performed on RelativePath, merge ResourceGroup takes precedent.
-		/// @param params input parameters, See ResourceGroupMergeParams for more details.
-		/// @return Result see CarbonResources::Result for more details.
-		Result Merge( const ResourceGroupMergeParams& params ) const;
+	/// @brief Merges a supplied ResourceGroup with this one. Merge performed on RelativePath, merge ResourceGroup takes precedent.
+	/// @param params input parameters, See ResourceGroupMergeParams for more details.
+	/// @return Result see CarbonResources::Result for more details.
+	Result Merge( const ResourceGroupMergeParams& params ) const;
 
-        /// @brief Diffs two supplied ResourceGroups.
-		/// @param params input parameters, See ResourceGroupDiffAgainstGroupParams for more details.
-		/// @return Result see CarbonResources::Result for more details.
-		Result DiffAgainstGroup( const ResourceGroupDiffAgainstGroupParams& params ) const;
+	/// @brief Diffs two supplied ResourceGroups.
+	/// @param params input parameters, See ResourceGroupDiffAgainstGroupParams for more details.
+	/// @return Result see CarbonResources::Result for more details.
+	Result DiffAgainstGroup( const ResourceGroupDiffAgainstGroupParams& params ) const;
 
-        /// @brief Removes Resources from ResourceGroup. Resources to remove are supplied are identified from a vector of RelativePaths.
-		/// @param params input parameters, See CreateResourceGroupFromDirectoryParams for more details.
-		/// @return Result see CarbonResources::Result for more details.
-		/// @note No file filtering supported
-		Result RemoveResources( const ResourceGroupRemoveResourcesParams& params ) const;
-
-    };
+	/// @brief Removes Resources from ResourceGroup. Resources to remove are supplied are identified from a vector of RelativePaths.
+	/// @param params input parameters, See CreateResourceGroupFromDirectoryParams for more details.
+	/// @return Result see CarbonResources::Result for more details.
+	/// @note No file filtering supported
+	Result RemoveResources( const ResourceGroupRemoveResourcesParams& params ) const;
+};
 
 }
 
