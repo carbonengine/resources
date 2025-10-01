@@ -37,4 +37,3 @@ CMakeUserPresets.json
 ### VCPKG ###
 # Temporary measure which fixes build agent issue
 vcpkg_registry_cache/
-/vcpkg_registry_cache/git/.vcpkg-lock
