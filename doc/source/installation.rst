@@ -27,7 +27,6 @@ Building
     "inherits": "carbon_windows_vcpkg_vs",
     "environment": {
       // put any other environment variables that you want here
-      "CCP_EVE_PERFORCE_BRANCH_PATH": "D:/perforce/eve-frontier/branches/sandbox/VCPKG-MIGRATION"
     },
     "cacheVariables": {
       // put any extra cache variables that you want in here
