@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BundleResourceGroup &mdash; resources 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="PatchResourceGroup" href="PatchResourceGroup.html" />
+    <link rel="prev" title="ResourceGroup" href="ResourceGroup.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            resources
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../tools.html">Tools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html">resources library API</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../api.html#structures">Structures</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ResourceGroup.html">ResourceGroup</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">BundleResourceGroup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PatchResourceGroup.html">PatchResourceGroup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="FilesystemStructs.html">Filesystem Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CallbackStructures.html">Callback Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ResultStructures.html">Result Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="VersionStructures.html">Version Structures</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../cli.html">resources CLI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../overviewDocuments.html">Overview Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickStart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides.html">Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../designDocuments.html">Design Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">resources</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../tools.html">Tools</a></li>
+          <li class="breadcrumb-item"><a href="../api.html">resources library API</a></li>
+      <li class="breadcrumb-item active">BundleResourceGroup</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/Tools/Api/BundleResourceGroup.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bundleresourcegroup">
+<h1>BundleResourceGroup<a class="headerlink" href="#bundleresourcegroup" title="Link to this heading"></a></h1>
+<p>The BundleResourceGroup contains resources specifically of chunk type.</p>
+<p>See <a class="reference internal" href="../../DesignDocuments/resourceGroupFileFormat.html"><span class="doc">Resource Group File Format</span></a> file specification for more details.</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources19BundleResourceGroupE">
+<span id="_CPPv3N15CarbonResources19BundleResourceGroupE"></span><span id="_CPPv2N15CarbonResources19BundleResourceGroupE"></span><span id="CarbonResources::BundleResourceGroup"></span><span class="target" id="class_carbon_resources_1_1_bundle_resource_group"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BundleResourceGroup</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">CarbonResources</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="ResourceGroup.html#_CPPv4N15CarbonResources13ResourceGroupE" title="CarbonResources::ResourceGroup"><span class="n"><span class="pre">ResourceGroup</span></span></a><a class="headerlink" href="#_CPPv4N15CarbonResources19BundleResourceGroupE" title="Link to this definition"></a><br /></dt>
+<dd><p>Contains a collection of Chunk Resources. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources19BundleResourceGroup6UnpackERK18BundleUnpackParams">
+<span id="_CPPv3N15CarbonResources19BundleResourceGroup6UnpackERK18BundleUnpackParams"></span><span id="_CPPv2N15CarbonResources19BundleResourceGroup6UnpackERK18BundleUnpackParams"></span><span id="CarbonResources::BundleResourceGroup::Unpack__BundleUnpackParamsCR"></span><span class="target" id="class_carbon_resources_1_1_bundle_resource_group_1acc7e0b83911e6a4b6108e9144f9a78ba"></span><a class="reference internal" href="ResultStructures.html#_CPPv4N15CarbonResources6ResultE" title="CarbonResources::Result"><span class="n"><span class="pre">Result</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Unpack</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N15CarbonResources18BundleUnpackParamsE" title="CarbonResources::BundleUnpackParams"><span class="n"><span class="pre">BundleUnpackParams</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N15CarbonResources19BundleResourceGroup6UnpackERK18BundleUnpackParams" title="Link to this definition"></a><br /></dt>
+<dd><p>Unpacks the Resoruces from the <a class="reference internal" href="#class_carbon_resources_1_1_bundle_resource_group"><span class="std std-ref">BundleResourceGroup</span></a>. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="ResourceGroup.html#class_carbon_resources_1_1_resource_group_1abe6f98b4ccb4e772280b76a5ceefbb33"><span class="std std-ref">ResourceGroup::CreateBundle</span></a> for information regarding bundle creation. </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> – input parameters, See <a class="reference internal" href="#struct_carbon_resources_1_1_bundle_unpack_params"><span class="std std-ref">BundleUnpackParams</span></a> for more details. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="ResultStructures.html#struct_carbon_resources_1_1_result"><span class="std std-ref">Result</span></a> see <a class="reference internal" href="ResultStructures.html#struct_carbon_resources_1_1_result"><span class="std std-ref">CarbonResources::Result</span></a> for more details. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources19BundleResourceGroup23BundleResourceGroupImplE">
+<span id="_CPPv3N15CarbonResources19BundleResourceGroup23BundleResourceGroupImplE"></span><span id="_CPPv2N15CarbonResources19BundleResourceGroup23BundleResourceGroupImplE"></span><span id="CarbonResources::BundleResourceGroup::BundleResourceGroupImpl"></span><span class="target" id="class_carbon_resources_1_1_bundle_resource_group_1_1_bundle_resource_group_impl"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BundleResourceGroupImpl</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">CarbonResources</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="ResourceGroup.html#_CPPv4N15CarbonResources13ResourceGroupE" title="CarbonResources::ResourceGroup"><span class="n"><span class="pre">ResourceGroup</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="ResourceGroup.html#_CPPv4N15CarbonResources13ResourceGroup17ResourceGroupImplE" title="CarbonResources::ResourceGroup::ResourceGroupImpl"><span class="n"><span class="pre">ResourceGroupImpl</span></span></a><a class="headerlink" href="#_CPPv4N15CarbonResources19BundleResourceGroup23BundleResourceGroupImplE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<section id="input-parameters">
+<h2>Input Parameters<a class="headerlink" href="#input-parameters" title="Link to this heading"></a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources18BundleUnpackParamsE">
+<span id="_CPPv3N15CarbonResources18BundleUnpackParamsE"></span><span id="_CPPv2N15CarbonResources18BundleUnpackParamsE"></span><span id="CarbonResources::BundleUnpackParams"></span><span class="target" id="struct_carbon_resources_1_1_bundle_unpack_params"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BundleUnpackParams</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources18BundleUnpackParamsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Function Parameters required for <a class="reference internal" href="#class_carbon_resources_1_1_bundle_resource_group_1acc7e0b83911e6a4b6108e9144f9a78ba"><span class="std std-ref">CarbonResources::BundleResourceGroup::Unpack</span></a>. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources18BundleUnpackParams19chunkSourceSettingsE">
+<span id="_CPPv3N15CarbonResources18BundleUnpackParams19chunkSourceSettingsE"></span><span id="_CPPv2N15CarbonResources18BundleUnpackParams19chunkSourceSettingsE"></span><span id="CarbonResources::BundleUnpackParams::chunkSourceSettings__ResourceSourceSettings"></span><span class="target" id="struct_carbon_resources_1_1_bundle_unpack_params_1a22f2dc9fd0819f7a355e49d54cadf2cd"></span><a class="reference internal" href="FilesystemStructs.html#_CPPv4N15CarbonResources22ResourceSourceSettingsE" title="CarbonResources::ResourceSourceSettings"><span class="n"><span class="pre">ResourceSourceSettings</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">chunkSourceSettings</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources18BundleUnpackParams19chunkSourceSettingsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Location where chunks can be sourced. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources18BundleUnpackParams27resourceDestinationSettingsE">
+<span id="_CPPv3N15CarbonResources18BundleUnpackParams27resourceDestinationSettingsE"></span><span id="_CPPv2N15CarbonResources18BundleUnpackParams27resourceDestinationSettingsE"></span><span id="CarbonResources::BundleUnpackParams::resourceDestinationSettings__ResourceDestinationSettings"></span><span class="target" id="struct_carbon_resources_1_1_bundle_unpack_params_1a6f1a70866dcc3f9a1e41c1718e41c04e"></span><a class="reference internal" href="FilesystemStructs.html#_CPPv4N15CarbonResources27ResourceDestinationSettingsE" title="CarbonResources::ResourceDestinationSettings"><span class="n"><span class="pre">ResourceDestinationSettings</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resourceDestinationSettings</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources18BundleUnpackParams27resourceDestinationSettingsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Location where the unpacked resources should be saved. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources18BundleUnpackParams14statusCallbackE">
+<span id="_CPPv3N15CarbonResources18BundleUnpackParams14statusCallbackE"></span><span id="_CPPv2N15CarbonResources18BundleUnpackParams14statusCallbackE"></span><span id="CarbonResources::BundleUnpackParams::statusCallback__StatusCallback"></span><span class="target" id="struct_carbon_resources_1_1_bundle_unpack_params_1aa46c768aef063b88c2bbbbb2d484d400"></span><a class="reference internal" href="CallbackStructures.html#_CPPv4N15CarbonResources14StatusCallbackE" title="CarbonResources::StatusCallback"><span class="n"><span class="pre">StatusCallback</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">statusCallback</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N15CarbonResources18BundleUnpackParams14statusCallbackE" title="Link to this definition"></a><br /></dt>
+<dd><p>Optional status function callback. Callback is triggered at key status update events. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ResourceGroup.html" class="btn btn-neutral float-left" title="ResourceGroup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PatchResourceGroup.html" class="btn btn-neutral float-right" title="PatchResourceGroup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Copyright © 2025 CCP ehf.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

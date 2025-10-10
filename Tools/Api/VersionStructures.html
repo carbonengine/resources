@@ -1,0 +1,177 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Version Structures &mdash; resources 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="resources CLI" href="../cli.html" />
+    <link rel="prev" title="Result Structures" href="ResultStructures.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            resources
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../tools.html">Tools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html">resources library API</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../api.html#structures">Structures</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ResourceGroup.html">ResourceGroup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="BundleResourceGroup.html">BundleResourceGroup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PatchResourceGroup.html">PatchResourceGroup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="FilesystemStructs.html">Filesystem Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CallbackStructures.html">Callback Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ResultStructures.html">Result Structures</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Version Structures</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../cli.html">resources CLI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../overviewDocuments.html">Overview Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickStart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides.html">Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../designDocuments.html">Design Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">resources</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../tools.html">Tools</a></li>
+          <li class="breadcrumb-item"><a href="../api.html">resources library API</a></li>
+      <li class="breadcrumb-item active">Version Structures</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/Tools/Api/VersionStructures.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="version-structures">
+<h1>Version Structures<a class="headerlink" href="#version-structures" title="Link to this heading"></a></h1>
+<p>Structures related to versioning.</p>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources7VersionE">
+<span id="_CPPv3N15CarbonResources7VersionE"></span><span id="_CPPv2N15CarbonResources7VersionE"></span><span id="CarbonResources::Version"></span><span class="target" id="struct_carbon_resources_1_1_version"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Version</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources7VersionE" title="Link to this definition"></a><br /></dt>
+<dd><p>Represents <a class="reference internal" href="#struct_carbon_resources_1_1_version"><span class="std std-ref">Version</span></a> information. <a class="reference internal" href="#struct_carbon_resources_1_1_version"><span class="std std-ref">Version</span></a> follows semantic versioning paradigm. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources7Version5majorE">
+<span id="_CPPv3N15CarbonResources7Version5majorE"></span><span id="_CPPv2N15CarbonResources7Version5majorE"></span><span id="CarbonResources::Version::major__unsigned-i"></span><span class="target" id="struct_carbon_resources_1_1_version_1afffa704de9bf2d21c11f379009fd0481"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">major</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources7Version5majorE" title="Link to this definition"></a><br /></dt>
+<dd><p>Major version. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources7Version5minorE">
+<span id="_CPPv3N15CarbonResources7Version5minorE"></span><span id="_CPPv2N15CarbonResources7Version5minorE"></span><span id="CarbonResources::Version::minor__unsigned-i"></span><span class="target" id="struct_carbon_resources_1_1_version_1a6a18a69e44f97776b679281455651454"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">minor</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources7Version5minorE" title="Link to this definition"></a><br /></dt>
+<dd><p>Minor version. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources7Version5patchE">
+<span id="_CPPv3N15CarbonResources7Version5patchE"></span><span id="_CPPv2N15CarbonResources7Version5patchE"></span><span id="CarbonResources::Version::patch__unsigned-i"></span><span class="target" id="struct_carbon_resources_1_1_version_1aba604a7e9cff64595152cbb077a1ce31"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">patch</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources7Version5patchE" title="Link to this definition"></a><br /></dt>
+<dd><p>Patch version </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources17S_LIBRARY_VERSIONE">
+<span id="_CPPv3N15CarbonResources17S_LIBRARY_VERSIONE"></span><span id="_CPPv2N15CarbonResources17S_LIBRARY_VERSIONE"></span><span id="CarbonResources::S_LIBRARY_VERSION__VersionC"></span><span class="target" id="namespace_carbon_resources_1a6e062a3866cc590b1d13314094426d50"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N15CarbonResources7VersionE" title="CarbonResources::Version"><span class="n"><span class="pre">Version</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">CarbonResources</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">S_LIBRARY_VERSION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="n"><span class="pre">VERSION_MAJOR</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VERSION_MINOR</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">VERSION_PATCH</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N15CarbonResources17S_LIBRARY_VERSIONE" title="Link to this definition"></a><br /></dt>
+<dd><p>Current version of the resources </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources18S_DOCUMENT_VERSIONE">
+<span id="_CPPv3N15CarbonResources18S_DOCUMENT_VERSIONE"></span><span id="_CPPv2N15CarbonResources18S_DOCUMENT_VERSIONE"></span><span id="CarbonResources::S_DOCUMENT_VERSION__VersionC"></span><span class="target" id="namespace_carbon_resources_1a0a0f70d485d2974a0c707a8318cef810"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N15CarbonResources7VersionE" title="CarbonResources::Version"><span class="n"><span class="pre">Version</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">CarbonResources</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">S_DOCUMENT_VERSION</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N15CarbonResources18S_DOCUMENT_VERSIONE" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum document version supported by resources </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources25S_VALID_DOCUMENT_VERSIONSE">
+<span id="_CPPv3N15CarbonResources25S_VALID_DOCUMENT_VERSIONSE"></span><span id="_CPPv2N15CarbonResources25S_VALID_DOCUMENT_VERSIONSE"></span><span id="CarbonResources::S_VALID_DOCUMENT_VERSIONS__vC"></span><span class="target" id="namespace_carbon_resources_1aa0f5e386a4000f48a0817b45c2f7474a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">CarbonResources</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">S_VALID_DOCUMENT_VERSIONS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><a class="reference internal" href="#_CPPv4N15CarbonResources7VersionE" title="CarbonResources::Version"><span class="n"><span class="pre">Version</span></span></a><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N15CarbonResources7VersionE" title="CarbonResources::Version"><span class="n"><span class="pre">Version</span></span></a><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N15CarbonResources25S_VALID_DOCUMENT_VERSIONSE" title="Link to this definition"></a><br /></dt>
+<dd><p>List of valid document version supported by resources </p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ResultStructures.html" class="btn btn-neutral float-left" title="Result Structures" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../cli.html" class="btn btn-neutral float-right" title="resources CLI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Copyright © 2025 CCP ehf.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,396 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Result Structures &mdash; resources 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Version Structures" href="VersionStructures.html" />
+    <link rel="prev" title="Callback Structures" href="CallbackStructures.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            resources
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../tools.html">Tools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html">resources library API</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../api.html#structures">Structures</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ResourceGroup.html">ResourceGroup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="BundleResourceGroup.html">BundleResourceGroup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PatchResourceGroup.html">PatchResourceGroup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="FilesystemStructs.html">Filesystem Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CallbackStructures.html">Callback Structures</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Result Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="VersionStructures.html">Version Structures</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../cli.html">resources CLI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../overviewDocuments.html">Overview Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickStart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides.html">Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../designDocuments.html">Design Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">resources</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../tools.html">Tools</a></li>
+          <li class="breadcrumb-item"><a href="../api.html">resources library API</a></li>
+      <li class="breadcrumb-item active">Result Structures</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/Tools/Api/ResultStructures.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="result-structures">
+<h1>Result Structures<a class="headerlink" href="#result-structures" title="Link to this heading"></a></h1>
+<p>resources returns as much useful information as possible to the caller.</p>
+<p>This is especially important when encountering errors.</p>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources6ResultE">
+<span id="_CPPv3N15CarbonResources6ResultE"></span><span id="_CPPv2N15CarbonResources6ResultE"></span><span id="CarbonResources::Result"></span><span class="target" id="struct_carbon_resources_1_1_result"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Result</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources6ResultE" title="Link to this definition"></a><br /></dt>
+<dd><p>Return structure for resources operations. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources6Result4typeE">
+<span id="_CPPv3N15CarbonResources6Result4typeE"></span><span id="_CPPv2N15CarbonResources6Result4typeE"></span><span id="CarbonResources::Result::type__ResultType"></span><span class="target" id="struct_carbon_resources_1_1_result_1a96657f767a52a2d1cf2dc36fb8cca291"></span><a class="reference internal" href="#_CPPv4N15CarbonResources10ResultTypeE" title="CarbonResources::ResultType"><span class="n"><span class="pre">ResultType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N15CarbonResources10ResultTypeE" title="CarbonResources::ResultType"><span class="n"><span class="pre">ResultType</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N15CarbonResources10ResultType7SUCCESSE" title="CarbonResources::ResultType::SUCCESS"><span class="n"><span class="pre">SUCCESS</span></span></a><a class="headerlink" href="#_CPPv4N15CarbonResources6Result4typeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Type of result returned </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources6Result4infoE">
+<span id="_CPPv3N15CarbonResources6Result4infoE"></span><span id="_CPPv2N15CarbonResources6Result4infoE"></span><span id="CarbonResources::Result::info__ss"></span><span class="target" id="struct_carbon_resources_1_1_result_1aef45cdd214395bc1a8b14fd562c5285e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">info</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><a class="headerlink" href="#_CPPv4N15CarbonResources6Result4infoE" title="Link to this definition"></a><br /></dt>
+<dd><p>Optional further information on the return </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultTypeE">
+<span id="_CPPv3N15CarbonResources10ResultTypeE"></span><span id="_CPPv2N15CarbonResources10ResultTypeE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">CarbonResources</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ResultType</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultTypeE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType7SUCCESSE">
+<span id="_CPPv3N15CarbonResources10ResultType7SUCCESSE"></span><span id="_CPPv2N15CarbonResources10ResultType7SUCCESSE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193ad0749aaba8b833466dfcbb0428e4f89c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SUCCESS</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType7SUCCESSE" title="Link to this definition"></a><br /></dt>
+<dd><p>Operation was successful. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType4FAILE">
+<span id="_CPPv3N15CarbonResources10ResultType4FAILE"></span><span id="_CPPv2N15CarbonResources10ResultType4FAILE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193ac2759effffc94bb9acc71d69fe3e8a1f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAIL</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType4FAILE" title="Link to this definition"></a><br /></dt>
+<dd><p>Operation failed. This is an internal library error which shouldn’t be encountered. If you encounter this error contact API addministrators. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType23UNSUPPORTED_FILE_FORMATE">
+<span id="_CPPv3N15CarbonResources10ResultType23UNSUPPORTED_FILE_FORMATE"></span><span id="_CPPv2N15CarbonResources10ResultType23UNSUPPORTED_FILE_FORMATE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a2bc99be9bb866568c0273d27a4da2fec"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UNSUPPORTED_FILE_FORMAT</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType23UNSUPPORTED_FILE_FORMATE" title="Link to this definition"></a><br /></dt>
+<dd><p>Operation encounted an unsupported file format. It is likely that supplied file format is unsupported. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType19FAILED_TO_OPEN_FILEE">
+<span id="_CPPv3N15CarbonResources10ResultType19FAILED_TO_OPEN_FILEE"></span><span id="_CPPv2N15CarbonResources10ResultType19FAILED_TO_OPEN_FILEE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a5a2ca8d747770ea2ae4add296c5a4b7f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_OPEN_FILE</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType19FAILED_TO_OPEN_FILEE" title="Link to this definition"></a><br /></dt>
+<dd><p>A file failed to open during operation. Perhaps the file was not found, or is locked. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType24MALFORMED_RESOURCE_INPUTE">
+<span id="_CPPv3N15CarbonResources10ResultType24MALFORMED_RESOURCE_INPUTE"></span><span id="_CPPv2N15CarbonResources10ResultType24MALFORMED_RESOURCE_INPUTE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a410602db683b20eed0b06d59e810f8ea"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MALFORMED_RESOURCE_INPUT</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType24MALFORMED_RESOURCE_INPUTE" title="Link to this definition"></a><br /></dt>
+<dd><p>A malformed resource was encountered. This may be related to required missing fields required for document version. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType18FILE_TYPE_MISMATCHE">
+<span id="_CPPv3N15CarbonResources10ResultType18FILE_TYPE_MISMATCHE"></span><span id="_CPPv2N15CarbonResources10ResultType18FILE_TYPE_MISMATCHE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193aa2dd81f0a9ff979a4c40323189f70c34"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FILE_TYPE_MISMATCH</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType18FILE_TYPE_MISMATCHE" title="Link to this definition"></a><br /></dt>
+<dd><p>The document type being imported didn’t match expected type for operation. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType28DOCUMENT_VERSION_UNSUPPORTEDE">
+<span id="_CPPv3N15CarbonResources10ResultType28DOCUMENT_VERSION_UNSUPPORTEDE"></span><span id="_CPPv2N15CarbonResources10ResultType28DOCUMENT_VERSION_UNSUPPORTEDE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a968119a11b43eb4296e0d252c96b3798"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DOCUMENT_VERSION_UNSUPPORTED</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType28DOCUMENT_VERSION_UNSUPPORTEDE" title="Link to this definition"></a><br /></dt>
+<dd><p>Document major version is greater than library max version. Library needs updating. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType35REQUIRED_RESOURCE_PARAMETER_NOT_SETE">
+<span id="_CPPv3N15CarbonResources10ResultType35REQUIRED_RESOURCE_PARAMETER_NOT_SETE"></span><span id="_CPPv2N15CarbonResources10ResultType35REQUIRED_RESOURCE_PARAMETER_NOT_SETE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a1b89fbaab6483d33e1dc24b1226c6e77"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQUIRED_RESOURCE_PARAMETER_NOT_SET</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType35REQUIRED_RESOURCE_PARAMETER_NOT_SETE" title="Link to this definition"></a><br /></dt>
+<dd><p>Resource parameter that is required for the document version has not been set. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType26FAILED_TO_OPEN_FILE_STREAME">
+<span id="_CPPv3N15CarbonResources10ResultType26FAILED_TO_OPEN_FILE_STREAME"></span><span id="_CPPv2N15CarbonResources10ResultType26FAILED_TO_OPEN_FILE_STREAME"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a8ae8a0b6c257677f7d46f7852b215e15"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_OPEN_FILE_STREAM</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType26FAILED_TO_OPEN_FILE_STREAME" title="Link to this definition"></a><br /></dt>
+<dd><p>Failed to open file stream during operation.Perhaps the file was not found, or is locked. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType26FAILED_TO_READ_FROM_STREAME">
+<span id="_CPPv3N15CarbonResources10ResultType26FAILED_TO_READ_FROM_STREAME"></span><span id="_CPPv2N15CarbonResources10ResultType26FAILED_TO_READ_FROM_STREAME"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a0f78bd4ac4a82a3d6238caf8102bf5f0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_READ_FROM_STREAM</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType26FAILED_TO_READ_FROM_STREAME" title="Link to this definition"></a><br /></dt>
+<dd><p>An error was encountered while attempting to read from stream. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType25FAILED_TO_WRITE_TO_STREAME">
+<span id="_CPPv3N15CarbonResources10ResultType25FAILED_TO_WRITE_TO_STREAME"></span><span id="_CPPv2N15CarbonResources10ResultType25FAILED_TO_WRITE_TO_STREAME"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a58bc5fbc01bdd05da4d5ecf12ce389ad"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_WRITE_TO_STREAM</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType25FAILED_TO_WRITE_TO_STREAME" title="Link to this definition"></a><br /></dt>
+<dd><p>An error was encountered while attempting to write to a stream. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType23FAILED_TO_DOWNLOAD_FILEE">
+<span id="_CPPv3N15CarbonResources10ResultType23FAILED_TO_DOWNLOAD_FILEE"></span><span id="_CPPv2N15CarbonResources10ResultType23FAILED_TO_DOWNLOAD_FILEE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193aac58ccddfe61d70e775dbf4c1075feeb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_DOWNLOAD_FILE</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType23FAILED_TO_DOWNLOAD_FILEE" title="Link to this definition"></a><br /></dt>
+<dd><p>A file failed to download during operation. Check supplied URLS are correct. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType22FAILED_TO_CREATE_PATCHE">
+<span id="_CPPv3N15CarbonResources10ResultType22FAILED_TO_CREATE_PATCHE"></span><span id="_CPPv2N15CarbonResources10ResultType22FAILED_TO_CREATE_PATCHE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a21b46d5796c48f59402d0fbc51cfbd02"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_CREATE_PATCH</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType22FAILED_TO_CREATE_PATCHE" title="Link to this definition"></a><br /></dt>
+<dd><p>An error occurred during generation of a binary patch. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType19FAILED_TO_SAVE_FILEE">
+<span id="_CPPv3N15CarbonResources10ResultType19FAILED_TO_SAVE_FILEE"></span><span id="_CPPv2N15CarbonResources10ResultType19FAILED_TO_SAVE_FILEE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193acebf42c163220d09d1bd6a8b15a03911"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_SAVE_FILE</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType19FAILED_TO_SAVE_FILEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Operation failed to save a file. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType27FAILED_TO_GENERATE_CHECKSUME">
+<span id="_CPPv3N15CarbonResources10ResultType27FAILED_TO_GENERATE_CHECKSUME"></span><span id="_CPPv2N15CarbonResources10ResultType27FAILED_TO_GENERATE_CHECKSUME"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a3f845abece53ed917fd98c7ef715e7e9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_GENERATE_CHECKSUM</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType27FAILED_TO_GENERATE_CHECKSUME" title="Link to this definition"></a><br /></dt>
+<dd><p>An error occurred during generation of a data checksum. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType41FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUME">
+<span id="_CPPv3N15CarbonResources10ResultType41FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUME"></span><span id="_CPPv2N15CarbonResources10ResultType41FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUME"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193aa6fd4d4e127b1cfa7136901d27e153f9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUM</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType41FAILED_TO_GENERATE_RELATIVE_PATH_CHECKSUME" title="Link to this definition"></a><br /></dt>
+<dd><p>An error occurred during generation of a relative path checksum. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType23FAILED_TO_COMPRESS_DATAE">
+<span id="_CPPv3N15CarbonResources10ResultType23FAILED_TO_COMPRESS_DATAE"></span><span id="_CPPv2N15CarbonResources10ResultType23FAILED_TO_COMPRESS_DATAE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a6588e71032f1e22c1c2b5c36ee681bbc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_COMPRESS_DATA</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType23FAILED_TO_COMPRESS_DATAE" title="Link to this definition"></a><br /></dt>
+<dd><p>An error occurred during data compression. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType29PATCH_RESOURCE_LIST_MISSMATCHE">
+<span id="_CPPv3N15CarbonResources10ResultType29PATCH_RESOURCE_LIST_MISSMATCHE"></span><span id="_CPPv2N15CarbonResources10ResultType29PATCH_RESOURCE_LIST_MISSMATCHE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a8c9cea745e391e19f45aaf8c660db38a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PATCH_RESOURCE_LIST_MISSMATCH</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType29PATCH_RESOURCE_LIST_MISSMATCHE" title="Link to this definition"></a><br /></dt>
+<dd><p>ResourceGroups provided to create patch do not match in type. Validate <a class="reference internal" href="ResourceGroup.html#class_carbon_resources_1_1_resource_group"><span class="std std-ref">ResourceGroup</span></a> inputs are correct. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType21FAILED_TO_APPLY_PATCHE">
+<span id="_CPPv3N15CarbonResources10ResultType21FAILED_TO_APPLY_PATCHE"></span><span id="_CPPv2N15CarbonResources10ResultType21FAILED_TO_APPLY_PATCHE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a782137d56c9ec5e0a8670137d5017965"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_APPLY_PATCH</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType21FAILED_TO_APPLY_PATCHE" title="Link to this definition"></a><br /></dt>
+<dd><p>An error occurred during application of a binary patch. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType32UNEXPECTED_PATCH_CHECKSUM_RESULTE">
+<span id="_CPPv3N15CarbonResources10ResultType32UNEXPECTED_PATCH_CHECKSUM_RESULTE"></span><span id="_CPPv2N15CarbonResources10ResultType32UNEXPECTED_PATCH_CHECKSUM_RESULTE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a9e5dfd87c46fff59a8003e037d829eeb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UNEXPECTED_PATCH_CHECKSUM_RESULT</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType32UNEXPECTED_PATCH_CHECKSUM_RESULTE" title="Link to this definition"></a><br /></dt>
+<dd><p>Patched resource doesn’t match expected checksum upon patch completion. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType33UNEXPECTED_PATCH_DIFF_ENCOUNTEREDE">
+<span id="_CPPv3N15CarbonResources10ResultType33UNEXPECTED_PATCH_DIFF_ENCOUNTEREDE"></span><span id="_CPPv2N15CarbonResources10ResultType33UNEXPECTED_PATCH_DIFF_ENCOUNTEREDE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193ad73930630a15e587f08a5beeb8847391"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UNEXPECTED_PATCH_DIFF_ENCOUNTERED</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType33UNEXPECTED_PATCH_DIFF_ENCOUNTEREDE" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="ResourceGroup.html#class_carbon_resources_1_1_resource_group"><span class="std std-ref">ResourceGroup</span></a> diff operation produced unexpected result. This is an internal library error. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType14FILE_NOT_FOUNDE">
+<span id="_CPPv3N15CarbonResources10ResultType14FILE_NOT_FOUNDE"></span><span id="_CPPv2N15CarbonResources10ResultType14FILE_NOT_FOUNDE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193acd54d99c8efb3c2db794197045f5b83c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FILE_NOT_FOUND</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType14FILE_NOT_FOUNDE" title="Link to this definition"></a><br /></dt>
+<dd><p>Required file not found. Validate parameter inputs. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType29FAILED_TO_RETRIEVE_CHUNK_DATAE">
+<span id="_CPPv3N15CarbonResources10ResultType29FAILED_TO_RETRIEVE_CHUNK_DATAE"></span><span id="_CPPv2N15CarbonResources10ResultType29FAILED_TO_RETRIEVE_CHUNK_DATAE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a6df2027d11ffe71572e08ba6e0f68638"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_RETRIEVE_CHUNK_DATA</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType29FAILED_TO_RETRIEVE_CHUNK_DATAE" title="Link to this definition"></a><br /></dt>
+<dd><p>An error was encountered while attempting to read from a chunk data stream. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType22RESOURCE_VALUE_NOT_SETE">
+<span id="_CPPv3N15CarbonResources10ResultType22RESOURCE_VALUE_NOT_SETE"></span><span id="_CPPv2N15CarbonResources10ResultType22RESOURCE_VALUE_NOT_SETE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a19f181f28f935de50548f9f81334e778"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RESOURCE_VALUE_NOT_SET</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType22RESOURCE_VALUE_NOT_SETE" title="Link to this definition"></a><br /></dt>
+<dd><p>A request was made for a parameter which was not set. This is an internal library error. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType24UNEXPECTED_END_OF_CHUNKSE">
+<span id="_CPPv3N15CarbonResources10ResultType24UNEXPECTED_END_OF_CHUNKSE"></span><span id="_CPPv2N15CarbonResources10ResultType24UNEXPECTED_END_OF_CHUNKSE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a0abf036f3d5ed1f4afba8be40953019c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UNEXPECTED_END_OF_CHUNKS</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType24UNEXPECTED_END_OF_CHUNKSE" title="Link to this definition"></a><br /></dt>
+<dd><p>Chunk file finished before all expected chunks had reconstituted. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType32UNEXPECTED_CHUNK_CHECKSUM_RESULTE">
+<span id="_CPPv3N15CarbonResources10ResultType32UNEXPECTED_CHUNK_CHECKSUM_RESULTE"></span><span id="_CPPv2N15CarbonResources10ResultType32UNEXPECTED_CHUNK_CHECKSUM_RESULTE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a1c10943f74497696cf3d28c227f40084"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UNEXPECTED_CHUNK_CHECKSUM_RESULT</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType32UNEXPECTED_CHUNK_CHECKSUM_RESULTE" title="Link to this definition"></a><br /></dt>
+<dd><p>Generated checksum didn’t match expected result. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType24FAILED_TO_SAVE_TO_STREAME">
+<span id="_CPPv3N15CarbonResources10ResultType24FAILED_TO_SAVE_TO_STREAME"></span><span id="_CPPv2N15CarbonResources10ResultType24FAILED_TO_SAVE_TO_STREAME"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a6f9d486896ccbce3fbfeadd3ffd3958a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_SAVE_TO_STREAM</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType24FAILED_TO_SAVE_TO_STREAME" title="Link to this definition"></a><br /></dt>
+<dd><p>An error was encountered while attempting to write to a stream. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType28INPUT_DIRECTORY_DOESNT_EXISTE">
+<span id="_CPPv3N15CarbonResources10ResultType28INPUT_DIRECTORY_DOESNT_EXISTE"></span><span id="_CPPv2N15CarbonResources10ResultType28INPUT_DIRECTORY_DOESNT_EXISTE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a66ec6b63bf046c1f59cc2432fcec2d25"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">INPUT_DIRECTORY_DOESNT_EXIST</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType28INPUT_DIRECTORY_DOESNT_EXISTE" title="Link to this definition"></a><br /></dt>
+<dd><p>Supplied input directory doesn’t exist. Validate parameter inputs. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType23RESOURCE_TYPE_MISSMATCHE">
+<span id="_CPPv3N15CarbonResources10ResultType23RESOURCE_TYPE_MISSMATCHE"></span><span id="_CPPv2N15CarbonResources10ResultType23RESOURCE_TYPE_MISSMATCHE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a0ce1bf2b255cb49238dcfc1c8f8c4750"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RESOURCE_TYPE_MISSMATCH</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType23RESOURCE_TYPE_MISSMATCHE" title="Link to this definition"></a><br /></dt>
+<dd><p>Resource parameters were attempted to be set by a resource of a different type. This is an internal library error which shouldn’t be encountered. If you encounter this error contact API addministrators. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType24MALFORMED_RESOURCE_GROUPE">
+<span id="_CPPv3N15CarbonResources10ResultType24MALFORMED_RESOURCE_GROUPE"></span><span id="_CPPv2N15CarbonResources10ResultType24MALFORMED_RESOURCE_GROUPE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a24dde1dc61302d8ce52f4f34ca3b99bc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MALFORMED_RESOURCE_GROUP</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType24MALFORMED_RESOURCE_GROUPE" title="Link to this definition"></a><br /></dt>
+<dd><p>Resource group provided appears malformed. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType18MALFORMED_RESOURCEE">
+<span id="_CPPv3N15CarbonResources10ResultType18MALFORMED_RESOURCEE"></span><span id="_CPPv2N15CarbonResources10ResultType18MALFORMED_RESOURCEE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a79f1695a886530f3c8e1c05edb97d406"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MALFORMED_RESOURCE</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType18MALFORMED_RESOURCEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Resource provided appears malformed. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType20FAILED_TO_PARSE_YAMLE">
+<span id="_CPPv3N15CarbonResources10ResultType20FAILED_TO_PARSE_YAMLE"></span><span id="_CPPv2N15CarbonResources10ResultType20FAILED_TO_PARSE_YAMLE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193ae6970aae19693bb2d6e2cd77c69f2f23"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FAILED_TO_PARSE_YAML</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType20FAILED_TO_PARSE_YAMLE" title="Link to this definition"></a><br /></dt>
+<dd><p>Failed to parse provided yaml. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType18INVALID_CHUNK_SIZEE">
+<span id="_CPPv3N15CarbonResources10ResultType18INVALID_CHUNK_SIZEE"></span><span id="_CPPv2N15CarbonResources10ResultType18INVALID_CHUNK_SIZEE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a0e586fe96684741173252c5fb0b92411"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">INVALID_CHUNK_SIZE</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType18INVALID_CHUNK_SIZEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Chunk size must be &gt; 0. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType22RESOURCE_GROUP_NOT_SETE">
+<span id="_CPPv3N15CarbonResources10ResultType22RESOURCE_GROUP_NOT_SETE"></span><span id="_CPPv2N15CarbonResources10ResultType22RESOURCE_GROUP_NOT_SETE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193ac937cd26e540bcbe5c0863cac75e6ec6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RESOURCE_GROUP_NOT_SET</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType22RESOURCE_GROUP_NOT_SETE" title="Link to this definition"></a><br /></dt>
+<dd><p>Resource Group is null </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType21RESOURCE_LIST_NOT_SETE">
+<span id="_CPPv3N15CarbonResources10ResultType21RESOURCE_LIST_NOT_SETE"></span><span id="_CPPv2N15CarbonResources10ResultType21RESOURCE_LIST_NOT_SETE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a172e0f49b3bb79cda5ce1c9774fa5f27"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RESOURCE_LIST_NOT_SET</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType21RESOURCE_LIST_NOT_SETE" title="Link to this definition"></a><br /></dt>
+<dd><p>Required resource List is not set </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType18RESOURCE_NOT_FOUNDE">
+<span id="_CPPv3N15CarbonResources10ResultType18RESOURCE_NOT_FOUNDE"></span><span id="_CPPv2N15CarbonResources10ResultType18RESOURCE_NOT_FOUNDE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193ad9b34187ffdac9293ab025c3742f38b4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RESOURCE_NOT_FOUND</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType18RESOURCE_NOT_FOUNDE" title="Link to this definition"></a><br /></dt>
+<dd><p>Required resource not found </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources10ResultType32REQUIRED_INPUT_PARAMETER_NOT_SETE">
+<span id="_CPPv3N15CarbonResources10ResultType32REQUIRED_INPUT_PARAMETER_NOT_SETE"></span><span id="_CPPv2N15CarbonResources10ResultType32REQUIRED_INPUT_PARAMETER_NOT_SETE"></span><span class="target" id="namespace_carbon_resources_1aca38283f3f74587dbe783c8517a46193a9042703ad585d90fa91c8efba5b9973f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">REQUIRED_INPUT_PARAMETER_NOT_SET</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources10ResultType32REQUIRED_INPUT_PARAMETER_NOT_SETE" title="Link to this definition"></a><br /></dt>
+<dd><p>A required input parameter was not set </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources18ResultTypeToStringE10ResultTypeRNSt6stringE">
+<span id="_CPPv3N15CarbonResources18ResultTypeToStringE10ResultTypeRNSt6stringE"></span><span id="_CPPv2N15CarbonResources18ResultTypeToStringE10ResultTypeRNSt6stringE"></span><span id="CarbonResources::ResultTypeToString__ResultType.ssR"></span><span class="target" id="namespace_carbon_resources_1a2b85a7ef4de288533ce025c5f4b4b09c"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">CarbonResources</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ResultTypeToString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N15CarbonResources10ResultTypeE" title="CarbonResources::ResultType"><span class="n"><span class="pre">ResultType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">resultType</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">output</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N15CarbonResources18ResultTypeToStringE10ResultTypeRNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Converts ResultType to string </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resultType</strong> – <a class="reference internal" href="#struct_carbon_resources_1_1_result"><span class="std std-ref">Result</span></a> type to be converted. </p></li>
+<li><p><strong>output</strong> – Output to string conversion. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="CallbackStructures.html" class="btn btn-neutral float-left" title="Callback Structures" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="VersionStructures.html" class="btn btn-neutral float-right" title="Version Structures" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Copyright © 2025 CCP ehf.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

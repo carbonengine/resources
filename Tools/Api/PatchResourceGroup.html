@@ -1,0 +1,208 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PatchResourceGroup &mdash; resources 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Filesystem Structures" href="FilesystemStructs.html" />
+    <link rel="prev" title="BundleResourceGroup" href="BundleResourceGroup.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            resources
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../tools.html">Tools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html">resources library API</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../api.html#structures">Structures</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ResourceGroup.html">ResourceGroup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="BundleResourceGroup.html">BundleResourceGroup</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">PatchResourceGroup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="FilesystemStructs.html">Filesystem Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CallbackStructures.html">Callback Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ResultStructures.html">Result Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="VersionStructures.html">Version Structures</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../cli.html">resources CLI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../overviewDocuments.html">Overview Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickStart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides.html">Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../designDocuments.html">Design Documents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">resources</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../tools.html">Tools</a></li>
+          <li class="breadcrumb-item"><a href="../api.html">resources library API</a></li>
+      <li class="breadcrumb-item active">PatchResourceGroup</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/Tools/Api/PatchResourceGroup.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="patchresourcegroup">
+<h1>PatchResourceGroup<a class="headerlink" href="#patchresourcegroup" title="Link to this heading"></a></h1>
+<p>The PatchResourceGroup contains resources specifically of patch type.</p>
+<p>See <a class="reference internal" href="../../DesignDocuments/resourceGroupFileFormat.html"><span class="doc">Resource Group File Format</span></a> file specification for more details.</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources18PatchResourceGroupE">
+<span id="_CPPv3N15CarbonResources18PatchResourceGroupE"></span><span id="_CPPv2N15CarbonResources18PatchResourceGroupE"></span><span id="CarbonResources::PatchResourceGroup"></span><span class="target" id="class_carbon_resources_1_1_patch_resource_group"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PatchResourceGroup</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">CarbonResources</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="ResourceGroup.html#_CPPv4N15CarbonResources13ResourceGroupE" title="CarbonResources::ResourceGroup"><span class="n"><span class="pre">ResourceGroup</span></span></a><a class="headerlink" href="#_CPPv4N15CarbonResources18PatchResourceGroupE" title="Link to this definition"></a><br /></dt>
+<dd><p>Contains a collection of Patch Resources. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources18PatchResourceGroup5ApplyERK16PatchApplyParams">
+<span id="_CPPv3N15CarbonResources18PatchResourceGroup5ApplyERK16PatchApplyParams"></span><span id="_CPPv2N15CarbonResources18PatchResourceGroup5ApplyERK16PatchApplyParams"></span><span id="CarbonResources::PatchResourceGroup::Apply__PatchApplyParamsCR"></span><span class="target" id="class_carbon_resources_1_1_patch_resource_group_1a33a408c273842af712ba06917d1e96a9"></span><a class="reference internal" href="ResultStructures.html#_CPPv4N15CarbonResources6ResultE" title="CarbonResources::Result"><span class="n"><span class="pre">Result</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Apply</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N15CarbonResources16PatchApplyParamsE" title="CarbonResources::PatchApplyParams"><span class="n"><span class="pre">PatchApplyParams</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N15CarbonResources18PatchResourceGroup5ApplyERK16PatchApplyParams" title="Link to this definition"></a><br /></dt>
+<dd><p>Applies the Patches from the <a class="reference internal" href="BundleResourceGroup.html#class_carbon_resources_1_1_bundle_resource_group"><span class="std std-ref">BundleResourceGroup</span></a>. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="ResourceGroup.html#class_carbon_resources_1_1_resource_group_1abc98c60a96cf0831c6905f2aef3a77a8"><span class="std std-ref">ResourceGroup::CreatePatch</span></a> for information regarding patch creation. </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> – input parameters, See <a class="reference internal" href="#struct_carbon_resources_1_1_patch_apply_params"><span class="std std-ref">PatchApplyParams</span></a> for more details. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="ResultStructures.html#struct_carbon_resources_1_1_result"><span class="std std-ref">Result</span></a> see <a class="reference internal" href="ResultStructures.html#struct_carbon_resources_1_1_result"><span class="std std-ref">CarbonResources::Result</span></a> for more details. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources18PatchResourceGroup22PatchResourceGroupImplE">
+<span id="_CPPv3N15CarbonResources18PatchResourceGroup22PatchResourceGroupImplE"></span><span id="_CPPv2N15CarbonResources18PatchResourceGroup22PatchResourceGroupImplE"></span><span id="CarbonResources::PatchResourceGroup::PatchResourceGroupImpl"></span><span class="target" id="class_carbon_resources_1_1_patch_resource_group_1_1_patch_resource_group_impl"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PatchResourceGroupImpl</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">CarbonResources</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="ResourceGroup.html#_CPPv4N15CarbonResources13ResourceGroupE" title="CarbonResources::ResourceGroup"><span class="n"><span class="pre">ResourceGroup</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="ResourceGroup.html#_CPPv4N15CarbonResources13ResourceGroup17ResourceGroupImplE" title="CarbonResources::ResourceGroup::ResourceGroupImpl"><span class="n"><span class="pre">ResourceGroupImpl</span></span></a><a class="headerlink" href="#_CPPv4N15CarbonResources18PatchResourceGroup22PatchResourceGroupImplE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<section id="input-parameters">
+<h2>Input Parameters<a class="headerlink" href="#input-parameters" title="Link to this heading"></a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources16PatchApplyParamsE">
+<span id="_CPPv3N15CarbonResources16PatchApplyParamsE"></span><span id="_CPPv2N15CarbonResources16PatchApplyParamsE"></span><span id="CarbonResources::PatchApplyParams"></span><span class="target" id="struct_carbon_resources_1_1_patch_apply_params"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PatchApplyParams</span></span></span><a class="headerlink" href="#_CPPv4N15CarbonResources16PatchApplyParamsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Function Parameters required for <a class="reference internal" href="#class_carbon_resources_1_1_patch_resource_group_1a33a408c273842af712ba06917d1e96a9"><span class="std std-ref">CarbonResources::PatchResourceGroup::Apply</span></a>. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources16PatchApplyParams25patchBinarySourceSettingsE">
+<span id="_CPPv3N15CarbonResources16PatchApplyParams25patchBinarySourceSettingsE"></span><span id="_CPPv2N15CarbonResources16PatchApplyParams25patchBinarySourceSettingsE"></span><span id="CarbonResources::PatchApplyParams::patchBinarySourceSettings__ResourceSourceSettings"></span><span class="target" id="struct_carbon_resources_1_1_patch_apply_params_1aca390c3ebb4865325a99f67d1042383f"></span><a class="reference internal" href="FilesystemStructs.html#_CPPv4N15CarbonResources22ResourceSourceSettingsE" title="CarbonResources::ResourceSourceSettings"><span class="n"><span class="pre">ResourceSourceSettings</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">patchBinarySourceSettings</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N15CarbonResources16PatchApplyParams25patchBinarySourceSettingsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Location where patch binaries can be sourced. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources16PatchApplyParams30resourcesToPatchSourceSettingsE">
+<span id="_CPPv3N15CarbonResources16PatchApplyParams30resourcesToPatchSourceSettingsE"></span><span id="_CPPv2N15CarbonResources16PatchApplyParams30resourcesToPatchSourceSettingsE"></span><span id="CarbonResources::PatchApplyParams::resourcesToPatchSourceSettings__ResourceSourceSettings"></span><span class="target" id="struct_carbon_resources_1_1_patch_apply_params_1acc0a2f56c47c8b3a6c60db2b7da2c2f1"></span><a class="reference internal" href="FilesystemStructs.html#_CPPv4N15CarbonResources22ResourceSourceSettingsE" title="CarbonResources::ResourceSourceSettings"><span class="n"><span class="pre">ResourceSourceSettings</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resourcesToPatchSourceSettings</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><a class="reference internal" href="FilesystemStructs.html#_CPPv4N15CarbonResources18ResourceSourceTypeE" title="CarbonResources::ResourceSourceType"><span class="n"><span class="pre">ResourceSourceType</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="FilesystemStructs.html#_CPPv4N15CarbonResources18ResourceSourceType14LOCAL_RELATIVEE" title="CarbonResources::ResourceSourceType::LOCAL_RELATIVE"><span class="n"><span class="pre">LOCAL_RELATIVE</span></span></a><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N15CarbonResources16PatchApplyParams30resourcesToPatchSourceSettingsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Location where the resources to be patched can be sourced. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources16PatchApplyParams35resourcesToPatchDestinationSettingsE">
+<span id="_CPPv3N15CarbonResources16PatchApplyParams35resourcesToPatchDestinationSettingsE"></span><span id="_CPPv2N15CarbonResources16PatchApplyParams35resourcesToPatchDestinationSettingsE"></span><span id="CarbonResources::PatchApplyParams::resourcesToPatchDestinationSettings__ResourceDestinationSettings"></span><span class="target" id="struct_carbon_resources_1_1_patch_apply_params_1a6abe535f627123dc7a331f209e8d45c8"></span><a class="reference internal" href="FilesystemStructs.html#_CPPv4N15CarbonResources27ResourceDestinationSettingsE" title="CarbonResources::ResourceDestinationSettings"><span class="n"><span class="pre">ResourceDestinationSettings</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resourcesToPatchDestinationSettings</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><a class="reference internal" href="FilesystemStructs.html#_CPPv4N15CarbonResources23ResourceDestinationTypeE" title="CarbonResources::ResourceDestinationType"><span class="n"><span class="pre">ResourceDestinationType</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="FilesystemStructs.html#_CPPv4N15CarbonResources23ResourceDestinationType14LOCAL_RELATIVEE" title="CarbonResources::ResourceDestinationType::LOCAL_RELATIVE"><span class="n"><span class="pre">LOCAL_RELATIVE</span></span></a><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N15CarbonResources16PatchApplyParams35resourcesToPatchDestinationSettingsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Location where to place patched resources. This can match <a class="reference internal" href="#struct_carbon_resources_1_1_patch_apply_params_1acc0a2f56c47c8b3a6c60db2b7da2c2f1"><span class="std std-ref">PatchApplyParams::resourcesToPatchSourceSettings</span></a> to overwrite. Allows creation of staging area in case of failure. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources16PatchApplyParams17temporaryFilePathE">
+<span id="_CPPv3N15CarbonResources16PatchApplyParams17temporaryFilePathE"></span><span id="_CPPv2N15CarbonResources16PatchApplyParams17temporaryFilePathE"></span><span id="CarbonResources::PatchApplyParams::temporaryFilePath__std::filesystem::path"></span><span class="target" id="struct_carbon_resources_1_1_patch_apply_params_1a616b5711d3a69d3f70501457ce173afd"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">temporaryFilePath</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;tempFile.resource&quot;</span></span><a class="headerlink" href="#_CPPv4N15CarbonResources16PatchApplyParams17temporaryFilePathE" title="Link to this definition"></a><br /></dt>
+<dd><p>Name of a temporary filename to use when patching large files. This file will be cleaned up on process completion. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15CarbonResources16PatchApplyParams14statusCallbackE">
+<span id="_CPPv3N15CarbonResources16PatchApplyParams14statusCallbackE"></span><span id="_CPPv2N15CarbonResources16PatchApplyParams14statusCallbackE"></span><span id="CarbonResources::PatchApplyParams::statusCallback__StatusCallback"></span><span class="target" id="struct_carbon_resources_1_1_patch_apply_params_1a25037a2a3cb3f898a4ca896a22613079"></span><a class="reference internal" href="CallbackStructures.html#_CPPv4N15CarbonResources14StatusCallbackE" title="CarbonResources::StatusCallback"><span class="n"><span class="pre">StatusCallback</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">statusCallback</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N15CarbonResources16PatchApplyParams14statusCallbackE" title="Link to this definition"></a><br /></dt>
+<dd><p>Optional status function callback. Callback is triggered at key status update events. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="BundleResourceGroup.html" class="btn btn-neutral float-left" title="BundleResourceGroup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="FilesystemStructs.html" class="btn btn-neutral float-right" title="Filesystem Structures" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Copyright © 2025 CCP ehf.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

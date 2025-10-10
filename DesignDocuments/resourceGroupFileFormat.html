@@ -1,0 +1,357 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resource Group File Format &mdash; resources 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Filesystem Design - Local/Remote" href="filesystemDesign.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            resources
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overviewDocuments.html">Overview Documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickStart.html">QuickStart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides.html">Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../designDocuments.html">Design Documents</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="filesystemDesign.html">Filesystem Design - Local/Remote</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Resource Group File Format</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-resourcegroup-file">Example ResourceGroup file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#resourcegroup-fields">ResourceGroup Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-patchresourcegroup-file">Example PatchResourceGroup file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#patchresourcegroup-additional-fields">PatchResourceGroup Additional Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-bundleresourcegroup-file">Example BundleResourceGroup file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bundleresourcegroup-additional-fields">BundleResourceGroup Additional Fields</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">resources</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../designDocuments.html">Design Documents</a></li>
+      <li class="breadcrumb-item active">Resource Group File Format</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/DesignDocuments/resourceGroupFileFormat.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="resource-group-file-format">
+<h1>Resource Group File Format<a class="headerlink" href="#resource-group-file-format" title="Link to this heading"></a></h1>
+<p>Resource Groups are human readable Yaml files which encapsulate all data associated a group of resources.</p>
+<p>The word ‘Resources’ is used here, however the term is interchangeable with ‘file’.</p>
+<p>Resource Groups are an evolution of the resfileindex.txt files used in EVE and Frontier. Many of the file management
+concepts of resources originate there.</p>
+<p>Most operations require Resource Groups as inputs. Operations output may also contain generated ResourceGroups.</p>
+<p>ResourceGroup is a base type, extended versions which add additional fields for with special operations include</p>
+<ol class="arabic simple">
+<li><p>PatchResourceGroup - Contains a location to a ResourceGroup which it is based on the resources represent binary diffs.</p></li>
+<li><p>BundleResourceGroup - Contains a location to a ResourceGroup which it was based on and the resources are chunks which make up the bundle.</p></li>
+</ol>
+<section id="example-resourcegroup-file">
+<h2>Example ResourceGroup file<a class="headerlink" href="#example-resourcegroup-file" title="Link to this heading"></a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1.0</span>
+<span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ResourceGroup</span>
+<span class="nt">NumberOfResources</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">621</span>
+<span class="nt">TotalResourcesSizeCompressed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">36013964</span>
+<span class="nt">TotalResourcesSizeUnCompressed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">155170840</span>
+<span class="nt">Resources</span><span class="p">:</span>
+
+<span class="nt">RelativePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">buildtrees/argparse/config-x64-windows-carbon-err.log</span>
+<span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Resource</span>
+<span class="nt">Location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4a/4a2879b6b400c8cc_d41d8cd98f00b204e9800998ecf8427e</span>
+<span class="nt">Checksum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">d41d8cd98f00b204e9800998ecf8427e</span>
+<span class="nt">UncompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="nt">CompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="nt">BinaryOperation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33206</span>
+
+<span class="nt">RelativePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">buildtrees/argparse/config-x64-windows-carbon-out.log</span>
+<span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Resource</span>
+<span class="nt">Location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16/169c6bb00fdceb69_c888d1e49f02ac82658ebad2a0808f70</span>
+<span class="nt">Checksum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c888d1e49f02ac82658ebad2a0808f70</span>
+<span class="nt">UncompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3719</span>
+<span class="nt">CompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1294</span>
+<span class="nt">BinaryOperation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33206</span>
+<span class="nn">...</span>
+</pre></div>
+</div>
+</section>
+<section id="resourcegroup-fields">
+<h2>ResourceGroup Fields<a class="headerlink" href="#resourcegroup-fields" title="Link to this heading"></a></h2>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Document Fields</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Version</p></td>
+<td><p>Version number of the Resource Group document</p></td>
+</tr>
+<tr class="row-odd"><td><p>Type</p></td>
+<td><p>Type of ResourceGroup. Type ‘ResourceGroup’ is the base type. There are also specialisations which add further fields related to their function.</p></td>
+</tr>
+<tr class="row-even"><td><p>NumberOfResources</p></td>
+<td><p>Number of resources which appear in the ResourceGroup.</p></td>
+</tr>
+<tr class="row-odd"><td><p>TotalResourcesSizeCompressed</p></td>
+<td><p>Total compressed size of all the files which appear in the ResourceGroup.</p></td>
+</tr>
+<tr class="row-even"><td><p>TotalResourcesSizeUnCompressed</p></td>
+<td><p>Total uncompressed size of all the files which appear in the ResourceGroup</p></td>
+</tr>
+<tr class="row-odd"><td><p>Resources</p></td>
+<td><p>List of resources and information relating to them</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Resource Fields</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>RelativePath</p></td>
+<td><p>Relative path to the resource.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Type</p></td>
+<td><p>Type of resource.</p></td>
+</tr>
+<tr class="row-even"><td><p>Location</p></td>
+<td><p>Location where resource would appear in a Content Deliver Network (CDN) structure.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Checksum</p></td>
+<td><p>Data checksum of the uncompressed resource.</p></td>
+</tr>
+<tr class="row-even"><td><p>UncompressedSize</p></td>
+<td><p>Uncompressed size of resource in bytes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>CompressedSize</p></td>
+<td><p>Compressed size of resource in bytes.</p></td>
+</tr>
+<tr class="row-even"><td><p>BinaryOperation</p></td>
+<td><p>Binary operation for the resource</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="example-patchresourcegroup-file">
+<h2>Example PatchResourceGroup file<a class="headerlink" href="#example-patchresourcegroup-file" title="Link to this heading"></a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1.0</span>
+<span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PatchGroup</span>
+<span class="nt">NumberOfResources</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="nt">TotalResourcesSizeCompressed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">125</span>
+<span class="nt">TotalResourcesSizeUnCompressed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">228</span>
+<span class="nt">ResourceGroupResource</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">RelativePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PatchResourceGroup.yaml</span>
+<span class="w">  </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ResourceGroup</span>
+<span class="w">  </span><span class="nt">Location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16/169490e8f16ecbbd_064c6a93988a6dfb92cf480826a1de45</span>
+<span class="w">  </span><span class="nt">Checksum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">064c6a93988a6dfb92cf480826a1de45</span>
+<span class="w">  </span><span class="nt">UncompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">868</span>
+<span class="w">  </span><span class="nt">CompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">341</span>
+<span class="nt">MaxInputChunkSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50000000</span>
+<span class="nt">Resources</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">RelativePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Patches/Patch.0</span>
+<span class="w">    </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BinaryPatch</span>
+<span class="w">    </span><span class="nt">Location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">89/8917d12f0dc2f2a4_23038413c133ea89d37201b6660a0383</span>
+<span class="w">    </span><span class="nt">Checksum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">23038413c133ea89d37201b6660a0383</span>
+<span class="w">    </span><span class="nt">UncompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">145</span>
+<span class="w">    </span><span class="nt">CompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">67</span>
+<span class="w">    </span><span class="nt">TargetResourceRelativePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TextDocument1.txt</span>
+<span class="w">    </span><span class="nt">DataOffset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">SourceOffset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">RelativePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Patches/Patch.1</span>
+<span class="w">    </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BinaryPatch</span>
+<span class="w">    </span><span class="nt">Location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">89/8917d12f0dc2f2a5_27729bde0c1cb7e299408059a3809617</span>
+<span class="w">    </span><span class="nt">Checksum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27729bde0c1cb7e299408059a3809617</span>
+<span class="w">    </span><span class="nt">UncompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">83</span>
+<span class="w">    </span><span class="nt">CompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">58</span>
+<span class="w">    </span><span class="nt">TargetResourceRelativePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TextDocument2.txt</span>
+<span class="w">    </span><span class="nt">DataOffset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">SourceOffset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">  </span><span class="w w-Error"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+</section>
+<section id="patchresourcegroup-additional-fields">
+<h2>PatchResourceGroup Additional Fields<a class="headerlink" href="#patchresourcegroup-additional-fields" title="Link to this heading"></a></h2>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Document Fields</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ResourceGroupResource</p></td>
+<td><p>Resource information for a Resource Group containing resources to patch</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">Patch Resource Fields</span><a class="headerlink" href="#id4" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>DataOffset</p></td>
+<td><p>Data offset for use in the patch procedure</p></td>
+</tr>
+<tr class="row-odd"><td><p>SourceOffset</p></td>
+<td><p>Data source offset for use in the patch procedure</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="example-bundleresourcegroup-file">
+<h2>Example BundleResourceGroup file<a class="headerlink" href="#example-bundleresourcegroup-file" title="Link to this heading"></a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1.0</span>
+<span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BundleGroup</span>
+<span class="nt">NumberOfResources</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nt">TotalResourcesSizeCompressed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8389</span>
+<span class="nt">TotalResourcesSizeUnCompressed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">41961</span>
+<span class="nt">ResourceGroupResource</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">RelativePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ResourceGroup.yaml</span>
+<span class="w">  </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ResourceGroup</span>
+<span class="w">  </span><span class="nt">Location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cc/cc00d34500ea7a31_f32613169b3491afb5d029828d269ff3</span>
+<span class="w">  </span><span class="nt">Checksum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f32613169b3491afb5d029828d269ff3</span>
+<span class="w">  </span><span class="nt">UncompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">851</span>
+<span class="w">  </span><span class="nt">CompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">363</span>
+<span class="nt">ChunkSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="nt">Resources</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">RelativePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CreateBundleOut/ResourceGroup0.chunk</span>
+<span class="w">    </span><span class="nt">Type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BinaryChunk</span>
+<span class="w">    </span><span class="nt">Location</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">24/2445432734181d30_c6ffd7f72188cbf71e665c3714b5b148</span>
+<span class="w">    </span><span class="nt">Checksum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">c6ffd7f72188cbf71e665c3714b5b148</span>
+<span class="w">    </span><span class="nt">UncompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">41961</span>
+<span class="w">    </span><span class="nt">CompressedSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8389</span>
+<span class="w">  </span><span class="w w-Error"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+</section>
+<section id="bundleresourcegroup-additional-fields">
+<h2>BundleResourceGroup Additional Fields<a class="headerlink" href="#bundleresourcegroup-additional-fields" title="Link to this heading"></a></h2>
+<p>Bundle Resource Groups extend Resource Groups and so contain all the base fields for a Resource Group.</p>
+<table class="docutils align-default" id="id5">
+<caption><span class="caption-text">Document Fields</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ResourceGroupResource</p></td>
+<td><p>Resource information for a Resource Group containing resources that have been bundled</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="filesystemDesign.html" class="btn btn-neutral float-left" title="Filesystem Design - Local/Remote" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Copyright © 2025 CCP ehf.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
