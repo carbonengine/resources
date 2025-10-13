@@ -7,9 +7,9 @@
   "registries": [
     {
       "kind": "git",
-      "repository": "git@github.com:ccpgames/carbon-vcpkg-registry.git",
-      "baseline": "4089428d25208720dcf6451cb8b57816bbf9fb9d",
-      "packages": ["carbon-*", "python3-prebuilt", "bsdiff-drake127"]
+      "repository": "git@github.com:carbonengine/vcpkg-registry.git",
+      "baseline": "addd8867a1553f4b7866bb7a36deb84bd59bd1f9",
+      "packages": ["carbon-*", "python3", "bsdiff-drake127"]
     }
   ]
 }

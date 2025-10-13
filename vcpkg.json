@@ -1,8 +1,8 @@
 {
   "dependencies": [
     {
-      "name": "python3-prebuilt",
-      "version>=": "3.12.3#2"
+      "name": "python3",
+      "version>=": "3.12.3"
     },
     
     {
