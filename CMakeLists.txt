@@ -105,14 +105,17 @@ target_include_directories(resources-static
 add_subdirectory(cli)
 
 # Enable testing based on option set (on by default)
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    option(BUILD_TESTING "Build and run tests. Enabled by default." ON)
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    option(BUILD_TESTING "Build and run tests. Enabled by default." OFF)
     include(CTest)
-    if(BUILD_TESTING)
+    if (BUILD_TESTING)
+        message(STATUS "Running tests is a vcpkg feature and needs to be enabled explicitly, example:")
+        message(STATUS "\tCMake configure: -DVCPKG_MANIFEST_FEATURES=tests,<...any other features...>")
+        message(STATUS "\tCMakeUserPresets.json add: \"cacheVariables\": { \"VCPKG_MANIFEST_FEATURES\": \"tests;<...any other features...>\"  }")
+        message(STATUS "\tCommand line: vcpkg install --features=tests,<...any other features...>")
         add_subdirectory(tests)
-    endif()
-endif()
-
+    endif ()
+endif ()
 
 # Provide an install target if this is the top level project only
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -128,6 +131,11 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     option(BUILD_DOCUMENTATION "Build Documentation" ${BUILD_DOCUMENTATION_DEFAULT_FLAG})
 
     if (BUILD_DOCUMENTATION)
+        message(STATUS "Generating documentation is a vcpkg feature and needs to be enabled explicitly, example:")
+        message(STATUS "\tCMake configure: -DVCPKG_MANIFEST_FEATURES=docs,<...any other features...>")
+        message(STATUS "\tCMakeUserPresets.json add: \"cacheVariables\": { \"VCPKG_MANIFEST_FEATURES\": \"docs;<...any other features...>\"  }")
+        message(STATUS "\tCommand line: vcpkg install --features=docs,<...any other features...>")
+
         # Run sphinx
         set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/doc/source)
         set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/doc/build)
