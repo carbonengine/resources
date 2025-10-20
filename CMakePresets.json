@@ -17,7 +17,8 @@
       "cacheVariables": {
         "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets",
-        "VCPKG_TARGET_TRIPLET": "x64-windows-carbon"
+        "VCPKG_TARGET_TRIPLET": "x64-windows-carbon",
+        "VCPKG_HOST_TRIPLET": "x64-windows-carbon"
       },
       "environment": {
         "X_VCPKG_REGISTRIES_CACHE": "${sourceDir}/vcpkg_registry_cache"
@@ -31,7 +32,8 @@
       "cacheVariables": {
         "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets",
-        "VCPKG_TARGET_TRIPLET": "x64-windows-carbon"
+        "VCPKG_TARGET_TRIPLET": "x64-windows-carbon",
+        "VCPKG_HOST_TRIPLET": "x64-windows-carbon"
       },
       "environment": {
         "X_VCPKG_REGISTRIES_CACHE": "${sourceDir}/vcpkg_registry_cache"
@@ -53,7 +55,8 @@
       "cacheVariables": {
         "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets",
-        "VCPKG_TARGET_TRIPLET": "arm64-osx-carbon"
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-carbon",
+        "VCPKG_HOST_TRIPLET": "arm64-osx-carbon"
       },
       "environment": {
         "X_VCPKG_REGISTRIES_CACHE": "${sourceDir}/vcpkg_registry_cache"

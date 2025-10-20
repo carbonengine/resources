@@ -34,11 +34,13 @@
       "dependencies": [
         {
           "name": "gtest",
-          "version>=": "1.15.2"
+          "version>=": "1.15.2",
+          "host": true
         },
         {
           "name": "tiny-process-library",
-          "version>=": "2.0.4#3"
+          "version>=": "2.0.4#3",
+          "host": true
         }
       ]
     },
@@ -47,7 +49,8 @@
       "dependencies": [
         {
           "name": "python3",
-          "version>=": "3.12.3"
+          "version>=": "3.12.3",
+          "host": true
         }
       ]
     }
