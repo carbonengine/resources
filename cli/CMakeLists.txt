@@ -1,6 +1,6 @@
 # Copyright © 2025 CCP ehf.
 
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.30)
 project(resources-cli VERSION 1.0.0)
 
 find_package(argparse CONFIG REQUIRED)
