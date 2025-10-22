@@ -1,7 +1,5 @@
 # Copyright © 2025 CCP ehf.
 
-cmake_minimum_required(VERSION 3.18)
-
 project(resources-test)
 
 find_package(CURL CONFIG REQUIRED)
