@@ -1,7 +1,5 @@
 # Copyright © 2025 CCP ehf.
 
-project(resources-test)
-
 find_package(CURL CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 find_package(tiny-process-library CONFIG REQUIRED)
@@ -41,13 +39,6 @@ if (WIN32)
     add_custom_command(
             TARGET resources-test POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:resources-cli> $<TARGET_FILE_DIR:resources-test>
-            COMMAND_EXPAND_LISTS
-    )
-
-    # Binaries
-    add_custom_command(
-            TARGET resources-test POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:resources-test> $<TARGET_FILE_DIR:resources-test>
             COMMAND_EXPAND_LISTS
     )
 

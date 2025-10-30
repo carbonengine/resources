@@ -1,7 +1,5 @@
 # Copyright © 2025 CCP ehf.
 
-project(resources-tools VERSION 1.0.0)
-
 find_package(cryptopp CONFIG REQUIRED)
 find_package(CURL CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)

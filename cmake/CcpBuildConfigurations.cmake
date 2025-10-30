@@ -86,8 +86,6 @@ if (MSVC)
     add_compile_options(/permissive-)
     # Ignore missing PDB file for libraries
     add_link_options(/IGNORE:4099)
-    # https://docs.microsoft.com/en-us/cpp/error-messages/tool-errors/linker-tools-warning-lnk4098?view=msvc-150
-    add_link_options(/NODEFAULTLIB:libcmt.lib)
 
     # https://docs.microsoft.com/en-us/cpp/text/support-for-multibyte-character-sets-mbcss?view=msvc-150
     # We don't want this, but we currently can't use /D UNICODE since this breaks all our legacy nonsense (which we should fix)

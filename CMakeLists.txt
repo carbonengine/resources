@@ -52,7 +52,7 @@ set(SRC_FILES
         src/ParameterVersion.cpp
 )
 
-ccp_add_library(resources SHARED ${SRC_FILES})
+add_library(resources STATIC ${SRC_FILES})
 
 target_compile_definitions(resources PRIVATE EXPORT_LIBRARY)
 
@@ -64,7 +64,9 @@ if (WIN32)
     target_compile_definitions(resources PRIVATE NOMINMAX) # Do not define min/max macros.
 endif ()
 
-target_link_libraries(resources PRIVATE resources-tools yaml-cpp::yaml-cpp)
+target_compile_definitions(resources PUBLIC CARBON_RESOURCES_STATIC)
+
+target_link_libraries(resources PRIVATE $<BUILD_LOCAL_INTERFACE:resources-tools> yaml-cpp::yaml-cpp)
 
 target_include_directories(resources
         PUBLIC
@@ -80,26 +82,6 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 set_target_properties(resources PROPERTIES OUTPUT_NAME "_resources")
-
-# Static lib, exported and used for cli
-ccp_add_library(resources-static STATIC ${SRC_FILES})
-
-set_target_properties(resources-static PROPERTIES OUTPUT_NAME "_resources-static")
-
-target_compile_definitions(resources-static PUBLIC CARBON_RESOURCES_STATIC)
-
-if (WIN32)
-    target_compile_definitions(resources-static PRIVATE NOMINMAX) # Do not define min/max macros.
-endif ()
-
-target_link_libraries(resources-static PRIVATE $<BUILD_LOCAL_INTERFACE:resources-tools> yaml-cpp::yaml-cpp)
-
-target_include_directories(resources-static
-        PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-)
 
 add_subdirectory(cli)
 
@@ -152,7 +134,7 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     if (INSTALL_BIN_ONLY)
         # Install rule to ensure that our runtime files are in the expected, platform-specific folder
         install(
-                TARGETS resources resources-static
+                TARGETS resources
                 EXPORT resourcesTarget
                 CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
                 LIBRARY DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
@@ -162,7 +144,7 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     else ()
         # Install rule to ensure that our runtime and linker files are in the expected, platform-specific folders
         install(
-                TARGETS resources resources-static
+                TARGETS resources
                 EXPORT resourcesTarget
                 CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
                 LIBRARY DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
