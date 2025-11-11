@@ -2,11 +2,11 @@
   "dependencies": [
     {
       "name": "argparse",
-      "version>=": "2.2#0"
+      "version>=": "2.2"
     },
     {
       "name": "bsdiff-drake127",
-      "version>=": "4.3.3"
+      "version>=": "4.3.3#1"
     },
     {
       "name": "cryptopp",
@@ -35,7 +35,7 @@
         {
           "name": "python3",
           "host": true,
-          "version>=": "3.12.3"
+          "version>=": "3.12.3#1"
         }
       ]
     },
@@ -58,7 +58,7 @@
   "overrides": [
     {
       "name": "argparse",
-      "version": "2.2#0"
+      "version": "2.2"
     }
   ]
 }
