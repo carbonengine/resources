@@ -1,7 +1,7 @@
 # Copyright © 2025 CCP ehf.
 
 cmake_minimum_required(VERSION 3.30.1)
-project(resources VERSION 3.1.1)
+project(resources VERSION 3.1.2)
 
 include(cmake/CcpGlobalSettings.cmake)
 include(cmake/CcpTargetConfigurations.cmake)
@@ -157,11 +157,13 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
         install(
                 EXPORT resourcesTarget
-                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/resources
-                FILE resources.cmake)
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/carbon-resources
+                FILE carbon-resources.cmake
+        )
         install(
-                FILES resourcesConfig.cmake
-                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/resources)
+                FILES carbon-resourcesConfig.cmake
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/carbon-resources
+        )
     endif ()
 
 endif ()

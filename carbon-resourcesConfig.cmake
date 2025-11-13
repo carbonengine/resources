@@ -1,7 +1,7 @@
 include(CMakeFindDependencyMacro)
 
 # ${CMAKE_CURRENT_LIST_DIR}/project_name.cmake is generated automatically by cmake as part of the install step
-include(${CMAKE_CURRENT_LIST_DIR}/resources.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/carbon-resources.cmake)
 
 # Please specify all of this projects transitive dependencies here
 # In order for a consuming cmake project system to locate any transitive dependencies of this project, they must be
