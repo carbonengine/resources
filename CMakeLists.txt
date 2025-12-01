@@ -8,6 +8,7 @@ include(cmake/CcpTargetConfigurations.cmake)
 include(cmake/CcpDocsGenerator.cmake)
 
 find_package(yaml-cpp CONFIG REQUIRED)
+find_package(unofficial-inih CONFIG REQUIRED)
 
 # Add subdirectory for resource tools static library
 add_subdirectory(tools)
@@ -65,7 +66,7 @@ endif ()
 
 target_compile_definitions(resources PUBLIC CARBON_RESOURCES_STATIC)
 
-target_link_libraries(resources PRIVATE $<BUILD_LOCAL_INTERFACE:resources-tools> yaml-cpp::yaml-cpp)
+target_link_libraries(resources PRIVATE $<BUILD_LOCAL_INTERFACE:resources-tools> yaml-cpp::yaml-cpp unofficial::inih::inireader)
 
 target_include_directories(resources
         PUBLIC

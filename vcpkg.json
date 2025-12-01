@@ -17,6 +17,10 @@
       "version>=": "8.11.1#1"
     },
     {
+      "name": "inih",
+      "version>=": "62"
+    },
+    {
       "name": "yaml-cpp",
       "version>=": "0.8.0#1"
     },
