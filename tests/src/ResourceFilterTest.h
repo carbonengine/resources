@@ -1,9 +1,8 @@
 #pragma once
 
-#include <gtest/gtest.h>
+#include "ResourcesTestFixture.h"
 
-class ResourceFilterTestFixture : public ::testing::Test {
-protected:
-    void SetUp() override {}
-    void TearDown() override {}
+// Inherit from ResourcesTestFixture to gain access to file and directory helper functions
+class ResourceFilterTestFixture : public ResourcesTestFixture
+{
 };
