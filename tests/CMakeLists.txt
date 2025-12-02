@@ -14,6 +14,8 @@ set(SRC_FILES
         src/ResourcesLibraryTest.cpp
         src/ResourcesCliTest.cpp
         src/ResourceToolsLibraryTest.cpp
+        src/ResourceFilterTest.cpp
+        src/ResourceFilterTest.h
 )
 
 add_executable(resources-test ${SRC_FILES})
