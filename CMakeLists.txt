@@ -50,6 +50,19 @@ set(SRC_FILES
         src/ResourceInfo/BundleResourceGroupInfo.cpp
         src/ParameterVersion.h
         src/ParameterVersion.cpp
+
+        src/FilterResourceFile.h
+        src/FilterResourceFile.cpp
+        src/FilterDefaultSection.h
+        src/FilterDefaultSection.cpp
+        src/FilterNamedSection.h
+        src/FilterNamedSection.cpp
+        src/FilterPrefixmap.h
+        src/FilterPrefixmap.cpp
+        src/FilterResourceFilter.h
+        src/FilterResourceFilter.cpp
+        src/FilterResourceLine.h
+        src/FilterResourceLine.cpp
 )
 
 add_library(resources STATIC ${SRC_FILES})
