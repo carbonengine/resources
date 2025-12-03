@@ -1,7 +1,9 @@
+// Copyright © 2025 CCP ehf.
+
 #include "ResourceFilterTest.h"
 #include <INIReader.h>
 
-TEST_F( ResourceFilterTestFixture, Example1IniParsing )
+TEST_F( ResourceFilterTest, Example1IniParsing )
 {
 	// Use the test fixture's helper to get the absolute path
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/example1.ini" );
