@@ -9,8 +9,8 @@
 namespace CarbonResources
 {
 
-FilterResourceFilter::FilterResourceFilter( const std::string& rawFilter )
-	: m_rawFilter( rawFilter )
+FilterResourceFilter::FilterResourceFilter( const std::string& rawFilter ) :
+	m_rawFilter( rawFilter )
 {
 	ParseFilters();
 }
@@ -30,6 +30,18 @@ const std::vector<std::string>& FilterResourceFilter::GetExcludeFilter() const
 	return m_excludeFilter;
 }
 
+void FilterResourceFilter::PlaceTokenInCorrectVector( const std::string& token, std::vector<std::string>& fromVector, std::vector<std::string>& toVector )
+{
+	// Remove token from the fromVector if present
+	auto it = std::find( fromVector.begin(), fromVector.end(), token );
+	if( it != fromVector.end() )
+		fromVector.erase( it );
+
+	// Add token to the toVector if not already present in it.
+	if( std::find( toVector.begin(), toVector.end(), token ) == toVector.end() )
+		toVector.push_back( token );
+}
+
 void FilterResourceFilter::ParseFilters()
 {
 	m_includeFilter.clear();
@@ -40,7 +52,7 @@ void FilterResourceFilter::ParseFilters()
 	while( pos < s.size() )
 	{
 		// Skip whitespace
-		while( pos < s.size() && std::isspace(static_cast<unsigned char>(s[pos])) )
+		while( pos < s.size() && std::isspace( static_cast<unsigned char>( s[pos] ) ) )
 			++pos;
 		if( pos >= s.size() )
 			break;
@@ -75,26 +87,9 @@ void FilterResourceFilter::ParseFilters()
 			if( token.empty() )
 				continue;
 
-			if( isExclude )
-			{
-				// Remove from include if present
-				auto it = std::find( m_includeFilter.begin(), m_includeFilter.end(), token );
-				if( it != m_includeFilter.end() )
-					m_includeFilter.erase( it );
-				// Add to exclude if not present
-				if( std::find( m_excludeFilter.begin(), m_excludeFilter.end(), token ) == m_excludeFilter.end() )
-					m_excludeFilter.push_back( token );
-			}
-			else
-			{
-				// Remove from exclude if present
-				auto it = std::find( m_excludeFilter.begin(), m_excludeFilter.end(), token );
-				if( it != m_excludeFilter.end() )
-					m_excludeFilter.erase( it );
-				// Add to include if not present
-				if( std::find( m_includeFilter.begin(), m_includeFilter.end(), token ) == m_includeFilter.end() )
-					m_includeFilter.push_back( token );
-			}
+			PlaceTokenInCorrectVector( token,
+									   isExclude ? m_includeFilter : m_excludeFilter,
+									   isExclude ? m_excludeFilter : m_includeFilter );
 		}
 		pos = endBracket + 1;
 	}
