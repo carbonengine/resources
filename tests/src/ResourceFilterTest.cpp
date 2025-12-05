@@ -2,6 +2,7 @@
 
 #include "ResourceFilterTest.h"
 #include <INIReader.h>
+#include "../../src/FilterResourceFilter.h"
 
 TEST_F( ResourceFilterTest, Example1IniParsing )
 {
@@ -25,4 +26,70 @@ TEST_F( ResourceFilterTest, Example1IniParsing )
 	EXPECT_EQ( reader.Get( "testyamlfilesovermultilinerespaths", "resfile", "" ), "res:/binaryFileIndex_v0_0_0.txt" );
 	EXPECT_EQ( reader.Get( "testyamlfilesovermultilinerespaths", "respaths", "" ), "res:/...\nres2:/..." );
 	EXPECT_EQ( reader.Keys( "testyamlfilesovermultilinerespaths" ).size(), 3 );
+}
+
+TEST_F( ResourceFilterTest, OnlyIncludeFilter )
+{
+	CarbonResources::FilterResourceFilter filter("[ .this .is .included ]");
+	const auto& includes = filter.GetIncludeFilter();
+	const auto& excludes = filter.GetExcludeFilter();
+	EXPECT_EQ(includes.size(), 3);
+	EXPECT_EQ(includes[0], ".this");
+	EXPECT_EQ(includes[1], ".is");
+	EXPECT_EQ(includes[2], ".included");
+	EXPECT_TRUE(excludes.empty());
+}
+
+TEST_F( ResourceFilterTest, OnlyExcludeFilter )
+{
+	CarbonResources::FilterResourceFilter filter("![ .excluded .extension ]");
+	const auto& includes = filter.GetIncludeFilter();
+	const auto& excludes = filter.GetExcludeFilter();
+	EXPECT_TRUE(includes.empty());
+	EXPECT_EQ(excludes.size(), 2);
+	EXPECT_EQ(excludes[0], ".excluded");
+	EXPECT_EQ(excludes[1], ".extension");
+}
+
+TEST_F( ResourceFilterTest, ComplexIncludeExcludeFilter )
+{
+	CarbonResources::FilterResourceFilter filter("[ .red .gr2 .dds .png .yaml ] [ .txt ] ![ .csv .xls ] [ .bat .sh ] ![ .blk .yel ]");
+	const auto& includes = filter.GetIncludeFilter();
+	const auto& excludes = filter.GetExcludeFilter();
+	std::vector<std::string> expectedIncludes = { ".red", ".gr2", ".dds", ".png", ".yaml", ".txt", ".bat", ".sh" };
+	std::vector<std::string> expectedExcludes = { ".csv", ".xls", ".blk", ".yel" };
+	EXPECT_EQ(includes, expectedIncludes);
+	EXPECT_EQ(excludes, expectedExcludes);
+}
+
+TEST_F( ResourceFilterTest, SimpleIncludeFilter )
+{
+	CarbonResources::FilterResourceFilter filter("[ .red ]");
+	const auto& includes = filter.GetIncludeFilter();
+	EXPECT_EQ(includes.size(), 1);
+	EXPECT_EQ(includes[0], ".red");
+}
+
+TEST_F( ResourceFilterTest, SimpleExcludeFilter )
+{
+	CarbonResources::FilterResourceFilter filter("![ .blk ]");
+	const auto& excludes = filter.GetExcludeFilter();
+	EXPECT_EQ(excludes.size(), 1);
+	EXPECT_EQ(excludes[0], ".blk");
+}
+
+TEST_F( ResourceFilterTest, IncludeExcludeInclude)
+{
+	// Include .in1 and .in2
+	// Exclude .in2, .ex1, and .ex2         (removes .in2 from include)
+	// Include .ex1, .in3 and .in1	        (removes .ex1 from exclude, adds .in3, keeps .in1)
+	// Resulting include: .in1, .ex1, .in3
+	// Resulting exclude: .in2, .ex2
+	CarbonResources::FilterResourceFilter filter("[ .in1 .in2 ] ![ .in2 .ex1 .ex2 ] [ .ex1 .in3 .in1 ]");
+	const auto& includes = filter.GetIncludeFilter();
+	const auto& excludes = filter.GetExcludeFilter();
+	std::vector<std::string> expectedIncludes = { ".in1", ".ex1", ".in3" };
+	std::vector<std::string> expectedExcludes = { ".in2", ".ex2" };
+	EXPECT_EQ(includes, expectedIncludes);
+	EXPECT_EQ(excludes, expectedExcludes);
 }
