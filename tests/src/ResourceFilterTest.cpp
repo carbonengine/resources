@@ -247,3 +247,25 @@ TEST_F( ResourceFilterTest, MissingClosingBracket_v3 )
 		FAIL() << "Expected std::invalid_argument (2)";
 	}
 }
+
+TEST_F( ResourceFilterTest, CondensedValidFilterStringv1 )
+{
+	CarbonResources::FilterResourceFilter filter( "[inToken1 inToken2]![exToken1 exToken2][inToken3]" );
+	const auto& includes = filter.GetIncludeFilter();
+	const auto& excludes = filter.GetExcludeFilter();
+	std::vector<std::string> expectedIncludes = { "inToken1", "inToken2", "inToken3" };
+	std::vector<std::string> expectedExcludes = { "exToken1", "exToken2" };
+	EXPECT_EQ( includes, expectedIncludes );
+	EXPECT_EQ( excludes, expectedExcludes );
+}
+
+TEST_F( ResourceFilterTest, CondensedValidFilterStringv2 )
+{
+	CarbonResources::FilterResourceFilter filter( "![exToken1][inToken1 inToken2]![exToken2][inToken3]" );
+	const auto& includes = filter.GetIncludeFilter();
+	const auto& excludes = filter.GetExcludeFilter();
+	std::vector<std::string> expectedIncludes = { "inToken1", "inToken2", "inToken3" };
+	std::vector<std::string> expectedExcludes = { "exToken1", "exToken2" };
+	EXPECT_EQ( includes, expectedIncludes );
+	EXPECT_EQ( excludes, expectedExcludes );
+}
