@@ -12,19 +12,42 @@ namespace CarbonResources
 class FilterResourceFilter
 {
 public:
+	/// @brief Constructor that takes a raw filter string and parses it into include and exclude filters.
+	/// @param rawFilter the raw filter string to parse.
+	/// @note Calls ParseFilters() which may throw std::invalid_argument if the filter string is malformed.
+	/// @see CarbonResources::FilterResourceFilter::ParseFilters
 	explicit FilterResourceFilter( const std::string& rawFilter );
 
+	/// @brief Gets the raw filter string.
+	/// @return the raw filter string.
 	const std::string& GetRawFilter() const;
 
+	/// @brief Gets the include filter vector.
+	/// @return the valid include filter as a vector.
 	const std::vector<std::string>& GetIncludeFilter() const;
 
+	/// @brief Gets the exclude filter vector.
+	/// @return the valid exclude filter as a vector.
 	const std::vector<std::string>& GetExcludeFilter() const;
 
 private:
+	/// @brief The raw filter string.
+	/// @note Set in the constructor and used in ParseFilters().
 	std::string m_rawFilter;
+
+	/// @brief The include filter vector.
+	/// @note Populated in ParseFilters().
+	/// @see CarbonResources::FilterResourceFilter::ParseFilters
 	std::vector<std::string> m_includeFilter;
+
+	/// @brief The exclude filter vector.
+	/// @note Populated in ParseFilters().
+	/// @see CarbonResources::FilterResourceFilter::ParseFilters
 	std::vector<std::string> m_excludeFilter;
 
+	/// @brief Parses the raw filter string into include and exclude filters.
+	/// @return void
+	/// @note Throws std::invalid_argument if the filter string is malformed, bubbling the error up to the callar (class constructor).
 	void ParseFilters();
 
 	/// @brief Static helper function that places a token in the correct vector, moving it from one vector to another if need be.
