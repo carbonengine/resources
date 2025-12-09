@@ -9,6 +9,9 @@
 namespace CarbonResources
 {
 
+/// @brief Class representing a resource filter with include and exclude filters.
+/// @note This can be for the filter attribute of a NamedSection OR the optional filter for a respaths/resfile line (defined in FilterResourceLine).
+/// see CarbonResources::FilterNamedSection and CarbonResources::FilterResourceLine for usage.
 class FilterResourceFilter
 {
 public:
@@ -47,7 +50,7 @@ private:
 
 	/// @brief Parses the raw filter string into include and exclude filters.
 	/// @return void
-	/// @note Throws std::invalid_argument if the filter string is malformed, bubbling the error up to the callar (class constructor).
+	/// @note Throws std::invalid_argument if the filter string is malformed, bubbling the error up to the caller (class constructor).
 	void ParseFilters();
 
 	/// @brief Static helper function that places a token in the correct vector, moving it from one vector to another if need be.

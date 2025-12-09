@@ -6,15 +6,21 @@
 namespace CarbonResources
 {
 
-FilterResourceLine::FilterResourceLine( const std::string& line, const FilterPrefixmap& prefixMap, const FilterResourceFilter& sectionFilter ) :
-	m_line( line ),
+FilterResourceLine::FilterResourceLine( const std::string& rawLine, const FilterPrefixmap& prefixMap, const FilterResourceFilter& sectionFilter ) :
+	m_rawLine( rawLine ),
 	m_prefixMap( prefixMap ),
-	m_resFilter( sectionFilter )
+	m_sectionFilter( sectionFilter )
 {
 	throw std::logic_error( "Not implemented yet exception" );
 }
 
-bool FilterResourceLine::IsValid() const
+// TODO: Remove this, probably don't need it.
+//bool FilterResourceLine::IsValid() const
+//{
+//	throw std::logic_error( "Not implemented yet exception" );
+//}
+
+void FilterResourceLine::ParseLine()
 {
 	throw std::logic_error( "Not implemented yet exception" );
 }
