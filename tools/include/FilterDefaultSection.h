@@ -5,7 +5,7 @@
 
 #include "FilterPrefixmap.h"
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 class FilterDefaultSection

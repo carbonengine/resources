@@ -8,7 +8,7 @@
 #include "FilterResourceFilter.h"
 #include "FilterResourceLine.h"
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 class FilterNamedSection

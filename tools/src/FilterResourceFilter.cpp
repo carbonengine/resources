@@ -6,7 +6,7 @@
 #include <cctype>
 #include <FilterResourceFilter.h>
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 FilterResourceFilter::FilterResourceFilter( const std::string& rawFilter ) :

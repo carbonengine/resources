@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <FilterResourceLine.h>
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 FilterResourceLine::FilterResourceLine( const std::string& rawLine, const FilterPrefixmap& prefixMap, const FilterResourceFilter& sectionFilter ) :

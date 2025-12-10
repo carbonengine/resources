@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <FilterDefaultSection.h>
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 FilterDefaultSection::FilterDefaultSection( const std::string& prefixmapStr ) :

@@ -4,7 +4,7 @@
 
 #include <FilterResourceFile.h>
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 FilterResourceFile::FilterResourceFile( const FilterDefaultSection& defaultSection, const std::vector<FilterNamedSection>& namedSections ) :

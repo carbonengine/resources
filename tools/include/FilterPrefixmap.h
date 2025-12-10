@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 class FilterPrefixmap

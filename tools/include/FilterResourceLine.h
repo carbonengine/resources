@@ -7,7 +7,7 @@
 #include "FilterPrefixmap.h"
 #include "FilterResourceFilter.h"
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 /// @brief Class representing a single line of a resfile/respaths attribute.

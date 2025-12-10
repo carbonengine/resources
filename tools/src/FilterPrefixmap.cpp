@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <FilterPrefixmap.h>
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 FilterPrefixmap::FilterPrefixmap( const std::string& prefixmapStr )

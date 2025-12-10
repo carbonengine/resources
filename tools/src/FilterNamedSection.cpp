@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <FilterNamedSection.h>
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 FilterNamedSection::FilterNamedSection( const std::string& filter, const std::string& resfile, const std::vector<std::string>& respaths ) :

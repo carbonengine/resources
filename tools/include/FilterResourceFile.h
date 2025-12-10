@@ -7,7 +7,7 @@
 #include "FilterDefaultSection.h"
 #include "FilterNamedSection.h"
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 class FilterResourceFile

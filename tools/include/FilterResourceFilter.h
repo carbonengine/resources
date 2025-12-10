@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace CarbonResources
+namespace ResourceTools
 {
 
 /// @brief Class representing a resource filter with include and exclude filters.
