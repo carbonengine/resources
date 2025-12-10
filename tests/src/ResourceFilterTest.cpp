@@ -21,11 +21,14 @@ TEST_F( ResourceFilterTest, Example1IniParsing )
 	EXPECT_EQ( reader.Keys( "default" ).size(), 2 );
 
 	// Check [testyamlfilesovermultilinerespaths] section
-	ASSERT_TRUE( reader.HasSection( "testyamlfilesovermultilinerespaths" ) );
-	EXPECT_EQ( reader.Get( "testyamlfilesovermultilinerespaths", "filter", "" ), "[ .yaml ]" );
-	EXPECT_EQ( reader.Get( "testyamlfilesovermultilinerespaths", "resfile", "" ), "res:/binaryFileIndex_v0_0_0.txt" );
-	EXPECT_EQ( reader.Get( "testyamlfilesovermultilinerespaths", "respaths", "" ), "res:/...\nres2:/..." );
-	EXPECT_EQ( reader.Keys( "testyamlfilesovermultilinerespaths" ).size(), 3 );
+	ASSERT_TRUE( reader.HasSection( "testYamlFilesOverMultiLineResPathsWithEmptyLines" ) );
+	EXPECT_EQ( reader.Get( "testYamlFilesOverMultiLineResPathsWithEmptyLines", "filter", "" ), "[ .yaml ]" );
+	EXPECT_EQ( reader.Get( "testYamlFilesOverMultiLineResPathsWithEmptyLines", "resfile", "" ), "res:/binaryFileIndex_v0_0_0.txt" );
+	auto respathValueGet =  reader.Get( "testYamlFilesOverMultiLineResPathsWithEmptyLines", "respaths", "" );
+	std::string respathValueGetString = reader.Get( "testYamlFilesOverMultiLineResPathsWithEmptyLines", "respaths", "" );
+	EXPECT_EQ( respathValueGet, respathValueGetString );
+	EXPECT_EQ( respathValueGet, "res:/firstLine/...\nres:/secondLine/...\nres2:/thirdLine/..." ); // Note: Under the hood, INIReader converts multi-empty-lines to a single \n line breaks
+	EXPECT_EQ( reader.Keys( "testYamlFilesOverMultiLineResPathsWithEmptyLines" ).size(), 3 );
 }
 
 TEST_F( ResourceFilterTest, OnlyIncludeFilter )
