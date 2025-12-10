@@ -1,7 +1,7 @@
 // Copyright © 2025 CCP ehf.
 
 #include <stdexcept>
-#include "FilterResourceLine.h"
+#include <FilterResourceLine.h>
 
 namespace CarbonResources
 {

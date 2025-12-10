@@ -20,6 +20,12 @@ set(SRC_FILES
         include/RollingChecksum.h
         include/ScopedFile.h
         include/StatusCallback.h
+        include/FilterResourceFile.h
+        include/FilterDefaultSection.h
+        include/FilterNamedSection.h
+        include/FilterPrefixmap.h
+        include/FilterResourceFilter.h
+        include/FilterResourceLine.h
 
         src/BundleStreamIn.cpp
         src/BundleStreamOut.cpp
@@ -35,6 +41,12 @@ set(SRC_FILES
         src/ScopedFile.cpp
         src/Patching.cpp
         src/RollingChecksum.cpp
+        src/FilterResourceFile.cpp
+        src/FilterDefaultSection.cpp
+        src/FilterNamedSection.cpp
+        src/FilterPrefixmap.cpp
+        src/FilterResourceFilter.cpp
+        src/FilterResourceLine.cpp
 )
 
 add_library(resources-tools STATIC ${SRC_FILES})

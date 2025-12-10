@@ -2,7 +2,7 @@
 
 #include "ResourceFilterTest.h"
 #include <INIReader.h>
-#include "../../src/FilterResourceFilter.h"
+#include <FilterResourceFilter.h>
 
 TEST_F( ResourceFilterTest, Example1IniParsing )
 {

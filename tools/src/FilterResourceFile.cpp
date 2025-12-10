@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "FilterResourceFile.h"
+#include <FilterResourceFile.h>
 
 namespace CarbonResources
 {

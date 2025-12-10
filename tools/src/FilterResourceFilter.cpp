@@ -4,7 +4,7 @@
 //#include <regex>
 #include <sstream>
 #include <cctype>
-#include "FilterResourceFilter.h"
+#include <FilterResourceFilter.h>
 
 namespace CarbonResources
 {

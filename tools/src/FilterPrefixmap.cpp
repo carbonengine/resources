@@ -1,7 +1,7 @@
 // Copyright © 2025 CCP ehf.
 
 #include <stdexcept>
-#include "FilterPrefixmap.h"
+#include <FilterPrefixmap.h>
 
 namespace CarbonResources
 {
