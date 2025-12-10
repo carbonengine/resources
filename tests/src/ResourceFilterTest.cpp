@@ -30,7 +30,7 @@ TEST_F( ResourceFilterTest, Example1IniParsing )
 
 TEST_F( ResourceFilterTest, OnlyIncludeFilter )
 {
-	CarbonResources::FilterResourceFilter filter( "[ .this .is .included ]" );
+	ResourceTools::FilterResourceFilter filter( "[ .this .is .included ]" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
 	EXPECT_EQ( includes.size(), 3 );
@@ -42,7 +42,7 @@ TEST_F( ResourceFilterTest, OnlyIncludeFilter )
 
 TEST_F( ResourceFilterTest, OnlyExcludeFilter )
 {
-	CarbonResources::FilterResourceFilter filter( "![ .excluded .extension ]" );
+	ResourceTools::FilterResourceFilter filter( "![ .excluded .extension ]" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
 	EXPECT_TRUE( includes.empty() );
@@ -53,7 +53,7 @@ TEST_F( ResourceFilterTest, OnlyExcludeFilter )
 
 TEST_F( ResourceFilterTest, ComplexIncludeExcludeFilter )
 {
-	CarbonResources::FilterResourceFilter filter( "[ .red .gr2 .dds .png .yaml ] [ .txt ] ![ .csv .xls ] [ .bat .sh ] ![ .blk .yel ]" );
+	ResourceTools::FilterResourceFilter filter( "[ .red .gr2 .dds .png .yaml ] [ .txt ] ![ .csv .xls ] [ .bat .sh ] ![ .blk .yel ]" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
 	std::vector<std::string> expectedIncludes = { ".red", ".gr2", ".dds", ".png", ".yaml", ".txt", ".bat", ".sh" };
@@ -64,7 +64,7 @@ TEST_F( ResourceFilterTest, ComplexIncludeExcludeFilter )
 
 TEST_F( ResourceFilterTest, SimpleIncludeFilter )
 {
-	CarbonResources::FilterResourceFilter filter( "[ .red ]" );
+	ResourceTools::FilterResourceFilter filter( "[ .red ]" );
 	const auto& includes = filter.GetIncludeFilter();
 	EXPECT_EQ( includes.size(), 1 );
 	EXPECT_EQ( includes[0], ".red" );
@@ -72,7 +72,7 @@ TEST_F( ResourceFilterTest, SimpleIncludeFilter )
 
 TEST_F( ResourceFilterTest, SimpleExcludeFilter )
 {
-	CarbonResources::FilterResourceFilter filter( "![ .blk ]" );
+	ResourceTools::FilterResourceFilter filter( "![ .blk ]" );
 	const auto& excludes = filter.GetExcludeFilter();
 	EXPECT_EQ( excludes.size(), 1 );
 	EXPECT_EQ( excludes[0], ".blk" );
@@ -85,7 +85,7 @@ TEST_F( ResourceFilterTest, IncludeExcludeInclude )
 	// Include .ex1, .in3 and .in1	        (removes .ex1 from exclude, adds .in3, keeps .in1)
 	// Resulting include: .in1, .ex1, .in3
 	// Resulting exclude: .in2, .ex2
-	CarbonResources::FilterResourceFilter filter( "[ .in1 .in2 ] ![ .in2 .ex1 .ex2 ] [ .ex1 .in3 .in1 ]" );
+	ResourceTools::FilterResourceFilter filter( "[ .in1 .in2 ] ![ .in2 .ex1 .ex2 ] [ .ex1 .in3 .in1 ]" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
 	std::vector<std::string> expectedIncludes = { ".in1", ".ex1", ".in3" };
@@ -99,7 +99,7 @@ TEST_F( ResourceFilterTest, MissingClosingIncludeBracketBeforeNextOpenExcludeBra
 	try
 	{
 		// This test filter has a missing closing bracket for the first include filter, before the next exclude filter starts
-		CarbonResources::FilterResourceFilter filter( "[ .in1   !  [ .ex1 ]" );
+		ResourceTools::FilterResourceFilter filter( "[ .in1   !  [ .ex1 ]" );
 		FAIL() << "Expected std::invalid_argument (1)";
 	}
 	catch( const std::invalid_argument& e )
@@ -116,7 +116,7 @@ TEST_F( ResourceFilterTest, ExcludeMarkerWithoutBracket_v1 )
 {
 	try
 	{
-		CarbonResources::FilterResourceFilter filter( "! .ex1 ]" );
+		ResourceTools::FilterResourceFilter filter( "! .ex1 ]" );
 		FAIL() << "Expected std::invalid_argument (1)";
 	}
 	catch( const std::invalid_argument& e )
@@ -133,7 +133,7 @@ TEST_F( ResourceFilterTest, ExcludeMarkerWithoutBracket_v2 )
 {
 	try
 	{
-		CarbonResources::FilterResourceFilter filter( "  [ .in1 ] ! .ex1 ]" );
+		ResourceTools::FilterResourceFilter filter( "  [ .in1 ] ! .ex1 ]" );
 		FAIL() << "Expected std::invalid_argument (1)";
 	}
 	catch( const std::invalid_argument& e )
@@ -150,7 +150,7 @@ TEST_F( ResourceFilterTest, ExcludeMarkerWithoutBracket_v3 )
 {
 	try
 	{
-		CarbonResources::FilterResourceFilter filter( "  [ .in1 ] ![ .ex1 ] ! " );
+		ResourceTools::FilterResourceFilter filter( "  [ .in1 ] ![ .ex1 ] ! " );
 		FAIL() << "Expected std::invalid_argument (1)";
 	}
 	catch( const std::invalid_argument& e )
@@ -167,7 +167,7 @@ TEST_F( ResourceFilterTest, MissingOpeningBracket_v1 )
 {
 	try
 	{
-		CarbonResources::FilterResourceFilter filter( ".in1 .in2 ]" );
+		ResourceTools::FilterResourceFilter filter( ".in1 .in2 ]" );
 		FAIL() << "Expected std::invalid_argument (1)";
 	}
 	catch( const std::invalid_argument& e )
@@ -184,7 +184,7 @@ TEST_F( ResourceFilterTest, MissingOpeningBracket_v2 )
 {
 	try
 	{
-		CarbonResources::FilterResourceFilter filter( " [ .in1 .in2 ] .in3 ] " );
+		ResourceTools::FilterResourceFilter filter( " [ .in1 .in2 ] .in3 ] " );
 		FAIL() << "Expected std::invalid_argument (1)";
 	}
 	catch( const std::invalid_argument& e )
@@ -201,7 +201,7 @@ TEST_F( ResourceFilterTest, MissingClosingBracket_v1 )
 {
 	try
 	{
-		CarbonResources::FilterResourceFilter filter( "[ .in1 .in2 " );
+		ResourceTools::FilterResourceFilter filter( "[ .in1 .in2 " );
 		FAIL() << "Expected std::invalid_argument (1)";
 	}
 	catch( const std::invalid_argument& e )
@@ -218,7 +218,7 @@ TEST_F( ResourceFilterTest, MissingClosingBracket_v2 )
 {
 	try
 	{
-		CarbonResources::FilterResourceFilter filter( "[ .in1 .in2 ] [ .in3 " );
+		ResourceTools::FilterResourceFilter filter( "[ .in1 .in2 ] [ .in3 " );
 		FAIL() << "Expected std::invalid_argument (1)";
 	}
 	catch( const std::invalid_argument& e )
@@ -235,7 +235,7 @@ TEST_F( ResourceFilterTest, MissingClosingBracket_v3 )
 {
 	try
 	{
-		CarbonResources::FilterResourceFilter filter( "[ .in1 .in2 ] [ .in3 [ .in4 ]" );
+		ResourceTools::FilterResourceFilter filter( "[ .in1 .in2 ] [ .in3 [ .in4 ]" );
 		FAIL() << "Expected std::invalid_argument (1)";
 	}
 	catch( const std::invalid_argument& e )
@@ -250,7 +250,7 @@ TEST_F( ResourceFilterTest, MissingClosingBracket_v3 )
 
 TEST_F( ResourceFilterTest, CondensedValidFilterStringv1 )
 {
-	CarbonResources::FilterResourceFilter filter( "[inToken1 inToken2]![exToken1 exToken2][inToken3]" );
+	ResourceTools::FilterResourceFilter filter( "[inToken1 inToken2]![exToken1 exToken2][inToken3]" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
 	std::vector<std::string> expectedIncludes = { "inToken1", "inToken2", "inToken3" };
@@ -261,7 +261,7 @@ TEST_F( ResourceFilterTest, CondensedValidFilterStringv1 )
 
 TEST_F( ResourceFilterTest, CondensedValidFilterStringv2 )
 {
-	CarbonResources::FilterResourceFilter filter( "![exToken1][inToken1 inToken2]![exToken2][inToken3]" );
+	ResourceTools::FilterResourceFilter filter( "![exToken1][inToken1 inToken2]![exToken2][inToken3]" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
 	std::vector<std::string> expectedIncludes = { "inToken1", "inToken2", "inToken3" };
