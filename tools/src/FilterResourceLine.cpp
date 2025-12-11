@@ -6,7 +6,7 @@
 namespace ResourceTools
 {
 
-FilterResourceLine::FilterResourceLine( const std::string& rawLine, const FilterPrefixmap& prefixMap, const FilterResourceFilter& sectionFilter ) :
+FilterResourceLine::FilterResourceLine( const std::string& rawLine, const FilterPrefixMap& prefixMap, std::optional<FilterResourceFilter> sectionFilter ) :
 	m_rawLine( rawLine ),
 	m_prefixMap( prefixMap ),
 	m_sectionFilter( sectionFilter )

@@ -6,17 +6,18 @@
 namespace ResourceTools
 {
 
-FilterPrefixmap::FilterPrefixmap( const std::string& prefixmapStr )
+FilterPrefixMap::FilterPrefixMap( const std::string& rawPrefixMap ) :
+	m_rawPrefixMap( m_rawPrefixMap )
 {
 	throw std::logic_error( "Not implemented yet exception" );
 }
 
-const std::map<std::string, std::vector<std::string>>& FilterPrefixmap::GetMap() const
+const std::map<std::string, std::vector<std::string>>& FilterPrefixMap::GetPrefixMap() const
 {
 	throw std::logic_error( "Not implemented yet exception" );
 }
 
-void FilterPrefixmap::Parse( const std::string& prefixmapStr )
+void FilterPrefixMap::ParsePrefixMap()
 {
 	throw std::logic_error( "Not implemented yet exception" );
 }

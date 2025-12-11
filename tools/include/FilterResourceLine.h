@@ -7,46 +7,41 @@
 #include "FilterPrefixmap.h"
 #include "FilterResourceFilter.h"
 
+#include <optional>
+
 namespace ResourceTools
 {
 
-/// @brief Class representing a single line of a resfile/respaths attribute.
+// Class representing a single raw line of a resfile/respaths attribute.
 class FilterResourceLine
 {
 public:
-	/// @brief Constructor that takes a rawLine string, a reference to an already constructed prefixMap and sectionFilter.
-	/// @param rawLine the raw value of a resfile/respaths line string to parse.
-	/// @param prefixMap reference to an already constructed FilterPrefixmap object.
-	/// @param sectionFilter reference to an already constructed FilterResourceFilter object representing the "parent" filter for this section.
-	/// @note Calls ParseLine() which may throw std::invalid_argument if the rawLine string is malformed.
-	/// @see CarbonResources::FilterResourceLine::ParseLine
-	explicit FilterResourceLine( const std::string& rawLine, const FilterPrefixmap& prefixMap, const FilterResourceFilter& sectionFilter );
-
-	// bool IsValid() const;  // TODO: Remove this, probably don't need it.
+	// Constructor that takes a rawLine string to parse into a linePath vector, based on already constructed prefixMap and an optional sectionFilter.
+	// - sectionFilter is only optional, in case "resfile" attribute requires it
+	explicit FilterResourceLine( const std::string& rawLine, const FilterPrefixMap& prefixMap, std::optional<FilterResourceFilter> sectionFilter );
 
 	// TODO: Add a getter function that combines the section filter and optional line filter along with the concatenated prefixMap + respath/resfile value.
 
 private:
-	/// @brief The raw string, representing the value of the resfile/respaths attribute.
-	/// @note Set in the constructor and used in ParseLine().
+	// Raw string, representing the value of the resfile/respaths line attribute.
 	std::string m_rawLine;
 
-	/// @brief Reference to an already constructed FilterPrefixmap object.
-	const FilterPrefixmap& m_prefixMap;
+	// Reference to an already constructed FilterPrefixMap object.
+	const FilterPrefixMap& m_prefixMap;
 
-	/// @brief Reference to an already constructed FilterResourceFilter object representing the "parent" filter for this section.
-	const FilterResourceFilter& m_sectionFilter;
+	// Optional FilterResourceFilter object representing the "parent" filter for this section.
+	// - optional, in case this is for a "resfile" attribute that MAY NOT have a section filter.
+	std::optional<FilterResourceFilter> m_sectionFilter;
 
-	// TODO: Decide how to handle optional FilterResourceFilter for the line-specific filter, if any
-	//       Probably add: std::optional<FilterResourceFilter> m_lineFilter
-	//       Then add a getter function (probably private) that combines the section filter and line filter as needed.
+	// The optional FilterResourceFilter object representing the line-specific filter, if any.
+	const std::optional<FilterResourceFilter> m_lineFilter;
 
-	/// @brief The resolved full path after applying the prefix map to the file/path portion of the rawLine.
-	std::string m_linePath;
+	// A vector of FilterResourceLineEntries, with two elemants: resolved full paths after applying all relevant prefix maps to the path portion, along with the combined in-order m_sectionFilter + optional m_lineFilter.
+	// NOTE:  FilterResourceLineEntry is a class/struct with a string path and combined FilterResourceFilter)
+	// Replace this std::vector<std::string> m_linePath;
+	// with std::vector<FilterResourceLineEntry> m_lineEntry;
 
-	/// @brief Parses the rawLine string into its components (m_linePath, optional m_lineFilter).
-	/// @note Throws std::invalid_argument if parsing fails, bubbling the error up to the caller (class constructor).
-	/// @return void
+	// Parses the rawLine string into its components (m_linePath, optional m_lineFilter).
 	void ParseLine();
 };
 

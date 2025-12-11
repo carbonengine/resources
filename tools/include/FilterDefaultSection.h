@@ -13,10 +13,10 @@ class FilterDefaultSection
 public:
 	explicit FilterDefaultSection( const std::string& prefixmapStr );
 
-	const FilterPrefixmap& GetPrefixmap() const;
+	const FilterPrefixMap& GetPrefixmap() const;
 
 private:
-	FilterPrefixmap m_prefixmap;
+	FilterPrefixMap m_prefixMap;
 };
 
 }

@@ -7,12 +7,12 @@ namespace ResourceTools
 {
 
 FilterDefaultSection::FilterDefaultSection( const std::string& prefixmapStr ) :
-	m_prefixmap( prefixmapStr )
+	m_prefixMap( prefixmapStr )
 {
 	throw std::logic_error( "Not implemented yet exception" );
 }
 
-const FilterPrefixmap& FilterDefaultSection::GetPrefixmap() const
+const FilterPrefixMap& FilterDefaultSection::GetPrefixmap() const
 {
 	throw std::logic_error( "Not implemented yet exception" );
 }

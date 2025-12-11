@@ -23,7 +23,7 @@ set(SRC_FILES
         include/FilterResourceFile.h
         include/FilterDefaultSection.h
         include/FilterNamedSection.h
-        include/FilterPrefixmap.h
+        include/FilterPrefixMap.h
         include/FilterResourceFilter.h
         include/FilterResourceLine.h
 
@@ -44,7 +44,7 @@ set(SRC_FILES
         src/FilterResourceFile.cpp
         src/FilterDefaultSection.cpp
         src/FilterNamedSection.cpp
-        src/FilterPrefixmap.cpp
+        src/FilterPrefixMap.cpp
         src/FilterResourceFilter.cpp
         src/FilterResourceLine.cpp
 )
