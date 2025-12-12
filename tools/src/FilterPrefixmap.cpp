@@ -1,25 +1,70 @@
 // Copyright © 2025 CCP ehf.
 
+#include "FilterPrefixMap.h"
+#include "FilterPrefixMapEntry.h"
 #include <stdexcept>
-#include <FilterPrefixmap.h>
+#include <cctype>
 
 namespace ResourceTools
 {
 
-FilterPrefixMap::FilterPrefixMap( const std::string& rawPrefixMap ) :
-	m_rawPrefixMap( m_rawPrefixMap )
+FilterPrefixMap::FilterPrefixMap( const std::string& rawPrefixMap )
 {
-	throw std::logic_error( "Not implemented yet exception" );
+	m_prefixMap.clear();
+
+	ParsePrefixMap( rawPrefixMap );
 }
 
-const std::map<std::string, std::vector<std::string>>& FilterPrefixMap::GetPrefixMap() const
+const std::map<std::string, FilterPrefixMapEntry> FilterPrefixMap::GetPrefixMap() const
 {
-	throw std::logic_error( "Not implemented yet exception" );
+	return m_prefixMap;
 }
 
-void FilterPrefixMap::ParsePrefixMap()
+void FilterPrefixMap::ParsePrefixMap( const std::string& rawPrefixMap )
 {
-	throw std::logic_error( "Not implemented yet exception" );
+	std::size_t pos = 0;
+	while( pos < rawPrefixMap.size() )
+	{
+		// Find the prefix (or error out if missing a colon)
+		std::size_t colon = rawPrefixMap.find( ':', pos );
+		if( colon == std::string::npos )
+			throw std::invalid_argument( "Invalid prefixmap format: missing ':'" );
+
+		std::string prefix = rawPrefixMap.substr( pos, colon - pos );
+		if( prefix.empty() )
+			throw std::invalid_argument( "Invalid prefixmap format: empty prefix" );
+
+		// Move position past the colon
+		pos = colon + 1;
+
+		// Find end of paths (next whitespace or end of string)
+		std::size_t nextSpace = rawPrefixMap.find_first_not_of( " \t\r\n", pos );
+		std::string rawPaths = ( nextSpace == std::string::npos ) ? rawPrefixMap.substr( pos ) : rawPrefixMap.substr( pos, nextSpace - pos );
+
+		if( rawPaths.empty() )
+			throw std::invalid_argument( "Invalid prefixmap format: No paths defined for prefix: " + prefix );
+
+		auto it = m_prefixMap.find( prefix );
+		if( it == m_prefixMap.end() )
+		{
+			// Prefix doesn't exist, create a map entry for it.
+			m_prefixMap.emplace( prefix, FilterPrefixMapEntry( prefix, rawPaths ) );
+		}
+		else
+		{
+			// The same prefix has been found again, appending paths to the existing entry
+			it->second.AppendPaths( prefix, rawPaths );
+		}
+
+		// Go to the next token in the rawPrefixMap (or break if at end)
+		if( nextSpace == std::string::npos )
+			break;
+		pos = nextSpace + 1;
+
+		// There was a whitespace, skip any additional spaces as well
+		while( pos < rawPrefixMap.size() && std::isspace( static_cast<unsigned char>( rawPrefixMap[pos] ) ) )
+			++pos;
+	}
 }
 
 }

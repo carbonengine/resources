@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "FilterPrefixMapEntry.h"
 
 namespace ResourceTools
 {
@@ -19,17 +20,13 @@ public:
 	explicit FilterPrefixMap( const std::string& rawPrefixMap );
 
 	// Gets the prefix map.
-	const std::map<std::string, std::vector<std::string>>& GetPrefixMap() const;
+	const std::map<std::string, FilterPrefixMapEntry> GetPrefixMap() const;
 
 private:
-	// Raw filter string.
-	std::string m_rawPrefixMap;
+	// Map of prefixes to FilterPrefixMapEntry objects.
+	std::map<std::string, FilterPrefixMapEntry> m_prefixMap;
 
-	// Map of prefixes to list of paths.
-	// e.g. "res:" -> { "/dir1", "/dir2" } and "res2:" -> { "/otherDir1" }
-	std::map<std::string, std::vector<std::string>> m_prefixMap;
-
-	void ParsePrefixMap();
+	void ParsePrefixMap( const std::string& rawPrefixMap );
 };
 
 }
