@@ -14,7 +14,6 @@ class FilterDefaultSection
 public:
 	explicit FilterDefaultSection( const std::string& prefixmapStr );
 
-	//const FilterPrefixMap& GetPrefixmap() const;
 	const std::map<std::string, FilterPrefixMapEntry>& GetPrefixMap() const;
 
 private:

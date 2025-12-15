@@ -1,10 +1,12 @@
 // Copyright © 2025 CCP ehf.
 
 #include "ResourceFilterTest.h"
+
 #include <INIReader.h>
 #include <FilterResourceFilter.h>
 #include <FilterPrefixMap.h>
 #include <FilterPrefixMapEntry.h>
+#include <FilterDefaultSection.h>
 
 TEST_F( ResourceFilterTest, Example1IniParsing )
 {
@@ -463,6 +465,63 @@ TEST_F ( ResourceFilterTest, FilterPrefixMapEntry_InvalidNoPathsOnAppend )
 	catch( const std::invalid_argument& e )
 	{
 		EXPECT_STREQ( e.what(), "Invalid prefixmap format: No paths appended for prefix: prefix1" );
+	}
+	catch( ... )
+	{
+		FAIL() << "Expected std::invalid_argument (2)";
+	}
+}
+
+// -----------------------------------------
+
+TEST_F ( ResourceFilterTest, FilterDefaultSection_InitializeValid )
+{
+	std::string input = "prefix1:/path1;../path2 prefix2:/path3";
+	ResourceTools::FilterDefaultSection defaultSection( input );
+	const auto& prefixMap = defaultSection.GetPrefixMap();
+	ASSERT_EQ( prefixMap.size(), 2 ) << "There should be 2 prefixes in the map";
+	auto it1 = prefixMap.find( "prefix1" );
+	auto it2 = prefixMap.find( "prefix2" );
+	ASSERT_NE( it1, prefixMap.end() ) << "Prefix 'prefix1' not found in the map";
+	ASSERT_NE( it2, prefixMap.end() ) << "Prefix 'prefix2' not found in the map";
+
+	std::set<std::string> prefix1Paths = { "/path1", "../path2" };
+	std::set<std::string> prefix2Paths = { "/path3" };
+	EXPECT_EQ( it1->second.GetPrefix(), "prefix1" ) << "Prefix should be 'prefix1'";
+	EXPECT_EQ( it2->second.GetPrefix(), "prefix2" ) << "Prefix should be 'prefix2'";
+	EXPECT_EQ( it1->second.GetPaths(), prefix1Paths ) << "Paths do not match expected values";
+	EXPECT_EQ( it2->second.GetPaths(), prefix2Paths ) << "Paths do not match expected values";
+	EXPECT_EQ( it1->first, it1->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
+	EXPECT_EQ( it2->first, it2->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
+}
+
+TEST_F( ResourceFilterTest, FilterDefaultSection_InitializeInvalidMissingColon )
+{
+	try
+	{
+		ResourceTools::FilterDefaultSection defaultSection( "prefix1/path1" );
+		FAIL() << "Expected std::invalid_argument (1)";
+	}
+	catch( const std::invalid_argument& e )
+	{
+		EXPECT_STREQ( e.what(), "Invalid prefixmap format: missing ':'" );
+	}
+	catch( ... )
+	{
+		FAIL() << "Expected std::invalid_argument (2)";
+	}
+}
+
+TEST_F( ResourceFilterTest, FilterDefaultSection_InitializeInvalidEmptyPrefix )
+{
+	try
+	{
+		ResourceTools::FilterDefaultSection defaultSection( ":/path1" );
+		FAIL() << "Expected std::invalid_argument (1)";
+	}
+	catch( const std::invalid_argument& e )
+	{
+		EXPECT_STREQ( e.what(), "Invalid prefixmap format: empty prefix" );
 	}
 	catch( ... )
 	{
