@@ -6,8 +6,7 @@
 #include <string>
 #include <map>
 #include <vector>
-
-#include "FilterPrefixMapEntry.h"
+#include <FilterPrefixMapEntry.h>
 
 namespace ResourceTools
 {
@@ -18,7 +17,7 @@ class FilterPrefixMap
 public:
 	explicit FilterPrefixMap( const std::string& rawPrefixMap );
 
-	const std::map<std::string, FilterPrefixMapEntry> GetPrefixMap() const;
+	const std::map<std::string, FilterPrefixMapEntry>& GetPrefixMap() const;
 
 private:
 	// Map of prefixes to FilterPrefixMapEntry objects.

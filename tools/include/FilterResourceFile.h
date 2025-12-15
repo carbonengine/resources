@@ -4,8 +4,8 @@
 #define FILTERRESOURCEFILE_H
 
 #include <vector>
-#include "FilterDefaultSection.h"
-#include "FilterNamedSection.h"
+#include <FilterDefaultSection.h>
+#include <FilterNamedSection.h>
 
 namespace ResourceTools
 {

@@ -3,7 +3,8 @@
 #ifndef FILTERDEFAULTSECTION_H
 #define FILTERDEFAULTSECTION_H
 
-#include "FilterPrefixmap.h"
+#include <FilterPrefixmap.h>
+#include <FilterPrefixMapEntry.h>
 
 namespace ResourceTools
 {
@@ -13,7 +14,8 @@ class FilterDefaultSection
 public:
 	explicit FilterDefaultSection( const std::string& prefixmapStr );
 
-	const FilterPrefixMap& GetPrefixmap() const;
+	//const FilterPrefixMap& GetPrefixmap() const;
+	const std::map<std::string, FilterPrefixMapEntry>& GetPrefixMap() const;
 
 private:
 	FilterPrefixMap m_prefixMap;

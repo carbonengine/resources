@@ -5,8 +5,8 @@
 
 #include <string>
 #include <vector>
-#include "FilterResourceFilter.h"
-#include "FilterResourceLine.h"
+#include <FilterResourceFilter.h>
+#include <FilterResourceLine.h>
 
 namespace ResourceTools
 {

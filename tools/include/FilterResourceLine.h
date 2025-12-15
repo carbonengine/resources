@@ -4,10 +4,9 @@
 #define FILTERRESOURCELINE_H
 
 #include <string>
-#include "FilterPrefixmap.h"
-#include "FilterResourceFilter.h"
-
 #include <optional>
+#include <FilterPrefixmap.h>
+#include <FilterResourceFilter.h>
 
 namespace ResourceTools
 {

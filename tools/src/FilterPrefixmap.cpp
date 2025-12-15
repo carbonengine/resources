@@ -1,8 +1,7 @@
 // Copyright © 2025 CCP ehf.
 
-#include "FilterPrefixMap.h"
-#include "FilterPrefixMapEntry.h"
-
+#include <FilterPrefixMap.h>
+#include <FilterPrefixMapEntry.h>
 #include <stdexcept>
 #include <cctype>
 
@@ -16,7 +15,7 @@ FilterPrefixMap::FilterPrefixMap( const std::string& rawPrefixMap )
 	ParsePrefixMap( rawPrefixMap );
 }
 
-const std::map<std::string, FilterPrefixMapEntry> FilterPrefixMap::GetPrefixMap() const
+const std::map<std::string, FilterPrefixMapEntry>& FilterPrefixMap::GetPrefixMap() const
 {
 	return m_prefixMap;
 }
