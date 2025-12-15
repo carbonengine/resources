@@ -2,6 +2,7 @@
 
 #include "FilterPrefixMap.h"
 #include "FilterPrefixMapEntry.h"
+
 #include <stdexcept>
 #include <cctype>
 
@@ -38,7 +39,7 @@ void FilterPrefixMap::ParsePrefixMap( const std::string& rawPrefixMap )
 		pos = colon + 1;
 
 		// Find end of paths (next whitespace or end of string)
-		std::size_t nextSpace = rawPrefixMap.find_first_not_of( " \t\r\n", pos );
+		std::size_t nextSpace = rawPrefixMap.find_first_of( " \t\r\n", pos );
 		std::string rawPaths = ( nextSpace == std::string::npos ) ? rawPrefixMap.substr( pos ) : rawPrefixMap.substr( pos, nextSpace - pos );
 
 		if( rawPaths.empty() )
