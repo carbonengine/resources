@@ -5,8 +5,11 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include <optional>
+#include <FilterPrefixMap.h>
 #include <FilterResourceFilter.h>
-#include <FilterResourceLine.h>
+#include <FilterResourcePathFile.h>
 
 namespace ResourceTools
 {
@@ -14,13 +17,37 @@ namespace ResourceTools
 class FilterNamedSection
 {
 public:
-	explicit FilterNamedSection( const std::string& filter, const std::string& resfile, const std::vector<std::string>& respaths );
+	explicit FilterNamedSection( const std::string& sectionName, const std::string& filter, const std::string& respaths, const std::string& resfile, const FilterPrefixMap& parentPrefixMap );
+
+	// Return combined resolved path map from both respaths and optional resfile
+	const std::map<std::string, FilterResourceFilter>& GetCombinedResolvedPathMap() const;
+
+	const std::map<std::string, FilterResourceFilter>& GetResolvedRespathsMap() const;
+
+	const std::map<std::string, FilterResourceFilter>& GetResolvedResfileMap() const;
 
 private:
+	std::string m_sectionName;
+
+	// The raw (unparsed) string representation of the filter, resfile and respaths attributes
+	std::string m_rawFilter;
+
+	std::string m_rawRespaths;  // Potentially a multi-line string
+
+	std::string m_rawResfile;  // If not empty, then only a single line string
+
+	FilterPrefixMap m_parentPrefixMap;  // The "parent" prefix map from the [DEFAULT] section
+
 	FilterResourceFilter m_filter;
-	std::string m_resfile;
-	std::vector<std::string> m_respaths;
-	// Optionally, store parsed FilterResourceLine objects
+
+	FilterResourcePathFile m_respaths;
+
+	std::optional<FilterResourcePathFile> m_resfile;
+
+	// Combined map of fully resolved respaths and resfile FilterResourceFilter objects
+	std::map<std::string, FilterResourceFilter> m_resolvedCombinedPathMap;
+
+	void ParseNamedSection();
 };
 
 }

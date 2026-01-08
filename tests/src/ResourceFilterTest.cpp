@@ -7,6 +7,7 @@
 #include <FilterPrefixMap.h>
 #include <FilterPrefixMapEntry.h>
 #include <FilterDefaultSection.h>
+#include <FilterResourcePathFile.h>
 
 TEST_F( ResourceFilterTest, Example1IniParsing )
 {
@@ -437,7 +438,7 @@ TEST_F( ResourceFilterTest, ParsePrefixMap_InvalidNoPaths )
 	}
 }
 
-TEST_F ( ResourceFilterTest, FilterPrefixMapEntry_PrefixMismatchOnAppend )
+TEST_F( ResourceFilterTest, FilterPrefixMapEntry_PrefixMismatchOnAppend )
 {
 	try
 	{
@@ -455,11 +456,11 @@ TEST_F ( ResourceFilterTest, FilterPrefixMapEntry_PrefixMismatchOnAppend )
 	}
 }
 
-TEST_F ( ResourceFilterTest, FilterPrefixMapEntry_InvalidNoPathsOnAppend )
+TEST_F( ResourceFilterTest, FilterPrefixMapEntry_InvalidNoPathsOnAppend )
 {
 	try
 	{
-		ResourceTools::FilterPrefixMapEntry entry( "prefix1", "" );  // Empty string for paths
+		ResourceTools::FilterPrefixMapEntry entry( "prefix1", "" ); // Empty string for paths
 		FAIL() << "Expected std::invalid_argument (1)";
 	}
 	catch( const std::invalid_argument& e )
@@ -474,7 +475,7 @@ TEST_F ( ResourceFilterTest, FilterPrefixMapEntry_InvalidNoPathsOnAppend )
 
 // -----------------------------------------
 
-TEST_F ( ResourceFilterTest, FilterDefaultSection_InitializeValid )
+TEST_F( ResourceFilterTest, FilterDefaultSection_InitializeValid )
 {
 	std::string input = "prefix1:/path1;../path2 prefix2:/path3";
 	ResourceTools::FilterDefaultSection defaultSection( input );
@@ -528,3 +529,176 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_InitializeInvalidEmptyPrefix )
 		FAIL() << "Expected std::invalid_argument (2)";
 	}
 }
+
+// -----------------------------------------
+
+TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_NoFilter )
+{
+	std::string prefixMapStr = "prefix1:/path1;../path2";
+	std::string parentFilterStr = "[ .in1 .in2 ] ![ .ex1 ]";
+	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
+	ResourceTools::FilterResourceFilter parentFilter( parentFilterStr );
+
+	std::string rawResPathAttrib = "prefix1:/foo/bar";
+	ResourceTools::FilterResourcePathFile pathFile( rawResPathAttrib, prefixMap, parentFilter );
+	const auto& resolvedPathMap = pathFile.GetResolvedPathMap();
+
+	// Check the resolved path and filters against expected
+	std::set<std::string> expectedPaths = { "/path1/foo/bar", "../path2/foo/bar" };
+	std::vector<std::string> expectedIncludes = { ".in1", ".in2" };
+	std::vector<std::string> expectedExcludes = { ".ex1" };
+
+	for( const auto& p : expectedPaths )
+	{
+		EXPECT_TRUE( resolvedPathMap.count( p ) );
+	}
+
+	for( const auto& kv : resolvedPathMap )
+	{
+		EXPECT_EQ( kv.second.GetIncludeFilter(), expectedIncludes );
+		EXPECT_EQ( kv.second.GetExcludeFilter(), expectedExcludes );
+	}
+}
+
+TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_InlineIncludeExclude )
+{
+	std::string prefixMapStr = "prefix1:/path1";
+	std::string parentFilterStr = "[ .in1 .in2 ] ![ .ex1 ]";
+	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
+	ResourceTools::FilterResourceFilter parentFilter( parentFilterStr );
+
+	std::string rawPathFileAttrib = "prefix1:/foo/bar [ .inLine1 ] ![ .exLine1 ]";
+	ResourceTools::FilterResourcePathFile pathFile( rawPathFileAttrib, prefixMap, parentFilter );
+	const auto& resolvedPathMap = pathFile.GetResolvedPathMap();
+
+	// Check the resolved path and filters against expected
+	std::set<std::string> expectedPaths = { "/path1/foo/bar" };
+	std::vector<std::string> expectedIncludes = { ".in1", ".in2", ".inLine1" };
+	std::vector<std::string> expectedExcludes = { ".ex1", ".exLine1" };
+
+	for( const auto& p : expectedPaths )
+	{
+		EXPECT_TRUE( resolvedPathMap.count( p ) );
+	}
+
+	for( const auto& kv : resolvedPathMap )
+	{
+		EXPECT_EQ( kv.second.GetIncludeFilter(), expectedIncludes );
+		EXPECT_EQ( kv.second.GetExcludeFilter(), expectedExcludes );
+	}
+}
+
+TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_InlineOverridesParentFilter )
+{
+	std::string prefixMapStr = "prefix1:/path1;../subPath2;/path3";
+	std::string parentFilterStr = "[ .parIn1 .parIn2 ] ![ .parEx1 ]";
+	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
+	ResourceTools::FilterResourceFilter parentFilter( parentFilterStr );
+
+	// Override the "location" of the parent include filter (.parIn2) and exclude filter (.parEx1), moving them to opposite filter side
+	std::string rawPathFileAttrib = "prefix1:/foo [ .lineIn1 .parEx1 ] ![ .parIn2 .lineEx1 ]";
+	ResourceTools::FilterResourcePathFile pathFile( rawPathFileAttrib, prefixMap, parentFilter );
+	const auto& resolvedPathMap = pathFile.GetResolvedPathMap();
+
+	// Check the resolved path and filters against expected (some filters switched around)
+	std::set<std::string> expectedPaths = { "/path1/foo", "../subPath2/foo", "/path3/foo" };
+	std::vector<std::string> expectedIncludes = { ".parIn1", ".lineIn1", ".parEx1" };
+	std::vector<std::string> expectedExcludes = { ".parIn2", ".lineEx1" };
+
+	for( const auto& p : expectedPaths )
+	{
+		EXPECT_TRUE( resolvedPathMap.count( p ) );
+	}
+
+	for( const auto& kv : resolvedPathMap )
+	{
+		EXPECT_EQ( kv.second.GetIncludeFilter(), expectedIncludes );
+		EXPECT_EQ( kv.second.GetExcludeFilter(), expectedExcludes );
+	}
+}
+
+TEST_F( ResourceFilterTest, FilterResourcePathFile_MultiLine_MixedFiltersWithOverrides )
+{
+	std::string prefixMapStr = "prefix1:/path1;../path2 prefix2:/path3";
+	std::string parentFilterStr = "[ .parIn1 .parIn2 ] ![ .parEx1 ]";
+	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
+	ResourceTools::FilterResourceFilter parentFilter( parentFilterStr );
+
+	std::string rawPathFileAttrib =
+		"prefix1:/firstLine [ .inLine1 ] ![ .parIn1 ]\n"  // Add .inLine1 to include and move .parIn1 from include to exclude filter
+		"prefix2:/secondLine\n"                           // Keep parent filters unchanged
+		"prefix1:/thirdLine ![ .exLine3 ] [ .parEx1 ]\n"  // Add .exLine3 to exclude filter and move .parEx1 from exclude to include
+		"prefix2:/fourthLine [ .inLine4 ] ![ .exLine4 ]"; // Add .inLine4 to include and .exLine4 to exclude filter
+	ResourceTools::FilterResourcePathFile pathFile( rawPathFileAttrib, prefixMap, parentFilter );
+	const auto& resolved = pathFile.GetResolvedPathMap();
+
+	// Check the resolved path and filters against expected (multiple switching of filters and overrides)
+	std::set<std::string> expectedPaths = { "/path1/firstLine", "../path2/firstLine", "/path3/secondLine", "/path1/thirdLine", "../path2/thirdLine", "/path3/fourthLine" };
+	for( const auto& p : expectedPaths )
+	{
+		EXPECT_TRUE( resolved.count( p ) );
+	}
+
+	for( const auto& kv : resolved )
+	{
+		if( kv.first == "/path1/firstLine" || kv.first == "../path2/firstLine" )
+		{
+			// Add .inLine1 to include and move .parIn1 from include to exclude filter
+			EXPECT_EQ( kv.second.GetIncludeFilter(), std::vector<std::string>( { ".parIn2", ".inLine1" } ) );
+			EXPECT_EQ( kv.second.GetExcludeFilter(), std::vector<std::string>( { ".parEx1", ".parIn1" } ) );
+		}
+		else if( kv.first == "/path3/secondLine" )
+		{
+			// Keep parent filters unchanged
+			EXPECT_EQ( kv.second.GetIncludeFilter(), std::vector<std::string>( { ".parIn1", ".parIn2" } ) );
+			EXPECT_EQ( kv.second.GetExcludeFilter(), std::vector<std::string>( { ".parEx1" } ) );
+		}
+		else if( kv.first == "/path1/thirdLine" || kv.first == "../path2/thirdLine" )
+		{
+			// Add .exLine3 to exclude filter and move .parEx1 from exclude to include
+			EXPECT_EQ( kv.second.GetIncludeFilter(), std::vector<std::string>( { ".parIn1", ".parIn2", ".parEx1" } ) );
+			EXPECT_EQ( kv.second.GetExcludeFilter(), std::vector<std::string>( { ".exLine3" } ) );
+		}
+		else if( kv.first == "/path3/fourthLine" )
+		{
+			// Add .inLine4 to include and .exLine4 to exclude filter
+			EXPECT_EQ( kv.second.GetIncludeFilter(), std::vector<std::string>( { ".parIn1", ".parIn2", ".inLine4" } ) );
+			EXPECT_EQ( kv.second.GetExcludeFilter(), std::vector<std::string>( { ".parEx1", ".exLine4" } ) );
+		}
+	}
+}
+
+TEST_F( ResourceFilterTest, FilterResourcePathFile_Invalid_MissingPrefix )
+{
+	std::string prefixMapStr = "prefix1:/path1;../path2 prefix2:/path3";
+	std::string parentFilterStr = "[ .in1 .in2 ] ![ .ex1 ]";
+	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
+	ResourceTools::FilterResourceFilter parentFilter( parentFilterStr );
+
+	std::string rawPathFileAttrib = "/foo/bar"; // respath is missing the prefix:
+	EXPECT_THROW( ResourceTools::FilterResourcePathFile pathFile( rawPathFileAttrib, prefixMap, parentFilter ), std::invalid_argument );
+}
+
+TEST_F( ResourceFilterTest, FilterResourcePathFile_Invalid_UnknownPrefix )
+{
+	std::string prefixMapStr = "prefix1:/path1;../path2 prefix2:/path3";
+	std::string parentFilterStr = "[ .in1 .in2 ] ![ .ex1 ]";
+	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
+	ResourceTools::FilterResourceFilter parentFilter( parentFilterStr );
+
+	std::string rawPathFileAttrib = "prefixNotInPrefixMap:/foo/bar"; // unknown prefix
+	EXPECT_THROW( ResourceTools::FilterResourcePathFile pathFile( rawPathFileAttrib, prefixMap, parentFilter ), std::invalid_argument );
+}
+
+TEST_F( ResourceFilterTest, FilterResourcePathFile_Invalid_MalformedInlineFilter )
+{
+	std::string prefixMapStr = "prefix1:/path1;../path2 prefix2:/path3";
+	std::string parentFilterStr = "[ .in1 .in2 ] ![ .ex1 ]";
+	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
+	ResourceTools::FilterResourceFilter parentFilter( parentFilterStr );
+
+	std::string rawPathFileAttrib = "prefix1:/foo/bar [ .yaml "; // missing closing bracket of inline include filter
+	EXPECT_THROW( ResourceTools::FilterResourcePathFile pathFile( rawPathFileAttrib, prefixMap, parentFilter ), std::invalid_argument );
+}
+
+// -----------------------------------------

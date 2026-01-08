@@ -17,6 +17,7 @@ public:
 
 private:
 	FilterDefaultSection m_defaultSection;
+
 	std::vector<FilterNamedSection> m_namedSections;
 };
 

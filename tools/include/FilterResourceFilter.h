@@ -10,37 +10,31 @@ namespace ResourceTools
 {
 
 // Class representing a resource filter with include and exclude filters.
-// - This can be for the filter attribute of a NamedSection OR the optional filter for a respaths/resfile line (defined in FilterResourceLine).
-// - see ResourceTools::FilterNamedSection and ResourceTools::FilterResourceLine
+// - This is for filter attribute of a NamedSection AND the "combined resolved" filter for each respaths/resfile line
 class FilterResourceFilter
 {
 public:
-	// Constructor that takes a raw filter string and parses it into include and exclude filters.
+	FilterResourceFilter() = default;
+
 	explicit FilterResourceFilter( const std::string& rawFilter );
 
-	// Gets the raw filter string.
+	// Used as input when constructing a combined resolved filter for a respaths/resfile line.
 	const std::string& GetRawFilter() const;
 
-	// Gets the include filter vector.
 	const std::vector<std::string>& GetIncludeFilter() const;
 
-	// Gets the exclude filter vector.
 	const std::vector<std::string>& GetExcludeFilter() const;
 
 private:
-	// Raw filter string.
 	std::string m_rawFilter;
 
-	// Include filter vector.
 	std::vector<std::string> m_includeFilter;
 
-	// Exclude filter vector.
 	std::vector<std::string> m_excludeFilter;
 
-	// Parse raw filter string into vectors of include and exclude filters.
 	void ParseFilters();
 
-	// Static helper to place a token in the correct vector, moving it from one vector to another, if need be.
+	// Static helper placing tokens in the correct vector, moving it if need be.
 	static void PlaceTokenInCorrectVector( const std::string& token, std::vector<std::string>& fromVector, std::vector<std::string>& toVector );
 };
 

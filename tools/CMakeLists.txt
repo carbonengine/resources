@@ -25,8 +25,9 @@ set(SRC_FILES
         include/FilterNamedSection.h
         include/FilterPrefixMap.h
         include/FilterResourceFilter.h
-        include/FilterResourceLine.h
+        include/FilterResourcePathFile.h
         include/FilterPrefixMapEntry.h
+        include/FilterResourcePathFileEntry.h
 
         src/BundleStreamIn.cpp
         src/BundleStreamOut.cpp
@@ -47,8 +48,9 @@ set(SRC_FILES
         src/FilterNamedSection.cpp
         src/FilterPrefixMap.cpp
         src/FilterResourceFilter.cpp
-        src/FilterResourceLine.cpp
+        src/FilterResourcePathFile.cpp
         src/FilterPrefixMapEntry.cpp
+        src/FilterResourcePathFileEntry.cpp
 )
 
 add_library(resources-tools STATIC ${SRC_FILES})
