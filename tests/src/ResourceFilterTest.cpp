@@ -668,6 +668,35 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_MultiLine_MixedFiltersWithOve
 	}
 }
 
+TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_DuplicateOverrides )
+{
+	std::string prefixMapStr = "prefix1:/path1";
+	std::string parentFilterStr = "[ .parIn1 .parIn2 ] ![ .parEx1 ]";
+	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
+	ResourceTools::FilterResourceFilter parentFilter( parentFilterStr );
+
+	// Make sure we DUPLICATE the inline with the same as the parents (should NOT result in combined duplicates)
+	std::string rawPathFileAttrib = "prefix1:/foo/bar [ .parIn2 .parIn1 .lineIn1 .parIn1 .parIn2 ] ![ .lineEx1 .parEx1 ]";
+	ResourceTools::FilterResourcePathFile pathFile( rawPathFileAttrib, prefixMap, parentFilter );
+	const auto& resolvedPathMap = pathFile.GetResolvedPathMap();
+
+	// Check the resolved path and filters against expected (NO duplicates in final filters list)
+	std::set<std::string> expectedPaths = { "/path1/foo/bar" };
+	std::vector<std::string> expectedIncludes = { ".parIn1", ".parIn2", ".lineIn1" };
+	std::vector<std::string> expectedExcludes = { ".parEx1", ".lineEx1" };
+
+	for( const auto& p : expectedPaths )
+	{
+		EXPECT_TRUE( resolvedPathMap.count( p ) );
+	}
+
+	for( const auto& kv : resolvedPathMap )
+	{
+		EXPECT_EQ( kv.second.GetIncludeFilter(), expectedIncludes );
+		EXPECT_EQ( kv.second.GetExcludeFilter(), expectedExcludes );
+	}
+}
+
 TEST_F( ResourceFilterTest, FilterResourcePathFile_Invalid_MissingPrefix )
 {
 	std::string prefixMapStr = "prefix1:/path1;../path2 prefix2:/path3";
