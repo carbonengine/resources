@@ -6,8 +6,10 @@
 namespace ResourceTools
 {
 
-FilterResourcePathFileEntry::FilterResourcePathFileEntry( const std::string& rawPathLine, const FilterPrefixMap& parentPrefixMap, const FilterResourceFilter& parentSectionFilter ) :
-	m_rawPathLine( rawPathLine ),
+FilterResourcePathFileEntry::FilterResourcePathFileEntry( std::string rawPathLine,
+														  const FilterPrefixMap& parentPrefixMap,
+														  const FilterResourceFilter& parentSectionFilter ) :
+	m_rawPathLine( std::move( rawPathLine ) ),
 	m_parentPrefixMap( parentPrefixMap ),
 	m_parentSectionFilter( parentSectionFilter )
 {

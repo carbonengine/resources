@@ -17,7 +17,9 @@ class FilterResourcePathFile
 public:
 	FilterResourcePathFile() = default;
 
-	explicit FilterResourcePathFile( const std::string& rawPathFileAttrib, const FilterPrefixMap& parentPrefixMap, const FilterResourceFilter& parentSectionFilter );
+	explicit FilterResourcePathFile( std::string rawPathFileAttrib,
+									 const FilterPrefixMap& parentPrefixMap,
+									 const FilterResourceFilter& parentSectionFilter );
 
 	// Get the map of fully resolved paths to their combined FilterResourceFilter objects.
 	const std::map<std::string, FilterResourceFilter>& GetResolvedPathMap() const;
@@ -26,7 +28,7 @@ private:
 	// The raw (multiline) respath attribute (same for resfile).
 	std::string m_rawPathFileAttrib;
 
-	FilterPrefixMap m_parentPrefixMap;
+	const FilterPrefixMap& m_parentPrefixMap; // The "parent" prefix map from the [DEFAULT] section
 
 	FilterResourceFilter m_parentSectionFilter;
 

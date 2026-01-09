@@ -17,7 +17,11 @@ namespace ResourceTools
 class FilterNamedSection
 {
 public:
-	explicit FilterNamedSection( const std::string& sectionName, const std::string& filter, const std::string& respaths, const std::string& resfile, const FilterPrefixMap& parentPrefixMap );
+	explicit FilterNamedSection( std::string sectionName,
+								 const std::string& filter,
+								 const std::string& respaths,
+								 const std::string& resfile,
+								 const FilterPrefixMap& parentPrefixMap );
 
 	// Return combined resolved path map from both respaths and optional resfile
 	const std::map<std::string, FilterResourceFilter>& GetCombinedResolvedPathMap() const;
@@ -29,14 +33,7 @@ public:
 private:
 	std::string m_sectionName;
 
-	// The raw (unparsed) string representation of the filter, resfile and respaths attributes
-	std::string m_rawFilter;
-
-	std::string m_rawRespaths;  // Potentially a multi-line string
-
-	std::string m_rawResfile;  // If not empty, then only a single line string
-
-	FilterPrefixMap m_parentPrefixMap;  // The "parent" prefix map from the [DEFAULT] section
+	const FilterPrefixMap& m_parentPrefixMap; // The "parent" prefix map from the [DEFAULT] section
 
 	FilterResourceFilter m_filter;
 

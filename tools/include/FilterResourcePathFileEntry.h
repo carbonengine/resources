@@ -13,7 +13,9 @@ namespace ResourceTools
 class FilterResourcePathFileEntry
 {
 public:
-	explicit FilterResourcePathFileEntry( const std::string& rawPathLine, const FilterPrefixMap& parentPrefixMap, const FilterResourceFilter& parentSectionFilter );
+	explicit FilterResourcePathFileEntry( std::string rawPathLine,
+										  const FilterPrefixMap& parentPrefixMap,
+										  const FilterResourceFilter& parentSectionFilter );
 
 	const FilterResourceFilter& GetEntryFilter() const;
 
@@ -22,7 +24,7 @@ public:
 private:
 	std::string m_rawPathLine;
 
-	FilterPrefixMap m_parentPrefixMap;
+	const FilterPrefixMap& m_parentPrefixMap; // The "parent" prefix map from the [DEFAULT] section
 
 	FilterResourceFilter m_parentSectionFilter;
 
