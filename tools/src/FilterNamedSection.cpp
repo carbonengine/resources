@@ -41,11 +41,10 @@ const std::map<std::string, FilterResourceFilter>& FilterNamedSection::GetResolv
 	{
 		return m_resfile->GetResolvedPathMap();
 	}
-	else
-	{
-		static const std::map<std::string, FilterResourceFilter> emptyResfileMap;
-		return emptyResfileMap;
-	}
+
+	// Return empty map if no resfile present
+	static const std::map<std::string, FilterResourceFilter> emptyResfileMap;
+	return emptyResfileMap;
 }
 
 void FilterNamedSection::ParseNamedSection()

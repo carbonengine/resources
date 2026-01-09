@@ -15,8 +15,6 @@ namespace ResourceTools
 class FilterPrefixMap
 {
 public:
-	FilterPrefixMap() = default;
-
 	explicit FilterPrefixMap( const std::string& rawPrefixMap );
 
 	const std::map<std::string, FilterPrefixMapEntry>& GetPrefixMap() const;

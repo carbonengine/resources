@@ -15,8 +15,6 @@ namespace ResourceTools
 class FilterResourcePathFile
 {
 public:
-	FilterResourcePathFile() = default;
-
 	explicit FilterResourcePathFile( std::string rawPathFileAttrib,
 									 const FilterPrefixMap& parentPrefixMap,
 									 const FilterResourceFilter& parentSectionFilter );
