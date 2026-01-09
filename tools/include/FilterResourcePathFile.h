@@ -28,9 +28,11 @@ private:
 	// The raw (multiline) respath attribute (same for resfile).
 	std::string m_rawPathFileAttrib;
 
-	const FilterPrefixMap& m_parentPrefixMap; // The "parent" prefix map from the [DEFAULT] section
+	// The "parent" prefix map from the [DEFAULT] section
+	const FilterPrefixMap& m_parentPrefixMap;
 
-	FilterResourceFilter m_parentSectionFilter;
+	// The "parent" filter from the [namedSection] containing this resfile/respaths attribute
+	const FilterResourceFilter& m_parentSectionFilter;
 
 	// Map of fully resolved paths to their combined FilterResourceFilter objects.
 	std::map<std::string, FilterResourceFilter> m_resolvedPathMap;

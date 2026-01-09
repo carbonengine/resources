@@ -24,9 +24,11 @@ public:
 private:
 	std::string m_rawPathLine;
 
-	const FilterPrefixMap& m_parentPrefixMap; // The "parent" prefix map from the [DEFAULT] section
+	// The "parent" prefix map from the [DEFAULT] section
+	const FilterPrefixMap& m_parentPrefixMap;
 
-	FilterResourceFilter m_parentSectionFilter;
+	// The "parent" filter from the [namedSection]
+	const FilterResourceFilter& m_parentSectionFilter;
 
 	// The combined filter for this resfile/respaths attribute line, built from the parentSectionFilter and any inline filter.
 	FilterResourceFilter m_entryFilter;
