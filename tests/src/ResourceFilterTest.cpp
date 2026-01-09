@@ -38,7 +38,7 @@ TEST_F( ResourceFilterTest, Example1IniParsing )
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, OnlyIncludeFilter )
+TEST_F( ResourceFilterTest, FilterResourceFilter_OnlyIncludeFilter )
 {
 	ResourceTools::FilterResourceFilter filter( "[ .this .is .included ]" );
 	const auto& includes = filter.GetIncludeFilter();
@@ -50,7 +50,7 @@ TEST_F( ResourceFilterTest, OnlyIncludeFilter )
 	EXPECT_TRUE( excludes.empty() );
 }
 
-TEST_F( ResourceFilterTest, OnlyExcludeFilter )
+TEST_F( ResourceFilterTest, FilterResourceFilter_OnlyExcludeFilter )
 {
 	ResourceTools::FilterResourceFilter filter( "![ .excluded .extension ]" );
 	const auto& includes = filter.GetIncludeFilter();
@@ -61,7 +61,7 @@ TEST_F( ResourceFilterTest, OnlyExcludeFilter )
 	EXPECT_EQ( excludes[1], ".extension" );
 }
 
-TEST_F( ResourceFilterTest, ComplexIncludeExcludeFilter )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ComplexIncludeExcludeFilter )
 {
 	ResourceTools::FilterResourceFilter filter( "[ .red .gr2 .dds .png .yaml ] [ .txt ] ![ .csv .xls ] [ .bat .sh ] ![ .blk .yel ]" );
 	const auto& includes = filter.GetIncludeFilter();
@@ -72,7 +72,7 @@ TEST_F( ResourceFilterTest, ComplexIncludeExcludeFilter )
 	EXPECT_EQ( excludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, SimpleIncludeFilter )
+TEST_F( ResourceFilterTest, FilterResourceFilter_SimpleIncludeFilter )
 {
 	ResourceTools::FilterResourceFilter filter( "[ .red ]" );
 	const auto& includes = filter.GetIncludeFilter();
@@ -80,7 +80,7 @@ TEST_F( ResourceFilterTest, SimpleIncludeFilter )
 	EXPECT_EQ( includes[0], ".red" );
 }
 
-TEST_F( ResourceFilterTest, SimpleExcludeFilter )
+TEST_F( ResourceFilterTest, FilterResourceFilter_SimpleExcludeFilter )
 {
 	ResourceTools::FilterResourceFilter filter( "![ .blk ]" );
 	const auto& excludes = filter.GetExcludeFilter();
@@ -88,7 +88,7 @@ TEST_F( ResourceFilterTest, SimpleExcludeFilter )
 	EXPECT_EQ( excludes[0], ".blk" );
 }
 
-TEST_F( ResourceFilterTest, IncludeExcludeInclude )
+TEST_F( ResourceFilterTest, FilterResourceFilter_IncludeExcludeInclude )
 {
 	// Include .in1 and .in2
 	// Exclude .in2, .ex1, and .ex2         (removes .in2 from include)
@@ -104,7 +104,7 @@ TEST_F( ResourceFilterTest, IncludeExcludeInclude )
 	EXPECT_EQ( excludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, MissingClosingIncludeBracketBeforeNextOpenExcludeBracket )
+TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingIncludeBracketBeforeNextOpenExcludeBracket )
 {
 	try
 	{
@@ -122,7 +122,7 @@ TEST_F( ResourceFilterTest, MissingClosingIncludeBracketBeforeNextOpenExcludeBra
 	}
 }
 
-TEST_F( ResourceFilterTest, ExcludeMarkerWithoutBracket_v1 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v1 )
 {
 	try
 	{
@@ -139,7 +139,7 @@ TEST_F( ResourceFilterTest, ExcludeMarkerWithoutBracket_v1 )
 	}
 }
 
-TEST_F( ResourceFilterTest, ExcludeMarkerWithoutBracket_v2 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v2 )
 {
 	try
 	{
@@ -156,7 +156,7 @@ TEST_F( ResourceFilterTest, ExcludeMarkerWithoutBracket_v2 )
 	}
 }
 
-TEST_F( ResourceFilterTest, ExcludeMarkerWithoutBracket_v3 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v3 )
 {
 	try
 	{
@@ -173,7 +173,7 @@ TEST_F( ResourceFilterTest, ExcludeMarkerWithoutBracket_v3 )
 	}
 }
 
-TEST_F( ResourceFilterTest, MissingOpeningBracket_v1 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_MissingOpeningBracket_v1 )
 {
 	try
 	{
@@ -190,7 +190,7 @@ TEST_F( ResourceFilterTest, MissingOpeningBracket_v1 )
 	}
 }
 
-TEST_F( ResourceFilterTest, MissingOpeningBracket_v2 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_MissingOpeningBracket_v2 )
 {
 	try
 	{
@@ -207,7 +207,7 @@ TEST_F( ResourceFilterTest, MissingOpeningBracket_v2 )
 	}
 }
 
-TEST_F( ResourceFilterTest, MissingClosingBracket_v1 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v1 )
 {
 	try
 	{
@@ -224,7 +224,7 @@ TEST_F( ResourceFilterTest, MissingClosingBracket_v1 )
 	}
 }
 
-TEST_F( ResourceFilterTest, MissingClosingBracket_v2 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v2 )
 {
 	try
 	{
@@ -241,7 +241,7 @@ TEST_F( ResourceFilterTest, MissingClosingBracket_v2 )
 	}
 }
 
-TEST_F( ResourceFilterTest, MissingClosingBracket_v3 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v3 )
 {
 	try
 	{
@@ -258,7 +258,7 @@ TEST_F( ResourceFilterTest, MissingClosingBracket_v3 )
 	}
 }
 
-TEST_F( ResourceFilterTest, CondensedValidFilterStringv1 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_CondensedValidFilterStringv1 )
 {
 	ResourceTools::FilterResourceFilter filter( "[inToken1 inToken2]![exToken1 exToken2][inToken3]" );
 	const auto& includes = filter.GetIncludeFilter();
@@ -269,7 +269,7 @@ TEST_F( ResourceFilterTest, CondensedValidFilterStringv1 )
 	EXPECT_EQ( excludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, CondensedValidFilterStringv2 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_CondensedValidFilterStringv2 )
 {
 	ResourceTools::FilterResourceFilter filter( "![exToken1][inToken1 inToken2]![exToken2][inToken3]" );
 	const auto& includes = filter.GetIncludeFilter();
@@ -282,7 +282,7 @@ TEST_F( ResourceFilterTest, CondensedValidFilterStringv2 )
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, SinglePrefixMultiplePaths )
+TEST_F( ResourceFilterTest, FilterPrefixMap_SinglePrefixMultiplePaths )
 {
 	ResourceTools::FilterPrefixMap map( "prefix1:/somePath;../otherPath" );
 	const auto& prefixMap = map.GetPrefixMap();
@@ -298,7 +298,7 @@ TEST_F( ResourceFilterTest, SinglePrefixMultiplePaths )
 	EXPECT_EQ( it->second.GetPaths(), expected ) << "Paths do not match expected values";
 }
 
-TEST_F( ResourceFilterTest, MultiplePrefixes )
+TEST_F( ResourceFilterTest, FilterPrefixMap_MultiplePrefixes )
 {
 	ResourceTools::FilterPrefixMap map( "prefix1:/path1;/path2 prefix2:/newPath1" );
 	const auto& prefixMap = map.GetPrefixMap();
@@ -320,7 +320,7 @@ TEST_F( ResourceFilterTest, MultiplePrefixes )
 	EXPECT_EQ( it2->second.GetPaths(), expected2 ) << "Paths do not match expected values";
 }
 
-TEST_F( ResourceFilterTest, DuplicateSamePrefixPathsInDifferentOrder )
+TEST_F( ResourceFilterTest, FilterPrefixMap_DuplicateSamePrefixPathsInDifferentOrder )
 {
 	ResourceTools::FilterPrefixMap map( "prefix1:/path1;/path2 prefix1:/path2;/path1" );
 
@@ -339,7 +339,7 @@ TEST_F( ResourceFilterTest, DuplicateSamePrefixPathsInDifferentOrder )
 	EXPECT_EQ( it->first, it->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, MultiplePrefixesAppendToPaths )
+TEST_F( ResourceFilterTest, FilterPrefixMap_MultiplePrefixesAppendToPaths )
 {
 	ResourceTools::FilterPrefixMap map( "prefix1:/path2;/path1 prefix2:/otherPath1;/otherPath2 prefix1:/path3;/path1" );
 	const auto& prefixMap = map.GetPrefixMap();
@@ -360,7 +360,7 @@ TEST_F( ResourceFilterTest, MultiplePrefixesAppendToPaths )
 	EXPECT_EQ( it2->first, it2->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, DifferentWhitespacesBetweenPrefixes )
+TEST_F( ResourceFilterTest, FilterPrefixMap_DifferentWhitespacesBetweenPrefixes )
 {
 	std::string input = "prefix1:/path1\tprefixTab:/path2\nprefixNewLine:/path3";
 	ResourceTools::FilterPrefixMap map( input );
@@ -387,7 +387,7 @@ TEST_F( ResourceFilterTest, DifferentWhitespacesBetweenPrefixes )
 	EXPECT_EQ( it3->first, it3->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, ParsePrefixMap_InvalidMissingColon )
+TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_MissingColon )
 {
 	try
 	{
@@ -404,7 +404,7 @@ TEST_F( ResourceFilterTest, ParsePrefixMap_InvalidMissingColon )
 	}
 }
 
-TEST_F( ResourceFilterTest, ParsePrefixMap_InvalidEmptyPrefix )
+TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_EmptyPrefix )
 {
 	try
 	{
@@ -421,7 +421,7 @@ TEST_F( ResourceFilterTest, ParsePrefixMap_InvalidEmptyPrefix )
 	}
 }
 
-TEST_F( ResourceFilterTest, ParsePrefixMap_InvalidNoPaths )
+TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_NoPaths )
 {
 	try
 	{
@@ -496,7 +496,7 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_InitializeValid )
 	EXPECT_EQ( it2->first, it2->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, FilterDefaultSection_InitializeInvalidMissingColon )
+TEST_F( ResourceFilterTest, FilterDefaultSection_Initialize_InvalidMissingColon )
 {
 	try
 	{
@@ -513,7 +513,7 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_InitializeInvalidMissingColon )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterDefaultSection_InitializeInvalidEmptyPrefix )
+TEST_F( ResourceFilterTest, FilterDefaultSection_Initialize_InvalidEmptyPrefix )
 {
 	try
 	{
