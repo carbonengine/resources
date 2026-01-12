@@ -16,7 +16,10 @@ FilterPrefixMapEntry::FilterPrefixMapEntry( const std::string& prefix, const std
 void FilterPrefixMapEntry::AppendPaths( const std::string& prefix, const std::string& rawPaths )
 {
 	if( prefix != m_prefix )
+	{
+		// TODO: Change this to a defined error code/type
 		throw std::invalid_argument( "Prefix mismatch while appending path(s): " + prefix + " (incoming) != " + m_prefix + " (existing)" );
+	}
 
 	std::size_t pos = 0;
 	while( pos < rawPaths.size() )
@@ -32,7 +35,10 @@ void FilterPrefixMapEntry::AppendPaths( const std::string& prefix, const std::st
 		pos = semicolon + 1;
 	}
 	if( m_paths.empty() )
+	{
+		// TODO: Change this to a defined error code/type
 		throw std::invalid_argument( "Invalid prefixmap format: No paths appended for prefix: " + m_prefix );
+	}
 }
 
 const std::string& FilterPrefixMapEntry::GetPrefix() const

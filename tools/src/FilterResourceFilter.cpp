@@ -65,20 +65,32 @@ void FilterResourceFilter::ParseFilters()
 			while( pos < s.size() && std::isspace( static_cast<unsigned char>( s[pos] ) ) )
 				++pos;
 			if( pos >= s.size() )
+			{
+				// TODO: Change this to a defined error code/type
 				throw std::invalid_argument( "Invalid filter format: exclude filter marker found without a [ token ] section" );
+			}
 		}
 
 		if( pos >= s.size() || s[pos] != '[' )
+		{
+			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid filter format: missing '['" );
+		}
 		++pos; // skip '['
 
 		size_t endBracket = s.find( ']', pos );
 		size_t nextStartBracket = s.find( '[', pos );
 		if( nextStartBracket != std::string::npos && nextStartBracket < endBracket )
+		{
+			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid filter format: matching end bracket ']' not present before the next start bracket '['" );
+		}
 
 		if( endBracket == std::string::npos )
+		{
+			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid filter format: missing ']'" );
+		}
 
 		std::string entries = s.substr( pos, endBracket - pos );
 		std::istringstream iss( entries );

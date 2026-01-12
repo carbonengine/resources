@@ -50,7 +50,7 @@ void FilterResourcePathFile::ParseRawPathFileAttribute()
 		const auto entryFilter = lineEntry.GetEntryFilter();
 		for( const auto& path : resolvedPaths )
 		{
-			m_resolvedPathMap.emplace( path, entryFilter );
+			m_resolvedPathMap.insert_or_assign( path, entryFilter );
 		}
 	}
 }

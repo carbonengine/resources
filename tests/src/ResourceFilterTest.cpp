@@ -8,6 +8,7 @@
 #include <FilterPrefixMapEntry.h>
 #include <FilterDefaultSection.h>
 #include <FilterResourcePathFile.h>
+#include <FilterNamedSection.h>
 
 TEST_F( ResourceFilterTest, Example1IniParsing )
 {
@@ -110,7 +111,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingIncludeBracketBef
 	{
 		// This test filter has a missing closing bracket for the first include filter, before the next exclude filter starts
 		ResourceTools::FilterResourceFilter filter( "[ .in1   !  [ .ex1 ]" );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -118,7 +119,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingIncludeBracketBef
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterResourceFilter";
 	}
 }
 
@@ -127,7 +128,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v1 
 	try
 	{
 		ResourceTools::FilterResourceFilter filter( "! .ex1 ]" );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -135,7 +136,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v1 
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterResourceFilter";
 	}
 }
 
@@ -144,7 +145,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v2 
 	try
 	{
 		ResourceTools::FilterResourceFilter filter( "  [ .in1 ] ! .ex1 ]" );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -152,7 +153,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v2 
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterResourceFilter";
 	}
 }
 
@@ -161,7 +162,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v3 
 	try
 	{
 		ResourceTools::FilterResourceFilter filter( "  [ .in1 ] ![ .ex1 ] ! " );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -169,7 +170,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v3 
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterResourceFilter";
 	}
 }
 
@@ -178,7 +179,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingOpeningBracket_v1 )
 	try
 	{
 		ResourceTools::FilterResourceFilter filter( ".in1 .in2 ]" );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -186,7 +187,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingOpeningBracket_v1 )
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterResourceFilter";
 	}
 }
 
@@ -195,7 +196,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingOpeningBracket_v2 )
 	try
 	{
 		ResourceTools::FilterResourceFilter filter( " [ .in1 .in2 ] .in3 ] " );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -203,7 +204,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingOpeningBracket_v2 )
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterResourceFilter";
 	}
 }
 
@@ -212,7 +213,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v1 )
 	try
 	{
 		ResourceTools::FilterResourceFilter filter( "[ .in1 .in2 " );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -220,7 +221,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v1 )
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterResourceFilter";
 	}
 }
 
@@ -229,7 +230,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v2 )
 	try
 	{
 		ResourceTools::FilterResourceFilter filter( "[ .in1 .in2 ] [ .in3 " );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -237,7 +238,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v2 )
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterResourceFilter";
 	}
 }
 
@@ -246,7 +247,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v3 )
 	try
 	{
 		ResourceTools::FilterResourceFilter filter( "[ .in1 .in2 ] [ .in3 [ .in4 ]" );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -254,7 +255,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v3 )
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterResourceFilter";
 	}
 }
 
@@ -392,7 +393,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_MissingColon )
 	try
 	{
 		ResourceTools::FilterPrefixMap prefixmap( "prefix1/path1" );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -400,7 +401,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_MissingColon )
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterPrefixMap";
 	}
 }
 
@@ -409,7 +410,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_EmptyPrefix )
 	try
 	{
 		ResourceTools::FilterPrefixMap prefixmap( ":/path1" );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -417,7 +418,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_EmptyPrefix )
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterPrefixMap";
 	}
 }
 
@@ -426,7 +427,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_NoPaths )
 	try
 	{
 		ResourceTools::FilterPrefixMap prefixmap( "prefix1:" );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -434,7 +435,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_NoPaths )
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterPrefixMap";
 	}
 }
 
@@ -444,7 +445,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMapEntry_PrefixMismatchOnAppend )
 	{
 		ResourceTools::FilterPrefixMapEntry entry( "prefix1", "/path1" );
 		entry.AppendPaths( "prefix2", "/path2" );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -452,7 +453,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMapEntry_PrefixMismatchOnAppend )
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when appending paths to FilterPrefixMapEntry";
 	}
 }
 
@@ -461,7 +462,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMapEntry_InvalidNoPathsOnAppend )
 	try
 	{
 		ResourceTools::FilterPrefixMapEntry entry( "prefix1", "" ); // Empty string for paths
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -469,7 +470,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMapEntry_InvalidNoPathsOnAppend )
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterPrefixMapEntry with no paths";
 	}
 }
 
@@ -501,7 +502,7 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_Initialize_InvalidMissingColon 
 	try
 	{
 		ResourceTools::FilterDefaultSection defaultSection( "prefix1/path1" );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -509,7 +510,7 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_Initialize_InvalidMissingColon 
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterDefaultSection";
 	}
 }
 
@@ -518,7 +519,7 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_Initialize_InvalidEmptyPrefix )
 	try
 	{
 		ResourceTools::FilterDefaultSection defaultSection( ":/path1" );
-		FAIL() << "Expected std::invalid_argument (1)";
+		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
 	catch( const std::invalid_argument& e )
 	{
@@ -526,11 +527,49 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_Initialize_InvalidEmptyPrefix )
 	}
 	catch( ... )
 	{
-		FAIL() << "Expected std::invalid_argument (2)";
+		FAIL() << "Expected std::invalid_argument when constructing FilterDefaultSection";
 	}
 }
 
 // -----------------------------------------
+
+void MapContainsPaths( const std::set<std::string>& allExpectedPaths,
+					   const std::map<std::string, ResourceTools::FilterResourceFilter>& resolvedMap,
+					   const std::string messagePrefix = "" )
+{
+	for( const auto& path : allExpectedPaths )
+	{
+		EXPECT_TRUE( resolvedMap.find( path ) != resolvedMap.end() ) << messagePrefix << " - Expected path not found in resolved map: " << path;
+	}
+	if( resolvedMap.size() != allExpectedPaths.size() )
+	{
+		FAIL() << messagePrefix << " - Resolved map size (" << resolvedMap.size() << ") does not match expected paths size (" << allExpectedPaths.size() << ")";
+	}
+}
+
+void ValidatePathMap( const std::set<std::string>& expectedPaths,
+					  const std::map<std::string, ResourceTools::FilterResourceFilter>& resolvedPathMap,
+					  const std::vector<std::string>& expectedIncludes,
+					  const std::vector<std::string>& expectedExcludes,
+					  const std::string messagePrefix = "" )
+{
+	for( const auto& p : expectedPaths )
+	{
+		EXPECT_TRUE( resolvedPathMap.count( p ) ) << messagePrefix << " - Expected path not found in resolved path map: " << p;
+	}
+
+	for( const auto& kv : resolvedPathMap )
+	{
+		// Ignore resolved paths that are not in the expectedPaths set (useful when checking partial expectedPaths, because of include/exclude overrides from default)
+		if( expectedPaths.find( kv.first ) == expectedPaths.end() )
+		{
+			continue;
+		}
+		EXPECT_EQ( kv.second.GetIncludeFilter(), expectedIncludes ) << messagePrefix << " - Include filter does not match expected for path: " << kv.first;
+		EXPECT_EQ( kv.second.GetExcludeFilter(), expectedExcludes ) << messagePrefix << " - Exclude filter does not match expected for path: " << kv.first;
+	}
+}
+
 
 TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_NoFilter )
 {
@@ -548,16 +587,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_NoFilter )
 	std::vector<std::string> expectedIncludes = { ".in1", ".in2" };
 	std::vector<std::string> expectedExcludes = { ".ex1" };
 
-	for( const auto& p : expectedPaths )
-	{
-		EXPECT_TRUE( resolvedPathMap.count( p ) );
-	}
-
-	for( const auto& kv : resolvedPathMap )
-	{
-		EXPECT_EQ( kv.second.GetIncludeFilter(), expectedIncludes );
-		EXPECT_EQ( kv.second.GetExcludeFilter(), expectedExcludes );
-	}
+	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
 TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_InlineIncludeExclude )
@@ -576,16 +606,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_InlineIncludeExclu
 	std::vector<std::string> expectedIncludes = { ".in1", ".in2", ".inLine1" };
 	std::vector<std::string> expectedExcludes = { ".ex1", ".exLine1" };
 
-	for( const auto& p : expectedPaths )
-	{
-		EXPECT_TRUE( resolvedPathMap.count( p ) );
-	}
-
-	for( const auto& kv : resolvedPathMap )
-	{
-		EXPECT_EQ( kv.second.GetIncludeFilter(), expectedIncludes );
-		EXPECT_EQ( kv.second.GetExcludeFilter(), expectedExcludes );
-	}
+	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
 TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_InlineOverridesParentFilter )
@@ -605,16 +626,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_InlineOverridesPar
 	std::vector<std::string> expectedIncludes = { ".parIn1", ".lineIn1", ".parEx1" };
 	std::vector<std::string> expectedExcludes = { ".parIn2", ".lineEx1" };
 
-	for( const auto& p : expectedPaths )
-	{
-		EXPECT_TRUE( resolvedPathMap.count( p ) );
-	}
-
-	for( const auto& kv : resolvedPathMap )
-	{
-		EXPECT_EQ( kv.second.GetIncludeFilter(), expectedIncludes );
-		EXPECT_EQ( kv.second.GetExcludeFilter(), expectedExcludes );
-	}
+	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
 TEST_F( ResourceFilterTest, FilterResourcePathFile_MultiLine_MixedFiltersWithOverrides )
@@ -685,16 +697,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_DuplicateOverrides
 	std::vector<std::string> expectedIncludes = { ".parIn1", ".parIn2", ".lineIn1" };
 	std::vector<std::string> expectedExcludes = { ".parEx1", ".lineEx1" };
 
-	for( const auto& p : expectedPaths )
-	{
-		EXPECT_TRUE( resolvedPathMap.count( p ) );
-	}
-
-	for( const auto& kv : resolvedPathMap )
-	{
-		EXPECT_EQ( kv.second.GetIncludeFilter(), expectedIncludes );
-		EXPECT_EQ( kv.second.GetExcludeFilter(), expectedExcludes );
-	}
+	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
 TEST_F( ResourceFilterTest, FilterResourcePathFile_Invalid_MissingPrefix )
@@ -731,3 +734,230 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_Invalid_MalformedInlineFilter
 }
 
 // -----------------------------------------
+
+TEST_F( ResourceFilterTest, FilterNamedSection_Valid_SingleLineRespath )
+{
+	std::string sectionName = "FilterNamedSection_Valid_SingleLineRespath";
+	std::string filter = "[ .in1 .in2 ] ![ .ex1 ]";
+	std::string respaths = "testPrefix:/foo/bar";
+	std::string defaultParentPrefixMapStr = "testPrefix:/myPath";
+
+	ResourceTools::FilterPrefixMap defaultPrefixMap( defaultParentPrefixMapStr );
+	ResourceTools::FilterNamedSection namedSection( sectionName, filter, respaths, "", defaultPrefixMap );
+
+	// Expected values:
+	std::set<std::string> expectedPaths = { "/myPath/foo/bar" };
+	std::vector<std::string> expectedIncludes = { ".in1", ".in2" };
+	std::vector<std::string> expectedExcludes = { ".ex1" };
+
+	const auto& resolvedRespathMap = namedSection.GetResolvedRespathsMap();
+	const auto& resolvedResfileMap = namedSection.GetResolvedResfileMap();
+	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
+
+	ValidatePathMap( expectedPaths, resolvedRespathMap, expectedIncludes, expectedExcludes, "ResolvedRespathsMap" );
+	EXPECT_TRUE( resolvedResfileMap.empty() );
+	ValidatePathMap( expectedPaths, combinedMap, expectedIncludes, expectedExcludes, "CombinedResolvedPathMap" );
+}
+
+
+
+TEST_F( ResourceFilterTest, FilterNamedSection_Valid_MultiLineRespath )
+{
+	std::string sectionName = "FilterNamedSection_Valid_MultiLineRespath";
+	std::string filter = "[ .in1 .in2 ] ![ .ex1 ]";
+	std::string respaths =
+		"prefix1:/firstLine [ .inLine1 ] ![ .exLine1 ]\n" // Add entries to both include and exclude filters
+		"prefix2:/secondLine";                            // Just using vanilla parent filter
+	std::string defaultParentPrefixMapStr = "prefix1:/pathA;/pathB prefix2:/path2";
+
+	ResourceTools::FilterPrefixMap defaultPrefixMap( defaultParentPrefixMapStr );
+	ResourceTools::FilterNamedSection namedSection( sectionName, filter, respaths, "", defaultPrefixMap );
+
+	// Expected values:
+	std::set<std::string> allExpectedPaths = { "/pathA/firstLine", "/pathB/firstLine", "/path2/secondLine" };
+	std::set<std::string> firstLinePaths = { "/pathA/firstLine", "/pathB/firstLine" };
+	std::set<std::string> secondLinePaths = { "/path2/secondLine" };
+	std::vector<std::string> defaultIncludes = { ".in1", ".in2" };
+	std::vector<std::string> defaultExcludes = { ".ex1" };
+	std::vector<std::string> firstLineIncludes = { ".in1", ".in2", ".inLine1" };
+	std::vector<std::string> firstLineExcludes = { ".ex1", ".exLine1" };
+
+	const auto& resolvedRespathsMap = namedSection.GetResolvedRespathsMap();
+	const auto& resolvedResfileMap = namedSection.GetResolvedResfileMap();
+	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
+
+	MapContainsPaths( allExpectedPaths, resolvedRespathsMap, "ResolvedRespathsMap" );
+	ValidatePathMap( firstLinePaths, resolvedRespathsMap, firstLineIncludes, firstLineExcludes, "FirstLine ResolvedRespathsMap" );
+	ValidatePathMap( secondLinePaths, resolvedRespathsMap, defaultIncludes, defaultExcludes, "SecondLine ResolvedRespathsMap" );
+	EXPECT_TRUE( resolvedResfileMap.empty() );
+	MapContainsPaths( allExpectedPaths, combinedMap, "CombinedResolvedMap" );
+	ValidatePathMap( firstLinePaths, combinedMap, firstLineIncludes, firstLineExcludes, "FirstLine ResolvedRespathsMap" );
+	ValidatePathMap( secondLinePaths, combinedMap, defaultIncludes, defaultExcludes, "SecondLine ResolvedRespathsMap" );
+}
+
+TEST_F( ResourceFilterTest, FilterNamedSection_Valid_RespathAndResfile )
+{
+	std::string sectionName = "FilterNamedSection_Valid_RespathAndResfile";
+	std::string defaultParentPrefixMapStr = "prefix1:/pathA;/pathB prefix2:/pathC";
+	std::string filter = "[ .in1 .in2 ] ![ .ex1 ]";
+	std::string respaths = "prefix1:/respaths";
+	std::string resfile = "prefix2:/resfile";
+
+	ResourceTools::FilterPrefixMap defaultPrefixMap( defaultParentPrefixMapStr );
+	ResourceTools::FilterNamedSection namedSection( sectionName, filter, respaths, resfile, defaultPrefixMap );
+
+	// Expected values:
+	std::set<std::string> allExpectedPaths = { "/pathA/respaths", "/pathB/respaths", "/pathC/resfile" };
+	std::set<std::string> respathsPaths = { "/pathA/respaths", "/pathB/respaths" };
+	std::set<std::string> resfilesPaths = { "/pathC/resfile" };
+	std::vector<std::string> defaultIncludes = { ".in1", ".in2" };
+	std::vector<std::string> defaultExcludes = { ".ex1" };
+
+	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
+	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
+
+	ASSERT_EQ( respathsMap.size(), 2 ); // prefix1 has two paths
+	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
+	ValidatePathMap( respathsPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
+
+	ASSERT_EQ( resfileMap.size(), 1 ); // prefix2 has one path
+	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
+
+	ASSERT_EQ( combinedMap.size(), 3 ); // 2 from respaths, 1 from resfile
+	MapContainsPaths( allExpectedPaths, combinedMap, "ResolvedCombinedMap" );
+	ValidatePathMap( allExpectedPaths, combinedMap, defaultIncludes, defaultExcludes, "ResolvedCombinedMap" );
+}
+
+
+TEST_F( ResourceFilterTest, FilterNamedSection_Valid_RespathSet_ResfileEmpty )
+{
+	std::string sectionName = "FilterNamedSection_Valid_RespathSet_ResfileEmpty";
+	std::string parentPrefixMapStr = "prefix1:/pathA";
+	std::string filter = "[ .in1 .in2 ] ![ .ex1 ]";
+	std::string respaths = "prefix1:/foo/bar";
+
+	ResourceTools::FilterPrefixMap defaultPrefixMap( parentPrefixMapStr );
+	ResourceTools::FilterNamedSection namedSection( sectionName, filter, respaths, "", defaultPrefixMap );
+
+	// Expected values:
+	std::set<std::string> onlyValidPaths = { "/pathA/foo/bar" };
+	std::vector<std::string> defaultIncludes = { ".in1", ".in2" };
+	std::vector<std::string> defaultExcludes = { ".ex1" };
+
+	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
+	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
+
+	ASSERT_EQ( respathsMap.size(), 1 );
+	MapContainsPaths( onlyValidPaths, respathsMap, "ResolvedRespathsMap" );
+	ValidatePathMap( onlyValidPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
+
+	ASSERT_EQ( resfileMap.size(), 0 ); // Nothing in resfile
+	EXPECT_TRUE( resfileMap.empty() );
+
+	ASSERT_EQ( combinedMap.size(), 1 ); // 1 from respaths, 0 from resfile
+	MapContainsPaths( onlyValidPaths, combinedMap, "ResolvedCombinedMap" );
+	ValidatePathMap( onlyValidPaths, combinedMap, defaultIncludes, defaultExcludes, "ResolvedCombinedMap" );
+}
+
+TEST_F( ResourceFilterTest, FilterNamedSection_Invalid_RespathMissing )
+{
+	std::string sectionName = "FilterNamedSection_Invalid_RespathMissing";
+	std::string defaultParentPrefixMapStr = "prefix1:/path1";
+	std::string filter = "[ .in1 ]";
+	std::string resfile = "prefix1:/foo/bar";
+
+	ResourceTools::FilterPrefixMap defaultPrefixMap( defaultParentPrefixMapStr );
+
+	// TODO: Should change code to throw defined error code/type
+	try
+	{
+		ResourceTools::FilterNamedSection namedSection( sectionName, filter, "", resfile, defaultPrefixMap );
+		FAIL() << "Expected std::invalid_argument when constructing FilterNamedSection with missing respaths";
+	}
+	catch( const std::invalid_argument& e )
+	{
+		std::string errorString = "Respaths attribute is empty for section: " + sectionName;
+		EXPECT_STREQ( e.what(), errorString.c_str() );
+	}
+	catch( ... )
+	{
+		FAIL() << "Expected std::invalid_argument to be thrown";
+	}
+}
+
+TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap )
+{
+	std::string sectionName = "FilterNamedSection_Valid_CombinedResolvedMap";
+	std::string defaultParentPrefixMapStr = "prefixA:/path1";
+	std::string filter = "[ .in1 ]";
+	std::string respaths = "prefixA:/foo/bar";
+	std::string resfile = "prefixA:/loo/car";
+
+	ResourceTools::FilterPrefixMap defaultPrefixMap( defaultParentPrefixMapStr );
+	ResourceTools::FilterNamedSection namedSection( sectionName, filter, respaths, resfile, defaultPrefixMap );
+
+	// Expected values:
+	std::set<std::string> combinedPaths = { "/path1/foo/bar", "/path1/loo/car" };
+	std::set<std::string> respathsPaths = { "/path1/foo/bar" };
+	std::set<std::string> resfilesPaths = { "/path1/loo/car" };
+	std::vector<std::string> defaultIncludes = { ".in1" };
+	std::vector<std::string> defaultExcludes = {};
+
+	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
+	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
+
+	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar"
+	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
+	ValidatePathMap( respathsPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
+
+	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar"
+	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
+
+	ASSERT_EQ( combinedMap.size(), 2 ); // both
+	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
+	ValidatePathMap( combinedPaths, combinedMap, defaultIncludes, defaultExcludes, "ResolvedCombinedMap" );
+}
+
+TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap_OverwrittenByResfileMap )
+{
+	std::string sectionName = "FilterNamedSection_Valid_CombinedResolvedMap_OverwrittenByResfileMap";
+	std::string defaultParentPrefixMapStr = "prefix1:/pathA;/pathB";
+	std::string filter = "[ .in1 .in2 ] ![ .ex1 ]";
+	std::string respaths = "prefix1:/foo/bar";
+	std::string resfile = "prefix1:/foo/bar [ .extra ]"; // Same path, extra include filter
+
+	ResourceTools::FilterPrefixMap defaultPrefixMap( defaultParentPrefixMapStr );
+	ResourceTools::FilterNamedSection namedSection( sectionName, filter, respaths, resfile, defaultPrefixMap );
+
+	// Expected values:
+	std::set<std::string> allPaths = { "/pathA/foo/bar", "/pathB/foo/bar" };
+	std::vector<std::string> defaultIncludes = { ".in1", ".in2" };
+	std::vector<std::string> allExcludes = { ".ex1" };
+	std::vector<std::string> overrideIncludes = { ".in1", ".in2", ".extra" };
+
+	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
+	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
+	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+
+	ASSERT_EQ( respathsMap.size(), 2 ); // "/path1/foo/bar"
+	MapContainsPaths( allPaths, respathsMap, "ResolvedRespathsMap" );
+	ValidatePathMap( allPaths, respathsMap, defaultIncludes, allExcludes, "ResolvedRespathsMap" );
+
+	ASSERT_EQ( resfileMap.size(), 2 ); // "/path1/loo/bar"
+	MapContainsPaths( allPaths, resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( allPaths, resfileMap, overrideIncludes, allExcludes, "ResolvedResfileMap" );
+
+	ASSERT_EQ( combinedMap.size(), 2 ); // Both, same count but now with overrides
+	MapContainsPaths( allPaths, combinedMap, "ResolvedCombinedMap" );
+	ValidatePathMap( allPaths, combinedMap, overrideIncludes, allExcludes, "ResolvedCombinedMap" );
+
+	// Re-validate that RespathsMap is unchanged
+	const auto& respathsAgainMap = namedSection.GetResolvedRespathsMap();
+	MapContainsPaths( allPaths, respathsAgainMap, "ResolvedRespathsMap-Again" );
+	ValidatePathMap( allPaths, respathsAgainMap, defaultIncludes, allExcludes, "ResolvedRespathsMap-Again" );
+}

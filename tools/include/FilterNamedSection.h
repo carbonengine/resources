@@ -23,8 +23,10 @@ public:
 								 const std::string& resfile,
 								 const FilterPrefixMap& parentPrefixMap );
 
+	const std::string& GetSectionName() const;
+
 	// Return combined resolved path map from both respaths and optional resfile
-	const std::map<std::string, FilterResourceFilter>& GetCombinedResolvedPathMap() const;
+	const std::map<std::string, FilterResourceFilter>& GetCombinedResolvedPathMap();
 
 	const std::map<std::string, FilterResourceFilter>& GetResolvedRespathsMap() const;
 
@@ -43,8 +45,6 @@ private:
 
 	// Combined map of fully resolved respaths and resfile FilterResourceFilter objects
 	std::map<std::string, FilterResourceFilter> m_resolvedCombinedPathMap;
-
-	void ParseNamedSection();
 };
 
 }

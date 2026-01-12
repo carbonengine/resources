@@ -28,11 +28,17 @@ void FilterPrefixMap::ParsePrefixMap( const std::string& rawPrefixMap )
 		// Find the prefix (or error out if missing a colon)
 		std::size_t colon = rawPrefixMap.find( ':', pos );
 		if( colon == std::string::npos )
+		{
+			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid prefixmap format: missing ':'" );
+		}
 
 		std::string prefix = rawPrefixMap.substr( pos, colon - pos );
 		if( prefix.empty() )
+		{
+			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid prefixmap format: empty prefix" );
+		}
 
 		// Move position past the colon
 		pos = colon + 1;
@@ -42,13 +48,16 @@ void FilterPrefixMap::ParsePrefixMap( const std::string& rawPrefixMap )
 		std::string rawPaths = ( nextSpace == std::string::npos ) ? rawPrefixMap.substr( pos ) : rawPrefixMap.substr( pos, nextSpace - pos );
 
 		if( rawPaths.empty() )
+		{
+			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid prefixmap format: No paths defined for prefix: " + prefix );
+		}
 
 		auto it = m_prefixMap.find( prefix );
 		if( it == m_prefixMap.end() )
 		{
 			// Prefix doesn't exist, create a map entry for it.
-			m_prefixMap.emplace( prefix, FilterPrefixMapEntry( prefix, rawPaths ) );
+			m_prefixMap.insert_or_assign( prefix, FilterPrefixMapEntry( prefix, rawPaths ) );
 		}
 		else
 		{

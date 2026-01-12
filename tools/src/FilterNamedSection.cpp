@@ -17,16 +17,55 @@ FilterNamedSection::FilterNamedSection( std::string sectionName,
 	m_respaths( respaths, parentPrefixMap, m_filter ),
 	m_resfile( resfile.empty() ? std::nullopt : std::make_optional<FilterResourcePathFile>( resfile, parentPrefixMap, m_filter ) )
 {
+	m_resolvedCombinedPathMap.clear();
+
 	if( respaths.empty() )
 	{
+		// TODO: Change this to a defined error code/type
 		throw std::invalid_argument( "Respaths attribute is empty for section: " + m_sectionName );
 	}
-
-	ParseNamedSection();
 }
 
-const std::map<std::string, FilterResourceFilter>& FilterNamedSection::GetCombinedResolvedPathMap() const
+const std::string& FilterNamedSection::GetSectionName() const
 {
+	return m_sectionName;
+}
+
+const std::map<std::string, FilterResourceFilter>& FilterNamedSection::GetCombinedResolvedPathMap()
+{
+
+	// Only populate the Combined map if not already done so.
+	if ( m_resolvedCombinedPathMap.empty() )
+	{
+		// Populate the combined map.
+		for( const auto& kv : m_respaths.GetResolvedPathMap() )
+		{
+			m_resolvedCombinedPathMap.insert_or_assign( kv.first, kv.second );
+		}
+
+		// Add resfile to the combined map
+		if( m_resfile )
+		{
+			// Allow "resfile" to contain multiple entries (future proofing)
+			for( const auto& kv : m_resfile->GetResolvedPathMap() )
+			{
+				// Combine filters of both if same key already exists
+				auto it = m_resolvedCombinedPathMap.find( kv.first );
+				if( it != m_resolvedCombinedPathMap.end() )
+				{
+					// Combine the filters (using raw filter strings)
+					std::string combinedRawFilter = it->second.GetRawFilter() + " " + kv.second.GetRawFilter();
+					FilterResourceFilter combinedFilter( combinedRawFilter );
+					m_resolvedCombinedPathMap.insert_or_assign( kv.first, combinedFilter );
+				}
+				else
+				{
+					m_resolvedCombinedPathMap.insert_or_assign( kv.first, kv.second );
+				}
+			}
+		}
+	}
+
 	return m_resolvedCombinedPathMap;
 }
 
@@ -45,37 +84,6 @@ const std::map<std::string, FilterResourceFilter>& FilterNamedSection::GetResolv
 	// Return empty map if no resfile present
 	static const std::map<std::string, FilterResourceFilter> emptyResfileMap;
 	return emptyResfileMap;
-}
-
-void FilterNamedSection::ParseNamedSection()
-{
-	// Populate the combined map.
-	for( const auto& kv : m_respaths.GetResolvedPathMap() )
-	{
-		m_resolvedCombinedPathMap[kv.first] = kv.second;
-	}
-
-	// Add resfile to the combined map
-	if( m_resfile )
-	{
-		// Allow "resfile" to contain multiple entries (future proofing)
-		for( const auto& kv : m_resfile->GetResolvedPathMap() )
-		{
-			// Combine filters of both if same key already exists
-			auto it = m_resolvedCombinedPathMap.find( kv.first );
-			if( it != m_resolvedCombinedPathMap.end() )
-			{
-				// Combine the filters (using raw filter strings)
-				std::string combinedRawFilter = it->second.GetRawFilter() + " " + kv.second.GetRawFilter();
-				FilterResourceFilter combinedFilter( combinedRawFilter );
-				m_resolvedCombinedPathMap[kv.first] = combinedFilter;
-			}
-			else
-			{
-				m_resolvedCombinedPathMap[kv.first] = kv.second;
-			}
-		}
-	}
 }
 
 }
