@@ -9,6 +9,7 @@
 #include <FilterDefaultSection.h>
 #include <FilterResourcePathFile.h>
 #include <FilterNamedSection.h>
+#include <FilterResourceFile.h>
 
 TEST_F( ResourceFilterTest, Example1IniParsing )
 {
@@ -759,8 +760,6 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_SingleLineRespath )
 	ValidatePathMap( expectedPaths, combinedMap, expectedIncludes, expectedExcludes, "CombinedResolvedPathMap" );
 }
 
-
-
 TEST_F( ResourceFilterTest, FilterNamedSection_Valid_MultiLineRespath )
 {
 	std::string sectionName = "FilterNamedSection_Valid_MultiLineRespath";
@@ -960,4 +959,44 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap_Overwri
 	const auto& respathsAgainMap = namedSection.GetResolvedRespathsMap();
 	MapContainsPaths( allPaths, respathsAgainMap, "ResolvedRespathsMap-Again" );
 	ValidatePathMap( allPaths, respathsAgainMap, defaultIncludes, allExcludes, "ResolvedRespathsMap-Again" );
+}
+
+// ------------------------------------------
+
+TEST_F( ResourceFilterTest, FilterResourceFile_Load_example1_ini )
+{
+	// Use the test fixture's helper to get the absolute path
+	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/example1.ini" );
+
+	try
+	{
+		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		const auto& fullPathMap = resourceFile.GetFullResolvedPathMap();
+
+		// Validate the paths:
+		std::set<std::string> expectedPaths = {
+			// From the respaths attribute:
+			"./Indicies/firstLine/...",           // "res:/firstLine/..."
+			"./resourcesOnBranch/firstLine/...",  // "res:/firstLine/..."
+			"./Indicies/secondLine/...",          // "res:/secondLine/..."
+			"./resourcesOnBranch/secondLine/...", // "res:/secondLine/..."
+			"./ResourceGroups/thirdLine/...",     // "res2:/thirdLine/..."
+			// From the resfile attribute:
+			"./Indicies/binaryFileIndex_v0_0_0.txt",         // "res:/binaryFileIndex_v0_0_0.txt"
+			"./resourcesOnBranch/binaryFileIndex_v0_0_0.txt" // "res:/binaryFileIndex_v0_0_0.txt"
+		};
+		std::vector<std::string> expectedIncludes = { ".yaml" };
+		std::vector<std::string> expectedExcludes = {};
+
+		MapContainsPaths( expectedPaths, fullPathMap, "FullResolvedPathMap from example1.ini" );
+		ValidatePathMap( expectedPaths, fullPathMap, expectedIncludes, expectedExcludes, "FullResolvedPathMap from example1.ini" );
+	}
+	catch( const std::exception& e )
+	{
+		FAIL() << "Exception thrown while loading example1.ini: " << e.what();
+	}
+	catch( ... )
+	{
+		FAIL() << "Unknown exception thrown while loading example1.ini";
+	}
 }
