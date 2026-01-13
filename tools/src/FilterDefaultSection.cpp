@@ -11,9 +11,9 @@ FilterDefaultSection::FilterDefaultSection( const std::string& prefixmapStr ) :
 {
 }
 
-const std::map<std::string, FilterPrefixMapEntry>& FilterDefaultSection::GetPrefixMap() const
+const FilterPrefixMap& FilterDefaultSection::GetPrefixMap() const
 {
-	return m_prefixMap.GetPrefixMap();
+	return m_prefixMap;
 }
 
 

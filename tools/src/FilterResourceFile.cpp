@@ -1,17 +1,98 @@
 // Copyright © 2025 CCP ehf.
 
 #include <stdexcept>
-
+#include <INIReader.h>
 #include <FilterResourceFile.h>
 
 namespace ResourceTools
 {
 
-FilterResourceFile::FilterResourceFile( const FilterDefaultSection& defaultSection, const std::vector<FilterNamedSection>& namedSections ) :
-	m_defaultSection( defaultSection ),
-	m_namedSections( namedSections )
+FilterResourceFile::FilterResourceFile( const std::filesystem::path& iniFilePath ) :
+	m_iniFilePath( iniFilePath )
 {
-	throw std::logic_error( "Not implemented yet exception" );
+	m_fullResolvedPathMap.clear();
+
+	ParseIniFile();
+}
+
+const std::map<std::string, FilterResourceFilter>& FilterResourceFile::GetFullResolvedPathMap()
+{
+	if( m_fullResolvedPathMap.empty() )
+	{
+		// Populate the full resolved path map from all named sections
+		for( auto& namedSection : m_namedSections )
+		{
+			auto& sectionPathMap = namedSection.GetCombinedResolvedPathMap();
+			for( const auto& kv : sectionPathMap )
+			{
+				// Combine filters if the same path already exists
+				auto it = m_fullResolvedPathMap.find( kv.first );
+				if( it != m_fullResolvedPathMap.end() )
+				{
+					// Combine the filters (using raw filter strings)
+					std::string combinedRawFilter = it->second.GetRawFilter() + " " + kv.second.GetRawFilter();
+					FilterResourceFilter combinedFilter( combinedRawFilter );
+					m_fullResolvedPathMap.insert_or_assign( kv.first, combinedFilter );
+				}
+				else
+				{
+					m_fullResolvedPathMap.insert_or_assign( kv.first, kv.second );
+				}
+			}
+		}
+	}
+
+	return m_fullResolvedPathMap;
+}
+
+void FilterResourceFile::ParseIniFile()
+{
+	// Open, read and parse the resource INI file.
+	INIReader reader( m_iniFilePath.string() );
+	if( reader.ParseError() != 0 )
+	{
+		// TODO: Change this to a defined error code/type
+		throw std::runtime_error( "Failed to parse INI file: " + m_iniFilePath.string() + " - " + reader.ParseErrorMessage() );
+	}
+
+	// Parse the [DEFAULT] section
+	if( !reader.HasSection( "DEFAULT" ) )
+	{
+		// TODO: Change this to a defined error code/type
+		throw std::runtime_error( "Missing [DEFAULT] section in INI file: " + m_iniFilePath.string() );
+	}
+	m_defaultSection = FilterDefaultSection( reader.Get( "DEFAULT", "prefixmap", "" ) );
+
+
+	// Validate that non-DEFAULT section(s) exist
+	std::vector<std::string> allSections = reader.Sections();
+	if( allSections.size() <= 1 )
+	{
+		// No namedSections defined
+		throw std::runtime_error( "No namedSections defined in INI file: " + m_iniFilePath.string() );
+	}
+
+	// Parse all other named sections
+	for( const auto& sectionName : reader.Sections() )
+	{
+		if( sectionName == "default" || sectionName == "DEFAULT" )
+		{
+			continue; // Already loaded, skip it
+		}
+
+		std::string filter = reader.Get( sectionName, "filter", "" );
+		std::string respaths = reader.Get( sectionName, "respaths", "" );
+		std::string resfile = reader.Get( sectionName, "resfile", "" );
+
+		if( respaths.empty() )
+		{
+			// TODO: Change this to a defined error code/type
+			throw std::invalid_argument( "Respaths attribute is empty for section: " + sectionName );
+		}
+
+		FilterNamedSection namedSection( sectionName, filter, respaths, resfile, m_defaultSection.GetPrefixMap() );
+		m_namedSections.push_back( namedSection );
+	}
 }
 
 }

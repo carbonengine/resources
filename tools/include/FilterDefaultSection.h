@@ -12,9 +12,11 @@ namespace ResourceTools
 class FilterDefaultSection
 {
 public:
+	FilterDefaultSection() = default;
+
 	explicit FilterDefaultSection( const std::string& prefixmapStr );
 
-	const std::map<std::string, FilterPrefixMapEntry>& GetPrefixMap() const;
+	const FilterPrefixMap& GetPrefixMap() const;
 
 private:
 	FilterPrefixMap m_prefixMap;

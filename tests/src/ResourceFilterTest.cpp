@@ -21,10 +21,10 @@ TEST_F( ResourceFilterTest, Example1IniParsing )
 	EXPECT_EQ( reader.Sections().size(), 2 );
 
 	// Check [default] section
-	ASSERT_TRUE( reader.HasSection( "default" ) );
-	EXPECT_EQ( reader.Get( "default", "prefixmap", "" ), "res:./Indicies;./resourcesOnBranch res2:./ResourceGroups" );
-	EXPECT_EQ( reader.Get( "default", "version", "" ), "1.2" );
-	EXPECT_EQ( reader.Keys( "default" ).size(), 2 );
+	ASSERT_TRUE( reader.HasSection( "DEFAULT" ) );
+	EXPECT_EQ( reader.Get( "DEFAULT", "prefixmap", "" ), "res:./Indicies;./resourcesOnBranch res2:./ResourceGroups" );
+	EXPECT_EQ( reader.Get( "DEFAULT", "version", "" ), "1.2" );
+	EXPECT_EQ( reader.Keys( "DEFAULT" ).size(), 2 );
 
 	// Check [testyamlfilesovermultilinerespaths] section
 	ASSERT_TRUE( reader.HasSection( "testYamlFilesOverMultiLineResPathsWithEmptyLines" ) );
@@ -286,12 +286,12 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_CondensedValidFilterStringv2 )
 TEST_F( ResourceFilterTest, FilterPrefixMap_SinglePrefixMultiplePaths )
 {
 	ResourceTools::FilterPrefixMap map( "prefix1:/somePath;../otherPath" );
-	const auto& prefixMap = map.GetPrefixMap();
-	ASSERT_EQ( prefixMap.size(), 1 ) << "There should only be 1 prefix in the map";
+	const auto& prefixMapEntries = map.GetMapEntries();
+	ASSERT_EQ( prefixMapEntries.size(), 1 ) << "There should only be 1 prefix in the map";
 
 	// If iterator is at end, the prefix was not found
-	auto it = prefixMap.find( "prefix1" );
-	ASSERT_NE( it, prefixMap.end() ) << "Prefix 'prefix1' not found in the map";
+	auto it = prefixMapEntries.find( "prefix1" );
+	ASSERT_NE( it, prefixMapEntries.end() ) << "Prefix 'prefix1' not found in the map";
 
 	std::set<std::string> expected = { "/somePath", "../otherPath" };
 	EXPECT_EQ( it->second.GetPrefix(), "prefix1" ) << "Prefix should be 'prefix1'";
@@ -302,14 +302,14 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_SinglePrefixMultiplePaths )
 TEST_F( ResourceFilterTest, FilterPrefixMap_MultiplePrefixes )
 {
 	ResourceTools::FilterPrefixMap map( "prefix1:/path1;/path2 prefix2:/newPath1" );
-	const auto& prefixMap = map.GetPrefixMap();
-	ASSERT_EQ( prefixMap.size(), 2 ) << "There should be 2 prefixes in the map";
+	const auto& prefixMapEntries = map.GetMapEntries();
+	ASSERT_EQ( prefixMapEntries.size(), 2 ) << "There should be 2 prefixes in the map";
 
 	// Make sure both prefixes exist
-	auto it1 = prefixMap.find( "prefix1" );
-	auto it2 = prefixMap.find( "prefix2" );
-	ASSERT_NE( it1, prefixMap.end() ) << "Prefix 'prefix1' not found in the map";
-	ASSERT_NE( it2, prefixMap.end() ) << "Prefix 'prefix2' not found in the map";
+	auto it1 = prefixMapEntries.find( "prefix1" );
+	auto it2 = prefixMapEntries.find( "prefix2" );
+	ASSERT_NE( it1, prefixMapEntries.end() ) << "Prefix 'prefix1' not found in the map";
+	ASSERT_NE( it2, prefixMapEntries.end() ) << "Prefix 'prefix2' not found in the map";
 
 	std::set<std::string> expected1 = { "/path1", "/path2" };
 	std::set<std::string> expected2 = { "/newPath1" };
@@ -326,10 +326,10 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_DuplicateSamePrefixPathsInDifferentO
 	ResourceTools::FilterPrefixMap map( "prefix1:/path1;/path2 prefix1:/path2;/path1" );
 
 	// There should only be one prefix (prefix1)
-	const auto& prefixMap = map.GetPrefixMap();
-	ASSERT_EQ( prefixMap.size(), 1 ) << "There should only be 1 prefix in the map";
-	auto it = prefixMap.find( "prefix1" );
-	ASSERT_NE( it, prefixMap.end() ) << "Prefix 'prefix1' not found in the map";
+	const auto& prefixMapEntries = map.GetMapEntries();
+	ASSERT_EQ( prefixMapEntries.size(), 1 ) << "There should only be 1 prefix in the map";
+	auto it = prefixMapEntries.find( "prefix1" );
+	ASSERT_NE( it, prefixMapEntries.end() ) << "Prefix 'prefix1' not found in the map";
 
 	// There should be only 2 paths, sorted in set
 	std::set<std::string> expected_a = { "/path1", "/path2" };
@@ -343,12 +343,12 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_DuplicateSamePrefixPathsInDifferentO
 TEST_F( ResourceFilterTest, FilterPrefixMap_MultiplePrefixesAppendToPaths )
 {
 	ResourceTools::FilterPrefixMap map( "prefix1:/path2;/path1 prefix2:/otherPath1;/otherPath2 prefix1:/path3;/path1" );
-	const auto& prefixMap = map.GetPrefixMap();
-	ASSERT_EQ( prefixMap.size(), 2 ) << "There should be 2 prefixes in the map";
-	auto it1 = prefixMap.find( "prefix1" );
-	auto it2 = prefixMap.find( "prefix2" );
-	ASSERT_NE( it1, prefixMap.end() ) << "Prefix 'prefix1' not found in the map";
-	ASSERT_NE( it2, prefixMap.end() ) << "Prefix 'prefix2' not found in the map";
+	const auto& prefixMapEntries = map.GetMapEntries();
+	ASSERT_EQ( prefixMapEntries.size(), 2 ) << "There should be 2 prefixes in the map";
+	auto it1 = prefixMapEntries.find( "prefix1" );
+	auto it2 = prefixMapEntries.find( "prefix2" );
+	ASSERT_NE( it1, prefixMapEntries.end() ) << "Prefix 'prefix1' not found in the map";
+	ASSERT_NE( it2, prefixMapEntries.end() ) << "Prefix 'prefix2' not found in the map";
 
 	// Prefix1 should have 3 paths and prefix2 should have 2
 	std::set<std::string> prefix1Paths = { "/path1", "/path2", "/path3" };
@@ -365,14 +365,14 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_DifferentWhitespacesBetweenPrefixes 
 {
 	std::string input = "prefix1:/path1\tprefixTab:/path2\nprefixNewLine:/path3";
 	ResourceTools::FilterPrefixMap map( input );
-	const auto& prefixMap = map.GetPrefixMap();
-	ASSERT_EQ( prefixMap.size(), 3 ) << "There should only be 3 prefix in the map";
-	auto it1 = prefixMap.find( "prefix1" );
-	auto it2 = prefixMap.find( "prefixTab" );
-	auto it3 = prefixMap.find( "prefixNewLine" );
-	EXPECT_NE( it1, prefixMap.end() ) << "Prefix 'prefix1' not found in the map";
-	EXPECT_NE( it2, prefixMap.end() ) << "Prefix 'prefixTab' not found in the map";
-	EXPECT_NE( it3, prefixMap.end() ) << "Prefix 'prefixNewLine' not found in the map";
+	const auto& prefixMapEntries = map.GetMapEntries();
+	ASSERT_EQ( prefixMapEntries.size(), 3 ) << "There should only be 3 prefix in the map";
+	auto it1 = prefixMapEntries.find( "prefix1" );
+	auto it2 = prefixMapEntries.find( "prefixTab" );
+	auto it3 = prefixMapEntries.find( "prefixNewLine" );
+	EXPECT_NE( it1, prefixMapEntries.end() ) << "Prefix 'prefix1' not found in the map";
+	EXPECT_NE( it2, prefixMapEntries.end() ) << "Prefix 'prefixTab' not found in the map";
+	EXPECT_NE( it3, prefixMapEntries.end() ) << "Prefix 'prefixNewLine' not found in the map";
 
 	std::set<std::string> prefix1Paths = { "/path1" };
 	std::set<std::string> prefixTabPaths = { "/path2" };
@@ -480,12 +480,12 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_InitializeValid )
 {
 	std::string input = "prefix1:/path1;../path2 prefix2:/path3";
 	ResourceTools::FilterDefaultSection defaultSection( input );
-	const auto& prefixMap = defaultSection.GetPrefixMap();
-	ASSERT_EQ( prefixMap.size(), 2 ) << "There should be 2 prefixes in the map";
-	auto it1 = prefixMap.find( "prefix1" );
-	auto it2 = prefixMap.find( "prefix2" );
-	ASSERT_NE( it1, prefixMap.end() ) << "Prefix 'prefix1' not found in the map";
-	ASSERT_NE( it2, prefixMap.end() ) << "Prefix 'prefix2' not found in the map";
+	const auto& prefixMapEntries = defaultSection.GetPrefixMap().GetMapEntries();
+	ASSERT_EQ( prefixMapEntries.size(), 2 ) << "There should be 2 prefixes in the map";
+	auto it1 = prefixMapEntries.find( "prefix1" );
+	auto it2 = prefixMapEntries.find( "prefix2" );
+	ASSERT_NE( it1, prefixMapEntries.end() ) << "Prefix 'prefix1' not found in the map";
+	ASSERT_NE( it2, prefixMapEntries.end() ) << "Prefix 'prefix2' not found in the map";
 
 	std::set<std::string> prefix1Paths = { "/path1", "../path2" };
 	std::set<std::string> prefix2Paths = { "/path3" };

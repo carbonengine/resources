@@ -15,13 +15,15 @@ namespace ResourceTools
 class FilterPrefixMap
 {
 public:
+	FilterPrefixMap() = default;
+
 	explicit FilterPrefixMap( const std::string& rawPrefixMap );
 
-	const std::map<std::string, FilterPrefixMapEntry>& GetPrefixMap() const;
+	const std::map<std::string, FilterPrefixMapEntry>& GetMapEntries() const;
 
 private:
 	// Map of prefixes to FilterPrefixMapEntry objects.
-	std::map<std::string, FilterPrefixMapEntry> m_prefixMap;
+	std::map<std::string, FilterPrefixMapEntry> m_prefixMapEntries;
 
 	void ParsePrefixMap( const std::string& rawPrefixMap );
 };

@@ -10,14 +10,14 @@ namespace ResourceTools
 
 FilterPrefixMap::FilterPrefixMap( const std::string& rawPrefixMap )
 {
-	m_prefixMap.clear();
+	m_prefixMapEntries.clear();
 
 	ParsePrefixMap( rawPrefixMap );
 }
 
-const std::map<std::string, FilterPrefixMapEntry>& FilterPrefixMap::GetPrefixMap() const
+const std::map<std::string, FilterPrefixMapEntry>& FilterPrefixMap::GetMapEntries() const
 {
-	return m_prefixMap;
+	return m_prefixMapEntries;
 }
 
 void FilterPrefixMap::ParsePrefixMap( const std::string& rawPrefixMap )
@@ -53,11 +53,11 @@ void FilterPrefixMap::ParsePrefixMap( const std::string& rawPrefixMap )
 			throw std::invalid_argument( "Invalid prefixmap format: No paths defined for prefix: " + prefix );
 		}
 
-		auto it = m_prefixMap.find( prefix );
-		if( it == m_prefixMap.end() )
+		auto it = m_prefixMapEntries.find( prefix );
+		if( it == m_prefixMapEntries.end() )
 		{
 			// Prefix doesn't exist, create a map entry for it.
-			m_prefixMap.insert_or_assign( prefix, FilterPrefixMapEntry( prefix, rawPaths ) );
+			m_prefixMapEntries.insert_or_assign( prefix, FilterPrefixMapEntry( prefix, rawPaths ) );
 		}
 		else
 		{

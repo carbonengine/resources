@@ -62,9 +62,9 @@ void FilterResourcePathFileEntry::ParseRawPathLine()
 	std::string prefix = rawPathToken.substr( 0, colon );
 	std::string rest = rawPathToken.substr( colon + 1 );
 
-	const auto& prefixMap = m_parentPrefixMap.GetPrefixMap();
-	auto it = prefixMap.find( prefix );
-	if( it == prefixMap.end() )
+	const auto& prefixMapEntries = m_parentPrefixMap.GetMapEntries();
+	auto it = prefixMapEntries.find( prefix );
+	if( it == prefixMapEntries.end() )
 	{
 		// TODO: Change this to a defined error code/type
 		throw std::invalid_argument( std::string( "Prefix '" ) + prefix + "' not present in prefixMap for line: " + m_rawPathLine );
