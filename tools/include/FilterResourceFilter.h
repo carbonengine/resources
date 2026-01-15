@@ -16,7 +16,7 @@ class FilterResourceFilter
 public:
 	FilterResourceFilter() = default;
 
-	explicit FilterResourceFilter( const std::string& rawFilter );
+	explicit FilterResourceFilter( const std::string& rawFilter, bool isToplevelFilter = false );
 
 	// Used as input when constructing a combined resolved filter for a respaths/resfile line.
 	const std::string& GetRawFilter() const;
@@ -26,6 +26,8 @@ public:
 	const std::vector<std::string>& GetExcludeFilter() const;
 
 private:
+	bool m_isToplevelFilter = false;
+
 	std::string m_rawFilter;
 
 	std::vector<std::string> m_includeFilter;

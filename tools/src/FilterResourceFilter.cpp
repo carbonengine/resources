@@ -7,8 +7,9 @@
 namespace ResourceTools
 {
 
-FilterResourceFilter::FilterResourceFilter( const std::string& rawFilter ) :
-	m_rawFilter( rawFilter )
+FilterResourceFilter::FilterResourceFilter( const std::string& rawFilter, bool isToplevelFilter /* = false */ ) :
+	m_rawFilter( rawFilter ),
+	m_isToplevelFilter( isToplevelFilter )
 {
 	ParseFilters();
 }
@@ -112,6 +113,19 @@ void FilterResourceFilter::ParseFilters()
 									   isExclude ? m_excludeFilter : m_includeFilter );
 		}
 		pos = endBracket + 1;
+	}
+
+	// Make sure that we have a wild-card ("*") in the TOP-LEVEL include filter if the include filter is empty
+	if( m_isToplevelFilter && m_includeFilter.empty() )
+	{
+		m_includeFilter.push_back( "*" );
+
+		// Also make sure we add the wild-card include to the raw filter (in case filters are concatenated later)
+		if( !m_rawFilter.empty() )
+		{
+			m_rawFilter += " ";
+		}
+		m_rawFilter += "[ * ]";
 	}
 }
 

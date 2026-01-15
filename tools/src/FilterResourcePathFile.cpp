@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <FilterResourcePathFile.h>
-
+#include <FilterResourcePathFileEntry.h>
 
 namespace ResourceTools
 {

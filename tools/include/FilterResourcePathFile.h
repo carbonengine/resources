@@ -6,7 +6,6 @@
 #include <string>
 #include <FilterPrefixmap.h>
 #include <FilterResourceFilter.h>
-#include <FilterResourcePathFileEntry.h>
 
 namespace ResourceTools
 {

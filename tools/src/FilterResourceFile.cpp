@@ -59,7 +59,7 @@ void FilterResourceFile::ParseIniFile()
 	if( !reader.HasSection( "DEFAULT" ) )
 	{
 		// TODO: Change this to a defined error code/type
-		throw std::runtime_error( "Missing [DEFAULT] section in INI file: " + m_iniFilePath.string() );
+		throw std::invalid_argument( "Missing [DEFAULT] section in INI file: " + m_iniFilePath.string() );
 	}
 	m_defaultSection = FilterDefaultSection( reader.Get( "DEFAULT", "prefixmap", "" ) );
 
@@ -69,7 +69,7 @@ void FilterResourceFile::ParseIniFile()
 	if( allSections.size() <= 1 )
 	{
 		// No namedSections defined
-		throw std::runtime_error( "No namedSections defined in INI file: " + m_iniFilePath.string() );
+		throw std::invalid_argument( "No namedSections defined in INI file: " + m_iniFilePath.string() );
 	}
 
 	// Parse all other named sections

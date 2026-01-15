@@ -13,7 +13,7 @@ FilterNamedSection::FilterNamedSection( std::string sectionName,
 										const FilterPrefixMap& parentPrefixMap ) :
 	m_sectionName( std::move( sectionName ) ),
 	m_parentPrefixMap( parentPrefixMap ),
-	m_filter( filter ),
+	m_filter( filter, true ), // isToplevelFilter = true
 	m_respaths( respaths, parentPrefixMap, m_filter ),
 	m_resfile( resfile.empty() ? std::nullopt : std::make_optional<FilterResourcePathFile>( resfile, parentPrefixMap, m_filter ) )
 {
