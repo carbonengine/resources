@@ -1097,6 +1097,242 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap_OnlyExc
 	}
 }
 
+TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_EmptyTopLevelFilter_OverrideRespath )
+{
+	std::string sectionName = "FilterNamedSection_Valid_DiffCombinedResolvedMap_EmptyTopLevelFilter_OverrideRespath";
+	std::string defaultParentPrefixMapStr = "prefixA:/path1";
+	std::string filter = ""; // Empty top-level filter should add wildcard ("*") include filter
+	std::string respaths = "prefixA:/foo/bar [ .inlineInclude ] ![ .inlineExclude ]"; // Inline filters to override
+	std::string resfile = "prefixA:/loo/car";
+
+	ResourceTools::FilterPrefixMap defaultPrefixMap( defaultParentPrefixMapStr );
+	ResourceTools::FilterNamedSection namedSection( sectionName, filter, respaths, resfile, defaultPrefixMap );
+
+	// Expected values:
+	std::set<std::string> combinedPaths = { "/path1/foo/bar", "/path1/loo/car" };
+	std::set<std::string> respathsPaths = { "/path1/foo/bar" };
+	std::set<std::string> resfilesPaths = { "/path1/loo/car" };
+	std::vector<std::string> defaultIncludes = { "*" }; // Default "*" added to top-level include
+	std::vector<std::string> defaultExcludes = {};
+	std::vector<std::string> overrideIncludes = { "*", ".inlineInclude" };
+	std::vector<std::string> overrideExcludes = { ".inlineExclude" };
+
+	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
+	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
+
+	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar" + "[ *, .inlineInclude ] ![ .inlineExclude ]"
+	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
+	ValidatePathMap( respathsPaths, respathsMap, overrideIncludes, overrideExcludes, "ResolvedRespathsMap" );
+
+	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar" + "[ * ]"
+	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
+
+	ASSERT_EQ( combinedMap.size(), 2 ); // both
+	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
+	// Manually validate combined map since it combines both overrides and defaults
+	for( const auto& kv : combinedMap )
+	{
+		// The "respaths" part:
+		if( kv.first == "/path1/foo/bar" )
+		{
+			EXPECT_EQ( kv.second.GetIncludeFilter().size(), 2 );
+			EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), "*" ) != kv.second.GetIncludeFilter().end() );
+			EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".inlineInclude" ) != kv.second.GetIncludeFilter().end() );
+
+			EXPECT_EQ( kv.second.GetExcludeFilter().size(), 1 );
+			EXPECT_EQ( kv.second.GetExcludeFilter()[0], ".inlineExclude" );
+		}
+		// The "resfile" part:
+		else if( kv.first == "/path1/loo/car" )
+		{
+			EXPECT_EQ( kv.second.GetIncludeFilter().size(), 1 );
+			EXPECT_EQ( kv.second.GetIncludeFilter()[0], "*" ); // Wild-card added when no include filter specified for TOP-LEVEL filter
+
+			EXPECT_EQ( kv.second.GetExcludeFilter().size(), 0 );
+		}
+	}
+}
+
+TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_EmptyTopLevelFilter_OverrideResfile )
+{
+	std::string sectionName = "FilterNamedSection_Valid_DiffCombinedResolvedMap_EmptyTopLevelFilter_OverrideResfile";
+	std::string defaultParentPrefixMapStr = "prefixA:/path1";
+	std::string filter = ""; // Empty top-level filter should add wildcard ("*") include filter
+	std::string respaths = "prefixA:/foo/bar";
+	std::string resfile = "prefixA:/loo/car [ .inlineInclude ] ![ .inlineExclude ]"; // Inline filters to override
+
+	ResourceTools::FilterPrefixMap defaultPrefixMap( defaultParentPrefixMapStr );
+	ResourceTools::FilterNamedSection namedSection( sectionName, filter, respaths, resfile, defaultPrefixMap );
+
+	// Expected values:
+	std::set<std::string> combinedPaths = { "/path1/foo/bar", "/path1/loo/car" };
+	std::set<std::string> respathsPaths = { "/path1/foo/bar" };
+	std::set<std::string> resfilesPaths = { "/path1/loo/car" };
+	std::vector<std::string> defaultIncludes = { "*" }; // Default "*" added to top-level include
+	std::vector<std::string> defaultExcludes = {};
+	std::vector<std::string> overrideIncludes = { "*", ".inlineInclude" };
+	std::vector<std::string> overrideExcludes = { ".inlineExclude" };
+
+	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
+	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
+
+	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar" + "[ * ]"
+	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
+	ValidatePathMap( respathsPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
+
+	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar" + "[ *, .inlineInclude ] ![ .inlineExclude ]"
+	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, resfileMap, overrideIncludes, overrideExcludes, "ResolvedResfileMap" );
+
+	ASSERT_EQ( combinedMap.size(), 2 ); // both
+	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
+	// Manually validate combined map since it combines both overrides and defaults
+	for( const auto& kv : combinedMap )
+	{
+		// The "resfile" part:
+		if( kv.first == "/path1/loo/car" )
+		{
+			EXPECT_EQ( kv.second.GetIncludeFilter().size(), 2 );
+			EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), "*" ) != kv.second.GetIncludeFilter().end() );
+			EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".inlineInclude" ) != kv.second.GetIncludeFilter().end() );
+
+			EXPECT_EQ( kv.second.GetExcludeFilter().size(), 1 );
+			EXPECT_EQ( kv.second.GetExcludeFilter()[0], ".inlineExclude" );
+		}
+		// The "respaths" part:
+		else if( kv.first == "/path1/foo/bar" )
+		{
+			EXPECT_EQ( kv.second.GetIncludeFilter().size(), 1 );
+			EXPECT_EQ( kv.second.GetIncludeFilter()[0], "*" ); // Wild-card added when no include filter specified for TOP-LEVEL filter
+
+			EXPECT_EQ( kv.second.GetExcludeFilter().size(), 0 );
+		}
+	}
+}
+
+TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_OnlyExcludeTopLevelFilter_OverrideRespath )
+{
+	std::string sectionName = "FilterNamedSection_Valid_DiffCombinedResolvedMap_OnlyExcludeTopLevelFilter_OverrideRespath";
+	std::string defaultParentPrefixMapStr = "prefixA:/path1";
+	std::string filter = "![ .toplevelExclude ]"; // Only exclude filter at top-level should add wildcard ("*") include as well
+	std::string respaths = "prefixA:/foo/bar [ .inlineInclude ] ![ .inlineExclude ]"; // Inline filters to override
+	std::string resfile = "prefixA:/loo/car";
+
+	ResourceTools::FilterPrefixMap defaultPrefixMap( defaultParentPrefixMapStr );
+	ResourceTools::FilterNamedSection namedSection( sectionName, filter, respaths, resfile, defaultPrefixMap );
+
+	// Expected values:
+	std::set<std::string> combinedPaths = { "/path1/foo/bar", "/path1/loo/car" };
+	std::set<std::string> respathsPaths = { "/path1/foo/bar" };
+	std::set<std::string> resfilesPaths = { "/path1/loo/car" };
+	std::vector<std::string> defaultIncludes = { "*" }; // Default "*" added to top-level include
+	std::vector<std::string> defaultExcludes = { ".toplevelExclude" };
+	std::vector<std::string> overrideIncludes = { "*", ".inlineInclude" };
+	std::vector<std::string> overrideExcludes = { ".toplevelExclude", ".inlineExclude" };
+
+	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
+	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
+
+	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar" + "[ *, .inlineInclude ] ![ .toplevelExclude .inlineExclude ]"
+	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
+	ValidatePathMap( respathsPaths, respathsMap, overrideIncludes, overrideExcludes, "ResolvedRespathsMap" );
+
+	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar" + "[ * ]"
+	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
+
+	ASSERT_EQ( combinedMap.size(), 2 ); // both
+	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
+	// Manually validate combined map since it combines both overrides and defaults
+	for( const auto& kv : combinedMap )
+	{
+		// The "respaths" part:
+		if( kv.first == "/path1/foo/bar" )
+		{
+			EXPECT_EQ( kv.second.GetIncludeFilter().size(), 2 );
+			EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), "*" ) != kv.second.GetIncludeFilter().end() );
+			EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".inlineInclude" ) != kv.second.GetIncludeFilter().end() );
+
+			EXPECT_EQ( kv.second.GetExcludeFilter().size(), 2 );
+			EXPECT_TRUE( std::find( kv.second.GetExcludeFilter().begin(), kv.second.GetExcludeFilter().end(), ".toplevelExclude" ) != kv.second.GetExcludeFilter().end() );
+			EXPECT_TRUE( std::find( kv.second.GetExcludeFilter().begin(), kv.second.GetExcludeFilter().end(), ".inlineExclude" ) != kv.second.GetExcludeFilter().end() );
+		}
+		// The "resfile" part:
+		else if( kv.first == "/path1/loo/car" )
+		{
+			EXPECT_EQ( kv.second.GetIncludeFilter().size(), 1 );
+			EXPECT_EQ( kv.second.GetIncludeFilter()[0], "*" ); // Wild-card added when no include filter specified for TOP-LEVEL filter
+
+			EXPECT_EQ( kv.second.GetExcludeFilter().size(), 1 );
+			EXPECT_EQ( kv.second.GetExcludeFilter()[0], ".toplevelExclude" ); // Top-level exclude filter
+		}
+	}
+}
+
+TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_OnlyExcludeTopLevelFilter_OverrideResfile )
+{
+	std::string sectionName = "FilterNamedSection_Valid_DiffCombinedResolvedMap_OnlyExcludeTopLevelFilter_OverrideRespath";
+	std::string defaultParentPrefixMapStr = "prefixA:/path1";
+	std::string filter = "![ .toplevelExclude ]"; // Only exclude filter at top-level should add wildcard ("*") include as well
+	std::string respaths = "prefixA:/foo/bar";
+	std::string resfile = "prefixA:/loo/car [ .inlineInclude ] ![ .inlineExclude ]"; // Inline filters to override";
+
+	ResourceTools::FilterPrefixMap defaultPrefixMap( defaultParentPrefixMapStr );
+	ResourceTools::FilterNamedSection namedSection( sectionName, filter, respaths, resfile, defaultPrefixMap );
+
+	// Expected values:
+	std::set<std::string> combinedPaths = { "/path1/foo/bar", "/path1/loo/car" };
+	std::set<std::string> respathsPaths = { "/path1/foo/bar" };
+	std::set<std::string> resfilesPaths = { "/path1/loo/car" };
+	std::vector<std::string> defaultIncludes = { "*" }; // Default "*" added to top-level include
+	std::vector<std::string> defaultExcludes = { ".toplevelExclude" };
+	std::vector<std::string> overrideIncludes = { "*", ".inlineInclude" };
+	std::vector<std::string> overrideExcludes = { ".toplevelExclude", ".inlineExclude" };
+
+	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
+	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
+
+	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar" + "[ * ]"
+	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
+	ValidatePathMap( respathsPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
+
+	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar" + "[ *, .inlineInclude ] ![ .toplevelExclude .inlineExclude ]"
+	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, resfileMap, overrideIncludes, overrideExcludes, "ResolvedResfileMap" );
+
+	ASSERT_EQ( combinedMap.size(), 2 ); // both
+	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
+	// Manually validate combined map since it combines both overrides and defaults
+	for( const auto& kv : combinedMap )
+	{
+		// The "resfile" part:
+		if( kv.first == "/path1/loo/car" )
+		{
+			EXPECT_EQ( kv.second.GetIncludeFilter().size(), 2 );
+			EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), "*" ) != kv.second.GetIncludeFilter().end() );
+			EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".inlineInclude" ) != kv.second.GetIncludeFilter().end() );
+
+			EXPECT_EQ( kv.second.GetExcludeFilter().size(), 2 );
+			EXPECT_TRUE( std::find( kv.second.GetExcludeFilter().begin(), kv.second.GetExcludeFilter().end(), ".toplevelExclude" ) != kv.second.GetExcludeFilter().end() );
+			EXPECT_TRUE( std::find( kv.second.GetExcludeFilter().begin(), kv.second.GetExcludeFilter().end(), ".inlineExclude" ) != kv.second.GetExcludeFilter().end() );
+		}
+		// The "respaths" part:
+		else if( kv.first == "/path1/foo/bar" )
+		{
+			EXPECT_EQ( kv.second.GetIncludeFilter().size(), 1 );
+			EXPECT_EQ( kv.second.GetIncludeFilter()[0], "*" ); // Wild-card added when no include filter specified for TOP-LEVEL filter
+
+			EXPECT_EQ( kv.second.GetExcludeFilter().size(), 1 );
+			EXPECT_EQ( kv.second.GetExcludeFilter()[0], ".toplevelExclude" ); // Top-level exclude filter
+		}
+	}
+}
+
 TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap_OverwrittenByResfileMap )
 {
 	std::string sectionName = "FilterNamedSection_Valid_CombinedResolvedMap_OverwrittenByResfileMap";
