@@ -161,22 +161,22 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 					return addResourceResult;
 				}
 
-                // If resources are set to be exported, then export as specified
-                if (params.exportResources)
-                {
+				// If resources are set to be exported, then export as specified
+				if( params.exportResources )
+				{
 					ResourcePutDataParams putDataParams;
 
-                    putDataParams.resourceDestinationSettings = params.exportResourcesDestinationSettings;
+					putDataParams.resourceDestinationSettings = params.exportResourcesDestinationSettings;
 
-                    putDataParams.data = &resourceData;
+					putDataParams.data = &resourceData;
 
 					Result putDataResult = resource->PutData( putDataParams );
 
-                    if( putDataResult.type != ResultType::SUCCESS )
+					if( putDataResult.type != ResultType::SUCCESS )
 					{
 						return putDataResult;
 					}
-                }
+				}
 			}
 			else
 			{
@@ -188,13 +188,13 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 
 				ResourceTools::FileDataStreamIn fileStreamIn( params.resourceStreamThreshold );
 
-				if (params.calculateCompressions)
-                {
+				if( params.calculateCompressions )
+				{
 					if( !compressionStream.Start() )
 					{
 						return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
 					}
-                }
+				}
 
 				if( !fileStreamIn.StartRead( entry.path() ) )
 				{
@@ -287,31 +287,31 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 					return addResourceResult;
 				}
 
-                // If resources are set to be exported, then export as specified.
-                // This is slow with large files as each need to be streamed again
-                // The problem is that checksum of the whole file needs to be calculated first
-                // in order to get the correct destination CDN path
-                // If compression is not skipped and REMOTE_CDN is chosen as destination then
-                // compression will also be calculated twice.
-				// This can be improved with a refactor but currently this code path not 
+				// If resources are set to be exported, then export as specified.
+				// This is slow with large files as each need to be streamed again
+				// The problem is that checksum of the whole file needs to be calculated first
+				// in order to get the correct destination CDN path
+				// If compression is not skipped and REMOTE_CDN is chosen as destination then
+				// compression will also be calculated twice.
+				// This can be improved with a refactor but currently this code path not
 				// likely to be relied upon often
 				if( params.exportResources )
 				{
 					ResourcePutDataStreamParams putDataStreamParams;
 
-                    // Create the correct file data streaming for the desination
-                    std::unique_ptr<ResourceTools::FileDataStreamOut> resourceDataStreamOut;
+					// Create the correct file data streaming for the desination
+					std::unique_ptr<ResourceTools::FileDataStreamOut> resourceDataStreamOut;
 
-                    if (params.exportResourcesDestinationSettings.destinationType == ResourceDestinationType::REMOTE_CDN)
-                    {
-                        // REMOTE_CDN requires compression
+					if( params.exportResourcesDestinationSettings.destinationType == ResourceDestinationType::REMOTE_CDN )
+					{
+						// REMOTE_CDN requires compression
 						resourceDataStreamOut = std::make_unique<ResourceTools::CompressedFileDataStreamOut>();
-                    }
-                    else
-                    {
-                        // Else just stream out uncompressed
+					}
+					else
+					{
+						// Else just stream out uncompressed
 						resourceDataStreamOut = std::make_unique<ResourceTools::FileDataStreamOut>();
-                    }
+					}
 
 					putDataStreamParams.resourceDestinationSettings = params.exportResourcesDestinationSettings;
 
@@ -324,44 +324,42 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 						return putDataStreamResult;
 					}
 
-                    // Export resource using streaming
+					// Export resource using streaming
 					ResourceTools::FileDataStreamIn fileStreamIn( params.resourceStreamThreshold );
 
-                    if( !fileStreamIn.StartRead( entry.path() ) )
+					if( !fileStreamIn.StartRead( entry.path() ) )
 					{
 						return Result{ ResultType::FAILED_TO_OPEN_FILE_STREAM };
 					}
 
-                    while( !fileStreamIn.IsFinished() )
+					while( !fileStreamIn.IsFinished() )
 					{
 						std::string data = "";
 
-                        if (!(fileStreamIn >> data))
-                        {
+						if( !( fileStreamIn >> data ) )
+						{
 							return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
-                        }
+						}
 
-                        if (!(resourceDataStreamOut->operator<<(data)))
-                        {
+						if( !( resourceDataStreamOut->operator<<( data ) ) )
+						{
 							return Result{ ResultType::FAILED_TO_SAVE_TO_STREAM };
-                        }
+						}
 					}
 
-                    if (!resourceDataStreamOut->Finish())
-                    {
+					if( !resourceDataStreamOut->Finish() )
+					{
 						return Result{ ResultType::FAILED_TO_SAVE_TO_STREAM };
-                    }
-
+					}
 				}
-
 			}
 		}
 	}
 
-    if (!params.calculateCompressions)
-    {
+	if( !params.calculateCompressions )
+	{
 		m_totalResourcesSizeCompressed.Reset();
-    }
+	}
 
 	if( params.statusCallback )
 	{
@@ -912,14 +910,13 @@ Result ResourceGroup::ResourceGroupImpl::ExportYaml( const VersionInternal& outp
 	out << YAML::Key << m_numberOfResources.GetTag();
 	out << YAML::Value << m_numberOfResources.GetValue();
 
-    if (m_totalResourcesSizeCompressed.HasValue())
-    {
+	if( m_totalResourcesSizeCompressed.HasValue() )
+	{
 		uintmax_t compressedSize = m_totalResourcesSizeCompressed.GetValue();
 
 		out << YAML::Key << m_totalResourcesSizeCompressed.GetTag();
 		out << YAML::Value << compressedSize;
-		
-    }
+	}
 
 	out << YAML::Key << m_totalResourcesSizeUncompressed.GetTag();
 	out << YAML::Value << m_totalResourcesSizeUncompressed.GetValue();

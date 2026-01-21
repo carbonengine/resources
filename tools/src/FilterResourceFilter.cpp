@@ -34,11 +34,15 @@ void FilterResourceFilter::PlaceTokenInCorrectVector( const std::string& token, 
 	// Remove token from the fromVector if present
 	auto it = std::find( fromVector.begin(), fromVector.end(), token );
 	if( it != fromVector.end() )
+	{
 		fromVector.erase( it );
+	}
 
 	// Add token to the toVector if not already present in it.
 	if( std::find( toVector.begin(), toVector.end(), token ) == toVector.end() )
+	{
 		toVector.push_back( token );
+	}
 }
 
 void FilterResourceFilter::ParseFilters()
@@ -52,9 +56,13 @@ void FilterResourceFilter::ParseFilters()
 	{
 		// Skip whitespace
 		while( pos < s.size() && std::isspace( static_cast<unsigned char>( s[pos] ) ) )
+		{
 			++pos;
+		}
 		if( pos >= s.size() )
+		{
 			break;
+		}
 
 		// Check for exclude filter marker '!'
 		bool isExclude = false;
@@ -64,17 +72,17 @@ void FilterResourceFilter::ParseFilters()
 			isExclude = true;
 			++pos;
 			while( pos < s.size() && std::isspace( static_cast<unsigned char>( s[pos] ) ) )
+			{
 				++pos;
+			}
 			if( pos >= s.size() )
 			{
-				// TODO: Change this to a defined error code/type
 				throw std::invalid_argument( "Invalid filter format: exclude filter marker found without a [ token ] section" );
 			}
 		}
 
 		if( pos >= s.size() || s[pos] != '[' )
 		{
-			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid filter format: missing '['" );
 		}
 		++pos; // skip '['
@@ -83,13 +91,11 @@ void FilterResourceFilter::ParseFilters()
 		size_t nextStartBracket = s.find( '[', pos );
 		if( nextStartBracket != std::string::npos && nextStartBracket < endBracket )
 		{
-			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid filter format: matching end bracket ']' not present before the next start bracket '['" );
 		}
 
 		if( endBracket == std::string::npos )
 		{
-			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid filter format: missing ']'" );
 		}
 
@@ -102,11 +108,15 @@ void FilterResourceFilter::ParseFilters()
 			size_t start = token.find_first_not_of( " \t\r\n" );
 			size_t end = token.find_last_not_of( " \t\r\n" );
 			if( start == std::string::npos || end == std::string::npos )
+			{
 				continue;
+			}
 			token = token.substr( start, end - start + 1 );
 
 			if( token.empty() )
+			{
 				continue;
+			}
 
 			PlaceTokenInCorrectVector( token,
 									   isExclude ? m_includeFilter : m_excludeFilter,

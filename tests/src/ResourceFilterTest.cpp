@@ -815,7 +815,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_EmptyFilter_TopLevel )
 	// Expected values:
 	std::set<std::string> expectedPaths = { "/myPath/foo/bar" };
 	std::vector<std::string> expectedIncludes = { "*" };
-	std::vector<std::string> expectedExcludes = { };
+	std::vector<std::string> expectedExcludes = {};
 
 	const auto& resolvedRespathMap = namedSection.GetResolvedRespathsMap();
 	const auto& resolvedResfileMap = namedSection.GetResolvedResfileMap();
@@ -1675,78 +1675,78 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_iniFileNotFound )
 
 TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidPrefixmap_ini )
 {
-    const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidPrefixmap.ini" );
-    try
-    {
-        ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
-        FAIL() << "Expected std::invalid_argument when loading ini file with invalid prefixmap";
-    }
-    catch( const std::invalid_argument& e )
-    {
-        std::string expectedError = "Invalid prefixmap format: No paths defined for prefix: prefix1";
-    	EXPECT_STREQ( e.what(), expectedError.c_str() );
-    }
-    catch( ... )
-    {
-        FAIL() << "Expected std::invalid_argument when loading invalidPrefixmap.ini file";
-    }
+	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidPrefixmap.ini" );
+	try
+	{
+		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		FAIL() << "Expected std::invalid_argument when loading ini file with invalid prefixmap";
+	}
+	catch( const std::invalid_argument& e )
+	{
+		std::string expectedError = "Invalid prefixmap format: No paths defined for prefix: prefix1";
+		EXPECT_STREQ( e.what(), expectedError.c_str() );
+	}
+	catch( ... )
+	{
+		FAIL() << "Expected std::invalid_argument when loading invalidPrefixmap.ini file";
+	}
 }
 
 TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidSectionFilter_ini )
 {
-    const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidSectionFilter.ini" );
-    try
-    {
-        ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
-        FAIL() << "Expected std::invalid_argument when loading ini file with invalid section filter";
-    }
-    catch( const std::invalid_argument& e )
-    {
-    	std::string expectedError = "Invalid filter format: missing ']'";
-    	EXPECT_STREQ( e.what(), expectedError.c_str() );
-    }
-    catch( ... )
-    {
-        FAIL() << "Expected std::invalid_argument when loading invalidSectionFilter.ini file";
-    }
+	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidSectionFilter.ini" );
+	try
+	{
+		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		FAIL() << "Expected std::invalid_argument when loading ini file with invalid section filter";
+	}
+	catch( const std::invalid_argument& e )
+	{
+		std::string expectedError = "Invalid filter format: missing ']'";
+		EXPECT_STREQ( e.what(), expectedError.c_str() );
+	}
+	catch( ... )
+	{
+		FAIL() << "Expected std::invalid_argument when loading invalidSectionFilter.ini file";
+	}
 }
 
 TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidInlineFilter_ini )
 {
-    const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidInlineFilter.ini" );
-    try
-    {
-        ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
-        FAIL() << "Expected std::invalid_argument when loading ini file with invalid inline filter";
-    }
-    catch( const std::invalid_argument& e )
-    {
-    	std::string expectedError = "Invalid filter format: missing '['";
-    	EXPECT_STREQ( e.what(), expectedError.c_str() );
-    }
-    catch( ... )
-    {
-        FAIL() << "Expected std::invalid_argument when loading invalidInlineFilter.ini file";
-    }
+	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidInlineFilter.ini" );
+	try
+	{
+		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		FAIL() << "Expected std::invalid_argument when loading ini file with invalid inline filter";
+	}
+	catch( const std::invalid_argument& e )
+	{
+		std::string expectedError = "Invalid filter format: missing '['";
+		EXPECT_STREQ( e.what(), expectedError.c_str() );
+	}
+	catch( ... )
+	{
+		FAIL() << "Expected std::invalid_argument when loading invalidInlineFilter.ini file";
+	}
 }
 
 TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidPrefixMismatch_ini )
 {
-    const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidPrefixMismatch.ini" );
-    try
-    {
-        ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
-        FAIL() << "Expected std::invalid_argument when loading ini file with prefix mismatch";
-    }
-    catch( const std::invalid_argument& e )
-    {
-    	std::string expectedError = "Prefix 'prefixDoesNotExist' not present in prefixMap for line: prefixDoesNotExist:/firstLine/*";
-    	EXPECT_STREQ( e.what(), expectedError.c_str() );
-    }
-    catch( ... )
-    {
-        FAIL() << "Expected std::invalid_argument when loading invalidPrefixMismatch.ini file";
-    }
+	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidPrefixMismatch.ini" );
+	try
+	{
+		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		FAIL() << "Expected std::invalid_argument when loading ini file with prefix mismatch";
+	}
+	catch( const std::invalid_argument& e )
+	{
+		std::string expectedError = "Prefix 'prefixDoesNotExist' not present in prefixMap for line: prefixDoesNotExist:/firstLine/*";
+		EXPECT_STREQ( e.what(), expectedError.c_str() );
+	}
+	catch( ... )
+	{
+		FAIL() << "Expected std::invalid_argument when loading invalidPrefixMismatch.ini file";
+	}
 }
 
 // ------------------------------------------

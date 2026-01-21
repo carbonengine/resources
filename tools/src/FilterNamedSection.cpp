@@ -21,7 +21,6 @@ FilterNamedSection::FilterNamedSection( std::string sectionName,
 
 	if( respaths.empty() )
 	{
-		// TODO: Change this to a defined error code/type
 		throw std::invalid_argument( "Respaths attribute is empty for section: " + m_sectionName );
 	}
 }
@@ -34,7 +33,7 @@ const std::string& FilterNamedSection::GetSectionName() const
 const std::map<std::string, FilterResourceFilter>& FilterNamedSection::GetCombinedResolvedPathMap()
 {
 	// Only populate the Combined map if not already done so.
-	if ( m_resolvedCombinedPathMap.empty() )
+	if( m_resolvedCombinedPathMap.empty() )
 	{
 		// Populate the combined map.
 		for( const auto& kv : m_respaths.GetResolvedPathMap() )
