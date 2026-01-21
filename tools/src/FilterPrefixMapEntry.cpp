@@ -17,7 +17,6 @@ void FilterPrefixMapEntry::AppendPaths( const std::string& prefix, const std::st
 {
 	if( prefix != m_prefix )
 	{
-		// TODO: Change this to a defined error code/type
 		throw std::invalid_argument( "Prefix mismatch while appending path(s): " + prefix + " (incoming) != " + m_prefix + " (existing)" );
 	}
 
@@ -36,7 +35,6 @@ void FilterPrefixMapEntry::AppendPaths( const std::string& prefix, const std::st
 	}
 	if( m_paths.empty() )
 	{
-		// TODO: Change this to a defined error code/type
 		throw std::invalid_argument( "Invalid prefixmap format: No paths appended for prefix: " + m_prefix );
 	}
 }

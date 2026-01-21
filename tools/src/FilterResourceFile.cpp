@@ -51,14 +51,12 @@ void FilterResourceFile::ParseIniFile()
 	INIReader reader( m_iniFilePath.string() );
 	if( reader.ParseError() != 0 )
 	{
-		// TODO: Change this to a defined error code/type
 		throw std::runtime_error( "Failed to parse INI file: " + m_iniFilePath.string() + " - " + reader.ParseErrorMessage() );
 	}
 
 	// Parse the [DEFAULT] section
 	if( !reader.HasSection( "DEFAULT" ) )
 	{
-		// TODO: Change this to a defined error code/type
 		throw std::invalid_argument( "Missing [DEFAULT] section in INI file: " + m_iniFilePath.string() );
 	}
 	m_defaultSection = FilterDefaultSection( reader.Get( "DEFAULT", "prefixmap", "" ) );
@@ -86,7 +84,6 @@ void FilterResourceFile::ParseIniFile()
 
 		if( respaths.empty() )
 		{
-			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Respaths attribute is empty for section: " + sectionName );
 		}
 

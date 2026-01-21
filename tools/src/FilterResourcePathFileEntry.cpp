@@ -56,7 +56,6 @@ void FilterResourcePathFileEntry::ParseRawPathLine()
 	size_t colon = rawPathToken.find( ':' );
 	if( colon == std::string::npos )
 	{
-		// TODO: Change this to a defined error code/type
 		throw std::invalid_argument( std::string( "Missing prefix in path for: " ) + m_rawPathLine );
 	}
 	std::string prefix = rawPathToken.substr( 0, colon );
@@ -66,7 +65,6 @@ void FilterResourcePathFileEntry::ParseRawPathLine()
 	auto it = prefixMapEntries.find( prefix );
 	if( it == prefixMapEntries.end() )
 	{
-		// TODO: Change this to a defined error code/type
 		throw std::invalid_argument( std::string( "Prefix '" ) + prefix + "' not present in prefixMap for line: " + m_rawPathLine );
 	}
 

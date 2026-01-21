@@ -29,14 +29,12 @@ void FilterPrefixMap::ParsePrefixMap( const std::string& rawPrefixMap )
 		std::size_t colon = rawPrefixMap.find( ':', pos );
 		if( colon == std::string::npos )
 		{
-			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid prefixmap format: missing ':'" );
 		}
 
 		std::string prefix = rawPrefixMap.substr( pos, colon - pos );
 		if( prefix.empty() )
 		{
-			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid prefixmap format: empty prefix" );
 		}
 
@@ -49,7 +47,6 @@ void FilterPrefixMap::ParsePrefixMap( const std::string& rawPrefixMap )
 
 		if( rawPaths.empty() )
 		{
-			// TODO: Change this to a defined error code/type
 			throw std::invalid_argument( "Invalid prefixmap format: No paths defined for prefix: " + prefix );
 		}
 
