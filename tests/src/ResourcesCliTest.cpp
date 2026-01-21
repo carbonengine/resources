@@ -155,7 +155,84 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectory )
 #else
 #error Unsupported platform
 #endif
-	EXPECT_TRUE( FilesMatch( goldFile, "GroupOut/ResourceGroup.yaml" ) );
+	EXPECT_TRUE( FilesMatch( goldFile, outputFile ) );
+}
+
+TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryExportResources )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-group" );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+
+    arguments.push_back( "--export-resources" );
+
+    arguments.push_back( "--export-resources-destination-type" );
+	arguments.push_back( "LOCAL_RELATIVE" );
+
+    arguments.push_back( "--export-resources-destination-path" );
+	std::string exportOutputPath = "ExportedResources";
+	arguments.push_back( exportOutputPath );
+
+	std::filesystem::path inputDirectory = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceFiles" );
+	arguments.push_back( inputDirectory.string() );
+
+	arguments.push_back( "--output-file" );
+	std::filesystem::path outputFile = "GroupOut/ResourceGroup.yaml";
+	arguments.push_back( outputFile.string() );
+
+	int res = RunCli( arguments, output );
+
+	ASSERT_EQ( res, 0 );
+
+#if _WIN64
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
+#elif __APPLE__
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupMacOS.yaml" );
+#else
+#error Unsupported platform
+#endif
+	EXPECT_TRUE( FilesMatch( goldFile, outputFile ) );
+
+    EXPECT_TRUE( DirectoryIsSubset( exportOutputPath, inputDirectory ) );
+}
+
+TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryWithSkipCompression )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-group" );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+
+    arguments.push_back( "--skip-compression" );
+
+	std::filesystem::path inputDirectory = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceFiles" );
+	arguments.push_back( inputDirectory.string() );
+
+	arguments.push_back( "--output-file" );
+	std::filesystem::path outputFile = "GroupOut/ResourceGroup.yaml";
+	arguments.push_back( outputFile.string() );
+
+	int res = RunCli( arguments, output );
+
+	ASSERT_EQ( res, 0 );
+
+#if _WIN64
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupSkipCompressionWindows.yaml" );
+#elif __APPLE__
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupSkipCompressionMacOS.yaml" );
+#else
+#error Unsupported platform
+#endif
+	EXPECT_TRUE( FilesMatch( goldFile, outputFile ) );
 }
 
 TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormat )
@@ -190,7 +267,7 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormat )
 #else
 #error Unsupported platform
 #endif
-	EXPECT_TRUE( FilesMatch( goldFile, "GroupOut/ResourceGroup.csv" ) );
+	EXPECT_TRUE( FilesMatch( goldFile, outputFile ) );
 }
 
 TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormatWithPrefix )
@@ -228,7 +305,7 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormatWithP
 #else
 #error Unsupported platform
 #endif
-	EXPECT_TRUE( FilesMatch( goldFile, "GroupOut/ResourceGroupPrefixed.csv" ) );
+	EXPECT_TRUE( FilesMatch( goldFile, outputFile ) );
 }
 
 TEST_F( ResourcesCliTest, CreateBundle )

@@ -7,6 +7,7 @@
 #include <ResourceTools.h>
 #include <BundleStreamOut.h>
 #include <FileDataStreamIn.h>
+#include <CompressedFileDataStreamOut.h>
 #include <Md5ChecksumStream.h>
 #include <GzipCompressionStream.h>
 #include "ResourceInfo/PatchResourceGroupInfo.h"
@@ -159,6 +160,23 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 				{
 					return addResourceResult;
 				}
+
+                // If resources are set to be exported, then export as specified
+                if (params.exportResources)
+                {
+					ResourcePutDataParams putDataParams;
+
+                    putDataParams.resourceDestinationSettings = params.exportResourcesDestinationSettings;
+
+                    putDataParams.data = &resourceData;
+
+					Result putDataResult = resource->PutData( putDataParams );
+
+                    if( putDataResult.type != ResultType::SUCCESS )
+					{
+						return putDataResult;
+					}
+                }
 			}
 			else
 			{
@@ -268,6 +286,74 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 				{
 					return addResourceResult;
 				}
+
+                // If resources are set to be exported, then export as specified.
+                // This is slow with large files as each need to be streamed again
+                // The problem is that checksum of the whole file needs to be calculated first
+                // in order to get the correct destination CDN path
+                // If compression is not skipped and REMOTE_CDN is chosen as destination then
+                // compression will also be calculated twice.
+				// This can be improved with a refactor but currently this code path not 
+				// likely to be relied upon often
+				if( params.exportResources )
+				{
+					ResourcePutDataStreamParams putDataStreamParams;
+
+                    // Create the correct file data streaming for the desination
+                    std::unique_ptr<ResourceTools::FileDataStreamOut> resourceDataStreamOut;
+
+                    if (params.exportResourcesDestinationSettings.destinationType == ResourceDestinationType::REMOTE_CDN)
+                    {
+                        // REMOTE_CDN requires compression
+						resourceDataStreamOut = std::make_unique<ResourceTools::CompressedFileDataStreamOut>();
+                    }
+                    else
+                    {
+                        // Else just stream out uncompressed
+						resourceDataStreamOut = std::make_unique<ResourceTools::FileDataStreamOut>();
+                    }
+
+					putDataStreamParams.resourceDestinationSettings = params.exportResourcesDestinationSettings;
+
+					putDataStreamParams.dataStream = resourceDataStreamOut.get();
+
+					Result putDataStreamResult = resource->PutDataStream( putDataStreamParams );
+
+					if( putDataStreamResult.type != ResultType::SUCCESS )
+					{
+						return putDataStreamResult;
+					}
+
+                    // Export resource using streaming
+					ResourceTools::FileDataStreamIn fileStreamIn( params.resourceStreamThreshold );
+
+                    if( !fileStreamIn.StartRead( entry.path() ) )
+					{
+						return Result{ ResultType::FAILED_TO_OPEN_FILE_STREAM };
+					}
+
+                    while( !fileStreamIn.IsFinished() )
+					{
+						std::string data = "";
+
+                        if (!(fileStreamIn >> data))
+                        {
+							return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+                        }
+
+                        if (!(resourceDataStreamOut->operator<<(data)))
+                        {
+							return Result{ ResultType::FAILED_TO_SAVE_TO_STREAM };
+                        }
+					}
+
+                    if (!resourceDataStreamOut->Finish())
+                    {
+						return Result{ ResultType::FAILED_TO_SAVE_TO_STREAM };
+                    }
+
+				}
+
 			}
 		}
 	}

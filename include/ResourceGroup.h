@@ -196,8 +196,14 @@ struct ResourceGroupExportToFileParams
     *  Optional status function callback. Callback is triggered at key status update events.
     *  @var CreateResourceGroupFromDirectoryParams::resourcePrefix
     *  Resource prefix setting, e.g. res.
-    *  @var BundleCreateParams::calculateCompressions
+    *  @var CreateResourceGroupFromDirectoryParams::calculateCompressions
     *  Specifies if compression will be calculated for the generated bundle chunks
+    *  @var CreateResourceGroupFromDirectoryParams::exportResources
+    *  Specifies if resources will be exported
+    *  @see CreateResourceGroupFromDirectoryParams::exportResourcesDestinationSettings
+    *  @var CreateResourceGroupFromDirectoryParams::exportResourcesDestinationSettings
+    *  If export resources is set, specifies where the produced PatchResourceGroup will be saved.
+    *  @see CreateResourceGroupFromDirectoryParams::exportResources
     *  @var CreateResourceGroupFromDirectoryParams::resourceFilterIniFiles
 	*  List of INI file(s) containing include/exclude rules for resource filtering
     */
@@ -205,7 +211,7 @@ struct CreateResourceGroupFromDirectoryParams
 {
 	std::filesystem::path directory = "";
 
-	uintmax_t resourceStreamThreshold = 10000000;
+	uintmax_t resourceStreamThreshold = 524288000;
 
 	Version outputDocumentVersion = S_DOCUMENT_VERSION;
 
@@ -213,7 +219,11 @@ struct CreateResourceGroupFromDirectoryParams
 
 	std::string resourcePrefix = "";
 
-	bool calculateCompressions = true;
+    bool calculateCompressions = true;
+
+    bool exportResources = false;
+
+    ResourceDestinationSettings exportResourcesDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_CDN, "ExportedResources" };
 
 	std::vector<std::filesystem::path> resourceFilterIniFiles = {};
 };
@@ -333,4 +343,3 @@ public:
 }
 
 #endif // ResourceGroup_H
-

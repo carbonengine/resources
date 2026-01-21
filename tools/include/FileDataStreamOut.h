@@ -24,7 +24,7 @@ public:
 
 	virtual bool StartWrite( std::filesystem::path filepath );
 
-	bool operator<<( const std::string& data );
+	virtual bool operator<<( const std::string& data );
 
 	size_t GetFileSize();
 

@@ -26,7 +26,7 @@ public:
 
 	virtual bool Finish() override;
 
-	bool operator<<( const std::string& data );
+	bool operator<<( const std::string& data ) override;
 
 private:
 	std::string m_compressionBuffer;

@@ -8,6 +8,8 @@
 
 #include "CliOperation.h"
 
+#include <ResourceGroup.h>
+
 class CreateResourceGroupCliOperation : public CliOperation
 {
 public:
@@ -16,8 +18,9 @@ public:
 	virtual bool Execute( std::string& returnErrorMessage ) const final;
 
 private:
-	void PrintStartBanner( const std::filesystem::path& inputDirectory, const std::filesystem::path& resourceGroupOutputDirectory, const std::string& version, const std::string& resourcePrefix, bool skipCompressionCalculation ) const;
-	bool CreateResourceGroup( const std::filesystem::path& inputDirectory, const std::filesystem::path& resourceGroupOutputFile, CarbonResources::Version documentVersion, const std::string& resourcePrefix, bool skipCompressionCalculation ) const;
+	void PrintStartBanner( CarbonResources::CreateResourceGroupFromDirectoryParams& createResourceGroupFromDirectoryParams, CarbonResources::ResourceGroupExportToFileParams& ResourceGroupExportToFileParams ) const;
+
+    bool CreateResourceGroup( CarbonResources::CreateResourceGroupFromDirectoryParams& createResourceGroupFromDirectoryParams, CarbonResources::ResourceGroupExportToFileParams& ResourceGroupExportToFileParams ) const;
 
 private:
 	std::string m_createResourceGroupPathArgumentId;
@@ -28,7 +31,13 @@ private:
 
 	std::string m_createResourceGroupResourcePrefixArgumentId;
 	
-    std::string m_createResourceGroupSkipCompressionCalculation;
+    std::string m_createResourceGroupSkipCompressionCalculationId;
+
+    std::string m_createResourceGroupExportResourcesId;
+
+    std::string m_createResourceGroupExportResourcesDestinationTypeId;
+		
+    std::string m_createResourceGroupExportResourcesDestinationPathId;
 };
 
 #endif // CreateResourceGroupCliOperation_H

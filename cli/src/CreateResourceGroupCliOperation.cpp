@@ -12,7 +12,10 @@ CreateResourceGroupCliOperation::CreateResourceGroupCliOperation() :
 	m_createResourceGroupOutputFileArgumentId( "--output-file" ),
 	m_createResourceGroupDocumentVersionArgumentId( "--document-version" ),
 	m_createResourceGroupResourcePrefixArgumentId( "--resource-prefix" ),
-	m_createResourceGroupSkipCompressionCalculation( "--skip-compression" )
+	m_createResourceGroupSkipCompressionCalculationId( "--skip-compression" ),
+	m_createResourceGroupExportResourcesId( "--export-resources" ),
+	m_createResourceGroupExportResourcesDestinationTypeId( "--export-resources-destination-type" ),
+	m_createResourceGroupExportResourcesDestinationPathId( "--export-resources-destination-path" )
 {
 
 	AddRequiredPositionalArgument( m_createResourceGroupPathArgumentId, "Base directory to create resource group from." );
@@ -30,26 +33,24 @@ CreateResourceGroupCliOperation::CreateResourceGroupCliOperation() :
 
 	AddArgument( m_createResourceGroupResourcePrefixArgumentId, R"(Optional resource path prefix, such as "res" or "app")", false, false, "" );
 	
-    AddArgumentFlag( m_createResourceGroupSkipCompressionCalculation, "Set skip compression calculations on resources." );
+    AddArgumentFlag( m_createResourceGroupSkipCompressionCalculationId, "Set skip compression calculations on resources." );
+
+    AddArgumentFlag( m_createResourceGroupExportResourcesId, "Export resources after processing. see --export-resources-destination-type and --export-resources-destination-path" );
+
+    AddArgument( m_createResourceGroupExportResourcesDestinationTypeId, "Represents the type of repository where exported resources will be saved. Requires --export-resources", false, false, DestinationTypeToString( defaultImportParams.exportResourcesDestinationSettings.destinationType ), ResourceDestinationTypeChoicesAsString() );
+
+	AddArgument( m_createResourceGroupExportResourcesDestinationPathId, "Represents the base path where the exported resources will be saved. Requires --export-resources", false, false, defaultImportParams.exportResourcesDestinationSettings.basePath.string() );
 }
 
 bool CreateResourceGroupCliOperation::Execute( std::string& returnErrorMessage ) const
 {
-	std::string inputDirectory = m_argumentParser->get<std::string>( m_createResourceGroupPathArgumentId );
+	CarbonResources::CreateResourceGroupFromDirectoryParams createResourceGroupParams;
 
-	std::string outputFile = m_argumentParser->get<std::string>( m_createResourceGroupOutputFileArgumentId );
+    CarbonResources::ResourceGroupExportToFileParams exportParams;
 
-	std::string version = m_argumentParser->get( m_createResourceGroupDocumentVersionArgumentId );
+    createResourceGroupParams.directory = m_argumentParser->get<std::string>( m_createResourceGroupPathArgumentId );
 
-	std::string resourcePrefix = m_argumentParser->get( m_createResourceGroupResourcePrefixArgumentId );
-	
-    bool skipCompressionCalculation = m_argumentParser->get<bool>( m_createResourceGroupSkipCompressionCalculation );
-
-	CarbonResources::Version documentVersion;
-
-	PrintStartBanner( inputDirectory, outputFile, version, resourcePrefix, skipCompressionCalculation );
-
-	bool versionIsValid = ParseDocumentVersion( version, documentVersion );
+    bool versionIsValid = ParseDocumentVersion( m_argumentParser->get( m_createResourceGroupDocumentVersionArgumentId ), createResourceGroupParams.outputDocumentVersion );
 
 	if( !versionIsValid )
 	{
@@ -57,10 +58,38 @@ bool CreateResourceGroupCliOperation::Execute( std::string& returnErrorMessage )
 
 		return false;
 	}
-	return CreateResourceGroup( inputDirectory, outputFile, documentVersion, resourcePrefix, skipCompressionCalculation );
+
+	createResourceGroupParams.resourcePrefix = m_argumentParser->get( m_createResourceGroupResourcePrefixArgumentId );
+
+	createResourceGroupParams.calculateCompressions = !m_argumentParser->get<bool>( m_createResourceGroupSkipCompressionCalculationId );
+
+    createResourceGroupParams.exportResources = m_argumentParser->get<bool>( m_createResourceGroupExportResourcesId );
+
+	if( createResourceGroupParams.exportResources )
+	{
+		std::string exportResourcesDesinationType = m_argumentParser->get<std::string>( m_createResourceGroupExportResourcesDestinationTypeId );
+
+		if( !StringToResourceDestinationType( exportResourcesDesinationType, createResourceGroupParams.exportResourcesDestinationSettings.destinationType ) )
+		{
+			returnErrorMessage = "Invalid chunk destination type";
+
+			return false;
+		}
+
+		createResourceGroupParams.exportResourcesDestinationSettings.basePath = m_argumentParser->get<std::string>( m_createResourceGroupExportResourcesDestinationPathId );
+	}
+
+
+    exportParams.filename = m_argumentParser->get<std::string>( m_createResourceGroupOutputFileArgumentId );
+
+    exportParams.outputDocumentVersion = createResourceGroupParams.outputDocumentVersion;
+
+	PrintStartBanner( createResourceGroupParams, exportParams );
+
+	return CreateResourceGroup( createResourceGroupParams, exportParams );
 }
 
-void CreateResourceGroupCliOperation::PrintStartBanner( const std::filesystem::path& inputDirectory, const std::filesystem::path& outputFile, const std::string& version, const std::string& resourcePrefix, bool skipCompressionCalculation ) const
+void CreateResourceGroupCliOperation::PrintStartBanner( CarbonResources::CreateResourceGroupFromDirectoryParams& createResourceGroupFromDirectoryParams, CarbonResources::ResourceGroupExportToFileParams& ResourceGroupExportToFileParams ) const
 {
 	if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
 	{
@@ -71,49 +100,52 @@ void CreateResourceGroupCliOperation::PrintStartBanner( const std::filesystem::p
 
 	PrintCommonOperationHeaderInformation();
 
-	std::cout << "Input Directory: " << inputDirectory << std::endl;
+	std::cout << "Input Directory: " << createResourceGroupFromDirectoryParams.directory << std::endl;
 
-	std::cout << "Output File: " << outputFile << std::endl;
+	std::cout << "Output File: " << ResourceGroupExportToFileParams.filename << std::endl;
 
-	std::cout << "Output Document Version: " << version << std::endl;
+	std::cout << "Output Document Version: " << VersionToString(ResourceGroupExportToFileParams.outputDocumentVersion) << std::endl;
 
-	std::cout << "Resource Prefix: " << resourcePrefix << std::endl;
+	std::cout << "Resource Prefix: " << createResourceGroupFromDirectoryParams.resourcePrefix << std::endl;
 
-    if (skipCompressionCalculation)
+    if( createResourceGroupFromDirectoryParams.calculateCompressions)
     {
-		std::cout << "Calculate Compression: Off" << std::endl;
+		std::cout << "Calculate Compression: On" << std::endl;
     }
 	else
 	{
-		std::cout << "Calculate Compression: On" << std::endl;
+		std::cout << "Calculate Compression: Off" << std::endl;
+	}
+
+    if( createResourceGroupFromDirectoryParams.exportResources )
+	{
+		std::cout << "Export Resources: On" << std::endl;
+
+        std::cout << "Export Resources Type: " << DestinationTypeToString( createResourceGroupFromDirectoryParams.exportResourcesDestinationSettings.destinationType ) << std::endl;
+
+        std::cout << "Export Resources Base Path: " << createResourceGroupFromDirectoryParams.exportResourcesDestinationSettings.basePath << std::endl;
+	}
+	else
+	{
+		std::cout << "Export Resources: Off" << std::endl;
 	}
 
 	std::cout << "----------------------------\n"
 			  << std::endl;
 }
 
-bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem::path& inputDirectory, const std::filesystem::path& resourceGroupOutputFile, CarbonResources::Version documentVersion, const std::string& resourcePrefix, bool skipCompressionCalculation ) const
+bool CreateResourceGroupCliOperation::CreateResourceGroup( CarbonResources::CreateResourceGroupFromDirectoryParams& createResourceGroupFromDirectoryParams, CarbonResources::ResourceGroupExportToFileParams& ResourceGroupExportToFileParams ) const
 {
 	CarbonResources::ResourceGroup resourceGroup;
 
-	CarbonResources::CreateResourceGroupFromDirectoryParams createResourceGroupParams;
+    createResourceGroupFromDirectoryParams.statusCallback = GetStatusCallback();
 
-	createResourceGroupParams.directory = inputDirectory;
-
-	createResourceGroupParams.outputDocumentVersion = documentVersion;
-
-	createResourceGroupParams.resourcePrefix = resourcePrefix;
-
-	createResourceGroupParams.statusCallback = GetStatusCallback();
-
-	createResourceGroupParams.calculateCompressions = !skipCompressionCalculation;
-
-	if( createResourceGroupParams.statusCallback )
+	if( createResourceGroupFromDirectoryParams.statusCallback )
 	{
-		createResourceGroupParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Resource Group from directory" );
+		createResourceGroupFromDirectoryParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Resource Group from directory" );
 	}
 
-	CarbonResources::Result createFromDirectoryResult = resourceGroup.CreateFromDirectory( createResourceGroupParams );
+	CarbonResources::Result createFromDirectoryResult = resourceGroup.CreateFromDirectory( createResourceGroupFromDirectoryParams );
 
 	if( createFromDirectoryResult.type != CarbonResources::ResultType::SUCCESS )
 	{
@@ -122,20 +154,14 @@ bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem
 		return false;
 	}
 
-	CarbonResources::ResourceGroupExportToFileParams exportParams;
+	ResourceGroupExportToFileParams.statusCallback = GetStatusCallback();
 
-	exportParams.filename = resourceGroupOutputFile;
-
-	exportParams.outputDocumentVersion = documentVersion;
-
-	exportParams.statusCallback = GetStatusCallback();
-
-	if( exportParams.statusCallback )
+	if( ResourceGroupExportToFileParams.statusCallback )
 	{
-		exportParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 50, "Exporting Resource Group to file." );
+		ResourceGroupExportToFileParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 50, "Exporting Resource Group to file." );
 	}
 
-	CarbonResources::Result exportToFileResult = resourceGroup.ExportToFile( exportParams );
+	CarbonResources::Result exportToFileResult = resourceGroup.ExportToFile( ResourceGroupExportToFileParams );
 
 	if( exportToFileResult.type != CarbonResources::ResultType::SUCCESS )
 	{
@@ -144,9 +170,9 @@ bool CreateResourceGroupCliOperation::CreateResourceGroup( const std::filesystem
 		return false;
 	}
 
-	if( exportParams.statusCallback )
+	if( ResourceGroupExportToFileParams.statusCallback )
 	{
-		exportParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Resource Group successfully created from directory." );
+		ResourceGroupExportToFileParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Resource Group successfully created from directory." );
 	}
 
 	return true;

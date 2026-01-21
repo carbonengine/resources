@@ -841,6 +841,38 @@ TEST_F( ResourcesLibraryTest, CreateResourceGroupFromDirectory )
 	EXPECT_TRUE( FilesMatch( goldFile, exportParams.filename ) );
 }
 
+TEST_F( ResourcesLibraryTest, CreateResourceGroupFromDirectoryExportResources )
+{
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::CreateResourceGroupFromDirectoryParams createResourceGroupParams;
+
+	createResourceGroupParams.directory = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceFiles" );
+
+    createResourceGroupParams.exportResources = true;
+
+    createResourceGroupParams.exportResourcesDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	EXPECT_EQ( resourceGroup.CreateFromDirectory( createResourceGroupParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	CarbonResources::ResourceGroupExportToFileParams exportParams;
+
+	exportParams.filename = "ResourceGroups/ResourceGroup.yaml";
+
+	EXPECT_EQ( resourceGroup.ExportToFile( exportParams ).type, CarbonResources::ResultType::SUCCESS );
+
+#if _WIN64
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
+#elif __APPLE__
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupMacOS.yaml" );
+#else
+#error Unsupported platform
+#endif
+	EXPECT_TRUE( FilesMatch( goldFile, exportParams.filename ) );
+
+    EXPECT_TRUE( DirectoryIsSubset( createResourceGroupParams.exportResourcesDestinationSettings.basePath, createResourceGroupParams.directory ) );
+}
+
 TEST_F( ResourcesLibraryTest, CreateResourceGroupFromDirectorySkipCompression )
 {
 	CarbonResources::ResourceGroup resourceGroup;
