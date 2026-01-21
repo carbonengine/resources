@@ -10,6 +10,7 @@
 #include <FilterResourcePathFile.h>
 #include <FilterNamedSection.h>
 #include <FilterResourceFile.h>
+#include <ResourceFilter.h>
 
 TEST_F( ResourceFilterTest, Example1IniParsing )
 {
@@ -34,7 +35,7 @@ TEST_F( ResourceFilterTest, Example1IniParsing )
 	auto respathValueGet = reader.Get( "testYamlFilesOverMultiLineResPathsWithEmptyLines", "respaths", "" );
 	std::string respathValueGetString = reader.Get( "testYamlFilesOverMultiLineResPathsWithEmptyLines", "respaths", "" );
 	EXPECT_EQ( respathValueGet, respathValueGetString );
-	EXPECT_EQ( respathValueGet, "res:/firstLine/...\nres:/secondLine/...\nres2:/thirdLine/..." ); // Note: Under the hood, INIReader converts multi-empty-lines to a single \n line breaks
+	EXPECT_EQ( respathValueGet, "res:/firstLine/...\nres:/secondLine/*\nres2:/thirdLine/..." ); // Note: Under the hood, INIReader converts multi-empty-lines to a single \n line breaks
 	EXPECT_EQ( reader.Keys( "testYamlFilesOverMultiLineResPathsWithEmptyLines" ).size(), 3 );
 }
 
@@ -1582,15 +1583,15 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_example1_ini )
 	try
 	{
 		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
-		const auto& fullPathMap = resourceFile.GetFullResolvedPathMap();
+		const auto& iniFilePathMap = resourceFile.GetIniFileResolvedPathMap();
 
 		// Validate the paths:
 		std::set<std::string> expectedPaths = {
 			// From the respaths attribute:
 			"./Indicies/firstLine/...",           // "res:/firstLine/..."
 			"./resourcesOnBranch/firstLine/...",  // "res:/firstLine/..."
-			"./Indicies/secondLine/...",          // "res:/secondLine/..."
-			"./resourcesOnBranch/secondLine/...", // "res:/secondLine/..."
+			"./Indicies/secondLine/*",            // "res:/secondLine/*"
+			"./resourcesOnBranch/secondLine/*",   // "res:/secondLine/*"
 			"./ResourceGroups/thirdLine/...",     // "res2:/thirdLine/..."
 			// From the resfile attribute:
 			"./Indicies/binaryFileIndex_v0_0_0.txt",         // "res:/binaryFileIndex_v0_0_0.txt"
@@ -1599,8 +1600,8 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_example1_ini )
 		std::vector<std::string> expectedIncludes = { ".yaml" };
 		std::vector<std::string> expectedExcludes = {};
 
-		MapContainsPaths( expectedPaths, fullPathMap, "FullResolvedPathMap from example1.ini" );
-		ValidatePathMap( expectedPaths, fullPathMap, expectedIncludes, expectedExcludes, "FullResolvedPathMap from example1.ini" );
+		MapContainsPaths( expectedPaths, iniFilePathMap, "FullResolvedPathMap from example1.ini" );
+		ValidatePathMap( expectedPaths, iniFilePathMap, expectedIncludes, expectedExcludes, "FullResolvedPathMap from example1.ini" );
 	}
 	catch( const std::exception& e )
 	{
@@ -1746,4 +1747,151 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidPrefixMismatch_ini )
     {
         FAIL() << "Expected std::invalid_argument when loading invalidPrefixMismatch.ini file";
     }
+}
+
+// ------------------------------------------
+
+TEST_F( ResourceFilterTest, ResourceFilter_Load_SingleFile_ThatDoesNotExist )
+{
+	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/noSuchFile.ini" );
+	std::vector<std::filesystem::path> paths = { iniPath };
+
+	ResourceTools::ResourceFilter resourceFilter;
+
+	try
+	{
+		resourceFilter.Initialize( paths );
+		FAIL() << "Expected this test to fail: ResourceFilter_Load_SingleFile_ThatDoesNotExist";
+	}
+	catch( const std::exception& e )
+	{
+		std::string errorMessage = e.what();
+		ASSERT_NE( errorMessage.find( "Unable to create ResourceFilter for:" ), std::string::npos );
+		ASSERT_NE( errorMessage.find( "Failed to parse INI file" ), std::string::npos );
+		ASSERT_NE( errorMessage.find( "unable to open file" ), std::string::npos );
+	}
+	catch( ... )
+	{
+		FAIL() << "Unknown exception thrown while initializing ResourceFilter with example1.ini";
+	}
+}
+
+TEST_F( ResourceFilterTest, ResourceFilter_Load_MultipleFiles_OneThatDoesNotExist )
+{
+	const std::filesystem::path iniPath1 = GetTestFileFileAbsolutePath( "ExampleIniFiles/example1.ini" );
+	const std::filesystem::path iniPath2 = GetTestFileFileAbsolutePath( "ExampleIniFiles/noSuchFile.ini" );
+	std::vector<std::filesystem::path> paths = { iniPath1, iniPath2 };
+
+	ResourceTools::ResourceFilter resourceFilter;
+
+	try
+	{
+		resourceFilter.Initialize( paths );
+		FAIL() << "Expected this test to fail: ResourceFilter_Load_MultipleFiles_OneThatDoesNotExist";
+	}
+	catch( const std::exception& e )
+	{
+		std::string errorMessage = e.what();
+		ASSERT_NE( errorMessage.find( "Unable to create ResourceFilter for:" ), std::string::npos );
+		ASSERT_NE( errorMessage.find( "Failed to parse INI file" ), std::string::npos );
+		ASSERT_NE( errorMessage.find( "unable to open file" ), std::string::npos );
+	}
+	catch( ... )
+	{
+		FAIL() << "Unknown exception thrown while initializing ResourceFilter with example1.ini";
+	}
+}
+
+TEST_F( ResourceFilterTest, ResourceFilter_JustLoad_example1_ini )
+{
+	const std::filesystem::path iniPath1 = GetTestFileFileAbsolutePath( "ExampleIniFiles/example1.ini" );
+	std::vector<std::filesystem::path> paths = { iniPath1 };
+
+	ResourceTools::ResourceFilter resourceFilter;
+
+	try
+	{
+		resourceFilter.Initialize( paths );
+	}
+	catch( const std::exception& e )
+	{
+		FAIL() << "Exception in test, should not have failed: " << e.what();
+	}
+	catch( ... )
+	{
+		FAIL() << "Unknown exception thrown while initializing ResourceFilter with example1.ini";
+	}
+}
+
+TEST_F( ResourceFilterTest, ResourceFilter_Test_CurrentWorkingDirectoryChanger )
+{
+	// RAII class to change the current working directory for the duration of this test
+	// Needed so both relative paths in the .ini file resolve correctly, based on paths to the location of the example .ini files
+	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+
+	const std::filesystem::path iniPath1 = "ExampleIniFiles/example1.ini";
+	std::vector<std::filesystem::path> paths = { iniPath1 };
+
+	ResourceTools::ResourceFilter resourceFilter;
+	try
+	{
+		resourceFilter.Initialize( paths );
+		ASSERT_EQ( resourceFilter.HasFilters(), true );
+		ASSERT_EQ( resourceFilter.GetFullResolvedPathMap().size(), 7 );
+
+		// Check that the "binaryFileIndex_v0_0_0.txt" file (and it's path) is included correctly
+		std::filesystem::path oneValidRelativePath = "./Indicies/binaryFileIndex_v0_0_0.txt";
+		ASSERT_EQ( resourceFilter.ShouldInclude( oneValidRelativePath ), true );
+	}
+	catch( const std::exception& e )
+	{
+		FAIL() << "Exception in test, should not have failed: " << e.what();
+	}
+	catch( ... )
+	{
+		FAIL() << "Unknown exception thrown while initializing ResourceFilter with example1.ini";
+	}
+}
+
+TEST_F( ResourceFilterTest, ResourceFilter_Load_validSimpleExample1_ini_usingRelativePaths )
+{
+	// Alter the current working directory for the duration of this test
+	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+
+	try
+	{
+		const std::filesystem::path iniPath1 = "ExampleIniFiles/validSimpleExample1.ini";
+		std::vector<std::filesystem::path> paths = { iniPath1 };
+		ResourceTools::ResourceFilter resourceFilter;
+		resourceFilter.Initialize( paths );
+
+		// Validate correct included paths via the resourceFilter:
+		std::set<std::filesystem::path> validResolvedRelativePaths = {
+			"resourcesOnBranch/introMovie.txt",
+			"resourcesOnBranch/videoCardCategories.yaml"
+		};
+
+		ASSERT_EQ( resourceFilter.HasFilters(), true );
+		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
+		{
+			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
+		}
+
+		// Additional check to make sure the FullResolvedPathMap contains correct data (either include or exclude):
+		const auto& fullPathMap = resourceFilter.GetFullResolvedPathMap();
+		ASSERT_EQ( fullPathMap.size(), 1 );
+
+		std::set<std::string> expectedPaths = {
+			"./resourcesOnBranch/*"
+		};
+		std::vector<std::string> expectedIncludes = { ".yaml", ".txt" };
+		std::vector<std::string> expectedExcludes = {};
+
+		MapContainsPaths( expectedPaths, fullPathMap, "FullResolvedPathMap from validSimpleExample1.ini" );
+		ValidatePathMap( expectedPaths, fullPathMap, expectedIncludes, expectedExcludes, "FullResolvedPathMap from validSimpleExample1.ini" );
+	}
+	catch( ... )
+	{
+		FAIL() << "Test [ResourceFilter_Load_validSimpleExample1_ini] failed when it should have passed.";
+	}
 }

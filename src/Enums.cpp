@@ -156,6 +156,14 @@ bool ResultTypeToString( ResultType resultType, std::string& output )
 	case ResultType::REQUIRED_INPUT_PARAMETER_NOT_SET:
 		output = "A required parameter was not set";
 		return true;
+
+	case ResultType::FAILED_TO_INITIALIZE_RESOURCE_FILTER:
+		output = "Failed to initialize ResourceFilter from .ini file";
+		return true;
+
+	case ResultType::FAILED_TO_APPLY_RESOURCE_FILTER_RULES:
+		output = "Unable to decide on include/exclude filtering rules for resource";
+		return true;
 	}
 
 	output = "Error code unrecognised. This is an internal library error which shouldn't be encountered. If you encounter this error contact API addministrators.";

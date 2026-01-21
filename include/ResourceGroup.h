@@ -198,6 +198,8 @@ struct ResourceGroupExportToFileParams
     *  Resource prefix setting, e.g. res.
     *  @var BundleCreateParams::calculateCompressions
     *  Specifies if compression will be calculated for the generated bundle chunks
+    *  @var CreateResourceGroupFromDirectoryParams::resourceFilterIniFiles
+	*  List of INI file(s) containing include/exclude rules for resource filtering
     */
 struct CreateResourceGroupFromDirectoryParams
 {
@@ -211,7 +213,9 @@ struct CreateResourceGroupFromDirectoryParams
 
 	std::string resourcePrefix = "";
 
-    bool calculateCompressions = true;
+	bool calculateCompressions = true;
+
+	std::vector<std::filesystem::path> resourceFilterIniFiles = {};
 };
 
 /** @struct ResourceGroupMergeParams
@@ -329,3 +333,4 @@ public:
 }
 
 #endif // ResourceGroup_H
+

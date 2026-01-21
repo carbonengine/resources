@@ -33,7 +33,6 @@ const std::string& FilterNamedSection::GetSectionName() const
 
 const std::map<std::string, FilterResourceFilter>& FilterNamedSection::GetCombinedResolvedPathMap()
 {
-
 	// Only populate the Combined map if not already done so.
 	if ( m_resolvedCombinedPathMap.empty() )
 	{

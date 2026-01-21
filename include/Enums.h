@@ -135,6 +135,10 @@ using StatusCallback = std::function<void( StatusLevel statusLevel, StatusProgre
     * Required resource not found
     * @var REQUIRED_INPUT_PARAMETER_NOT_SET
     * A required input parameter was not set
+    * @var FAILED_TO_INITIALIZE_RESOURCE_FILTER
+    * Failed to initialize ResourceFilter from .ini file
+    * @var FAILED_TO_APPLY_RESOURCE_FILTER_RULES
+    * Unable to decide on include/exclude filtering rules for resource
     */
 enum class ResultType
 {
@@ -175,6 +179,8 @@ enum class ResultType
 	RESOURCE_LIST_NOT_SET,
 	RESOURCE_NOT_FOUND,
 	REQUIRED_INPUT_PARAMETER_NOT_SET,
+	FAILED_TO_INITIALIZE_RESOURCE_FILTER,
+	FAILED_TO_APPLY_RESOURCE_FILTER_RULES,
 	//NOTE: if adding to this enum, a complimentary entry must be added to resultToString.
 };
 

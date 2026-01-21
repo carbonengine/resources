@@ -1,0 +1,216 @@
+// Copyright © 2026 CCP ehf.
+
+#include <regex>
+#include <ResourceFilter.h>
+#include <FilterResourceFile.h>
+
+namespace ResourceTools
+{
+
+ResourceFilter::ResourceFilter( const std::vector<std::filesystem::path>& iniFilePaths )
+{
+	Initialize( iniFilePaths );
+}
+
+void ResourceFilter::Initialize( const std::vector<std::filesystem::path>& iniFilePaths )
+{
+	m_fullResolvedPathMap.clear();
+
+	if( m_initialized )
+	{
+		throw std::runtime_error( "ResourceFilter is already initialized." );
+	}
+
+	std::set<std::filesystem::path> uniquePaths( iniFilePaths.begin(), iniFilePaths.end() );
+	for( const auto& path : uniquePaths )
+	{
+		try
+		{
+			m_filterFiles.emplace_back( std::make_unique<FilterResourceFile>( path ) );
+		}
+		catch( const std::exception& e )
+		{
+			// Optionally log or handle error
+			std::string errorMsg = "Unable to create ResourceFilter for: " + path.string() + " - because of: " + e.what();
+			throw std::runtime_error( errorMsg );
+		}
+	}
+
+	m_initialized = true;
+}
+
+const std::map<std::string, FilterResourceFilter>& ResourceFilter::GetFullResolvedPathMap()
+{
+	if( m_fullResolvedPathMap.empty() )
+	{
+		// Populate the full resolved path map from all Filter INI files
+		for( auto& iniFile : m_filterFiles )
+		{
+			auto& iniFilePathMap = iniFile->GetIniFileResolvedPathMap();
+			for( const auto& kv : iniFilePathMap )
+			{
+				// Combine filters if the same path already exists
+				auto it = m_fullResolvedPathMap.find( kv.first );
+				if( it != m_fullResolvedPathMap.end() )
+				{
+					// Combine the filters (using raw filter strings)
+					std::string combinedRawFilter = it->second.GetRawFilter() + " " + kv.second.GetRawFilter();
+					FilterResourceFilter combinedFilter( combinedRawFilter );
+					m_fullResolvedPathMap.insert_or_assign( kv.first, combinedFilter );
+				}
+				else
+				{
+					m_fullResolvedPathMap.insert_or_assign( kv.first, kv.second );
+				}
+			}
+		}
+	}
+
+	return m_fullResolvedPathMap;
+}
+
+bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
+{
+	// Make sure we work with the absolute path representation of the input file
+	std::filesystem::path inFilePathAbs = std::filesystem::absolute( inFilePath );
+	std::string inFilePathAbsStr = inFilePathAbs.generic_string();
+
+	// Priority: lower is higher priority:
+	// -1 = exact match on filename (or folder)
+	//  0 = wildcard match on same folder level
+	//  1 = wildcard match, 1 folder up, etc...
+	int bestIncludePriority = std::numeric_limits<int>::max();
+	int bestExcludePriority = std::numeric_limits<int>::max();
+
+	// Get the full resolved path map and iterate through it (contains relative paths)
+	const auto& resolvedPathMap = GetFullResolvedPathMap();
+
+	for( const auto& [resolvedRelativePathStr, filter] : resolvedPathMap )
+	{
+		// Make sure to work with absolute paths for comparison
+		std::filesystem::path resolvedRelativePath( resolvedRelativePathStr );
+		std::filesystem::path resolvedPathAbs = std::filesystem::absolute( resolvedRelativePath );
+		std::string resolvedPathAbsStr = resolvedPathAbs.generic_string();
+
+		if( resolvedPathAbsStr == inFilePathAbsStr )
+		{
+			// If there is an exact match on the full filename path, this means highest priority and
+			// SHOULD BE considered an "INCLUDE" even though resolvedPath has filters that might say otherwise.
+			bestIncludePriority = -1;
+			continue;
+		}
+
+		if( !WildcardMatch( resolvedPathAbsStr, inFilePathAbsStr ) )
+		{
+			// There was NO wildcard match on paths, ignore this resolvedRelativePath entry
+			continue;
+		}
+
+		// There is a Wildcard match - determine the folder depth difference
+		auto inFileIt = inFilePathAbs.begin();
+		auto resolvedIt = resolvedPathAbs.begin();
+		while( inFileIt != inFilePathAbs.end() && resolvedIt != resolvedPathAbs.end() && *inFileIt == *resolvedIt )
+		{
+			++inFileIt;
+			++resolvedIt;
+		}
+
+		std::filesystem::path remainingPath;
+		int folderDiffDepthPriority = -1; // Start at -1 (making first iteration priority 0 = same folder level)
+		while( inFileIt != inFilePathAbs.end() )
+		{
+			++folderDiffDepthPriority;
+			remainingPath /= *inFileIt;
+			++inFileIt;
+		}
+		std::string remainingPathStr = remainingPath.generic_string();
+
+		// Next step is to check the include/exclude filters:
+		for( const auto& includeToken : filter.GetIncludeFilter() )
+		{
+			if( includeToken == "*" || remainingPathStr.find( includeToken ) != std::string::npos )
+			{
+				if( folderDiffDepthPriority < bestIncludePriority )
+					bestIncludePriority = folderDiffDepthPriority;
+			}
+		}
+
+		for( const auto& excludeToken : filter.GetExcludeFilter() )
+		{
+			if( excludeToken == "*" || remainingPathStr.find( excludeToken ) != std::string::npos )
+			{
+				if( folderDiffDepthPriority < bestExcludePriority )
+					bestExcludePriority = folderDiffDepthPriority;
+			}
+		}
+	}
+
+	// Apply priority rules:
+	if( bestIncludePriority == std::numeric_limits<int>::max() )
+	{
+		return false; // No include match found => Exclude the file
+	}
+	if( bestExcludePriority == std::numeric_limits<int>::max() )
+	{
+		return true; // No exclude match found (but includePriority less than max => Include the file
+	}
+	if( bestIncludePriority < bestExcludePriority )
+	{
+		return true; // Include priority is lower => Include the file
+	}
+	if( bestExcludePriority < bestIncludePriority )
+	{
+		return false; // Exclude priority is lower => Exclude the file
+	}
+	// Both include and exclude have same priority => Exclude the file
+	return false;
+}
+
+
+// pattern = The resolved path from the .ini file (can contain wildcards)
+// checkStr = The input file path to check against the pattern
+bool ResourceFilter::WildcardMatch( const std::string& pattern, const std::string& checkStr )
+{
+	// Replace ... with a unique token, then process *
+	std::string pat = pattern;
+	std::string token = "\x01";
+	size_t pos;
+	while( ( pos = pat.find( "..." ) ) != std::string::npos )
+	{
+		pat.replace( pos, 3, token );
+	}
+	std::string regexPat;
+	for( size_t i = 0; i < pat.size(); ++i )
+	{
+		if( pat[i] == '*' )
+		{
+			regexPat += "[^/]*";
+		}
+		else if( pat[i] == '\x01' )
+		{
+			regexPat += ".*";
+		}
+		else if( std::string( ".^$|()[]{}+?\\" ).find( pat[i] ) != std::string::npos )
+		{
+			// Regex special characters that need escaping
+			regexPat += '\\';
+			regexPat += pat[i];
+		}
+		else
+		{
+			regexPat += pat[i];
+		}
+	}
+	try
+	{
+		std::regex re( regexPat, std::regex::ECMAScript | std::regex::icase );
+		bool regexResult = std::regex_match( checkStr, re );
+		return regexResult;
+	}
+	catch( ... )
+	{
+		return false;
+	}
+}
+
+} // namespace ResourceTools

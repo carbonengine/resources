@@ -18,6 +18,7 @@
 #include "BundleResourceGroupImpl.h"
 #include "ChunkIndex.h"
 #include "ResourceGroupFactory.h"
+#include <ResourceFilter.h>
 
 namespace CarbonResources
 {
@@ -65,6 +66,21 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 		return Result{ ResultType::DOCUMENT_VERSION_UNSUPPORTED };
 	}
 
+	// Initialize ResourceFilter if .ini files are supplied
+	ResourceTools::ResourceFilter resourceFilter;
+	if( !params.resourceFilterIniFiles.empty() )
+	{
+		try
+		{
+			resourceFilter.Initialize( params.resourceFilterIniFiles );
+		}
+		catch( const std::exception& e )
+		{
+			std::string errorMsg = "Unable to create ResourceFilter - because of: " + std::string( e.what() );
+			return Result{ ResultType::FAILED_TO_INITIALIZE_RESOURCE_FILTER, errorMsg };
+		}
+	}
+
 	// Walk directory and create a resource from each file using data
 	auto recursiveDirectoryIter = std::filesystem::recursive_directory_iterator( params.directory );
 
@@ -72,6 +88,25 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 	{
 		if( entry.is_regular_file() )
 		{
+			// Apply Resource filtering (in case any filters are supplied)
+			if( resourceFilter.HasFilters() )
+			{
+				try
+				{
+					// Resource filtering:
+					// Check if the file, i.e. entry.path() should be included or excluded based on filtering rules
+					if( !resourceFilter.ShouldInclude( entry.path() ) )
+					{
+						continue;
+					}
+				}
+				catch( const std::exception& e )
+				{
+					std::string errorMsg = "Unable to decide on include/exclude filtering for: " + entry.path().generic_string() + " - because of: " + std::string( e.what() );
+					return Result{ ResultType::FAILED_TO_APPLY_RESOURCE_FILTER_RULES, errorMsg };
+				}
+			}
+
 			// Update status
 			if( params.statusCallback )
 			{

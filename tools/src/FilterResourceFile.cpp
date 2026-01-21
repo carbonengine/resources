@@ -10,39 +10,39 @@ namespace ResourceTools
 FilterResourceFile::FilterResourceFile( const std::filesystem::path& iniFilePath ) :
 	m_iniFilePath( iniFilePath )
 {
-	m_fullResolvedPathMap.clear();
+	m_iniFileResolvedPathMap.clear();
 
 	ParseIniFile();
 }
 
-const std::map<std::string, FilterResourceFilter>& FilterResourceFile::GetFullResolvedPathMap()
+const std::map<std::string, FilterResourceFilter>& FilterResourceFile::GetIniFileResolvedPathMap()
 {
-	if( m_fullResolvedPathMap.empty() )
+	if( m_iniFileResolvedPathMap.empty() )
 	{
-		// Populate the full resolved path map from all named sections
+		// Populate the full resolved path map from all named sections in this INI file
 		for( auto& namedSection : m_namedSections )
 		{
 			auto& sectionPathMap = namedSection.GetCombinedResolvedPathMap();
 			for( const auto& kv : sectionPathMap )
 			{
 				// Combine filters if the same path already exists
-				auto it = m_fullResolvedPathMap.find( kv.first );
-				if( it != m_fullResolvedPathMap.end() )
+				auto it = m_iniFileResolvedPathMap.find( kv.first );
+				if( it != m_iniFileResolvedPathMap.end() )
 				{
 					// Combine the filters (using raw filter strings)
 					std::string combinedRawFilter = it->second.GetRawFilter() + " " + kv.second.GetRawFilter();
 					FilterResourceFilter combinedFilter( combinedRawFilter );
-					m_fullResolvedPathMap.insert_or_assign( kv.first, combinedFilter );
+					m_iniFileResolvedPathMap.insert_or_assign( kv.first, combinedFilter );
 				}
 				else
 				{
-					m_fullResolvedPathMap.insert_or_assign( kv.first, kv.second );
+					m_iniFileResolvedPathMap.insert_or_assign( kv.first, kv.second );
 				}
 			}
 		}
 	}
 
-	return m_fullResolvedPathMap;
+	return m_iniFileResolvedPathMap;
 }
 
 void FilterResourceFile::ParseIniFile()
