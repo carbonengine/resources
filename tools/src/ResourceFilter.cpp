@@ -100,6 +100,16 @@ bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
 			continue;
 		}
 
+		// std::filesystem::path does not support "..." (recursive wildcard).
+		// We need to append it to the absolute path (if specified) before WildcardMatching
+		if( resolvedRelativePathStr.find( "..." ) != std::string::npos )
+		{
+			if( resolvedPathAbsStr.back() != '/' )
+			{
+				resolvedPathAbsStr += '/';
+			}
+			resolvedPathAbsStr += "...";
+		}
 		if( !WildcardMatch( resolvedPathAbsStr, inFilePathAbsStr ) )
 		{
 			// There was NO wildcard match on paths, ignore this resolvedRelativePath entry
