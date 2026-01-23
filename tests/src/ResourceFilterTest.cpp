@@ -1985,13 +1985,8 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_validComplexExample1_ini_usingRe
 		};
 		const auto& fullPathMap = resourceFilter.GetFullResolvedPathMap();
 		ASSERT_EQ( fullPathMap.size(), expectedPaths.size() );
-
-		std::vector<std::string> expectedIncludes = { ".yaml", ".txt" };
-		std::vector<std::string> expectedExcludes = {};
-		std::vector<std::string> overrideExcludes = { "Movie" };
-
 		MapContainsPaths( expectedPaths, fullPathMap, "FullResolvedPathMap from validSimpleExample1.ini" );
-		//ValidatePathMap( expectedPaths, fullPathMap, expectedIncludes, expectedExcludes, "FullResolvedPathMap from validSimpleExample1.ini" );
+
 		// Manually validate the fullPathMap, as it has several different prefixPathCombos + some inline filter overrides
 		for( const auto& kv : fullPathMap )
 		{
@@ -2051,5 +2046,129 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_validComplexExample1_ini_usingRe
 	catch( ... )
 	{
 		FAIL() << "Test [ResourceFilter_Load_validComplexExample1_ini_usingRelativePaths] failed when it should have passed.";
+	}
+}
+
+TEST_F( ResourceFilterTest, ResourceFilter_Load2iniFiles_validComplexExample1_and_validSimpleExample1 )
+{
+	// Alter the current working directory for the duration of this test
+	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+
+	try
+	{
+		std::vector<std::filesystem::path> paths = {
+			"ExampleIniFiles/validComplexExample1.ini",
+			"ExampleIniFiles/validSimpleExample1.ini"
+		};
+		ResourceTools::ResourceFilter resourceFilter;
+		resourceFilter.Initialize( paths );
+
+		// Validate correct included paths via the resourceFilter:
+		std::set<std::filesystem::path> validResolvedRelativePaths = {
+			// From validComplexExample1:
+			//"PatchWithInputChunk/NextBuildResources/introMovie.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ]
+			"PatchWithInputChunk/NextBuildResources/introMoviePrefixed.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resLocalCDN:/../NextBuildResources/introMoviePrefixed.txt
+			//"PatchWithInputChunk/NextBuildResources/introMovieSomewhatChanged.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ]
+			"PatchWithInputChunk/NextBuildResources/testResource2.txt",
+			"PatchWithInputChunk/NextBuildResources/videoCardCategories.yaml",
+			"PatchWithInputChunk/PreviousBuildResources/introMovie.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			"PatchWithInputChunk/PreviousBuildResources/introMoviePrefixed.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			"PatchWithInputChunk/PreviousBuildResources/introMovieSomewhatChanged.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			//"PatchWithInputChunk/PreviousBuildResources/testResource.txt", // resRoot:/PatchWithInputChunk/PreviousBuildResources/* ![ testResource.txt ]
+			"PatchWithInputChunk/PreviousBuildResources/videoCardCategories.yaml",
+			"PatchWithInputChunk/PatchResourceGroup_previousBuild_latestBuild.yaml",
+			"PatchWithInputChunk/resFileIndexShort_build_next.txt",
+			"PatchWithInputChunk/resFileIndexShort_build_previous.txt",
+			// From validSimpleExample1.ini:
+			"resourcesOnBranch/introMovie.txt",
+			"resourcesOnBranch/videoCardCategories.yaml"
+		};
+
+		ASSERT_EQ( resourceFilter.HasFilters(), true );
+		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
+		{
+			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
+		}
+
+		// Additional check to make sure the FullResolvedPathMap contains correct data (either include or exclude):
+		std::set<std::string> expectedPaths = {
+			"PatchWithInputChunk/...",
+			"./PatchWithInputChunk/...",
+			"PatchWithInputChunk/PreviousBuildResources/*",
+			"PatchWithInputChunk/LocalCDNPatches/../NextBuildResources/introMoviePrefixed.txt",
+			"./PatchWithInputChunk/PreviousBuildResources/*",
+			"./resourcesOnBranch/*"
+		};
+		const auto& fullPathMap = resourceFilter.GetFullResolvedPathMap();
+		ASSERT_EQ( fullPathMap.size(), expectedPaths.size() );
+		MapContainsPaths( expectedPaths, fullPathMap, "FullResolvedPathMap from two ini files" );
+
+		// Manually validate the fullPathMap, as it has several different prefixPathCombos + some inline filter overrides
+		for( const auto& kv : fullPathMap )
+		{
+			if( kv.first == "PatchWithInputChunk/..." )
+			{
+				EXPECT_EQ( kv.second.GetIncludeFilter().size(), 2 );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".yaml" ) != kv.second.GetIncludeFilter().end() );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".txt" ) != kv.second.GetIncludeFilter().end() );
+
+				EXPECT_EQ( kv.second.GetExcludeFilter().size(), 0 );
+			}
+			else if( kv.first == "./PatchWithInputChunk/..." )
+			{
+				EXPECT_EQ( kv.second.GetIncludeFilter().size(), 2 );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".yaml" ) != kv.second.GetIncludeFilter().end() );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".txt" ) != kv.second.GetIncludeFilter().end() );
+
+				EXPECT_EQ( kv.second.GetExcludeFilter().size(), 1 );
+				EXPECT_EQ( kv.second.GetExcludeFilter()[0], "Movie" );
+			}
+			else if( kv.first == "PatchWithInputChunk/PreviousBuildResources/*" )
+			{
+				EXPECT_EQ( kv.second.GetIncludeFilter().size(), 3 );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".yaml" ) != kv.second.GetIncludeFilter().end() );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".txt" ) != kv.second.GetIncludeFilter().end() );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), "Movie" ) != kv.second.GetIncludeFilter().end() );
+
+				EXPECT_EQ( kv.second.GetExcludeFilter().size(), 0 );
+			}
+			else if( kv.first == "PatchWithInputChunk/LocalCDNPatches/../NextBuildResources/introMoviePrefixed.txt" )
+			{
+				EXPECT_EQ( kv.second.GetIncludeFilter().size(), 2 );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".yaml" ) != kv.second.GetIncludeFilter().end() );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".txt" ) != kv.second.GetIncludeFilter().end() );
+
+				EXPECT_EQ( kv.second.GetExcludeFilter().size(), 0 );
+			}
+			else if( kv.first == "./PatchWithInputChunk/PreviousBuildResources/*" )
+			{
+				EXPECT_EQ( kv.second.GetIncludeFilter().size(), 2 );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".yaml" ) != kv.second.GetIncludeFilter().end() );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".txt" ) != kv.second.GetIncludeFilter().end() );
+
+				EXPECT_EQ( kv.second.GetExcludeFilter().size(), 1 );
+				EXPECT_EQ( kv.second.GetExcludeFilter()[0], "testResource.txt" );
+			}
+			else if( kv.first == "./resourcesOnBranch/*" )
+			{
+				EXPECT_EQ( kv.second.GetIncludeFilter().size(), 2 );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".yaml" ) != kv.second.GetIncludeFilter().end() );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".txt" ) != kv.second.GetIncludeFilter().end() );
+
+				EXPECT_EQ( kv.second.GetExcludeFilter().size(), 0 );
+			}
+			else
+			{
+				FAIL() << "Unexpected path found in FullResolvedPathMap: " << kv.first;
+			}
+		}
+	}
+	catch( const std::exception& e )
+	{
+		FAIL() << "Test [ResourceFilter_Load2iniFiles_validComplexExample1_and_validSimpleExample1] failed with: " << e.what();
+	}
+	catch( ... )
+	{
+		FAIL() << "Test [ResourceFilter_Load2iniFiles_validComplexExample1_and_validSimpleExample1] failed when it should have passed.";
 	}
 }
