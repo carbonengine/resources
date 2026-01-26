@@ -18,9 +18,13 @@ public:
 	virtual bool Execute( std::string& returnErrorMessage ) const final;
 
 private:
-	void PrintStartBanner( CarbonResources::CreateResourceGroupFromDirectoryParams& createResourceGroupFromDirectoryParams, CarbonResources::ResourceGroupExportToFileParams& ResourceGroupExportToFileParams ) const;
+	void PrintStartBanner(
+		CarbonResources::CreateResourceGroupFromDirectoryParams& createResourceGroupFromDirectoryParams,
+		CarbonResources::ResourceGroupExportToFileParams& ResourceGroupExportToFileParams ) const;
 
-    bool CreateResourceGroup( CarbonResources::CreateResourceGroupFromDirectoryParams& createResourceGroupFromDirectoryParams, CarbonResources::ResourceGroupExportToFileParams& ResourceGroupExportToFileParams ) const;
+	bool CreateResourceGroup(
+		CarbonResources::CreateResourceGroupFromDirectoryParams& createResourceGroupFromDirectoryParams,
+		CarbonResources::ResourceGroupExportToFileParams& ResourceGroupExportToFileParams ) const;
 
 private:
 	std::string m_createResourceGroupPathArgumentId;
@@ -30,14 +34,16 @@ private:
 	std::string m_createResourceGroupDocumentVersionArgumentId;
 
 	std::string m_createResourceGroupResourcePrefixArgumentId;
-	
-    std::string m_createResourceGroupSkipCompressionCalculationId;
 
-    std::string m_createResourceGroupExportResourcesId;
+	std::string m_createResourceGroupSkipCompressionCalculationId;
 
-    std::string m_createResourceGroupExportResourcesDestinationTypeId;
-		
-    std::string m_createResourceGroupExportResourcesDestinationPathId;
+	std::string m_createResourceGroupExportResourcesId;
+
+	std::string m_createResourceGroupExportResourcesDestinationTypeId;
+
+	std::string m_createResourceGroupExportResourcesDestinationPathId;
+
+	std::string m_createResourceGroupIniFilterFilesArgumentId;
 };
 
 #endif // CreateResourceGroupCliOperation_H
