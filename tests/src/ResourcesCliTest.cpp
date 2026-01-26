@@ -320,9 +320,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = ".";  // The base testData directory
 	std::filesystem::path outputFilePath = "./IgnoredTestOutputFiles/CreateGroup_UsingFilter_validSimpleExample1.yaml";
-	std::vector<std::filesystem::path> filterIniFilePaths = {
-		"./ExampleIniFiles/validSimpleExample1.ini"
-	};
+	std::filesystem::path filterIniFilePath = "./ExampleIniFiles/validSimpleExample1.ini";
 
 	// Ensure any previous test output files are removed
 	CleanupTestOutputFiles({ outputFilePath } );
@@ -335,10 +333,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 	arguments.push_back( "3" );
 
 	arguments.push_back( "--filter-file" );
-	for(auto filterFilePath : filterIniFilePaths )
-	{
-		arguments.push_back( std::filesystem::absolute(filterFilePath).generic_string() );
-	}
+	arguments.push_back( std::filesystem::absolute(filterIniFilePath).generic_string() );
 
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.generic_string() );
@@ -361,7 +356,113 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 #endif
 	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) );
 
-	//  Cleanup test output files
+	// Cleanup test output files
+	CleanupTestOutputFiles({ outputFilePath } );
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
+{
+	// Alter the current working directory for the duration of this test
+	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+
+	// Setup test parameters
+	std::string output;
+	std::vector<std::string> arguments;
+	std::filesystem::path inputDirectoryPath = ".";  // The base testData directory
+	std::filesystem::path outputFilePath = "./IgnoredTestOutputFiles/CreateGroup_UsingFilter_validComplexExample1.yaml";
+	std::filesystem::path filterIniFilePath = "./ExampleIniFiles/validComplexExample1.ini";
+
+	// Ensure any previous test output files are removed
+	CleanupTestOutputFiles({ outputFilePath } );
+
+	arguments.push_back( "create-group" );
+
+	arguments.push_back( std::filesystem::absolute(inputDirectoryPath).generic_string() );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+
+	arguments.push_back( "--filter-file" );
+	arguments.push_back( std::filesystem::absolute(filterIniFilePath).generic_string() );
+
+	arguments.push_back( "--output-file" );
+	arguments.push_back( outputFilePath.generic_string() );
+
+	int res = RunCli( arguments, output );
+	std::cout << "Test RunCli output: " << std::endl;
+	std::cout << "----------------------------------" << std::endl;
+	std::cout << output << std::endl;
+	std::cout << "----------------------------------" << std::endl;
+
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, output: " << output;
+
+	// Check expected outcome
+#if _WIN64
+	std::filesystem::path goldFile = std::filesystem::absolute("./ExpectedTestOutputFiles/CreateGroup_UsingFilter_validComplexExample1_Windows.yaml");
+#elif __APPLE__
+	std::filesystem::path goldFile = std::filesystem::absolute("./ExpectedTestOutputFiles/CreateGroup_UsingFilter_validComplexExample1_macOS.yaml");
+#else
+#error Unsupported platform
+#endif
+	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) );
+
+	// Cleanup test output files
+	CleanupTestOutputFiles({ outputFilePath } );
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 )
+{
+	// Alter the current working directory for the duration of this test
+	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+
+	// Setup test parameters
+	std::string output;
+	std::vector<std::string> arguments;
+	std::filesystem::path inputDirectoryPath = ".";  // The base testData directory
+	std::filesystem::path outputFilePath = "./IgnoredTestOutputFiles/CreateGroup_UsingFilter_validSimpleAndComplexExample1.yaml";
+	std::vector<std::filesystem::path> filterIniFilePaths = {
+		"./ExampleIniFiles/validSimpleExample1.ini",
+		"./ExampleIniFiles/validComplexExample1.ini"
+	};
+
+	// Ensure any previous test output files are removed
+	CleanupTestOutputFiles({ outputFilePath } );
+
+	arguments.push_back( "create-group" );
+
+	arguments.push_back( std::filesystem::absolute(inputDirectoryPath).generic_string() );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+
+	for(auto filterFilePath : filterIniFilePaths )
+	{
+		arguments.push_back( "--filter-file" );
+		arguments.push_back( std::filesystem::absolute(filterFilePath).generic_string() );
+	}
+
+	arguments.push_back( "--output-file" );
+	arguments.push_back( outputFilePath.generic_string() );
+
+	int res = RunCli( arguments, output );
+	std::cout << "Test RunCli output: " << std::endl;
+	std::cout << "----------------------------------" << std::endl;
+	std::cout << output << std::endl;
+	std::cout << "----------------------------------" << std::endl;
+
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, output: " << output;
+
+	// Check expected outcome
+#if _WIN64
+	std::filesystem::path goldFile = std::filesystem::absolute("./ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleAndComplexExample1_Windows.yaml");
+#elif __APPLE__
+	std::filesystem::path goldFile = std::filesystem::absolute("./ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleAndComplexExample1_macOS.yaml");
+#else
+#error Unsupported platform
+#endif
+	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) );
+
+	// Cleanup test output files
 	CleanupTestOutputFiles({ outputFilePath } );
 }
 
