@@ -16,7 +16,7 @@ CreateResourceGroupCliOperation::CreateResourceGroupCliOperation() :
 	m_createResourceGroupExportResourcesId( "--export-resources" ),
 	m_createResourceGroupExportResourcesDestinationTypeId( "--export-resources-destination-type" ),
 	m_createResourceGroupExportResourcesDestinationPathId( "--export-resources-destination-path" ),
-	m_createResourceGroupIniFilterFilesArgumentId( "--filter-files" )
+	m_createResourceGroupIniFilterFilesArgumentId( "--filter-file" )
 {
 
 	AddRequiredPositionalArgument( m_createResourceGroupPathArgumentId, "Base directory to create resource group from." );
