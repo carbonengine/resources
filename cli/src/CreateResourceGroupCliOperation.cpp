@@ -42,7 +42,7 @@ CreateResourceGroupCliOperation::CreateResourceGroupCliOperation() :
 
 	AddArgument( m_createResourceGroupExportResourcesDestinationPathId, "Represents the base path where the exported resources will be saved. Requires --export-resources", false, false, defaultImportParams.exportResourcesDestinationSettings.basePath.string() );
 
-	AddArgument( m_createResourceGroupIniFilterFilesArgumentId, "Path to INI file(s) for resource filtering. Can be specified multiple times.", false, true, "" );
+	AddArgument( m_createResourceGroupIniFilterFilesArgumentId, "Path to INI file(s) for resource filtering.", false, true, "" );
 }
 
 bool CreateResourceGroupCliOperation::Execute( std::string& returnErrorMessage ) const
