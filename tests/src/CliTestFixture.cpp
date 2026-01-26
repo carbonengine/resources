@@ -22,3 +22,14 @@ int CliTestFixture::RunCli( std::vector<std::string>& arguments, std::string& ou
 
 	return exit_status;
 }
+
+void CliTestFixture::CleanupTestOutputFiles( const std::vector<std::filesystem::path>& filesToRemove )
+{
+	for( const auto& filePath : filesToRemove )
+	{
+		if( std::filesystem::exists( filePath ) )
+		{
+			std::filesystem::remove( filePath );
+		}
+	}
+}
