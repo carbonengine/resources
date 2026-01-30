@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <cctype>
+#include <stdexcept>
 #include <FilterResourceFilter.h>
 
 namespace ResourceTools

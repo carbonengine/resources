@@ -1,5 +1,6 @@
 // Copyright © 2025 CCP ehf.
 
+#include <stdexcept>
 #include <FilterPrefixMapEntry.h>
 
 namespace ResourceTools
