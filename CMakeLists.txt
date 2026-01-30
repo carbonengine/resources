@@ -1,11 +1,12 @@
 # Copyright © 2025 CCP ehf.
 
-cmake_minimum_required(VERSION 3.30.1)
+cmake_minimum_required(VERSION 3.31.0)
 project(resources VERSION 3.2.0)
 
-include(cmake/CcpGlobalSettings.cmake)
 include(cmake/CcpTargetConfigurations.cmake)
 include(cmake/CcpDocsGenerator.cmake)
+include(cmake/CcpPackageConfigHelpers.cmake)
+include(cmake/CcpBuildConfigurations.cmake)
 
 find_package(yaml-cpp CONFIG REQUIRED)
 find_package(unofficial-inih CONFIG REQUIRED)
