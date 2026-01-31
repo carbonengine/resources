@@ -35,8 +35,6 @@ public:
 private:
 	std::string m_sectionName;
 
-	const FilterPrefixMap& m_parentPrefixMap; // The "parent" prefix map from the [DEFAULT] section
-
 	FilterResourceFilter m_filter;
 
 	FilterResourcePathFile m_respaths;
