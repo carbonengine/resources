@@ -7,7 +7,7 @@
 #include <vector>
 #include <map>
 #include <optional>
-#include <FilterPrefixMap.h>
+#include <FilterPrefixmap.h>
 #include <FilterResourceFilter.h>
 #include <FilterResourcePathFile.h>
 

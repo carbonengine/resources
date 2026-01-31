@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 #include <cctype>
-#include <FilterPrefixMap.h>
+#include <FilterPrefixmap.h>
 #include <FilterPrefixMapEntry.h>
 
 namespace ResourceTools
