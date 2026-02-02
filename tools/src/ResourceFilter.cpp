@@ -224,9 +224,15 @@ bool ResourceFilter::WildcardMatch( const std::string& pattern, const std::strin
 		bool regexResult = std::regex_match( checkStr, re );
 		return regexResult;
 	}
-	catch( ... )
+	catch( const std::regex_error& e )
 	{
-		return false;
+		std::string errorMsg = "Regex Exception during WildcardMatching - regexPattern: " + regexPat + " checkString: " + checkStr + " - error details: " + e.what();
+		throw std::runtime_error( errorMsg );
+	}
+	catch( const std::exception& e )
+	{
+		std::string errorMsg = "Standard Exception during WildcardMatching - regexPattern: " + regexPat + " checkString: " + checkStr + " - error details: " + e.what();
+		throw std::runtime_error( errorMsg );
 	}
 }
 
