@@ -1,8 +1,8 @@
 // Copyright © 2026 CCP ehf.
 
-#include <regex>
 #include <ResourceFilter.h>
 #include <FilterResourceFile.h>
+#include <regex>
 
 namespace ResourceTools
 {
