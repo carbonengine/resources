@@ -73,7 +73,7 @@ bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
 {
 	// Make sure we work with the absolute path representation of the input file
 	std::filesystem::path inFilePathAbs = std::filesystem::absolute( inFilePath );
-	std::string inFilePathAbsStr = inFilePathAbs.generic_string();
+	std::string inFileNormalAbsPathStr = NormalizePath( inFilePathAbs.generic_string() );
 
 	// Priority: lower is higher priority:
 	// -1 = exact match on filename (or folder)
@@ -90,9 +90,9 @@ bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
 		// Make sure to work with absolute paths for comparison
 		std::filesystem::path resolvedRelativePath( resolvedRelativePathStr );
 		std::filesystem::path resolvedPathAbs = std::filesystem::absolute( resolvedRelativePath );
-		std::string resolvedPathAbsStr = resolvedPathAbs.generic_string();
+		std::string resolvedNormalAbsPathStr = NormalizePath( resolvedPathAbs.generic_string() );
 
-		if( resolvedPathAbsStr == inFilePathAbsStr )
+		if( resolvedNormalAbsPathStr == inFileNormalAbsPathStr )
 		{
 			// If there is an exact match on the full filename path, this means highest priority and
 			// SHOULD BE considered an "INCLUDE" even though resolvedPath has filters that might say otherwise.
@@ -104,19 +104,23 @@ bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
 		// We need to append it to the absolute path (if specified) before WildcardMatching
 		if( resolvedRelativePathStr.find( "..." ) != std::string::npos )
 		{
-			if( resolvedPathAbsStr.back() != '/' )
+			if( resolvedNormalAbsPathStr.back() != '/' )
 			{
-				resolvedPathAbsStr += '/';
+				resolvedNormalAbsPathStr += '/';
 			}
-			resolvedPathAbsStr += "...";
+			resolvedNormalAbsPathStr += "...";
 		}
-		if( !WildcardMatch( resolvedPathAbsStr, inFilePathAbsStr ) )
+		if( !WildcardMatch( resolvedNormalAbsPathStr, inFileNormalAbsPathStr ) )
 		{
 			// There was NO wildcard match on paths, ignore this resolvedRelativePath entry
 			continue;
 		}
 
 		// There is a Wildcard match - determine the folder depth difference
+		// Reset the path variables to their Normalized absolute path components (in case they differ from non-Normalized version)
+		inFilePathAbs = std::filesystem::absolute( inFileNormalAbsPathStr );
+		resolvedPathAbs = std::filesystem::absolute( resolvedNormalAbsPathStr );
+
 		auto inFileIt = inFilePathAbs.begin();
 		auto resolvedIt = resolvedPathAbs.begin();
 		while( inFileIt != inFilePathAbs.end() && resolvedIt != resolvedPathAbs.end() && *inFileIt == *resolvedIt )
@@ -181,7 +185,7 @@ bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
 // checkStr = The input file path to check against the pattern
 bool ResourceFilter::WildcardMatch( const std::string& pattern, const std::string& checkStr )
 {
-	// Replace ... with a unique token, then process *
+	// Replace ... with a unique token
 	std::string pat = pattern;
 	std::string token = "\x01";
 	size_t pos;
@@ -189,6 +193,8 @@ bool ResourceFilter::WildcardMatch( const std::string& pattern, const std::strin
 	{
 		pat.replace( pos, 3, token );
 	}
+
+	// Escape special characters and deal with wildcards
 	std::string regexPat;
 	for( size_t i = 0; i < pat.size(); ++i )
 	{
@@ -211,6 +217,7 @@ bool ResourceFilter::WildcardMatch( const std::string& pattern, const std::strin
 			regexPat += pat[i];
 		}
 	}
+
 	try
 	{
 		std::regex re( regexPat, std::regex::ECMAScript | std::regex::icase );
@@ -221,6 +228,12 @@ bool ResourceFilter::WildcardMatch( const std::string& pattern, const std::strin
 	{
 		return false;
 	}
+}
+
+std::string ResourceFilter::NormalizePath( const std::string& path )
+{
+	std::filesystem::path p( path );
+	return p.lexically_normal().generic_string();
 }
 
 } // namespace ResourceTools

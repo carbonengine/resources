@@ -42,6 +42,9 @@ private:
 
 	// Helper function for wildcard matching paths (supports "*" and "...")
 	static bool WildcardMatch( const std::string& pattern, const std::string& checkStr );
+
+	// Helper function to normalize paths (i.e. deal with \ / .. . etc)
+	static std::string NormalizePath( const std::string& path );
 };
 
 }
