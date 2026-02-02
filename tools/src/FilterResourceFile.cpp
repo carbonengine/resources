@@ -48,16 +48,16 @@ const std::map<std::string, FilterResourceFilter>& FilterResourceFile::GetIniFil
 void FilterResourceFile::ParseIniFile()
 {
 	// Open, read and parse the resource INI file.
-	INIReader reader( m_iniFilePath.string() );
+	INIReader reader( m_iniFilePath.generic_string() );
 	if( reader.ParseError() != 0 )
 	{
-		throw std::runtime_error( "Failed to parse INI file: " + m_iniFilePath.string() + " - " + reader.ParseErrorMessage() );
+		throw std::runtime_error( "Failed to parse INI file: " + m_iniFilePath.generic_string() + " - " + reader.ParseErrorMessage() );
 	}
 
 	// Parse the [DEFAULT] section
 	if( !reader.HasSection( "DEFAULT" ) )
 	{
-		throw std::invalid_argument( "Missing [DEFAULT] section in INI file: " + m_iniFilePath.string() );
+		throw std::invalid_argument( "Missing [DEFAULT] section in INI file: " + m_iniFilePath.generic_string() );
 	}
 	m_defaultSection = FilterDefaultSection( reader.Get( "DEFAULT", "prefixmap", "" ) );
 
@@ -67,7 +67,7 @@ void FilterResourceFile::ParseIniFile()
 	if( allSections.size() <= 1 )
 	{
 		// No namedSections defined
-		throw std::invalid_argument( "No namedSections defined in INI file: " + m_iniFilePath.string() );
+		throw std::invalid_argument( "No namedSections defined in INI file: " + m_iniFilePath.generic_string() );
 	}
 
 	// Parse all other named sections

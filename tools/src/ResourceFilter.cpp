@@ -31,7 +31,7 @@ void ResourceFilter::Initialize( const std::vector<std::filesystem::path>& iniFi
 		catch( const std::exception& e )
 		{
 			// Optionally log or handle error
-			std::string errorMsg = "Unable to create ResourceFilter for: " + path.string() + " - because of: " + e.what();
+			std::string errorMsg = "Unable to create ResourceFilter for: " + path.generic_string() + " - because of: " + e.what();
 			throw std::runtime_error( errorMsg );
 		}
 	}

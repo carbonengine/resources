@@ -16,7 +16,7 @@ TEST_F( ResourceFilterTest, Example1IniParsing )
 {
 	// Use the test fixture's helper to get the absolute path
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/example1.ini" );
-	INIReader reader( iniPath.string() );
+	INIReader reader( iniPath.generic_string() );
 	ASSERT_EQ( reader.ParseError(), 0 ) << "Failed to parse example1.ini";
 
 	// There should only be 2 sections
@@ -1582,7 +1582,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_example1_ini )
 
 	try
 	{
-		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
 		const auto& iniFilePathMap = resourceFile.GetIniFileResolvedPathMap();
 
 		// Validate the paths:
@@ -1619,12 +1619,12 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidMissingDefaultSection
 
 	try
 	{
-		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
 		FAIL() << "Expected std::invalid_argument when loading ini file missing [DEFAULT] section";
 	}
 	catch( const std::invalid_argument& e )
 	{
-		std::string expectedError = "Missing [DEFAULT] section in INI file: " + iniPath.string();
+		std::string expectedError = "Missing [DEFAULT] section in INI file: " + iniPath.generic_string();
 		EXPECT_STREQ( e.what(), expectedError.c_str() );
 	}
 	catch( ... )
@@ -1639,12 +1639,12 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidMissingNamedSection_i
 
 	try
 	{
-		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
 		FAIL() << "Expected std::invalid_argument when loading ini file missing [NamedSection] section";
 	}
 	catch( const std::invalid_argument& e )
 	{
-		std::string expectedError = "No namedSections defined in INI file: " + iniPath.string();
+		std::string expectedError = "No namedSections defined in INI file: " + iniPath.generic_string();
 		EXPECT_STREQ( e.what(), expectedError.c_str() );
 	}
 	catch( ... )
@@ -1659,12 +1659,12 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_iniFileNotFound )
 
 	try
 	{
-		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
 		FAIL() << "Expected std::runtime_error when loading non-existent ini file";
 	}
 	catch( const std::runtime_error& e )
 	{
-		std::string expectedError = "Failed to parse INI file: " + iniPath.string() + " - unable to open file";
+		std::string expectedError = "Failed to parse INI file: " + iniPath.generic_string() + " - unable to open file";
 		EXPECT_STREQ( e.what(), expectedError.c_str() );
 	}
 	catch( ... )
@@ -1678,7 +1678,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidPrefixmap_ini )
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidPrefixmap.ini" );
 	try
 	{
-		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
 		FAIL() << "Expected std::invalid_argument when loading ini file with invalid prefixmap";
 	}
 	catch( const std::invalid_argument& e )
@@ -1697,7 +1697,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidSectionFilter_ini )
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidSectionFilter.ini" );
 	try
 	{
-		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
 		FAIL() << "Expected std::invalid_argument when loading ini file with invalid section filter";
 	}
 	catch( const std::invalid_argument& e )
@@ -1716,7 +1716,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidInlineFilter_ini )
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidInlineFilter.ini" );
 	try
 	{
-		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
 		FAIL() << "Expected std::invalid_argument when loading ini file with invalid inline filter";
 	}
 	catch( const std::invalid_argument& e )
@@ -1735,7 +1735,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidPrefixMismatch_ini )
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidPrefixMismatch.ini" );
 	try
 	{
-		ResourceTools::FilterResourceFile resourceFile( iniPath.string() );
+		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
 		FAIL() << "Expected std::invalid_argument when loading ini file with prefix mismatch";
 	}
 	catch( const std::invalid_argument& e )
