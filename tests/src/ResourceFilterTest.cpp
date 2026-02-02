@@ -4,7 +4,7 @@
 
 #include <INIReader.h>
 #include <FilterResourceFilter.h>
-#include <FilterPrefixMap.h>
+#include <FilterPrefixmap.h>
 #include <FilterPrefixMapEntry.h>
 #include <FilterDefaultSection.h>
 #include <FilterResourcePathFile.h>
