@@ -310,6 +310,12 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormatWithP
 
 //---------------------------------------
 
+// Helper function to normalize paths
+std::string NormalizePath( const std::filesystem::path& path )
+{
+	return path.lexically_normal().generic_string();
+}
+
 TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 {
 	// Alter the current working directory for the duration of this test
@@ -333,7 +339,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 	arguments.push_back( "3" );
 
 	arguments.push_back( "--filter-file" );
-	arguments.push_back( std::filesystem::absolute( filterIniFilePath ).generic_string() );
+	arguments.push_back( NormalizePath( std::filesystem::absolute( filterIniFilePath ) ) );
 
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.generic_string() );
@@ -391,7 +397,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 	arguments.push_back( "3" );
 
 	arguments.push_back( "--filter-file" );
-	arguments.push_back( std::filesystem::absolute( filterIniFilePath ).generic_string() );
+	arguments.push_back( NormalizePath( std::filesystem::absolute( filterIniFilePath ) ) );
 
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.generic_string() );
@@ -454,7 +460,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 	for( auto filterFilePath : filterIniFilePaths )
 	{
 		arguments.push_back( "--filter-file" );
-		arguments.push_back( std::filesystem::absolute( filterFilePath ).generic_string() );
+		arguments.push_back( NormalizePath( std::filesystem::absolute( filterFilePath ) ) );
 	}
 
 	arguments.push_back( "--output-file" );
