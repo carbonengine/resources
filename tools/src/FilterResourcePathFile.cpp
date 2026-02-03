@@ -35,14 +35,18 @@ void FilterResourcePathFile::ParseRawPathFileAttribute()
 		// Trim whitespace from both ends
 		size_t first = line.find_first_not_of( " \t\r" );
 		if( first == std::string::npos )
+		{
 			continue; // skip if empty line
+		}
 
 		size_t last = line.find_last_not_of( " \t\r" );
 		std::string rawPathLine = line.substr( first, last - first + 1 );
 
 		// Skip commented out lines (in case there is "inline" comment within the .ini file attribute value)
 		if( rawPathLine.empty() || rawPathLine[0] == '#' || rawPathLine[0] == ';' )
+		{
 			continue;
+		}
 
 		// Add entries to the resolved path map
 		auto lineEntry = FilterResourcePathFileEntry( rawPathLine, m_parentPrefixMap, m_parentSectionFilter );
