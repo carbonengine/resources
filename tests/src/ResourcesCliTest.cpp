@@ -342,7 +342,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 	arguments.push_back( NormalizePath( std::filesystem::absolute( filterIniFilePath ) ) );
 
 	arguments.push_back( "--output-file" );
-	arguments.push_back( NormalizePath( outputFilePath ) );
+	arguments.push_back( NormalizePath( std::filesystem::absolute( outputFilePath ) ) );
 
 	// TODO: Add debug information on parameters
 	std::cout << "CLI arguments: " << std::endl;
@@ -367,11 +367,10 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 #else
 #error Unsupported platform
 #endif
-	// TODO: Temporarily disable so test passes and doesn't cleanup the output file
-	//EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) );
+	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
 
 	// Cleanup test output files
-	//CleanupTestOutputFiles( { outputFilePath } );
+	CleanupTestOutputFiles( { outputFilePath } );
 }
 
 TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
@@ -400,7 +399,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 	arguments.push_back( NormalizePath( std::filesystem::absolute( filterIniFilePath ) ) );
 
 	arguments.push_back( "--output-file" );
-	arguments.push_back( NormalizePath( outputFilePath ) );
+	arguments.push_back( NormalizePath( std::filesystem::absolute( outputFilePath ) ) );
 
 	// TODO: Add debug information on parameters
 	std::cout << "CLI arguments: " << std::endl;
@@ -425,11 +424,10 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 #else
 #error Unsupported platform
 #endif
-	// TODO: Temporarily disable so test passes and doesn't cleanup the output file
-	//EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) );
+	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
 
 	// Cleanup test output files
-	//CleanupTestOutputFiles( { outputFilePath } );
+	CleanupTestOutputFiles( { outputFilePath } );
 }
 
 TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 )
@@ -464,7 +462,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 	}
 
 	arguments.push_back( "--output-file" );
-	arguments.push_back( NormalizePath( outputFilePath ) );
+	arguments.push_back( NormalizePath( std::filesystem::absolute( outputFilePath ) ) );
 
 	// TODO: Add debug information on parameters
 	std::cout << "CLI arguments: " << std::endl;
@@ -489,11 +487,10 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 #else
 #error Unsupported platform
 #endif
-	// TODO: Temporarily disable so test passes and doesn't cleanup the output file
-	//EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) );
+	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
 
 	// Cleanup test output files
-	//CleanupTestOutputFiles( { outputFilePath } );
+	CleanupTestOutputFiles( { outputFilePath } );
 }
 
 //---------------------------------------
