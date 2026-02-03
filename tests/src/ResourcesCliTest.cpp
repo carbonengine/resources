@@ -333,7 +333,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 
 	arguments.push_back( "create-group" );
 
-	arguments.push_back( std::filesystem::absolute( inputDirectoryPath ).generic_string() );
+	arguments.push_back( NormalizePath( std::filesystem::absolute( inputDirectoryPath ) ) );
 
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "3" );
@@ -342,7 +342,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 	arguments.push_back( NormalizePath( std::filesystem::absolute( filterIniFilePath ) ) );
 
 	arguments.push_back( "--output-file" );
-	arguments.push_back( outputFilePath.generic_string() );
+	arguments.push_back( NormalizePath( outputFilePath ) );
 
 	// TODO: Add debug information on parameters
 	std::cout << "CLI arguments: " << std::endl;
@@ -391,7 +391,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 
 	arguments.push_back( "create-group" );
 
-	arguments.push_back( std::filesystem::absolute( inputDirectoryPath ).generic_string() );
+	arguments.push_back( NormalizePath( std::filesystem::absolute( inputDirectoryPath ) ) );
 
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "3" );
@@ -400,7 +400,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 	arguments.push_back( NormalizePath( std::filesystem::absolute( filterIniFilePath ) ) );
 
 	arguments.push_back( "--output-file" );
-	arguments.push_back( outputFilePath.generic_string() );
+	arguments.push_back( NormalizePath( outputFilePath ) );
 
 	// TODO: Add debug information on parameters
 	std::cout << "CLI arguments: " << std::endl;
@@ -452,7 +452,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 
 	arguments.push_back( "create-group" );
 
-	arguments.push_back( std::filesystem::absolute( inputDirectoryPath ).generic_string() );
+	arguments.push_back( NormalizePath( std::filesystem::absolute( inputDirectoryPath ) ) );
 
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "3" );
@@ -464,7 +464,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 	}
 
 	arguments.push_back( "--output-file" );
-	arguments.push_back( outputFilePath.generic_string() );
+	arguments.push_back( NormalizePath( outputFilePath ) );
 
 	// TODO: Add debug information on parameters
 	std::cout << "CLI arguments: " << std::endl;
