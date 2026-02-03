@@ -113,19 +113,25 @@ bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
 			continue;
 		}
 
-		// std::filesystem::path does not support "..." (recursive wildcard).
-		// We need to append it to the absolute path (if specified) before WildcardMatching
-		if( resolvedRelativePathStr.find( "..." ) != std::string::npos )
+		// Make sure the resolvedNormalAbsPathStr contains the "..." (recursive folder wildcard) if the
+		// original resolvedRelativePathStr had it.
+		// Only check the end of the string for any combination of ["/...", "...", ".../"].
+		if( resolvedRelativePathStr.find( "...", resolvedRelativePathStr.size() - 4 ) != std::string::npos )
 		{
-			if( resolvedNormalAbsPathStr.back() != '/' )
+			if( resolvedNormalAbsPathStr.find( "...", resolvedNormalAbsPathStr.size() - 4 ) == std::string::npos )
 			{
-				resolvedNormalAbsPathStr += '/';
+				if( resolvedNormalAbsPathStr.back() != '/' )
+				{
+					resolvedNormalAbsPathStr += '/';
+				}
+				resolvedNormalAbsPathStr += "...";
 			}
-			resolvedNormalAbsPathStr += "...";
 
 			// TODO: Add debugging info
 			std::cout << "   - Adjusted resolvedNormalAbsPathStr for ... : " << resolvedNormalAbsPathStr << std::endl;
 		}
+
+		// Perform Wildcard matching on the normalized absolute paths
 		if( !WildcardMatch( resolvedNormalAbsPathStr, inFileNormalAbsPathStr ) )
 		{
 			// TODO: Add debugging info
