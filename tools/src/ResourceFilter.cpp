@@ -3,6 +3,7 @@
 #include <ResourceFilter.h>
 #include <FilterResourceFile.h>
 #include <regex>
+#include <iostream>  // TODO: Added for debugging purposes, remove this
 
 namespace ResourceTools
 {
@@ -82,6 +83,11 @@ bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
 	int bestIncludePriority = std::numeric_limits<int>::max();
 	int bestExcludePriority = std::numeric_limits<int>::max();
 
+	// TODO: Add debugging info
+	std::cout << " - inFilePath:             " << inFilePath << std::endl;
+	std::cout << " - inFilePathAbs:          " << inFilePathAbs.generic_string() << std::endl;
+	std::cout << " - inFileNormalAbsPathStr: " << inFileNormalAbsPathStr << std::endl;
+
 	// Get the full resolved path map and iterate through it (contains relative paths)
 	const auto& resolvedPathMap = GetFullResolvedPathMap();
 
@@ -91,6 +97,13 @@ bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
 		std::filesystem::path resolvedRelativePath( resolvedRelativePathStr );
 		std::filesystem::path resolvedPathAbs = std::filesystem::absolute( resolvedRelativePath );
 		std::string resolvedNormalAbsPathStr = NormalizePath( resolvedPathAbs.generic_string() );
+
+		// TODO: Add debugging info
+		std::cout << "   Checking resolvedRelativePathStr:" << std::endl;
+		std::cout << "   - resolvedRelativePathStr:  " << resolvedRelativePathStr << std::endl;
+		std::cout << "   - resolvedRelativePath:     " << resolvedRelativePath.generic_string() << std::endl;
+		std::cout << "   - resolvedPathAbs:          " << resolvedPathAbs.generic_string() << std::endl;
+		std::cout << "   - resolvedNormalAbsPathStr: " << resolvedNormalAbsPathStr << std::endl;
 
 		if( resolvedNormalAbsPathStr == inFileNormalAbsPathStr )
 		{
@@ -109,9 +122,15 @@ bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
 				resolvedNormalAbsPathStr += '/';
 			}
 			resolvedNormalAbsPathStr += "...";
+
+			// TODO: Add debugging info
+			std::cout << "   - Adjusted resolvedNormalAbsPathStr for ... : " << resolvedNormalAbsPathStr << std::endl;
 		}
 		if( !WildcardMatch( resolvedNormalAbsPathStr, inFileNormalAbsPathStr ) )
 		{
+			// TODO: Add debugging info
+			std::cout << "   No WildcardMatch for pattern: " << resolvedNormalAbsPathStr << " checkStr: " << inFileNormalAbsPathStr << std::endl;
+
 			// There was NO wildcard match on paths, ignore this resolvedRelativePath entry
 			continue;
 		}
@@ -120,6 +139,11 @@ bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
 		// Reset the path variables to their Normalized absolute path components (in case they differ from non-Normalized version)
 		inFilePathAbs = std::filesystem::absolute( inFileNormalAbsPathStr );
 		resolvedPathAbs = std::filesystem::absolute( resolvedNormalAbsPathStr );
+
+		// TODO: Add debugging info
+		std::cout << "   WildcardMatch succeeded!" << std::endl;
+		std::cout << "   - inFilePathAbs (normalized):      " << inFilePathAbs.generic_string() << std::endl;
+		std::cout << "   - resolvedPathAbs (normalized):    " << resolvedPathAbs.generic_string() << std::endl;
 
 		auto inFileIt = inFilePathAbs.begin();
 		auto resolvedIt = resolvedPathAbs.begin();
@@ -158,6 +182,10 @@ bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
 			}
 		}
 	}
+
+	// TODO: Add debugging info
+	std::cout << " - bestIncludePriority: " << bestIncludePriority << std::endl;
+	std::cout << " - bestExcludePriority: " << bestExcludePriority << std::endl;
 
 	// Apply priority rules:
 	if( bestIncludePriority == std::numeric_limits<int>::max() )
