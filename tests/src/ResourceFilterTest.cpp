@@ -960,7 +960,6 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Invalid_RespathMissing )
 
 	ResourceTools::FilterPrefixMap defaultPrefixMap( defaultParentPrefixMapStr );
 
-	// TODO: Should change code to throw defined error code/type
 	try
 	{
 		ResourceTools::FilterNamedSection namedSection( sectionName, filter, "", resfile, defaultPrefixMap );
@@ -1872,47 +1871,8 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_validSimpleExample1_ini_usingRel
 		};
 
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
-
-		// TODO: Remove debug output once confirmed working on macOS (TeamCity)
-		//-- BEGIN - Debug resourceFilter contents vs expected values
-		std::cout << "------ Debug info (begin) -----" << std::endl;
-		std::cout << "ResourceFilter FullResolvedPathMap contents:" << std::endl;
-		for( const auto& [fullPath, filter] : resourceFilter.GetFullResolvedPathMap() )
-		{
-			std::cout << "ResourceFilter Path: " << std::endl;
-			std::cout << "   - path (relative string): " << fullPath << std::endl;
-			std::cout << "   - path (relative generic_string): " << std::filesystem::path( fullPath ).generic_string() << std::endl;
-			std::cout << "   - path (absolute generic_string): " << std::filesystem::absolute( std::filesystem::path( fullPath ) ).generic_string() << std::endl;
-			std::cout << "   - path (absolute normal string): " << std::filesystem::absolute( std::filesystem::path( fullPath ).lexically_normal() ).generic_string() << std::endl;
-			std::cout << "  Includes: ";
-			for( const auto& include : filter.GetIncludeFilter() )
-			{
-				std::cout << include << " ";
-			}
-			std::cout << std::endl;
-			std::cout << "  Excludes: ";
-			for( const auto& exclude : filter.GetExcludeFilter() )
-			{
-				std::cout << exclude << " ";
-			}
-			std::cout << std::endl;
-		}
-		std::cout << "- - - - - - - - -" << std::endl;
-		std::cout << "Expected valid resolved relative paths:" << std::endl;
 		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
 		{
-			std::cout << "  - path (relative string): " << resolvedRelativePath.string() << std::endl;
-			std::cout << "  - path (relative generic_string): " << resolvedRelativePath.generic_string() << std::endl;
-			std::cout << "  - path (absolute generic_string): " << std::filesystem::absolute( resolvedRelativePath ).generic_string() << std::endl;
-			std::cout << "  - path (absolute normal string): " << std::filesystem::absolute( resolvedRelativePath.lexically_normal() ).generic_string() << std::endl;
-		}
-		std::cout << "------ Debug info (end) -----" << std::endl;
-		//-- END - Debug resourceFilter contents vs expected values
-
-		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
-		{
-			// TODO: Remove debug output once confirmed working on macOS (TeamCity)
-			std::cout << "About to call resourceFilter.ShouldInclude() for (generic_string): " << resolvedRelativePath.generic_string() << std::endl;
 			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
 		}
 
@@ -1955,46 +1915,8 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_validSimpleExample1_ini_usingAbs
 		};
 
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
-
-		// TODO: Remove debug output once confirmed working on macOS (TeamCity)
-		//-- BEGIN - Debug resourceFilter contents vs expected values
-		std::cout << "------ Debug info (begin) -----" << std::endl;
-		std::cout << "ResourceFilter FullResolvedPathMap contents:" << std::endl;
-		for( const auto& [fullPath, filter] : resourceFilter.GetFullResolvedPathMap() )
-		{
-			std::cout << "ResourceFilter Path: " << std::endl;
-			std::cout << "   - path (relative string): " << fullPath << std::endl;
-			std::cout << "   - path (relative generic_string): " << std::filesystem::path( fullPath ).generic_string() << std::endl;
-			std::cout << "   - path (absolute generic_string): " << std::filesystem::absolute( std::filesystem::path( fullPath ) ).generic_string() << std::endl;
-			std::cout << "   - path (absolute normal string): " << std::filesystem::absolute( std::filesystem::path( fullPath ).lexically_normal() ).generic_string() << std::endl;
-			std::cout << "  Includes: ";
-			for( const auto& include : filter.GetIncludeFilter() )
-			{
-				std::cout << include << " ";
-			}
-			std::cout << std::endl;
-			std::cout << "  Excludes: ";
-			for( const auto& exclude : filter.GetExcludeFilter() )
-			{
-				std::cout << exclude << " ";
-			}
-			std::cout << std::endl;
-		}
-		std::cout << "- - - - - - - - -" << std::endl;
-		std::cout << "Expected valid resolved absolute paths:" << std::endl;
-		for( const auto& resolvedAbsolutePath : validResolvedAbsolutePaths )
-		{
-			std::cout << "  - path (absolute string): " << resolvedAbsolutePath.string() << std::endl;
-			std::cout << "  - path (absolute generic_string): " << resolvedAbsolutePath.generic_string() << std::endl;
-			std::cout << "  - path (absolute normal string): " << resolvedAbsolutePath.lexically_normal().generic_string() << std::endl;
-		}
-		std::cout << "------ Debug info (end) -----" << std::endl;
-		//-- END - Debug resourceFilter contents vs expected values
-
 		for( const auto& resolvedAbsPath : validResolvedAbsolutePaths )
 		{
-			// TODO: Remove debug output once confirmed working on macOS (TeamCity)
-			std::cout << "About to call resourceFilter.ShouldInclude() for (generic_string): " << resolvedAbsPath.generic_string() << std::endl;
 			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedAbsPath ), true ) << "Should have included absolute path: " << resolvedAbsPath.generic_string();
 		}
 
@@ -2047,47 +1969,8 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_validComplexExample1_ini_usingRe
 		};
 
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
-
-		// TODO: Remove debug output once confirmed working on macOS (TeamCity)
-		//-- BEGIN - Debug resourceFilter contents vs expected values
-		std::cout << "------ Debug info (begin) -----" << std::endl;
-		std::cout << "ResourceFilter FullResolvedPathMap contents:" << std::endl;
-		for( const auto& [fullPath, filter] : resourceFilter.GetFullResolvedPathMap() )
-		{
-			std::cout << "ResourceFilter Path: " << std::endl;
-			std::cout << "   - path (relative string): " << fullPath << std::endl;
-			std::cout << "   - path (relative generic_string): " << std::filesystem::path( fullPath ).generic_string() << std::endl;
-			std::cout << "   - path (absolute generic_string): " << std::filesystem::absolute( std::filesystem::path( fullPath ) ).generic_string() << std::endl;
-			std::cout << "   - path (absolute normal string): " << std::filesystem::absolute( std::filesystem::path( fullPath ).lexically_normal() ).generic_string() << std::endl;
-			std::cout << "  Includes: ";
-			for( const auto& include : filter.GetIncludeFilter() )
-			{
-				std::cout << include << " ";
-			}
-			std::cout << std::endl;
-			std::cout << "  Excludes: ";
-			for( const auto& exclude : filter.GetExcludeFilter() )
-			{
-				std::cout << exclude << " ";
-			}
-			std::cout << std::endl;
-		}
-		std::cout << "- - - - - - - - -" << std::endl;
-		std::cout << "Expected valid resolved relative paths:" << std::endl;
 		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
 		{
-			std::cout << "  - path (relative string): " << resolvedRelativePath.string() << std::endl;
-			std::cout << "  - path (relative generic_string): " << resolvedRelativePath.generic_string() << std::endl;
-			std::cout << "  - path (absolute generic_string): " << std::filesystem::absolute( resolvedRelativePath ).generic_string() << std::endl;
-			std::cout << "  - path (absolute normal string): " << std::filesystem::absolute( resolvedRelativePath.lexically_normal() ).generic_string() << std::endl;
-		}
-		std::cout << "------ Debug info (end) -----" << std::endl;
-		//-- END - Debug resourceFilter contents vs expected values
-
-		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
-		{
-			// TODO: Remove debug output once confirmed working on macOS (TeamCity)
-			std::cout << "About to call resourceFilter.ShouldInclude() for (generic_string): " << resolvedRelativePath.generic_string() << std::endl;
 			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
 		}
 
@@ -2195,46 +2078,8 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_validComplexExample1_ini_usingAb
 		};
 
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
-
-		// TODO: Remove debug output once confirmed working on macOS (TeamCity)
-		//-- BEGIN - Debug resourceFilter contents vs expected values
-		std::cout << "------ Debug info (begin) -----" << std::endl;
-		std::cout << "ResourceFilter FullResolvedPathMap contents:" << std::endl;
-		for( const auto& [fullPath, filter] : resourceFilter.GetFullResolvedPathMap() )
-		{
-			std::cout << "ResourceFilter Path: " << std::endl;
-			std::cout << "   - path (relative string): " << fullPath << std::endl;
-			std::cout << "   - path (relative generic_string): " << std::filesystem::path( fullPath ).generic_string() << std::endl;
-			std::cout << "   - path (absolute generic_string): " << std::filesystem::absolute( std::filesystem::path( fullPath ) ).generic_string() << std::endl;
-			std::cout << "   - path (absolute normal string): " << std::filesystem::absolute( std::filesystem::path( fullPath ).lexically_normal() ).generic_string() << std::endl;
-			std::cout << "  Includes: ";
-			for( const auto& include : filter.GetIncludeFilter() )
-			{
-				std::cout << include << " ";
-			}
-			std::cout << std::endl;
-			std::cout << "  Excludes: ";
-			for( const auto& exclude : filter.GetExcludeFilter() )
-			{
-				std::cout << exclude << " ";
-			}
-			std::cout << std::endl;
-		}
-		std::cout << "- - - - - - - - -" << std::endl;
-		std::cout << "Expected valid resolved absolute paths:" << std::endl;
-		for( const auto& resolvedAbsolutePath : validResolvedRelativePaths )
-		{
-			std::cout << "  - path (absolute string): " << resolvedAbsolutePath.string() << std::endl;
-			std::cout << "  - path (absolute generic_string): " << resolvedAbsolutePath.generic_string() << std::endl;
-			std::cout << "  - path (absolute normal string): " << resolvedAbsolutePath.lexically_normal().generic_string() << std::endl;
-		}
-		std::cout << "------ Debug info (end) -----" << std::endl;
-		//-- END - Debug resourceFilter contents vs expected values
-
 		for( const auto& resolvedAbsPath : validResolvedRelativePaths )
 		{
-			// TODO: Remove debug output once confirmed working on macOS (TeamCity)
-			std::cout << "About to call resourceFilter.ShouldInclude() for (generic_string): " << resolvedAbsPath.generic_string() << std::endl;
 			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedAbsPath ), true ) << "Should have included relative path: " << resolvedAbsPath.generic_string();
 		}
 
@@ -2348,47 +2193,8 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load2iniFiles_validComplexExample1_an
 		};
 
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
-
-		// TODO: Remove debug output once confirmed working on macOS (TeamCity)
-		//-- BEGIN - Debug resourceFilter contents vs expected values
-		std::cout << "------ Debug info (begin) -----" << std::endl;
-		std::cout << "ResourceFilter FullResolvedPathMap contents:" << std::endl;
-		for( const auto& [fullPath, filter] : resourceFilter.GetFullResolvedPathMap() )
-		{
-			std::cout << "ResourceFilter Path: " << std::endl;
-			std::cout << "   - path (relative string): " << fullPath << std::endl;
-			std::cout << "   - path (relative generic_string): " << std::filesystem::path( fullPath ).generic_string() << std::endl;
-			std::cout << "   - path (absolute generic_string): " << std::filesystem::absolute( std::filesystem::path( fullPath ) ).generic_string() << std::endl;
-			std::cout << "   - path (absolute normal string): " << std::filesystem::absolute( std::filesystem::path( fullPath ).lexically_normal() ).generic_string() << std::endl;
-			std::cout << "  Includes: ";
-			for( const auto& include : filter.GetIncludeFilter() )
-			{
-				std::cout << include << " ";
-			}
-			std::cout << std::endl;
-			std::cout << "  Excludes: ";
-			for( const auto& exclude : filter.GetExcludeFilter() )
-			{
-				std::cout << exclude << " ";
-			}
-			std::cout << std::endl;
-		}
-		std::cout << "- - - - - - - - -" << std::endl;
-		std::cout << "Expected valid resolved relative paths:" << std::endl;
 		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
 		{
-			std::cout << "  - path (relative string): " << resolvedRelativePath.string() << std::endl;
-			std::cout << "  - path (relative generic_string): " << resolvedRelativePath.generic_string() << std::endl;
-			std::cout << "  - path (absolute generic_string): " << std::filesystem::absolute( resolvedRelativePath ).generic_string() << std::endl;
-			std::cout << "  - path (absolute normal string): " << std::filesystem::absolute( resolvedRelativePath.lexically_normal() ).generic_string() << std::endl;
-		}
-		std::cout << "------ Debug info (end) -----" << std::endl;
-		//-- END - Debug resourceFilter contents vs expected values
-
-		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
-		{
-			// TODO: Remove debug output once confirmed working on macOS (TeamCity)
-			std::cout << "About to call resourceFilter.ShouldInclude() for (generic_string): " << resolvedRelativePath.generic_string() << std::endl;
 			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
 		}
 

@@ -352,10 +352,9 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 	arguments.push_back( outputFilePath.string() );
 
 	int res = RunCli( arguments, output, errorOutput, TEST_DATA_BASE_PATH );
-	std::cout << "Test RunCli output: " << std::endl;
-	std::cout << "----------------------------------" << std::endl;
+	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
-	std::cout << "----------------------------------" << std::endl;
+	std::cout << "------------------------" << std::endl;
 
 	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
@@ -403,10 +402,9 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 	arguments.push_back( outputFilePath.string() );
 
 	int res = RunCli( arguments, output, errorOutput, TEST_DATA_BASE_PATH );
-	std::cout << "Test RunCli output: " << std::endl;
-	std::cout << "----------------------------------" << std::endl;
+	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
-	std::cout << "----------------------------------" << std::endl;
+	std::cout << "------------------------" << std::endl;
 
 	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
@@ -460,10 +458,9 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 	arguments.push_back( outputFilePath.string() );
 
 	int res = RunCli( arguments, output, errorOutput, TEST_DATA_BASE_PATH );
-	std::cout << "Test RunCli output: " << std::endl;
-	std::cout << "----------------------------------" << std::endl;
+	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
-	std::cout << "----------------------------------" << std::endl;
+	std::cout << "------------------------" << std::endl;
 
 	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
