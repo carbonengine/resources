@@ -9,10 +9,11 @@ struct ResourcesCliTest : public CliTestFixture
 TEST_F( ResourcesCliTest, RunWithoutArguments )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
 	// Expect 4 which indicates failed with no command specified
 	ASSERT_EQ( res, 4 );
@@ -21,12 +22,13 @@ TEST_F( ResourcesCliTest, RunWithoutArguments )
 TEST_F( ResourcesCliTest, RunWithNonesenseArguments )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
 	arguments.push_back( "Nonesense" );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
 	// Expect 3 which indicates failed due to invalid operation
 	ASSERT_EQ( res, 3 );
@@ -35,12 +37,13 @@ TEST_F( ResourcesCliTest, RunWithNonesenseArguments )
 TEST_F( ResourcesCliTest, RunCreateGroupWithNoArguments )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
 	arguments.push_back( "create-group" );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
 	// Expect 2 which failed due to invalid operation arguments
 	ASSERT_EQ( res, 2 );
@@ -49,12 +52,13 @@ TEST_F( ResourcesCliTest, RunCreateGroupWithNoArguments )
 TEST_F( ResourcesCliTest, RunCreatePatchWithNoArguments )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
 	arguments.push_back( "create-patch" );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
 	// Expect 2 which failed due to invalid operation arguments
 	ASSERT_EQ( res, 2 );
@@ -63,12 +67,13 @@ TEST_F( ResourcesCliTest, RunCreatePatchWithNoArguments )
 TEST_F( ResourcesCliTest, RunCreateBundleWithNoArguments )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
 	arguments.push_back( "create-bundle" );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
 	// Expect 2 which failed due to invalid operation arguments
 	ASSERT_EQ( res, 2 );
@@ -79,12 +84,13 @@ TEST_F( ResourcesCliTest, RunCreateBundleWithNoArguments )
 TEST_F( ResourcesCliTest, RunApplyPatchWithNoArguments )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
 	arguments.push_back( "apply-patch" );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
 	// Expect 2 which failed due to invalid operation arguments
 	ASSERT_EQ( res, 2 );
@@ -93,12 +99,13 @@ TEST_F( ResourcesCliTest, RunApplyPatchWithNoArguments )
 TEST_F( ResourcesCliTest, RunUnpackBundleWithNoArguments )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
 	arguments.push_back( "unpack-bundle" );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
 	// Expect 2 which failed due to invalid operation arguments
 	ASSERT_EQ( res, 2 );
@@ -106,8 +113,8 @@ TEST_F( ResourcesCliTest, RunUnpackBundleWithNoArguments )
 
 TEST_F( ResourcesCliTest, CreateOperationWithInvalidInput )
 {
-
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -119,7 +126,7 @@ TEST_F( ResourcesCliTest, CreateOperationWithInvalidInput )
 	std::filesystem::path inputDirectory = "INVALID_PATH";
 	arguments.push_back( inputDirectory.string() );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
 	// Expect return 1 indicating failed during valid operation
 	ASSERT_EQ( res, 1 );
@@ -129,6 +136,7 @@ TEST_F( ResourcesCliTest, CreateOperationWithInvalidInput )
 TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectory )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -144,9 +152,9 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectory )
 	std::filesystem::path outputFile = "GroupOut/ResourceGroup.yaml";
 	arguments.push_back( outputFile.string() );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	ASSERT_EQ( res, 0 );
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 #if _WIN64
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
@@ -161,6 +169,7 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectory )
 TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryExportResources )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -185,9 +194,9 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryExportResources )
 	std::filesystem::path outputFile = "GroupOut/ResourceGroup.yaml";
 	arguments.push_back( outputFile.string() );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	ASSERT_EQ( res, 0 );
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 #if _WIN64
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.yaml" );
@@ -204,6 +213,7 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryExportResources )
 TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryWithSkipCompression )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -221,9 +231,9 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryWithSkipCompression )
 	std::filesystem::path outputFile = "GroupOut/ResourceGroup.yaml";
 	arguments.push_back( outputFile.string() );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	ASSERT_EQ( res, 0 );
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 #if _WIN64
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupSkipCompressionWindows.yaml" );
@@ -238,6 +248,7 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryWithSkipCompression )
 TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormat )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -256,9 +267,9 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormat )
 	arguments.push_back( "--document-version" );
 	arguments.push_back( "0.0.0" );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	ASSERT_EQ( res, 0 );
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 #if _WIN64
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindows.csv" );
@@ -273,6 +284,7 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormat )
 TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormatWithPrefix )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -294,9 +306,9 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormatWithP
 	arguments.push_back( "--resource-prefix" );
 	arguments.push_back( "test" );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	ASSERT_EQ( res, 0 );
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 #if _WIN64
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateResourceFiles/ResourceGroupWindowsPrefixed.csv" );
@@ -323,6 +335,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 
 	// Setup test parameters
 	std::string output;
+	std::string errorOutput;
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "." ); // The base testData directory
 	std::filesystem::path outputFilePath = GetTestFileFileAbsolutePath( "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validSimpleExample1.yaml" );
@@ -351,13 +364,13 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 		std::cout << " " << arg << std::endl;
 	}
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 	std::cout << "Test RunCli output: " << std::endl;
 	std::cout << "----------------------------------" << std::endl;
 	std::cout << output << std::endl;
 	std::cout << "----------------------------------" << std::endl;
 
-	ASSERT_EQ( res, 0 ) << "CLI operation failed, output: " << output;
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check expected outcome
 #if _WIN64
@@ -380,6 +393,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 
 	// Setup test parameters
 	std::string output;
+	std::string errorOutput;
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "." ); // The base testData directory
 	std::filesystem::path outputFilePath = GetTestFileFileAbsolutePath( "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validComplexExample1.yaml" );
@@ -408,13 +422,13 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 		std::cout << " " << arg << std::endl;
 	}
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 	std::cout << "Test RunCli output: " << std::endl;
 	std::cout << "----------------------------------" << std::endl;
 	std::cout << output << std::endl;
 	std::cout << "----------------------------------" << std::endl;
 
-	ASSERT_EQ( res, 0 ) << "CLI operation failed, output: " << output;
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check expected outcome
 #if _WIN64
@@ -437,6 +451,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 
 	// Setup test parameters
 	std::string output;
+	std::string errorOutput;
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "." ) ; // The base testData directory
 	std::filesystem::path outputFilePath = GetTestFileFileAbsolutePath( "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validSimpleAndComplexExample1.yaml" );
@@ -471,13 +486,13 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 		std::cout << " " << arg << std::endl;
 	}
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 	std::cout << "Test RunCli output: " << std::endl;
 	std::cout << "----------------------------------" << std::endl;
 	std::cout << output << std::endl;
 	std::cout << "----------------------------------" << std::endl;
 
-	ASSERT_EQ( res, 0 ) << "CLI operation failed, output: " << output;
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check expected outcome
 #if _WIN64
@@ -498,6 +513,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 TEST_F( ResourcesCliTest, CreateBundle )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -530,9 +546,9 @@ TEST_F( ResourcesCliTest, CreateBundle )
 	arguments.push_back( "1000" );
 
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	EXPECT_EQ( res, 0 );
+	EXPECT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check expected outcome
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "CreateBundle/BundleResourceGroup.yaml" );
@@ -545,6 +561,7 @@ TEST_F( ResourcesCliTest, CreateBundle )
 TEST_F( ResourcesCliTest, RemoveResourcesWithUnknownResourceIgnoreOnResourceNotFound )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -569,14 +586,15 @@ TEST_F( ResourcesCliTest, RemoveResourcesWithUnknownResourceIgnoreOnResourceNotF
 
 	arguments.push_back( "--ignore-missing-resources" );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	EXPECT_EQ( res, 0 );
+	EXPECT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 }
 
 TEST_F( ResourcesCliTest, RemoveResourcesWithUnknownResourceWithInvalidPathToResourcesFile )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -599,7 +617,7 @@ TEST_F( ResourcesCliTest, RemoveResourcesWithUnknownResourceWithInvalidPathToRes
 
 	arguments.push_back( resourceGroupAfterRemovePath.string() );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
 	EXPECT_EQ( res, 1 );
 }
@@ -607,6 +625,7 @@ TEST_F( ResourcesCliTest, RemoveResourcesWithUnknownResourceWithInvalidPathToRes
 TEST_F( ResourcesCliTest, RemoveResourcesWithUnknownResource )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -629,7 +648,7 @@ TEST_F( ResourcesCliTest, RemoveResourcesWithUnknownResource )
 
 	arguments.push_back( resourceGroupAfterRemovePath.string() );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
 	EXPECT_EQ( res, 1 );
 }
@@ -637,6 +656,7 @@ TEST_F( ResourcesCliTest, RemoveResourcesWithUnknownResource )
 TEST_F( ResourcesCliTest, RemoveResources )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -659,9 +679,9 @@ TEST_F( ResourcesCliTest, RemoveResources )
 
 	arguments.push_back( resourceGroupAfterRemovePath.string() );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	EXPECT_EQ( res, 0 );
+	EXPECT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check output matches expected
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "RemoveResource/ResourceGroupAfterRemove.yaml" );
@@ -672,6 +692,7 @@ TEST_F( ResourcesCliTest, RemoveResources )
 TEST_F( ResourcesCliTest, DiffResourceGroupsWithTwoAdditions )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -694,9 +715,9 @@ TEST_F( ResourcesCliTest, DiffResourceGroupsWithTwoAdditions )
 
 	arguments.push_back( outputPath.string() );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	EXPECT_EQ( res, 0 );
+	EXPECT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check output matches expected
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "DiffGroups/ExpectedDiffWithAdditions.txt" );
@@ -711,6 +732,7 @@ TEST_F( ResourcesCliTest, DiffResourceGroupsWithTwoAdditions )
 TEST_F( ResourcesCliTest, DiffResourceGroupsWithTwoChanges )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -733,9 +755,9 @@ TEST_F( ResourcesCliTest, DiffResourceGroupsWithTwoChanges )
 
 	arguments.push_back( outputPath.string() );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	EXPECT_EQ( res, 0 );
+	EXPECT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check output matches expected
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "DiffGroups/ExpectedDiffWithChanges.txt" );
@@ -750,6 +772,7 @@ TEST_F( ResourcesCliTest, DiffResourceGroupsWithTwoChanges )
 TEST_F( ResourcesCliTest, DiffResourceGroupsWithTwoSubtractions )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -772,9 +795,9 @@ TEST_F( ResourcesCliTest, DiffResourceGroupsWithTwoSubtractions )
 
 	arguments.push_back( outputPath.string() );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	EXPECT_EQ( res, 0 );
+	EXPECT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check output matches expected
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "DiffGroups/ExpectedDiffWithSubtractions.txt" );
@@ -789,6 +812,7 @@ TEST_F( ResourcesCliTest, DiffResourceGroupsWithTwoSubtractions )
 TEST_F( ResourcesCliTest, MergeGroup )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -811,9 +835,9 @@ TEST_F( ResourcesCliTest, MergeGroup )
 
 	arguments.push_back( mergedOutputPath.string() );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	EXPECT_EQ( res, 0 );
+	EXPECT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check output matches expected
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "MergeGroups/YamlAdditive/ExpectedMergedResourceGroup.yaml" );
@@ -824,6 +848,7 @@ TEST_F( ResourcesCliTest, MergeGroup )
 TEST_F( ResourcesCliTest, CreatePatch )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -865,9 +890,9 @@ TEST_F( ResourcesCliTest, CreatePatch )
 	arguments.push_back( "--chunk-size" );
 	arguments.push_back( "50000000" );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	EXPECT_EQ( res, 0 );
+	EXPECT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check expected outcome
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "Patch/PatchResourceGroup.yaml" );
@@ -880,6 +905,7 @@ TEST_F( ResourcesCliTest, CreatePatch )
 TEST_F( ResourcesCliTest, CreateGroup )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -898,9 +924,9 @@ TEST_F( ResourcesCliTest, CreateGroup )
 
 	arguments.push_back( outputFilename );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	EXPECT_EQ( res, 0 );
+	EXPECT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 // Check expected outcome
 #if _WIN64
@@ -918,6 +944,7 @@ TEST_F( ResourcesCliTest, CreateGroup )
 TEST_F( ResourcesCliTest, ApplyPatch )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -961,9 +988,9 @@ TEST_F( ResourcesCliTest, ApplyPatch )
 
 	std::filesystem::copy( resourcesToPatchBasePath, outputBasePath );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	EXPECT_EQ( res, 0 );
+	EXPECT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check expected outcome
 	std::filesystem::path goldDirectory = GetTestFileFileAbsolutePath( "Patch/NextBuildResources" );
@@ -973,6 +1000,7 @@ TEST_F( ResourcesCliTest, ApplyPatch )
 TEST_F( ResourcesCliTest, UnpackBundle )
 {
 	std::string output;
+	std::string errorOutput;
 
 	std::vector<std::string> arguments;
 
@@ -995,9 +1023,9 @@ TEST_F( ResourcesCliTest, UnpackBundle )
 
 	arguments.push_back( "LOCAL_RELATIVE" );
 
-	int res = RunCli( arguments, output );
+	int res = RunCli( arguments, output, errorOutput );
 
-	EXPECT_EQ( res, 0 );
+	EXPECT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
 
 	// Check expected outcome
 	EXPECT_TRUE( DirectoryIsSubset( GetTestFileFileAbsolutePath( "Bundle/Res" ), "UnpackBundleOut" ) );
