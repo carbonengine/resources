@@ -1,7 +1,8 @@
 // Copyright © 2025 CCP ehf.
 
-#ifndef FILTERDEFAULTSECTION_H
-#define FILTERDEFAULTSECTION_H
+#pragma once
+#ifndef FilterDefaultSection_H
+#define FilterDefaultSection_H
 
 #include <FilterPrefixmap.h>
 #include <FilterPrefixMapEntry.h>
@@ -24,4 +25,4 @@ private:
 
 }
 
-#endif // FILTERDEFAULTSECTION_H
+#endif // FilterDefaultSection_H

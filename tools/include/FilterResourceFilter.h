@@ -1,7 +1,8 @@
 // Copyright © 2025 CCP ehf.
 
-#ifndef FILTERRESOURCEFILTER_H
-#define FILTERRESOURCEFILTER_H
+#pragma once
+#ifndef FilterResourceFilter_H
+#define FilterResourceFilter_H
 
 #include <string>
 #include <vector>
@@ -42,4 +43,4 @@ private:
 
 }
 
-#endif // FILTERRESOURCEFILTER_H
+#endif // FilterResourceFilter_H

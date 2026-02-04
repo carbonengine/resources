@@ -1,7 +1,8 @@
 // Copyright © 2025 CCP ehf.
 
-#ifndef FILTERPREFIXMAP_H
-#define FILTERPREFIXMAP_H
+#pragma once
+#ifndef FilterPrefixmap_H
+#define FilterPrefixmap_H
 
 #include <string>
 #include <map>
@@ -30,4 +31,4 @@ private:
 
 }
 
-#endif // FILTERPREFIXMAP_H
+#endif // FilterPrefixmap_H

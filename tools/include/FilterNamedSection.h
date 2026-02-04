@@ -1,7 +1,8 @@
 // Copyright © 2025 CCP ehf.
 
-#ifndef FILTERNAMEDSECTION_H
-#define FILTERNAMEDSECTION_H
+#pragma once
+#ifndef FilterNamedSection_H
+#define FilterNamedSection_H
 
 #include <string>
 #include <vector>
@@ -47,4 +48,4 @@ private:
 
 }
 
-#endif // FILTERNAMEDSECTION_H
+#endif // FilterNamedSection_H

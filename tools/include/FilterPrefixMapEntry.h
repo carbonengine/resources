@@ -1,7 +1,8 @@
 // Copyright © 2025 CCP ehf.
 
-#ifndef FILTERPREFIXMAPENTRY_H
-#define FILTERPREFIXMAPENTRY_H
+#pragma once
+#ifndef FilterPrefixMapEntry_H
+#define FilterPrefixMapEntry_H
 
 #include <string>
 #include <set>
@@ -31,4 +32,4 @@ private:
 
 }
 
-#endif // FILTERPREFIXMAPENTRY_H
+#endif // FilterPrefixMapEntry_H

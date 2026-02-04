@@ -1,7 +1,8 @@
 // Copyright © 2025 CCP ehf.
 
-#ifndef FILTERRESOURCEPATHFILEENTRY_H
-#define FILTERRESOURCEPATHFILEENTRY_H
+#pragma once
+#ifndef FilterResourcePathFileEntry_H
+#define FilterResourcePathFileEntry_H
 
 #include <set>
 #include <FilterPrefixmap.h>
@@ -42,4 +43,4 @@ private:
 
 }
 
-#endif //FILTERRESOURCEPATHFILEENTRY_H
+#endif //FilterResourcePathFileEntry_H
