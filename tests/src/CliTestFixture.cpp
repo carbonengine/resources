@@ -11,7 +11,7 @@ int CliTestFixture::RunCli( std::vector<std::string>& arguments, std::string& ou
 	std::string processOutput;
 	std::string processError;
 
-	arguments.insert( arguments.begin(), CARBON_RESOURCES_CLI_EXE_NAME );
+	arguments.insert( arguments.begin(), CARBON_RESOURCES_CLI_EXE_FULLPATH );
 
 	// TODO: Add debug information on parameters
 	std::cout << "RunCli arguments: " << std::endl;
