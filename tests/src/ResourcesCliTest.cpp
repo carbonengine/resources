@@ -357,13 +357,6 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 	arguments.push_back( "--output-file" );
 	arguments.push_back( NormalizePath( outputFilePath ) );
 
-	// TODO: Add debug information on parameters
-	std::cout << "CLI arguments: " << std::endl;
-	for( const auto& arg : arguments )
-	{
-		std::cout << " " << arg << std::endl;
-	}
-
 	int res = RunCli( arguments, output, errorOutput );
 	std::cout << "Test RunCli output: " << std::endl;
 	std::cout << "----------------------------------" << std::endl;
@@ -414,13 +407,6 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.string() );
-
-	// TODO: Add debug information on parameters
-	std::cout << "CLI arguments: " << std::endl;
-	for( const auto& arg : arguments )
-	{
-		std::cout << " " << arg << std::endl;
-	}
 
 	int res = RunCli( arguments, output, errorOutput );
 	std::cout << "Test RunCli output: " << std::endl;
@@ -478,13 +464,6 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.string() );
-
-	// TODO: Add debug information on parameters
-	std::cout << "CLI arguments: " << std::endl;
-	for( const auto& arg : arguments )
-	{
-		std::cout << " " << arg << std::endl;
-	}
 
 	int res = RunCli( arguments, output, errorOutput );
 	std::cout << "Test RunCli output: " << std::endl;

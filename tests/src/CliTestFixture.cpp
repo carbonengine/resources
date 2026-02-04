@@ -13,6 +13,13 @@ int CliTestFixture::RunCli( std::vector<std::string>& arguments, std::string& ou
 
 	arguments.insert( arguments.begin(), CARBON_RESOURCES_CLI_EXE_NAME );
 
+	// TODO: Add debug information on parameters
+	std::cout << "RunCli arguments: " << std::endl;
+	for( const auto& arg : arguments )
+	{
+		std::cout << " " << arg << std::endl;
+	}
+
 	TinyProcessLib::Process process1a(
 		arguments, "",
 		[&processOutput]( const char* bytes, size_t n ) { processOutput += std::string( bytes, n ); },
