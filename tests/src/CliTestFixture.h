@@ -12,7 +12,7 @@
 struct CliTestFixture : public ResourcesTestFixture
 {
 
-	int RunCli( std::vector<std::string>& arguments, std::string& output, std::string& errorOutput );
+	int RunCli( std::vector<std::string>& arguments, std::string& output, std::string& errorOutput, const std::string& workingDirectory = "" );
 
 	void CleanupTestOutputFiles( const std::vector<std::filesystem::path>& filesToRemove );
 };

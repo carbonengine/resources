@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-int CliTestFixture::RunCli( std::vector<std::string>& arguments, std::string& output, std::string& errorOutput )
+int CliTestFixture::RunCli( std::vector<std::string>& arguments, std::string& output, std::string& errorOutput, const std::string& workingDirectory /* = "" (empty = do not alter it) */ )
 {
 	std::string processOutput;
 	std::string processError;
@@ -21,7 +21,7 @@ int CliTestFixture::RunCli( std::vector<std::string>& arguments, std::string& ou
 	}
 
 	TinyProcessLib::Process process1a(
-		arguments, "",
+		arguments, workingDirectory,
 		[&processOutput]( const char* bytes, size_t n ) { processOutput += std::string( bytes, n ); },
 		[&processError]( const char* bytes, size_t n ) { processError += std::string( bytes, n ); }
 	);

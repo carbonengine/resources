@@ -322,12 +322,6 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormatWithP
 
 //---------------------------------------
 
-// Helper function to normalize paths, using regular string() function for system specific path separators
-std::string NormalizePath( const std::filesystem::path& path )
-{
-	return path.lexically_normal().string();
-}
-
 TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 {
 	// Alter the current working directory for the duration of this test
@@ -337,27 +331,27 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "." ); // The base testData directory
-	std::filesystem::path outputFilePath = GetTestFileFileAbsolutePath( "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validSimpleExample1.yaml" );
-	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" );
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path outputFilePath = "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validSimpleExample1.yaml";
+	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
 
 	// Ensure any previous test output files are removed
 	CleanupTestOutputFiles( { outputFilePath } );
 
 	arguments.push_back( "create-group" );
 
-	arguments.push_back( NormalizePath( inputDirectoryPath ) );
+	arguments.push_back( inputDirectoryPath.string() );
 
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "3" );
 
 	arguments.push_back( "--filter-file" );
-	arguments.push_back( NormalizePath( filterIniFilePath ) );
+	arguments.push_back( filterIniFilePath.string() );
 
 	arguments.push_back( "--output-file" );
-	arguments.push_back( NormalizePath( outputFilePath ) );
+	arguments.push_back( outputFilePath.string() );
 
-	int res = RunCli( arguments, output, errorOutput );
+	int res = RunCli( arguments, output, errorOutput, TEST_DATA_BASE_PATH );
 	std::cout << "Test RunCli output: " << std::endl;
 	std::cout << "----------------------------------" << std::endl;
 	std::cout << output << std::endl;
@@ -388,9 +382,9 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "." ); // The base testData directory
-	std::filesystem::path outputFilePath = GetTestFileFileAbsolutePath( "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validComplexExample1.yaml" );
-	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validComplexExample1.ini" );
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path outputFilePath = "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validComplexExample1.yaml";
+	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validComplexExample1.ini";
 
 	// Ensure any previous test output files are removed
 	CleanupTestOutputFiles( { outputFilePath } );
@@ -408,7 +402,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.string() );
 
-	int res = RunCli( arguments, output, errorOutput );
+	int res = RunCli( arguments, output, errorOutput, TEST_DATA_BASE_PATH );
 	std::cout << "Test RunCli output: " << std::endl;
 	std::cout << "----------------------------------" << std::endl;
 	std::cout << output << std::endl;
@@ -439,11 +433,11 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "." ) ; // The base testData directory
-	std::filesystem::path outputFilePath = GetTestFileFileAbsolutePath( "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validSimpleAndComplexExample1.yaml" );
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ) ; // The base testData directory
+	std::filesystem::path outputFilePath = "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validSimpleAndComplexExample1.yaml";
 	std::vector<std::filesystem::path> filterIniFilePaths = {
-		GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" ),
-		GetTestFileFileAbsolutePath( "ExampleIniFiles/validComplexExample1.ini" )
+		"ExampleIniFiles/validSimpleExample1.ini",
+		"ExampleIniFiles/validComplexExample1.ini"
 	};
 
 	// Ensure any previous test output files are removed
@@ -465,7 +459,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.string() );
 
-	int res = RunCli( arguments, output, errorOutput );
+	int res = RunCli( arguments, output, errorOutput, TEST_DATA_BASE_PATH );
 	std::cout << "Test RunCli output: " << std::endl;
 	std::cout << "----------------------------------" << std::endl;
 	std::cout << output << std::endl;
