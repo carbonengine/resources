@@ -34,7 +34,16 @@ int CliTestFixture::RunCli( std::vector<std::string>& arguments, std::string& ou
 	return exit_status;
 }
 
-void CliTestFixture::CleanupTestOutputFiles( const std::vector<std::filesystem::path>& filesToRemove )
+// -------------------------------------------------------------
+// Description:
+//   Helper function to remove intermediate files generated as
+//   part of a test being run.
+// Arguments:
+//   filesToRemove - Vector of file paths to remove.
+// Return Value:
+//   Nothing (void)
+// -------------------------------------------------------------
+void CliTestFixture::RemoveFiles( const std::vector<std::filesystem::path>& filesToRemove )
 {
 	for( const auto& filePath : filesToRemove )
 	{

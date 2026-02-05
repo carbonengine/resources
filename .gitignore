@@ -37,6 +37,3 @@ CMakeUserPresets.json
 ### VCPKG ###
 # Temporary measure which fixes build agent issue
 vcpkg_registry_cache/
-
-### Ignored Test Run Files ###
-/tests/testData/IgnoredTestOutputFiles/

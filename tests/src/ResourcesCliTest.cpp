@@ -324,32 +324,29 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormatWithP
 
 TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 {
-	// Alter the current working directory for the duration of this test
-	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
-
 	// Setup test parameters
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
-	std::filesystem::path outputFilePath = "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validSimpleExample1.yaml";
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleExample1.yaml" );
 	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
 
 	// Ensure any previous test output files are removed
-	CleanupTestOutputFiles( { outputFilePath } );
+	RemoveFiles( { outputFilePath } );
 
 	arguments.push_back( "create-group" );
 
-	arguments.push_back( inputDirectoryPath.string() );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
 
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "3" );
 
 	arguments.push_back( "--filter-file" );
-	arguments.push_back( filterIniFilePath.string() );
+	arguments.push_back( filterIniFilePath.lexically_normal().string() );
 
 	arguments.push_back( "--output-file" );
-	arguments.push_back( outputFilePath.string() );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
 
 	int res = RunCli( arguments, output, errorOutput, TEST_DATA_BASE_PATH );
 	std::cout << "--- RunCli() output: ---" << std::endl;
@@ -367,39 +364,33 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 #error Unsupported platform
 #endif
 	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
-
-	// Cleanup test output files
-	//CleanupTestOutputFiles( { outputFilePath } );
 }
 
 TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 {
-	// Alter the current working directory for the duration of this test
-	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
-
 	// Setup test parameters
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
-	std::filesystem::path outputFilePath = "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validComplexExample1.yaml";
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validComplexExample1.yaml" );
 	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validComplexExample1.ini";
 
 	// Ensure any previous test output files are removed
-	CleanupTestOutputFiles( { outputFilePath } );
+	RemoveFiles( { outputFilePath } );
 
 	arguments.push_back( "create-group" );
 
-	arguments.push_back( inputDirectoryPath.string() );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
 
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "3" );
 
 	arguments.push_back( "--filter-file" );
-	arguments.push_back( filterIniFilePath.string() );
+	arguments.push_back( filterIniFilePath.lexically_normal().string() );
 
 	arguments.push_back( "--output-file" );
-	arguments.push_back( outputFilePath.string() );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
 
 	int res = RunCli( arguments, output, errorOutput, TEST_DATA_BASE_PATH );
 	std::cout << "--- RunCli() output: ---" << std::endl;
@@ -417,33 +408,27 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 #error Unsupported platform
 #endif
 	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
-
-	// Cleanup test output files
-	//CleanupTestOutputFiles( { outputFilePath } );
 }
 
 TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 )
 {
-	// Alter the current working directory for the duration of this test
-	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
-
 	// Setup test parameters
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ) ; // The base testData directory
-	std::filesystem::path outputFilePath = "IgnoredTestOutputFiles/CreateGroup_UsingFilter_validSimpleAndComplexExample1.yaml";
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleAndComplexExample1.yaml" );
 	std::vector<std::filesystem::path> filterIniFilePaths = {
 		"ExampleIniFiles/validSimpleExample1.ini",
 		"ExampleIniFiles/validComplexExample1.ini"
 	};
 
 	// Ensure any previous test output files are removed
-	CleanupTestOutputFiles( { outputFilePath } );
+	RemoveFiles( { outputFilePath } );
 
 	arguments.push_back( "create-group" );
 
-	arguments.push_back( inputDirectoryPath.string() );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
 
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "3" );
@@ -451,11 +436,11 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 	for( auto filterFilePath : filterIniFilePaths )
 	{
 		arguments.push_back( "--filter-file" );
-		arguments.push_back( filterFilePath.string() );
+		arguments.push_back( filterFilePath.lexically_normal().string() );
 	}
 
 	arguments.push_back( "--output-file" );
-	arguments.push_back( outputFilePath.string() );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
 
 	int res = RunCli( arguments, output, errorOutput, TEST_DATA_BASE_PATH );
 	std::cout << "--- RunCli() output: ---" << std::endl;
@@ -473,9 +458,6 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 #error Unsupported platform
 #endif
 	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
-
-	// Cleanup test output files
-	//CleanupTestOutputFiles( { outputFilePath } );
 }
 
 //---------------------------------------
