@@ -587,11 +587,14 @@ TEST_F( ResourceFilterTest, FilterPrefixMapEntry_CheckFailure_EmptyPathWhenAppen
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, FilterDefaultSection_InitializeValid )
+TEST_F( ResourceFilterTest, FilterDefaultSection_Validate_DefaultSectionWithMultiplePrefixesIsAllowed )
 {
+	// This test validates that a FilterDefaultSection can be initialized
+	// with multiple different prefixes and their associated paths.
 	std::string input = "prefix1:/path1;../path2 prefix2:/path3";
 	ResourceTools::FilterDefaultSection defaultSection( input );
 	const auto& prefixMapEntries = defaultSection.GetPrefixMap().GetMapEntries();
+
 	ASSERT_EQ( prefixMapEntries.size(), 2 ) << "There should be 2 prefixes in the map";
 	auto it1 = prefixMapEntries.find( "prefix1" );
 	auto it2 = prefixMapEntries.find( "prefix2" );
@@ -608,8 +611,11 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_InitializeValid )
 	EXPECT_EQ( it2->first, it2->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, FilterDefaultSection_Initialize_InvalidMissingColon )
+TEST_F( ResourceFilterTest, FilterDefaultSection_CheckFailure_InitializeWithMissingColonInPrefixmap )
 {
+	// This test validates that when trying to initialize a FilterDefaultSection
+	// with a prefixmap string missing a colon ":" after the prefix definition
+	// that an exception is thrown.
 	try
 	{
 		ResourceTools::FilterDefaultSection defaultSection( "prefix1/path1" );
@@ -625,8 +631,11 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_Initialize_InvalidMissingColon 
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterDefaultSection_Initialize_InvalidEmptyPrefix )
+TEST_F( ResourceFilterTest, FilterDefaultSection_CheckFailure_InitializeWithEmptyPrefixInPrefixmap )
 {
+	// This test validates that when trying to initialize a FilterDefaultSection
+	// with a prefixmap string missing the prefix definition (empty prefix)
+	// that an exception is thrown.
 	try
 	{
 		ResourceTools::FilterDefaultSection defaultSection( ":/path1" );
@@ -642,8 +651,17 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_Initialize_InvalidEmptyPrefix )
 	}
 }
 
-// -----------------------------------------
-
+// -------------------------------------------------------------
+// Description:
+//   Helper function, for tests in this file, to verify that all
+//   expected paths are present in the resolved map.
+// Arguments:
+//   allExpectedPaths - Set of all expected paths to be found in the map
+//   resolvedMap      - Map of resolved paths
+//   messagePrefix    - Optional prefix to add to the failure message
+// Return Value:
+//   None (void)
+// -------------------------------------------------------------
 void MapContainsPaths( const std::set<std::string>& allExpectedPaths,
 					   const std::map<std::string, ResourceTools::FilterResourceFilter>& resolvedMap,
 					   const std::string messagePrefix = "" )
@@ -658,6 +676,19 @@ void MapContainsPaths( const std::set<std::string>& allExpectedPaths,
 	}
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Helper function, for tests in this file, to validate that the resolved
+//   path map contains all expected paths with the correct include/exclude filters.
+// Arguments:
+//   expectedPaths    - Set of expected paths to be found in the map
+//   resolvedPathMap  - Map of resolved paths with their filters
+//   expectedIncludes - Vector of expected include filters for each path
+//   expectedExcludes - Vector of expected exclude filters for each path
+//   messagePrefix    - Optional prefix to add to the failure message
+// Return Value:
+//   None (void)
+// -------------------------------------------------------------
 void ValidatePathMap( const std::set<std::string>& expectedPaths,
 					  const std::map<std::string, ResourceTools::FilterResourceFilter>& resolvedPathMap,
 					  const std::vector<std::string>& expectedIncludes,
@@ -681,6 +712,7 @@ void ValidatePathMap( const std::set<std::string>& expectedPaths,
 	}
 }
 
+// -----------------------------------------
 
 TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_NoFilter )
 {
