@@ -714,8 +714,10 @@ void ValidatePathMap( const std::set<std::string>& expectedPaths,
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_NoFilter )
+TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithNoInlineFilterIsAllowed )
 {
+	// This test validates that a FilterResourcePathFile can be initialized with a single line attribute
+	// that contains a prefix and path, but no in-line filter.
 	std::string prefixMapStr = "prefix1:/path1;../path2";
 	std::string parentFilterStr = "[ .in1 .in2 ] ![ .ex1 ]";
 	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
@@ -733,8 +735,10 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_NoFilter )
 	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_InlineIncludeExclude )
+TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithInlineFilterNoOverridesIsAllowed )
 {
+	// This test validates that a FilterResourcePathFile can be initialized with a single line attribute
+	// that contains a prefix and path, with an in-line filter that does not override any of the parent filters.
 	std::string prefixMapStr = "prefix1:/path1";
 	std::string parentFilterStr = "[ .in1 .in2 ] ![ .ex1 ]";
 	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
@@ -752,8 +756,11 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_InlineIncludeExclu
 	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_InlineOverridesParentFilter )
+TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithInlineFilterOverridingParentFilterIsAllowed )
 {
+	// This test validates that a FilterResourcePathFile can be initialized with a single
+	// line attribute with an in-line filter that overrides some of the parent filters by
+	// moving some filters from include to exclude and vice versa.
 	std::string prefixMapStr = "prefix1:/path1;../subPath2;/path3";
 	std::string parentFilterStr = "[ .parIn1 .parIn2 ] ![ .parEx1 ]";
 	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
@@ -772,8 +779,12 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_InlineOverridesPar
 	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_MultiLine_MixedFiltersWithOverrides )
+TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_MultiLineAttribute_WithMixedInlineFilterOverridesIsAllowed )
 {
+	// This test validates that a FilterResourcePathFile can be initialized with a multi-line attribute
+	// that contains multiple prefixes and paths.
+	// The in-line filters may override parent filters in different ways.
+	// Some with no overrides, others with include/exclude filters switched around, etc.
 	std::string prefixMapStr = "prefix1:/path1;../path2 prefix2:/path3";
 	std::string parentFilterStr = "[ .parIn1 .parIn2 ] ![ .parEx1 ]";
 	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
@@ -823,8 +834,11 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_MultiLine_MixedFiltersWithOve
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_DuplicateOverrides )
+TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithDuplicateIncludeExcludeInlineOverridesIsAllowed )
 {
+	// This test validates that a FilterResourcePathFile can be initialized with a single line attribute.
+	// With an in-line filter that has duplicate include and exclude entries (some same as parent filters).
+	// The final resolved filters should not contain any duplicates.
 	std::string prefixMapStr = "prefix1:/path1";
 	std::string parentFilterStr = "[ .parIn1 .parIn2 ] ![ .parEx1 ]";
 	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
@@ -843,8 +857,10 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_SingleLine_DuplicateOverrides
 	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_Invalid_MissingPrefix )
+TEST_F( ResourceFilterTest, FilterResourcePathFile_CheckFailure_MissingPrefixThrowsException )
 {
+	// This test validates that when trying to initialize a FilterResourcePathFile with an
+	// invalid raw attribute string (missing prefix), that an exception is thrown.
 	std::string prefixMapStr = "prefix1:/path1;../path2 prefix2:/path3";
 	std::string parentFilterStr = "[ .in1 .in2 ] ![ .ex1 ]";
 	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
@@ -854,8 +870,10 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_Invalid_MissingPrefix )
 	EXPECT_THROW( ResourceTools::FilterResourcePathFile pathFile( rawPathFileAttrib, prefixMap, parentFilter ), std::invalid_argument );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_Invalid_UnknownPrefix )
+TEST_F( ResourceFilterTest, FilterResourcePathFile_CheckFailure_UnknownPrefixThrowsException )
 {
+	// This test validates that when trying to initialize a FilterResourcePathFile with an
+	// invalid raw attribute string (unknown prefix, not in the prefix map), that an exception is thrown.
 	std::string prefixMapStr = "prefix1:/path1;../path2 prefix2:/path3";
 	std::string parentFilterStr = "[ .in1 .in2 ] ![ .ex1 ]";
 	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
@@ -865,8 +883,10 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_Invalid_UnknownPrefix )
 	EXPECT_THROW( ResourceTools::FilterResourcePathFile pathFile( rawPathFileAttrib, prefixMap, parentFilter ), std::invalid_argument );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_Invalid_MalformedInlineFilter )
+TEST_F( ResourceFilterTest, FilterResourcePathFile_CheckFailure_MalformedInlineFilterThrowsException )
 {
+	// This test validates that when trying to initialize a FilterResourcePathFile with an
+	// invalid raw attribute string (malformed in-line filter), that an exception is thrown.
 	std::string prefixMapStr = "prefix1:/path1;../path2 prefix2:/path3";
 	std::string parentFilterStr = "[ .in1 .in2 ] ![ .ex1 ]";
 	ResourceTools::FilterPrefixMap prefixMap( prefixMapStr );
