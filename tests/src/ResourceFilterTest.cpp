@@ -1935,13 +1935,12 @@ TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidPre
 
 // ------------------------------------------
 
-TEST_F( ResourceFilterTest, ResourceFilter_Load_SingleFile_ThatDoesNotExist )
+TEST_F( ResourceFilterTest, ResourceFilter_ConfirmFileLoadFailure_SingleIniFileThatDoesNotExist )
 {
+	// This test validates that initializing a ResourceFilter with a non-existent ini file throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/noSuchFile.ini" );
 	std::vector<std::filesystem::path> paths = { iniPath };
-
 	ResourceTools::ResourceFilter resourceFilter;
-
 	try
 	{
 		resourceFilter.Initialize( paths );
@@ -1960,14 +1959,14 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_SingleFile_ThatDoesNotExist )
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_Load_MultipleFiles_OneThatDoesNotExist )
+TEST_F( ResourceFilterTest, ResourceFilter_ConfirmFileLoadFailure_MultipleFilesOneThatDoesNotExist )
 {
+	// This test validates that initializing a ResourceFilter with multiple ini files
+	// where one is valid and another does not exist, results in an exception being thrown.
 	const std::filesystem::path iniPath1 = GetTestFileFileAbsolutePath( "ExampleIniFiles/example1.ini" );
 	const std::filesystem::path iniPath2 = GetTestFileFileAbsolutePath( "ExampleIniFiles/noSuchFile.ini" );
 	std::vector<std::filesystem::path> paths = { iniPath1, iniPath2 };
-
 	ResourceTools::ResourceFilter resourceFilter;
-
 	try
 	{
 		resourceFilter.Initialize( paths );
@@ -1986,16 +1985,17 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_MultipleFiles_OneThatDoesNotExis
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_JustLoad_example1_ini )
+TEST_F( ResourceFilterTest, ResourceFilter_ConfirmSuccessfulFileLoad_example1_ini )
 {
+	// This test validates that initializing a ResourceFilter with a valid ini file (example1.ini)
+	// successfully loads without throwing any exceptions.
 	const std::filesystem::path iniPath1 = GetTestFileFileAbsolutePath( "ExampleIniFiles/example1.ini" );
 	std::vector<std::filesystem::path> paths = { iniPath1 };
-
 	ResourceTools::ResourceFilter resourceFilter;
-
 	try
 	{
 		resourceFilter.Initialize( paths );
+		ASSERT_TRUE( true ); // If we got here, the file loaded successfully without any exceptions
 	}
 	catch( const std::exception& e )
 	{
@@ -2007,41 +2007,58 @@ TEST_F( ResourceFilterTest, ResourceFilter_JustLoad_example1_ini )
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_Test_CurrentWorkingDirectoryChanger )
+TEST_F( ResourceFilterTest, ResourceFilter_Validate_RaiiClassCurrentWorkingDirectoryChanger_ChangesWorkingDirectoryForDurationOfTest )
 {
-	// RAII class to change the current working directory for the duration of this test
-	// Needed so both relative paths in the .ini file resolve correctly, based on paths to the location of the example .ini files
-	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+	// This test validates that the RAII CurrentWorkingDirectoryChanger class correctly changes
+	// the current working directory for the duration of the test.
+	std::filesystem::path pathBeforeChange = std::filesystem::current_path();
+	std::filesystem::path testDataPath = TEST_DATA_BASE_PATH;
 
-	const std::filesystem::path iniPath1 = "ExampleIniFiles/example1.ini";
-	std::vector<std::filesystem::path> paths = { iniPath1 };
+	{
+		// RAII class to change the current working directory for the duration of this test
+		// Needed so both relative paths in the .ini file resolve correctly,
+		// based on paths to the location of the example .ini files
+		CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
 
-	ResourceTools::ResourceFilter resourceFilter;
-	try
-	{
-		resourceFilter.Initialize( paths );
-		ASSERT_EQ( resourceFilter.HasFilters(), true );
-		ASSERT_EQ( resourceFilter.GetFullResolvedPathMap().size(), 7 );
+		const std::filesystem::path iniPath1 = "ExampleIniFiles/example1.ini";
+		std::vector<std::filesystem::path> paths = { iniPath1 };
+		ResourceTools::ResourceFilter resourceFilter;
+		try
+		{
+			resourceFilter.Initialize( paths );
+			ASSERT_EQ( resourceFilter.HasFilters(), true );
+			ASSERT_EQ( resourceFilter.GetFullResolvedPathMap().size(), 7 );
 
-		// Check that the "binaryFileIndex_v0_0_0.txt" file (and it's path) is included correctly
-		std::filesystem::path oneValidRelativePath = "./Indicies/binaryFileIndex_v0_0_0.txt";
-		ASSERT_EQ( resourceFilter.ShouldInclude( oneValidRelativePath ), true );
+			// Check that the "binaryFileIndex_v0_0_0.txt" file (and it's path) is included correctly
+			std::filesystem::path oneValidRelativePath = "./Indicies/binaryFileIndex_v0_0_0.txt";
+			ASSERT_EQ( resourceFilter.ShouldInclude( oneValidRelativePath ), true );
+		}
+		catch( const std::exception& e )
+		{
+			FAIL() << "Exception in test, should not have failed: " << e.what();
+		}
+		catch( ... )
+		{
+			FAIL() << "Unknown exception thrown while initializing ResourceFilter with example1.ini";
+		}
+
+		// Make sure the working directory is set to the testDataPath and not the original path
+		ASSERT_EQ( std::filesystem::current_path().lexically_normal().string(), testDataPath.lexically_normal().string() ) << "Current working directory should be the TEST_DATA_BASE_PATH";
+		ASSERT_NE( std::filesystem::current_path().lexically_normal().string(), pathBeforeChange.lexically_normal().string() ) << "Current working directory should not be same as at start of test";
 	}
-	catch( const std::exception& e )
-	{
-		FAIL() << "Exception in test, should not have failed: " << e.what();
-	}
-	catch( ... )
-	{
-		FAIL() << "Unknown exception thrown while initializing ResourceFilter with example1.ini";
-	}
+
+	// After the RAII object goes out of scope, the working directory should be restored to the original path
+	ASSERT_EQ( std::filesystem::current_path().lexically_normal().string(), pathBeforeChange.lexically_normal().string() ) << "Current working directory should have been restored";
+	ASSERT_NE( std::filesystem::current_path().lexically_normal().string(), testDataPath.lexically_normal().string() ) << "Current working directory should not be the TEST_DATA_BASE_PATH";
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_Load_validSimpleExample1_ini_usingRelativePaths )
+TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativePaths_validSimpleExample1_ini )
 {
+	// This test validates that initializing a ResourceFilter with a valid ini file (validSimpleExample1.ini),
+	// using relative paths, loads successfully and the expected paths and filters are present.
+
 	// Alter the current working directory for the duration of this test
 	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
-
 	try
 	{
 		const std::filesystem::path iniPath1 = "ExampleIniFiles/validSimpleExample1.ini";
@@ -2080,11 +2097,13 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_validSimpleExample1_ini_usingRel
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_Load_validSimpleExample1_ini_usingAbsolutePaths )
+TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolutePaths_validSimpleExample1_ini )
 {
+	// This test validates that initializing a ResourceFilter with a valid ini file (validSimpleExample1.ini),
+	// using absolute paths, loads successfully and the expected paths and filters are present.
+
 	// Alter the current working directory for the duration of this test
 	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
-
 	try
 	{
 		const std::filesystem::path iniPath1 = "ExampleIniFiles/validSimpleExample1.ini";
@@ -2124,11 +2143,13 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_validSimpleExample1_ini_usingAbs
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_Load_validComplexExample1_ini_usingRelativePaths )
+TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativePaths_validComplexExample1_ini )
 {
+	// This test validates that initializing a ResourceFilter with a valid ini file (validComplexExample1.ini),
+	// using relative paths, loads successfully and the expected paths and filters are present.
+
 	// Alter the current working directory for the duration of this test
 	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
-
 	try
 	{
 		const std::filesystem::path iniPath1 = "ExampleIniFiles/validComplexExample1.ini";
@@ -2233,11 +2254,13 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_validComplexExample1_ini_usingRe
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_Load_validComplexExample1_ini_usingAbsolutePaths )
+TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolutePath_validComplexExample1_ini )
 {
+	// This test validates that initializing a ResourceFilter with a valid ini file (validComplexExample1.ini),
+	// using absolute paths, loads successfully and the expected paths and filters are present.
+
 	// Alter the current working directory for the duration of this test
 	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
-
 	try
 	{
 		const std::filesystem::path iniPath1 = "ExampleIniFiles/validComplexExample1.ini";
@@ -2342,11 +2365,15 @@ TEST_F( ResourceFilterTest, ResourceFilter_Load_validComplexExample1_ini_usingAb
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_Load2iniFiles_validComplexExample1_and_validSimpleExample1 )
+TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulLoadOf2IniFiles_validComplexExample1_and_validSimpleExample1 )
 {
+	// This test validates that initializing a ResourceFilter with two valid ini files
+	// (validComplexExample1.ini and validSimpleExample1.ini), using relative paths,
+	// loads successfully and the expected paths and filters from both ini files are
+	// present in the resulting ResourceFilter.
+
 	// Alter the current working directory for the duration of this test
 	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
-
 	try
 	{
 		std::vector<std::filesystem::path> paths = {
