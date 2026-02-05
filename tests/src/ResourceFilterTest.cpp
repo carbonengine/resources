@@ -1752,11 +1752,11 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeFilterSameCom
 
 // ------------------------------------------
 
-TEST_F( ResourceFilterTest, FilterResourceFile_Load_example1_ini )
+TEST_F( ResourceFilterTest, FilterResourceFile_ValidateSuccessfulFileLoad_example1_ini )
 {
-	// Use the test fixture's helper to get the absolute path
+	// This test validates that the example1.ini file can be loaded successfully
+	// and that the resolved paths match the expected values.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/example1.ini" );
-
 	try
 	{
 		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
@@ -1790,10 +1790,11 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_example1_ini )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidMissingDefaultSection_ini )
+TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidMissingDefaultSection_ini )
 {
+	// This test validates that loading an ini file missing the required [DEFAULT]
+	// section throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidMissingDefaultSection.ini" );
-
 	try
 	{
 		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
@@ -1810,10 +1811,11 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidMissingDefaultSection
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidMissingNamedSection_ini )
+TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidMissingNamedSection_ini )
 {
+	// This test validates that loading an ini file missing any named sections
+	// throws an exception since at least one named section is required.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidMissingNamedSection.ini" );
-
 	try
 	{
 		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
@@ -1830,10 +1832,10 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidMissingNamedSection_i
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_Load_iniFileNotFound )
+TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_iniFileDoesNotExist )
 {
+	// This test validates that loading a non-existent ini file throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/iniFileNotFound.ini" );
-
 	try
 	{
 		ResourceTools::FilterResourceFile resourceFile( iniPath.generic_string() );
@@ -1850,8 +1852,9 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_iniFileNotFound )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidPrefixmap_ini )
+TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidPrefixmap_ini )
 {
+	// This test validates that loading an ini file with an invalid prefixmap format throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidPrefixmap.ini" );
 	try
 	{
@@ -1869,8 +1872,9 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidPrefixmap_ini )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidSectionFilter_ini )
+TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidSectionFilter_ini )
 {
+	// This test validates that loading an ini file with an invalid section filter format throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidSectionFilter.ini" );
 	try
 	{
@@ -1888,8 +1892,9 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidSectionFilter_ini )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidInlineFilter_ini )
+TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidInlineFilter_ini )
 {
+	// This test validates that loading an ini file with an invalid inline filter format throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidInlineFilter.ini" );
 	try
 	{
@@ -1907,8 +1912,10 @@ TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidInlineFilter_ini )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_Load_invalidPrefixMismatch_ini )
+TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidPrefixMismatch_ini )
 {
+	// This test validates that loading an ini file with a prefix in the respaths/resfile
+	// attributes that does not match any prefix in the prefixmap throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidPrefixMismatch.ini" );
 	try
 	{
