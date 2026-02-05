@@ -371,8 +371,10 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_EmptyInLineFilter )
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_SinglePrefixMultiplePaths )
+TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_SinglePrefixWithMultiplePathsIsAllowed )
 {
+	// This test validates that a single prefix (prefix1) with multiple different paths
+	// is correctly parsed and stored in the map.
 	ResourceTools::FilterPrefixMap map( "prefix1:/somePath;../otherPath" );
 	const auto& prefixMapEntries = map.GetMapEntries();
 	ASSERT_EQ( prefixMapEntries.size(), 1 ) << "There should only be 1 prefix in the map";
@@ -387,8 +389,10 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_SinglePrefixMultiplePaths )
 	EXPECT_EQ( it->second.GetPaths(), expected ) << "Paths do not match expected values";
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_MultiplePrefixes )
+TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_MultipleDifferentPrefixesAreAllowed )
 {
+	// This test validates that multiple different prefixes (prefix1 & prefix2)
+	// with their associated paths are correctly parsed and stored in the map.
 	ResourceTools::FilterPrefixMap map( "prefix1:/path1;/path2 prefix2:/newPath1" );
 	const auto& prefixMapEntries = map.GetMapEntries();
 	ASSERT_EQ( prefixMapEntries.size(), 2 ) << "There should be 2 prefixes in the map";
@@ -409,8 +413,11 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_MultiplePrefixes )
 	EXPECT_EQ( it2->second.GetPaths(), expected2 ) << "Paths do not match expected values";
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_DuplicateSamePrefixPathsInDifferentOrder )
+TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_DuplicateSamePrefixWithPathsInDifferentOrderIsAllowed )
 {
+	// This test validates that if the same prefix (prefix1) is defined multiple times,
+	// with same paths but in different order (path1+path2 & path2+path1).
+	// That the paths are combined and stored in the map without duplicates.
 	ResourceTools::FilterPrefixMap map( "prefix1:/path1;/path2 prefix1:/path2;/path1" );
 
 	// There should only be one prefix (prefix1)
@@ -428,9 +435,12 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_DuplicateSamePrefixPathsInDifferentO
 	EXPECT_EQ( it->first, it->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_MultiplePrefixesAppendToPaths )
+TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_MultipleSamePrefixesCanAppendToPaths )
 {
+	// This test validates that if the same prefix (prefix1) is defined multiple times (first and last),
+	// with different paths (path2+path1 & path3+path1), that the paths are combined and stored in the map without duplicates.
 	ResourceTools::FilterPrefixMap map( "prefix1:/path2;/path1 prefix2:/otherPath1;/otherPath2 prefix1:/path3;/path1" );
+
 	const auto& prefixMapEntries = map.GetMapEntries();
 	ASSERT_EQ( prefixMapEntries.size(), 2 ) << "There should be 2 prefixes in the map";
 	auto it1 = prefixMapEntries.find( "prefix1" );
@@ -449,10 +459,13 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_MultiplePrefixesAppendToPaths )
 	EXPECT_EQ( it2->first, it2->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_DifferentWhitespacesBetweenPrefixes )
+TEST_F( ResourceFilterTest, FilterPrefixMap_Validata_DifferentWhitespacesBetweenPrefixesAreAllowed )
 {
+	// This test validates that different whitespaces (space, tab, new line)
+	// between prefix definitions are handled correctly.
 	std::string input = "prefix1:/path1\tprefixTab:/path2\nprefixNewLine:/path3";
 	ResourceTools::FilterPrefixMap map( input );
+
 	const auto& prefixMapEntries = map.GetMapEntries();
 	ASSERT_EQ( prefixMapEntries.size(), 3 ) << "There should only be 3 prefix in the map";
 	auto it1 = prefixMapEntries.find( "prefix1" );
@@ -476,8 +489,10 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_DifferentWhitespacesBetweenPrefixes 
 	EXPECT_EQ( it3->first, it3->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_MissingColon )
+TEST_F( ResourceFilterTest, FilterPrefixMap_CheckFailure_MissingColonAfterPrefixBeforePaths )
 {
+	// This test validates that if a prefix definition is missing a colon ":"
+	// after the prefix and before the paths section, that an exception is thrown.
 	try
 	{
 		ResourceTools::FilterPrefixMap prefixmap( "prefix1/path1" );
@@ -493,8 +508,10 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_MissingColon )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_EmptyPrefix )
+TEST_F( ResourceFilterTest, FilterPrefixMap_CheckFailure_MissingPrefixBeforePaths )
 {
+	// This test validates that if a prefix definition is missing the prefix itself
+	// (lhs of colon) before the paths section, that an exception is thrown.
 	try
 	{
 		ResourceTools::FilterPrefixMap prefixmap( ":/path1" );
@@ -510,8 +527,10 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_EmptyPrefix )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_NoPaths )
+TEST_F( ResourceFilterTest, FilterPrefixMap_CheckFailure_MissingPathsAfterPrefix )
 {
+	// This test validates that if a prefix definition is missing the paths section
+	// (rhs of colon) after the prefix, that an exception is thrown.
 	try
 	{
 		ResourceTools::FilterPrefixMap prefixmap( "prefix1:" );
@@ -527,8 +546,10 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Invalid_NoPaths )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMapEntry_PrefixMismatchOnAppend )
+TEST_F( ResourceFilterTest, FilterPrefixMapEntry_CheckFailure_PrefixMissingInMapWhenAppendingPath )
 {
+	// This test validates that when trying to append paths to a FilterPrefixMapEntry
+	// with a different prefix than the existing one of the mapEntry that an exception is thrown.
 	try
 	{
 		ResourceTools::FilterPrefixMapEntry entry( "prefix1", "/path1" );
@@ -545,8 +566,10 @@ TEST_F( ResourceFilterTest, FilterPrefixMapEntry_PrefixMismatchOnAppend )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMapEntry_InvalidNoPathsOnAppend )
+TEST_F( ResourceFilterTest, FilterPrefixMapEntry_CheckFailure_EmptyPathWhenAppendingPathToPrefix )
 {
+	// This test validates that when trying to append an empty path to a FilterPrefixMapEntry
+	// that an exception is thrown, since empty paths are not allowed.
 	try
 	{
 		ResourceTools::FilterPrefixMapEntry entry( "prefix1", "" ); // Empty string for paths
