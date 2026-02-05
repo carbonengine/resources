@@ -459,7 +459,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_MultipleSamePrefixesCanAppe
 	EXPECT_EQ( it2->first, it2->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_Validata_DifferentWhitespacesBetweenPrefixesAreAllowed )
+TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_DifferentWhitespacesBetweenPrefixesAreAllowed )
 {
 	// This test validates that different whitespaces (space, tab, new line)
 	// between prefix definitions are handled correctly.
@@ -898,9 +898,10 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_CheckFailure_MalformedInlineF
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_SingleLineRespath )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_SingleLineRespathIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_SingleLineRespath";
+	// This test validates that a FilterNamedSection can be initialized with a single line respath.
+	std::string sectionName = "FilterNamedSection_Validate_SingleLineRespathIsAllowed";
 	std::string filter = "[ .in1 .in2 ] ![ .ex1 ]";
 	std::string respaths = "testPrefix:/foo/bar";
 	std::string defaultParentPrefixMapStr = "testPrefix:/myPath";
@@ -922,9 +923,11 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_SingleLineRespath )
 	ValidatePathMap( expectedPaths, combinedMap, expectedIncludes, expectedExcludes, "CombinedResolvedPathMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_EmptyFilter_TopLevel )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_EmptyTopLevelFilterIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_EmptyFilter_TopLevel";
+	// This test validates that a FilterNamedSection can be initialized with an empty filter at top-level,
+	// which should add a wildcard "*" include filter.
+	std::string sectionName = "FilterNamedSection_Validate_EmptyTopLevelFilterIsAllowed";
 	std::string defaultParentPrefixMapStr = "testPrefix:/myPath";
 	std::string filter = ""; // Empty filter string at top-level should add wildcard include
 	std::string respaths = "testPrefix:/foo/bar";
@@ -946,9 +949,11 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_EmptyFilter_TopLevel )
 	ValidatePathMap( expectedPaths, combinedMap, expectedIncludes, expectedExcludes, "CombinedResolvedPathMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_OnlyExcludeFilter_TopLevel )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyTopLevelExcludeFilterIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_OnlyExcludeFilter_TopLevel";
+	// This test validates that a FilterNamedSection can be initialized with only an exclude filter at top-level,
+	// which should add a wildcard "*" include filter.
+	std::string sectionName = "FilterNamedSection_Validate_OnlyTopLevelExcludeFilterIsAllowed";
 	std::string defaultParentPrefixMapStr = "testPrefix:/myPath";
 	std::string filter = "![ .ex1 ]"; // When there is only an exclude filter at top-level, it should add wildcard include
 	std::string respaths = "testPrefix:/foo/bar";
@@ -970,9 +975,11 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_OnlyExcludeFilter_TopLevel 
 	ValidatePathMap( expectedPaths, combinedMap, expectedIncludes, expectedExcludes, "CombinedResolvedPathMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_MultiLineRespath )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_MultiLineRespathWithSomeInlineOverridesIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_MultiLineRespath";
+	// This test validates that a FilterNamedSection can be initialized with a multi-line respath attribute.
+	// Some lines may have in-line filters that override the top-level filter, while others just use the top-level filter as-is.
+	std::string sectionName = "FilterNamedSection_Validate_MultiLineRespathWithSomeInlineOverridesIsAllowed";
 	std::string filter = "[ .in1 .in2 ] ![ .ex1 ]";
 	std::string respaths =
 		"prefix1:/firstLine [ .inLine1 ] ![ .exLine1 ]\n" // Add entries to both include and exclude filters
@@ -1004,9 +1011,11 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_MultiLineRespath )
 	ValidatePathMap( secondLinePaths, combinedMap, defaultIncludes, defaultExcludes, "SecondLine ResolvedRespathsMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_RespathAndResfile )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedSingleLineRespathAndResfileAttributesIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_RespathAndResfile";
+	// This test validates that a FilterNamedSection can be initialized with both respath and resfile attributes.
+	// The combined resolved map contains entries from both attributes.
+	std::string sectionName = "FilterNamedSection_Validate_CombinedSingleLineRespathAndResfileAttributesIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefix1:/pathA;/pathB prefix2:/pathC";
 	std::string filter = "[ .in1 .in2 ] ![ .ex1 ]";
 	std::string respaths = "prefix1:/respaths";
@@ -1040,9 +1049,11 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_RespathAndResfile )
 }
 
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_RespathSet_ResfileEmpty )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_RespathWithoutResfileAttributeIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_RespathSet_ResfileEmpty";
+	// This test validates that a FilterNamedSection can be initialized with only
+	// a respath attribute and no resfile attribute.
+	std::string sectionName = "FilterNamedSection_Validate_RespathWithoutResfileAttributeIsAllowed";
 	std::string parentPrefixMapStr = "prefix1:/pathA";
 	std::string filter = "[ .in1 .in2 ] ![ .ex1 ]";
 	std::string respaths = "prefix1:/foo/bar";
@@ -1071,9 +1082,11 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_RespathSet_ResfileEmpty )
 	ValidatePathMap( onlyValidPaths, combinedMap, defaultIncludes, defaultExcludes, "ResolvedCombinedMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Invalid_RespathMissing )
+TEST_F( ResourceFilterTest, FilterNamedSection_CheckFailure_MissingRespathAttributeThrowsException )
 {
-	std::string sectionName = "FilterNamedSection_Invalid_RespathMissing";
+	// This test validates that when trying to initialize a FilterNamedSection
+	// with a missing respath attribute, that an exception is thrown.
+	std::string sectionName = "FilterNamedSection_CheckFailure_MissingRespathAttributeThrowsException";
 	std::string defaultParentPrefixMapStr = "prefix1:/path1";
 	std::string filter = "[ .in1 ]";
 	std::string resfile = "prefix1:/foo/bar";
@@ -1096,9 +1109,12 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Invalid_RespathMissing )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedResolvedMapOnSamePrefixIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_CombinedResolvedMap";
+	// This test validates that a FilterNamedSection can be initialized with both
+	// respath and resfile attributes using the same prefix, and that the combined
+	// resolved map contains entries from both attributes.
+	std::string sectionName = "FilterNamedSection_Validate_CombinedResolvedMapOnSamePrefixIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefixA:/path1";
 	std::string filter = "[ .in1 ]";
 	std::string respaths = "prefixA:/foo/bar";
@@ -1131,9 +1147,12 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap )
 	ValidatePathMap( combinedPaths, combinedMap, defaultIncludes, defaultExcludes, "ResolvedCombinedMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap_EmptyTopLevelFilter )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedResolvedMapWithEmptyTopLevelFilterIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_CombinedResolvedMap_EmptyTopLevelFilter";
+	// This test validates that a FilterNamedSection can be initialized with both
+	// respath and resfile attributes using the same prefix, and an empty top-level filter.
+	// The combined resolved map contains entries from both attributes, with wildcard "*" include filter.
+	std::string sectionName = "FilterNamedSection_Validate_CombinedResolvedMapWithEmptyTopLevelFilterIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefixA:/path1";
 	std::string filter = ""; // Empty top-level filter should add wildcard ("*") include
 	std::string respaths = "prefixA:/foo/bar";
@@ -1174,9 +1193,12 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap_EmptyTo
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap_OnlyExcludeTopLevelFilter )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedResolvedMapWithOnlyExcludeTopLevelFilterIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_CombinedResolvedMap_OnlyExcludeTopLevelFilter";
+	// This test validates that a FilterNamedSection can be initialized with both
+	// respath and resfile attributes using the same prefix, and only an exclude filter at top-level.
+	// The combined resolved map contains entries from both attributes, with wildcard "*" include filter.
+	std::string sectionName = "FilterNamedSection_Validate_CombinedResolvedMapWithOnlyExcludeTopLevelFilterIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefixA:/path1";
 	std::string filter = " ![ .ex1 ] "; // Only exclude filter at top-level should add wildcard ("*") include as well
 	std::string respaths = "prefixA:/foo/bar";
@@ -1217,9 +1239,13 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap_OnlyExc
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_EmptyTopLevelFilter_OverrideRespath )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_EmptyTopLevelFilterWithRespathOverrideIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_DiffCombinedResolvedMap_EmptyTopLevelFilter_OverrideRespath";
+	// This test validates that a FilterNamedSection can be initialized with both
+	// respath and resfile attributes using the same prefix, and an empty top-level filter.
+	// The respath has in-line filters that override the top-level filter while the
+	// resfile uses the default "*" wildcard top-level filter.
+	std::string sectionName = "FilterNamedSection_Validate_EmptyTopLevelFilterWithRespathOverrideIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefixA:/path1";
 	std::string filter = ""; // Empty top-level filter should add wildcard ("*") include filter
 	std::string respaths = "prefixA:/foo/bar [ .inlineInclude ] ![ .inlineExclude ]"; // Inline filters to override
@@ -1275,9 +1301,13 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_Emp
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_EmptyTopLevelFilter_OverrideResfile )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_EmptyTopLevelFilterWithResfileOverrideIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_DiffCombinedResolvedMap_EmptyTopLevelFilter_OverrideResfile";
+	// This test validates that a FilterNamedSection can be initialized with both
+	// respath and resfile attributes using the same prefix, and an empty top-level filter.
+	// The resfile has in-line filters that override the top-level filter while the
+	// respath uses the default "*" wildcard top-level filter.
+	std::string sectionName = "FilterNamedSection_Validate_EmptyTopLevelFilterWithResfileOverrideIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefixA:/path1";
 	std::string filter = ""; // Empty top-level filter should add wildcard ("*") include filter
 	std::string respaths = "prefixA:/foo/bar";
@@ -1333,9 +1363,13 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_Emp
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_OnlyExcludeTopLevelFilter_OverrideRespath )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeTopLevelFilterWithRespathOverrideIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_DiffCombinedResolvedMap_OnlyExcludeTopLevelFilter_OverrideRespath";
+	// This test validates that a FilterNamedSection can be initialized with both
+	// respath and resfile attributes using the same prefix, and only an exclude filter at top-level.
+	// The respath has in-line filters that override the top-level filter while the
+	// resfile uses the default "*" wildcard top-level filter.
+	std::string sectionName = "FilterNamedSection_Validate_OnlyExcludeTopLevelFilterWithRespathOverrideIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefixA:/path1";
 	std::string filter = "![ .toplevelExclude ]"; // Only exclude filter at top-level should add wildcard ("*") include as well
 	std::string respaths = "prefixA:/foo/bar [ .inlineInclude ] ![ .inlineExclude ]"; // Inline filters to override
@@ -1393,9 +1427,13 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_Onl
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_OnlyExcludeTopLevelFilter_OverrideResfile )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeTopLevelFilterWithResfileOverrideIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_DiffCombinedResolvedMap_OnlyExcludeTopLevelFilter_OverrideRespath";
+	// This test validates that a FilterNamedSection can be initialized with both
+	// respath and resfile attributes using the same prefix, and only an exclude filter at top-level.
+	// The resfile has in-line filters that override the top-level filter while the
+	// respath uses the default "*" wildcard top-level filter.
+	std::string sectionName = "FilterNamedSection_Validate_OnlyExcludeTopLevelFilterWithResfileOverrideIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefixA:/path1";
 	std::string filter = "![ .toplevelExclude ]"; // Only exclude filter at top-level should add wildcard ("*") include as well
 	std::string respaths = "prefixA:/foo/bar";
@@ -1453,9 +1491,13 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_DiffCombinedResolvedMap_Onl
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap_OverwrittenByResfileMap )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedMapWithResfileOverrideIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_CombinedResolvedMap_OverwrittenByResfileMap";
+	// This test validates that a FilterNamedSection can be initialized with both
+	// respath and resfile attributes using the same prefix, and that the combined
+	// resolved map contains entries from both attributes, with the resfile filters
+	// overriding the top-level filters.
+	std::string sectionName = "FilterNamedSection_Validate_CombinedMapWithResfileOverrideIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefix1:/pathA;/pathB";
 	std::string filter = "[ .in1 .in2 ] ![ .ex1 ]";
 	std::string respaths = "prefix1:/foo/bar";
@@ -1492,9 +1534,13 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_CombinedResolvedMap_Overwri
 	ValidatePathMap( allPaths, respathsAgainMap, defaultIncludes, allExcludes, "ResolvedRespathsMap-Again" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_SameCombinedResolvedMap_EmptyTopLevelFilter_OverwrittenByResfileMap )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_NoTopLevelFilterSameCombinedMapWithResfileOverrideIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_SameCombinedResolvedMap_EmptyTopLevelFilter_OverwrittenByResfileMap";
+	// This test validates that a FilterNamedSection can be initialized with both
+	// respath and resfile attributes using the same prefix and only default "*" top-level filter.
+	// The combined resolved map contains entries from both attributes, with the resfile
+	// filters overriding the top-level filter.
+	std::string sectionName = "FilterNamedSection_Validate_NoTopLevelFilterSameCombinedMapWithResfileOverrideIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefix1:/pathA;/pathB";
 	std::string filter = ""; // Empty top-level filter should add wildcard ("*") include
 	std::string respaths = "prefix1:/foo/bar";
@@ -1540,9 +1586,13 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_SameCombinedResolvedMap_Emp
 	ValidatePathMap( allPaths, respathsAgainMap, defaultIncludes, allExcludes, "ResolvedRespathsMap-Again" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_SameCombinedResolvedMap_EmptyTopLevelFilter_OverwrittenByRespathMap )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_NoTopLevelFilterSameCombinedMapWithRespathOverrideIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_SameCombinedResolvedMap_EmptyTopLevelFilter_OverwrittenByRespathMap";
+	// This test validates that a FilterNamedSection can be initialized with both
+	// respath and resfile attributes using the same prefix and only default "*" top-level filter.
+	// The combined resolved map contains entries from both attributes, with the respath
+	// filters overriding the top-level filter.
+	std::string sectionName = "FilterNamedSection_Validate_NoTopLevelFilterSameCombinedMapWithRespathOverrideIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefix1:/pathA;/pathB";
 	std::string filter = ""; // Empty top-level filter should add wildcard ("*") include
 	std::string respaths = "prefix1:/foo/bar [ .extra ]"; // Same path, extra include filter
@@ -1592,9 +1642,13 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_SameCombinedResolvedMap_Emp
 	ValidatePathMap( allPaths, resfileAgainMap, defaultIncludes, allExcludes, "ResolvedResfileMap-Again" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_SameCombinedResolvedMap_ExcludeOnlyTopLevelFilter_OverwrittenByResfileMap )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeFilterSameCombinedMapWithResfileOverrideIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_SameCombinedResolvedMap_ExcludeOnlyTopLevelFilter_OverwrittenByResfileMap";
+	// This test validates that a FilterNamedSection can be initialized with both respath and resfile
+	// attributes using the same prefix, and only an exclude filter at top-level (and default "*" include).
+	// The combined resolved map contains entries from both attributes, with the resfile filters
+	// overriding the top-level filter.
+	std::string sectionName = "FilterNamedSection_Validate_OnlyExcludeFilterSameCombinedMapWithResfileOverrideIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefix1:/pathA;/pathB";
 	std::string filter = " ![ .topLevelExclude ]"; // Only exclude filter at top-level should add wildcard ("*") include
 	std::string respaths = "prefix1:/foo/bar";
@@ -1640,9 +1694,13 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Valid_SameCombinedResolvedMap_Exc
 	ValidatePathMap( allPaths, respathsAgainMap, defaultIncludes, allExcludes, "ResolvedRespathsMap-Again" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Valid_SameCombinedResolvedMap_ExcludeOnlyTopLevelFilter_OverwrittenByRespathMap )
+TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeFilterSameCombinedMapWithRespathsOverrideIsAllowed )
 {
-	std::string sectionName = "FilterNamedSection_Valid_SameCombinedResolvedMap_ExcludeOnlyTopLevelFilter_OverwrittenByRespathMap";
+	// This test validates that a FilterNamedSection can be initialized with both respath and resfile
+	// attributes using the same prefix, and only an exclude filter at top-level (and default "*" include).
+	// The combined resolved map contains entries from both attributes, with the respaths filters
+	// overriding the top-level filter.
+	std::string sectionName = "FilterNamedSection_Validate_OnlyExcludeFilterSameCombinedMapWithRespathsOverrideIsAllowed";
 	std::string defaultParentPrefixMapStr = "prefix1:/pathA;/pathB";
 	std::string filter = " ![ .topLevelExclude ]"; // Only exclude filter at top-level should add wildcard ("*") include
 	std::string respaths = "prefix1:/foo/bar [ .extra ]"; // Same path, extra include filter
