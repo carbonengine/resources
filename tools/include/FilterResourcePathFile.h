@@ -5,8 +5,9 @@
 #define FilterResourcePathFile_H
 
 #include <string>
-#include <FilterPrefixmap.h>
-#include <FilterResourceFilter.h>
+
+#include "FilterPrefixmap.h"
+#include "FilterResourceFilter.h"
 
 namespace ResourceTools
 {

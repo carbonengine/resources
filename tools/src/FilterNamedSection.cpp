@@ -1,7 +1,8 @@
 // Copyright © 2025 CCP ehf.
 
+#include "FilterNamedSection.h"
+
 #include <stdexcept>
-#include <FilterNamedSection.h>
 
 namespace ResourceTools
 {

@@ -4,8 +4,8 @@
 #ifndef FilterPrefixMapEntry_H
 #define FilterPrefixMapEntry_H
 
-#include <string>
 #include <set>
+#include <string>
 
 namespace ResourceTools
 {

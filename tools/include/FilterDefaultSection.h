@@ -4,8 +4,7 @@
 #ifndef FilterDefaultSection_H
 #define FilterDefaultSection_H
 
-#include <FilterPrefixmap.h>
-#include <FilterPrefixMapEntry.h>
+#include "FilterPrefixmap.h"
 
 namespace ResourceTools
 {

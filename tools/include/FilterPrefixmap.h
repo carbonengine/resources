@@ -4,10 +4,10 @@
 #ifndef FilterPrefixmap_H
 #define FilterPrefixmap_H
 
-#include <string>
 #include <map>
-#include <vector>
-#include <FilterPrefixMapEntry.h>
+#include <string>
+
+#include "FilterPrefixMapEntry.h"
 
 namespace ResourceTools
 {

@@ -6,8 +6,9 @@
 
 #include <filesystem>
 #include <vector>
-#include <memory>
-#include <FilterResourceFile.h>
+
+#include "FilterResourceFile.h"
+#include "FilterResourceFilter.h"
 
 namespace ResourceTools
 {

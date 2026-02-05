@@ -2,15 +2,21 @@
 
 #include "ResourceFilterTest.h"
 
-#include <INIReader.h>
-#include <FilterResourceFilter.h>
-#include <FilterPrefixmap.h>
-#include <FilterPrefixMapEntry.h>
-#include <FilterDefaultSection.h>
-#include <FilterResourcePathFile.h>
-#include <FilterNamedSection.h>
-#include <FilterResourceFile.h>
-#include <ResourceFilter.h>
+#include <filesystem>
+#include <map>
+#include <set>
+#include <string>
+
+#include "INIReader.h"
+
+#include "FilterDefaultSection.h"
+#include "FilterNamedSection.h"
+#include "FilterResourceFilter.h"
+#include "FilterPrefixmap.h"
+#include "FilterPrefixMapEntry.h"
+#include "FilterResourceFile.h"
+#include "FilterResourcePathFile.h"
+#include "ResourceFilter.h"
 
 TEST_F( ResourceFilterTest, Example1IniParsing )
 {

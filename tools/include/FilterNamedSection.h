@@ -4,13 +4,13 @@
 #ifndef FilterNamedSection_H
 #define FilterNamedSection_H
 
-#include <string>
-#include <vector>
 #include <map>
 #include <optional>
-#include <FilterPrefixmap.h>
-#include <FilterResourceFilter.h>
-#include <FilterResourcePathFile.h>
+#include <string>
+
+#include "FilterPrefixmap.h"
+#include "FilterResourceFilter.h"
+#include "FilterResourcePathFile.h"
 
 namespace ResourceTools
 {

@@ -5,7 +5,6 @@
 #define ResourceFilterTest_H
 
 #include "ResourcesTestFixture.h"
-#include <filesystem>
 
 // Inherit from ResourcesTestFixture to gain access to file and directory helper functions
 class ResourceFilterTest : public ResourcesTestFixture

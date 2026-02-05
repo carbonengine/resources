@@ -1,9 +1,10 @@
 // Copyright © 2025 CCP ehf.
 
-#include <stdexcept>
+#include "FilterResourcePathFile.h"
+
 #include <sstream>
-#include <FilterResourcePathFile.h>
-#include <FilterResourcePathFileEntry.h>
+
+#include "FilterResourcePathFileEntry.h"
 
 namespace ResourceTools
 {

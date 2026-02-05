@@ -1,8 +1,10 @@
 // Copyright © 2025 CCP ehf.
 
+#include "FilterResourceFile.h"
+
 #include <stdexcept>
-#include <INIReader.h>
-#include <FilterResourceFile.h>
+
+#include "INIReader.h"
 
 namespace ResourceTools
 {
