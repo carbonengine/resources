@@ -25,50 +25,60 @@ struct ResourcesTestFixture : public ::testing::Test
 	bool DirectoryIsSubset( const std::filesystem::path& dir1, const std::filesystem::path& dir2 ); // Test that all files in dir1 exist in dir2, and the contents of the files in both directories are the same.
 };
 
-// RAII helper class to change the current working directory temporarily (within a scope)
-class CurrentWorkingDirectoryChanger {
+// -------------------------------------------------------------
+// Description:
+//   CurrentWorkingDirectoryChanger is a RAII helper class that changes
+//   the current working directory to a specified path on construction
+//   and restores the original working directory once destructed.
+//   As long as the CurrentWorkingDirectoryChanger object is in scope,
+//   the working directory remains changed to its new value.
+// -------------------------------------------------------------
+class CurrentWorkingDirectoryChanger
+{
 public:
-	// Constructor acquires the current path and changes it
-	explicit CurrentWorkingDirectoryChanger(const std::filesystem::path& new_path) :
-		original_path_(std::filesystem::current_path())
+	// Constructor saves the current working directory and changes it to the new path
+	explicit CurrentWorkingDirectoryChanger( const std::filesystem::path& new_path ) :
+		m_original_path( std::filesystem::current_path() )
 	{
 		try
 		{
-			std::cout << "CurrentWorkingDirectoryChanger - Original directory: " << original_path_.generic_string() << std::endl;
-			std::filesystem::current_path(new_path); // Change to new path
-			std::cout << "CurrentWorkingDirectoryChanger - Changed directory to: " << std::filesystem::current_path().generic_string() << std::endl;
+			std::cout << "WorkingDirectory - before change: " << m_original_path.generic_string() << std::endl;
+			std::filesystem::current_path( new_path );
+			std::cout << "WorkingDirectory - after change: " << std::filesystem::current_path().generic_string()
+					  << std::endl;
 		}
-		catch (const std::filesystem::filesystem_error& e)
+		catch( const std::filesystem::filesystem_error& e )
 		{
-			std::cerr << "CurrentWorkingDirectoryChanger - Error changing directory: " << e.what() << std::endl;
+			std::cerr << "Error changing working directory: " << e.what() << std::endl;
 		}
 	}
 
-	// Destructor restores the original path
+	// Destructor restores working directory to the original path
 	~CurrentWorkingDirectoryChanger()
 	{
 		try
 		{
-			std::filesystem::current_path(original_path_); // Restore original path
-			std::cout << "CurrentWorkingDirectoryChanger - Restored directory to: " << std::filesystem::current_path().generic_string() << std::endl;
+			std::filesystem::current_path( m_original_path );
+			std::cout << "WorkingDirectory - restored to: " << m_original_path.generic_string() << std::endl;
 		}
-		catch (const std::filesystem::filesystem_error& e)
+		catch( const std::filesystem::filesystem_error& e )
 		{
-			std::cerr << "CurrentWorkingDirectoryChanger - Error restoring directory: " << e.what() << std::endl;
+			std::cerr << "Error restoring working directory: " << e.what() << std::endl;
 		}
 	}
 
 	// Disable copy and move operations
-	CurrentWorkingDirectoryChanger(const CurrentWorkingDirectoryChanger&) = delete;
+	CurrentWorkingDirectoryChanger( const CurrentWorkingDirectoryChanger& ) = delete;
 
-	CurrentWorkingDirectoryChanger& operator=(const CurrentWorkingDirectoryChanger&) = delete;
+	CurrentWorkingDirectoryChanger& operator=( const CurrentWorkingDirectoryChanger& ) = delete;
 
-	CurrentWorkingDirectoryChanger(CurrentWorkingDirectoryChanger&&) = delete;
+	CurrentWorkingDirectoryChanger( CurrentWorkingDirectoryChanger&& ) = delete;
 
-	CurrentWorkingDirectoryChanger& operator=(CurrentWorkingDirectoryChanger&&) = delete;
+	CurrentWorkingDirectoryChanger& operator=( CurrentWorkingDirectoryChanger&& ) = delete;
 
 private:
-	std::filesystem::path original_path_;
+	// Store the original working directory path to restore upon class destruction
+	std::filesystem::path m_original_path;
 };
 
 #endif // CarbonResourcesTestFixture_H
