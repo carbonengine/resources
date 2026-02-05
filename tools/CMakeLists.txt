@@ -12,23 +12,23 @@ set(SRC_FILES
         include/Downloader.h
         include/FileDataStreamIn.h
         include/FileDataStreamOut.h
+        include/FilterDefaultSection.h
+        include/FilterNamedSection.h
+        include/FilterPrefixMap.h
+        include/FilterPrefixMapEntry.h
+        include/FilterResourceFile.h
+        include/FilterResourceFilter.h
+        include/FilterResourcePathFile.h
+        include/FilterResourcePathFileEntry.h
         include/GzipCompressionStream.h
         include/GzipDecompressionStream.h
         include/Md5ChecksumStream.h
         include/Patching.h
+        include/ResourceFilter.h
         include/ResourceTools.h
         include/RollingChecksum.h
         include/ScopedFile.h
         include/StatusCallback.h
-        include/FilterResourceFile.h
-        include/FilterDefaultSection.h
-        include/FilterNamedSection.h
-        include/FilterPrefixMap.h
-        include/FilterResourceFilter.h
-        include/FilterResourcePathFile.h
-        include/FilterPrefixMapEntry.h
-        include/FilterResourcePathFileEntry.h
-        include/ResourceFilter.h
 
         src/BundleStreamIn.cpp
         src/BundleStreamOut.cpp
@@ -37,22 +37,22 @@ set(SRC_FILES
         src/Downloader.cpp
         src/FileDataStreamIn.cpp
         src/FileDataStreamOut.cpp
+        src/FilterDefaultSection.cpp
+        src/FilterNamedSection.cpp
+        src/FilterPrefixMap.cpp
+        src/FilterPrefixMapEntry.cpp
+        src/FilterResourceFile.cpp
+        src/FilterResourceFilter.cpp
+        src/FilterResourcePathFile.cpp
+        src/FilterResourcePathFileEntry.cpp
         src/GzipCompressionStream.cpp
         src/GzipDecompressionStream.cpp
         src/Md5ChecksumStream.cpp
+        src/ResourceFilter.cpp
         src/ResourceTools.cpp
         src/ScopedFile.cpp
         src/Patching.cpp
         src/RollingChecksum.cpp
-        src/FilterResourceFile.cpp
-        src/FilterDefaultSection.cpp
-        src/FilterNamedSection.cpp
-        src/FilterPrefixMap.cpp
-        src/FilterResourceFilter.cpp
-        src/FilterResourcePathFile.cpp
-        src/FilterPrefixMapEntry.cpp
-        src/FilterResourcePathFileEntry.cpp
-        src/ResourceFilter.cpp
 )
 
 add_library(resources-tools STATIC ${SRC_FILES})
