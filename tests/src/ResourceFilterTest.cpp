@@ -18,7 +18,7 @@
 #include "FilterResourcePathFile.h"
 #include "ResourceFilter.h"
 
-TEST_F( ResourceFilterTest, Example1IniParsing )
+TEST_F( ResourceFilterTest, LoadAndParseIniFile_example1Ini_UsingIniReader )
 {
 	// Use the test fixture's helper to get the absolute path
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/example1.ini" );
@@ -47,7 +47,7 @@ TEST_F( ResourceFilterTest, Example1IniParsing )
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_OnlyIncludeFilter )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_IncludeFilterOnly )
 {
 	ResourceTools::FilterResourceFilter filter( "[ .this .is .included ]" );
 	const auto& includes = filter.GetIncludeFilter();
@@ -59,8 +59,11 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_OnlyIncludeFilter )
 	EXPECT_TRUE( excludes.empty() );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_OnlyExcludeFilter_Toplevel )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_TopLevelExcludeFilterOnly )
 {
+	// Top-level filter refers to the "filter" attribute of a NamedSection.
+	// When there is no include filter specified at the top-level "filter" attribute,
+	// a wild-card "*" should be added as default include.
 	ResourceTools::FilterResourceFilter filter( "![ .excluded .extension ]", true );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
@@ -69,12 +72,16 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_OnlyExcludeFilter_Toplevel )
 	EXPECT_EQ( excludes[0], ".excluded" );
 	EXPECT_EQ( excludes[1], ".extension" );
 
+	// Include filter should contain wildcard when no explicit include filter specified at top-level ("filter" attribute)
 	EXPECT_EQ( includes.size(), 1 );
-	EXPECT_EQ( includes[0], "*" ); // Wild-card added when no include filter specified for TOP-LEVEL filter
+	EXPECT_EQ( includes[0], "*" );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_OnlyExcludeFilter_Inline )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_InLineExcludeFilterOnly )
 {
+	// "InLine" filter refers to an optional filter element at the end of a
+	// respaths/resfile attribute line (class FilterResourcePathFileEntry)
+	// The InLine filter applies only to that line (in addition to any parent filter present, if applicable).
 	ResourceTools::FilterResourceFilter filter( "![ .excluded .extension ]" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
@@ -83,39 +90,44 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_OnlyExcludeFilter_Inline )
 	EXPECT_EQ( excludes[0], ".excluded" );
 	EXPECT_EQ( excludes[1], ".extension" );
 
+	// No wildcard should be added to include filter at in-line level
 	EXPECT_EQ( includes.size(), 0 );
-	EXPECT_TRUE( includes.empty() ); // No wild-card added when no include filter specified INLINE
+	EXPECT_TRUE( includes.empty() );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ComplexIncludeExcludeFilter )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRules_UseComplexIncludeExcludeFilters )
 {
 	ResourceTools::FilterResourceFilter filter( "[ .red .gr2 .dds .png .yaml ] [ .txt ] ![ .csv .xls ] [ .bat .sh ] ![ .blk .yel ]" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
+
 	std::vector<std::string> expectedIncludes = { ".red", ".gr2", ".dds", ".png", ".yaml", ".txt", ".bat", ".sh" };
 	std::vector<std::string> expectedExcludes = { ".csv", ".xls", ".blk", ".yel" };
-	EXPECT_EQ( includes, expectedIncludes );
-	EXPECT_EQ( excludes, expectedExcludes );
+	EXPECT_EQ( includes, expectedIncludes ) << "Include filters do not match expected values";
+	EXPECT_EQ( excludes, expectedExcludes ) << "Exclude filters do not match expected values";
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_SimpleIncludeFilter )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_SimpleIncludeFilterOnly )
 {
 	ResourceTools::FilterResourceFilter filter( "[ .red ]" );
 	const auto& includes = filter.GetIncludeFilter();
+
 	EXPECT_EQ( includes.size(), 1 );
 	EXPECT_EQ( includes[0], ".red" );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_SimpleExcludeFilter )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_SimpleExcludeFilterOnly )
 {
 	ResourceTools::FilterResourceFilter filter( "![ .blk ]" );
 	const auto& excludes = filter.GetExcludeFilter();
+
 	EXPECT_EQ( excludes.size(), 1 );
 	EXPECT_EQ( excludes[0], ".blk" );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_IncludeExcludeInclude )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_CombineIncludeExcludeIncludeFilters )
 {
+	// This test, combines multiple include and exclude filters, to test the logic of adding/removing filter elements:
 	// Include .in1 and .in2
 	// Exclude .in2, .ex1, and .ex2         (removes .in2 from include)
 	// Include .ex1, .in3 and .in1	        (removes .ex1 from exclude, adds .in3, keeps .in1)
@@ -124,17 +136,19 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_IncludeExcludeInclude )
 	ResourceTools::FilterResourceFilter filter( "[ .in1 .in2 ] ![ .in2 .ex1 .ex2 ] [ .ex1 .in3 .in1 ]" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
+
 	std::vector<std::string> expectedIncludes = { ".in1", ".ex1", ".in3" };
 	std::vector<std::string> expectedExcludes = { ".in2", ".ex2" };
 	EXPECT_EQ( includes, expectedIncludes );
 	EXPECT_EQ( excludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingIncludeBracketBeforeNextOpenExcludeBracket )
+TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracketBeforeNextOpenExcludeBracket )
 {
 	try
 	{
-		// This test filter has a missing closing bracket for the first include filter, before the next exclude filter starts
+		// This test filter has a missing closing bracket for the first include filter
+		// before the next exclude filter starts.
 		ResourceTools::FilterResourceFilter filter( "[ .in1   !  [ .ex1 ]" );
 		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
@@ -148,10 +162,12 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingIncludeBracketBef
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v1 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWithoutOpenBracket )
 {
 	try
 	{
+		// This test filter has an exclude marker "!" but is missing the open bracket
+		// for the exclude filter.
 		ResourceTools::FilterResourceFilter filter( "! .ex1 ]" );
 		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
@@ -165,10 +181,12 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v1 
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v2 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWithoutOpenBracketAfterValidIncludeFilter )
 {
 	try
 	{
+		// This test filter has a valid include filter, followed by an exclude marker "!"
+		// but is missing the open bracket for the exclude filter.
 		ResourceTools::FilterResourceFilter filter( "  [ .in1 ] ! .ex1 ]" );
 		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
@@ -182,10 +200,12 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v2 
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v3 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWithoutBracketAfterValidIncludeAndExcludeFilters )
 {
 	try
 	{
+		// This test filter has a valid include and exclude filters,
+		// followed by an exclude marker "!" and no filter definition after that.
 		ResourceTools::FilterResourceFilter filter( "  [ .in1 ] ![ .ex1 ] ! " );
 		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
@@ -199,10 +219,11 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ExcludeMarkerWithoutBracket_v3 
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_MissingOpeningBracket_v1 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingOpeningIncludeBracketAtStart )
 {
 	try
 	{
+		// This test filter is missing the opening bracket for the include filter.
 		ResourceTools::FilterResourceFilter filter( ".in1 .in2 ]" );
 		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
@@ -216,10 +237,12 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingOpeningBracket_v1 )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_MissingOpeningBracket_v2 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingOpeningIncludeBracketForSecondIncludeFilter )
 {
 	try
 	{
+		// This test filter is missing the opening bracket for the second include filter,
+		// after a valid first include filter.
 		ResourceTools::FilterResourceFilter filter( " [ .in1 .in2 ] .in3 ] " );
 		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
@@ -233,10 +256,11 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingOpeningBracket_v2 )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v1 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracket )
 {
 	try
 	{
+		// This test filter is missing the closing bracket for the first and only include filter.
 		ResourceTools::FilterResourceFilter filter( "[ .in1 .in2 " );
 		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
@@ -250,10 +274,11 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v1 )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v2 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracketForSecondIncludeFilter )
 {
 	try
 	{
+		// This test filter is missing the closing bracket for the second include filter.
 		ResourceTools::FilterResourceFilter filter( "[ .in1 .in2 ] [ .in3 " );
 		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
@@ -267,10 +292,11 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v2 )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v3 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracketForMiddleIncludeFilter )
 {
 	try
 	{
+		// This test filter is missing the closing bracket for the middle include filter.
 		ResourceTools::FilterResourceFilter filter( "[ .in1 .in2 ] [ .in3 [ .in4 ]" );
 		FAIL() << "Expected std::invalid_argument to be thrown";
 	}
@@ -284,48 +310,61 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_MissingClosingBracket_v3 )
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_CondensedValidFilterStringv1 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_UseCondensedValidIncludeExcludeIncludeFilters )
 {
+	// This test filter combines multiple include and exclude filters without extra whitespaces.
+	// Done to test the logic of adding/removing filter elements and that the parsing logic is not dependent on whitespaces.
 	ResourceTools::FilterResourceFilter filter( "[inToken1 inToken2]![exToken1 exToken2][inToken3]" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
+
 	std::vector<std::string> expectedIncludes = { "inToken1", "inToken2", "inToken3" };
 	std::vector<std::string> expectedExcludes = { "exToken1", "exToken2" };
 	EXPECT_EQ( includes, expectedIncludes );
 	EXPECT_EQ( excludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_CondensedValidFilterStringv2 )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_UseCondensedValidExcludeIncludeExcludeFilters )
 {
+	// This test filter combines multiple include and exclude filters without extra whitespaces.
+	// Done to test the logic of adding/removing filter elements and that the parsing logic is not dependent on whitespaces.
 	ResourceTools::FilterResourceFilter filter( "![exToken1][inToken1 inToken2]![exToken2][inToken3]" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
+
 	std::vector<std::string> expectedIncludes = { "inToken1", "inToken2", "inToken3" };
 	std::vector<std::string> expectedExcludes = { "exToken1", "exToken2" };
 	EXPECT_EQ( includes, expectedIncludes );
 	EXPECT_EQ( excludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_EmptyFilterString_TopLevel )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_EmptyTopLevelFilter )
 {
+	// When the top-level "filter" attribute of a NamedSection is empty,
+	// a wild-card "*" should be added to the include filter by default.
+	// Exclude filter should be empty though.
 	ResourceTools::FilterResourceFilter filter( "", true );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
 
+	// Wildcard "*" should be added when no include filter is specified for top-level "filter" attribute
 	EXPECT_EQ( includes.size(), 1 );
-	EXPECT_EQ( includes[0], "*" ); // Wild-card added when no include filter specified on TOP-LEVEL filter
+	EXPECT_EQ( includes[0], "*" );
 
 	EXPECT_TRUE( excludes.empty() );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_EmptyFilterString_Inline )
+TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_EmptyInLineFilter )
 {
+	// When an in-line filter of (respaths/resfile line) is empty (the default behavior),
+	// no wildcard "*" should be added to the include filter.
 	ResourceTools::FilterResourceFilter filter( "" );
 	const auto& includes = filter.GetIncludeFilter();
 	const auto& excludes = filter.GetExcludeFilter();
 
+	// No wildcard should be added to an in-line include filter
 	EXPECT_EQ( includes.size(), 0 );
-	EXPECT_TRUE( includes.empty() ); // No wild-card added when no include filter specified INLINE
+	EXPECT_TRUE( includes.empty() );
 
 	EXPECT_TRUE( excludes.empty() );
 }
