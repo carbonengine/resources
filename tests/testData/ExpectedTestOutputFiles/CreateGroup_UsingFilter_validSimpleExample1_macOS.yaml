@@ -1,0 +1,20 @@
+Version: 0.1.0
+Type: ResourceGroup
+NumberOfResources: 2
+TotalResourcesSizeCompressed: 8235
+TotalResourcesSizeUnCompressed: 41906
+Resources:
+  - RelativePath: resourcesOnBranch/introMovie.txt
+    Type: Resource
+    Location: 1c/1c6368ffb440041a_e9fadf6f2d386a0a0786bc863f20fa34
+    Checksum: e9fadf6f2d386a0a0786bc863f20fa34
+    UncompressedSize: 9091
+    CompressedSize: 3232
+    BinaryOperation: 33188
+  - RelativePath: resourcesOnBranch/videoCardCategories.yaml
+    Type: Resource
+    Location: ff/ffe4c396c9c935d4_90d25dac9f4ed3233c5fda72bee3dfe6
+    Checksum: 90d25dac9f4ed3233c5fda72bee3dfe6
+    UncompressedSize: 32815
+    CompressedSize: 5003
+    BinaryOperation: 33188

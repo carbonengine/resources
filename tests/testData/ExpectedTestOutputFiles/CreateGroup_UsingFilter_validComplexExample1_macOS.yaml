@@ -1,0 +1,76 @@
+Version: 0.1.0
+Type: ResourceGroup
+NumberOfResources: 10
+TotalResourcesSizeCompressed: 24573
+TotalResourcesSizeUnCompressed: 107508
+Resources:
+  - RelativePath: PatchWithInputChunk/resFileIndexShort_build_next.txt
+    Type: Resource
+    Location: 1f/1f23be4b8bf6d2ae_4d398902b75611f7ae19903e6b461514
+    Checksum: 4d398902b75611f7ae19903e6b461514
+    UncompressedSize: 612
+    CompressedSize: 324
+    BinaryOperation: 33188
+  - RelativePath: PatchWithInputChunk/NextBuildResources/testResource2.txt
+    Type: Resource
+    Location: 82/8264e4640cf94b94_271c8036e4eae5515053e924a0a39e0f
+    Checksum: 271c8036e4eae5515053e924a0a39e0f
+    UncompressedSize: 29
+    CompressedSize: 47
+    BinaryOperation: 33188
+  - RelativePath: PatchWithInputChunk/NextBuildResources/videoCardCategories.yaml
+    Type: Resource
+    Location: 02/02b2b2627ca28b62_90d25dac9f4ed3233c5fda72bee3dfe6
+    Checksum: 90d25dac9f4ed3233c5fda72bee3dfe6
+    UncompressedSize: 32815
+    CompressedSize: 5003
+    BinaryOperation: 33188
+  - RelativePath: PatchWithInputChunk/NextBuildResources/introMoviePrefixed.txt
+    Type: Resource
+    Location: dc/dca8056adced9237_0fb2bed9d164ad014bcb060b95df7ba1
+    Checksum: 0fb2bed9d164ad014bcb060b95df7ba1
+    UncompressedSize: 9425
+    CompressedSize: 3409
+    BinaryOperation: 33188
+  - RelativePath: PatchWithInputChunk/resFileIndexShort_build_previous.txt
+    Type: Resource
+    Location: 32/326b0449af10b716_849821e0c98e37de4edc5f7156cf5887
+    Checksum: 849821e0c98e37de4edc5f7156cf5887
+    UncompressedSize: 611
+    CompressedSize: 299
+    BinaryOperation: 33188
+  - RelativePath: PatchWithInputChunk/PatchResourceGroup_previousBuild_latestBuild.yaml
+    Type: Resource
+    Location: 44/446d5f683db0d467_b7431ad6d859bfd67a4c3fae337b0b6e
+    Checksum: b7431ad6d859bfd67a4c3fae337b0b6e
+    UncompressedSize: 3902
+    CompressedSize: 765
+    BinaryOperation: 33188
+  - RelativePath: PatchWithInputChunk/PreviousBuildResources/introMovie.txt
+    Type: Resource
+    Location: fd/fd2a47b3d5faa494_e9fadf6f2d386a0a0786bc863f20fa34
+    Checksum: e9fadf6f2d386a0a0786bc863f20fa34
+    UncompressedSize: 9091
+    CompressedSize: 3232
+    BinaryOperation: 33188
+  - RelativePath: PatchWithInputChunk/PreviousBuildResources/videoCardCategories.yaml
+    Type: Resource
+    Location: fb/fbc1cb8895f6c396_90d25dac9f4ed3233c5fda72bee3dfe6
+    Checksum: 90d25dac9f4ed3233c5fda72bee3dfe6
+    UncompressedSize: 32815
+    CompressedSize: 5003
+    BinaryOperation: 33188
+  - RelativePath: PatchWithInputChunk/PreviousBuildResources/introMoviePrefixed.txt
+    Type: Resource
+    Location: 5d/5d2aadfa1344ac63_5e631fd37d3350e30095d1251b178f2c
+    Checksum: 5e631fd37d3350e30095d1251b178f2c
+    UncompressedSize: 9117
+    CompressedSize: 3259
+    BinaryOperation: 33188
+  - RelativePath: PatchWithInputChunk/PreviousBuildResources/introMovieSomewhatChanged.txt
+    Type: Resource
+    Location: 60/6054e5e0cf24763e_e9fadf6f2d386a0a0786bc863f20fa34
+    Checksum: e9fadf6f2d386a0a0786bc863f20fa34
+    UncompressedSize: 9091
+    CompressedSize: 3232
+    BinaryOperation: 33188
