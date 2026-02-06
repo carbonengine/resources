@@ -7,6 +7,8 @@
 #include <set>
 #include <string>
 
+#include <gtest/gtest.h>
+
 #include "INIReader.h"
 
 #include "FilterDefaultSection.h"
