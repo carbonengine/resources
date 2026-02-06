@@ -9,6 +9,15 @@
 namespace ResourceTools
 {
 
+// -------------------------------------------------------------
+// Description:
+//   Construct a FilterResourceFilter object by parsing the given raw filter string.
+// Arguments:
+//   rawFilter - the raw filter string to parse (e.g: "[ .yaml .txt ] ![ .exe ]")
+//   isTopLevelFilter - indicates whether the level of the filter:
+//     - true  = filter is from the "filter" attribute of a [NamedSection]
+//     - false = (default value) filter is an inline filter of a respaths/resfile line entry.
+// -------------------------------------------------------------
 FilterResourceFilter::FilterResourceFilter( const std::string& rawFilter, bool isToplevelFilter /* = false */ ) :
 	m_rawFilter( rawFilter ),
 	m_isToplevelFilter( isToplevelFilter )
@@ -16,47 +25,57 @@ FilterResourceFilter::FilterResourceFilter( const std::string& rawFilter, bool i
 	ParseFilters();
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Gets the raw filter string attribute from the .ini file,
+//   e.g: "[ .yaml .txt ] ![ .exe ]", either topLevel or inLine.
+// Return Value:
+//   The raw string representation of the filter.
+// Note:
+//   This function is needed as input to easily construct combined
+//   filters for "topLevel parent" and respaths/resfile attribute
+//   line filter entries, from both of their raw representation.
+// -------------------------------------------------------------
 const std::string& FilterResourceFilter::GetRawFilter() const
 {
 	return m_rawFilter;
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Gets the parsed include filter vector.
+// Return Value:
+//   Vector of strings representing the include filter tokens, e.g: { ".yaml", ".txt" }.
+// -------------------------------------------------------------
 const std::vector<std::string>& FilterResourceFilter::GetIncludeFilter() const
 {
 	return m_includeFilter;
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Gets the parsed exclude filter vector.
+// Return Value:
+//   Vector of strings representing the exclude filter tokens, e.g: { ".exclude" }.
+// -------------------------------------------------------------
 const std::vector<std::string>& FilterResourceFilter::GetExcludeFilter() const
 {
 	return m_excludeFilter;
 }
 
-void FilterResourceFilter::PlaceTokenInCorrectVector( const std::string& token, std::vector<std::string>& fromVector, std::vector<std::string>& toVector )
-{
-	// Remove token from the fromVector if present
-	auto it = std::find( fromVector.begin(), fromVector.end(), token );
-	if( it != fromVector.end() )
-	{
-		fromVector.erase( it );
-	}
-
-	// Add token to the toVector if not already present in it.
-	if( std::find( toVector.begin(), toVector.end(), token ) == toVector.end() )
-	{
-		toVector.push_back( token );
-	}
-}
-
+// -------------------------------------------------------------
+// Description:
+//   Parses the raw filter string into the include and exclude
+//   filter vectors and places it in the correct vector.
+//   The raw filter string is expected to be in the format of one or more sections of the form:
+// -------------------------------------------------------------
 void FilterResourceFilter::ParseFilters()
 {
-	m_includeFilter.clear();
-	m_excludeFilter.clear();
-
 	std::string s = m_rawFilter;
 	size_t pos = 0;
 	while( pos < s.size() )
 	{
-		// Skip whitespace
+		// Skip whitespaces
 		while( pos < s.size() && std::isspace( static_cast<unsigned char>( s[pos] ) ) )
 		{
 			++pos;
@@ -138,6 +157,30 @@ void FilterResourceFilter::ParseFilters()
 			m_rawFilter += " ";
 		}
 		m_rawFilter += "[ * ]";
+	}
+}
+
+// -------------------------------------------------------------
+// Description:
+//   Static helper function placing filter tokens in the correct include/exclude vector.
+// Arguments:
+//   token - the filter token to place in the correct vector (e.g: ".yaml")
+//   fromVector - the vector to remove the token from (if present)
+//   toVector - the vector to add the token to (if not already present in it)
+// -------------------------------------------------------------
+void FilterResourceFilter::PlaceTokenInCorrectVector( const std::string& token, std::vector<std::string>& fromVector, std::vector<std::string>& toVector )
+{
+	// Remove token from the fromVector if present
+	auto it = std::find( fromVector.begin(), fromVector.end(), token );
+	if( it != fromVector.end() )
+	{
+		fromVector.erase( it );
+	}
+
+	// Add token to the toVector if not already present in it.
+	if( std::find( toVector.begin(), toVector.end(), token ) == toVector.end() )
+	{
+		toVector.push_back( token );
 	}
 }
 

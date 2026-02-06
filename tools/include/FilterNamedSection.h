@@ -17,8 +17,8 @@ namespace ResourceTools
 
 // -------------------------------------------------------------
 // Description:
-// FilterNamedSection is a class that represents all the contents
-// of a named section (e.g: [SomeSectionName]) from a filter .ini file.
+//   FilterNamedSection is a class that represents all the contents
+//   of a named section (e.g: [SomeSectionName]) from a filter .ini file.
 // -------------------------------------------------------------
 class FilterNamedSection
 {
