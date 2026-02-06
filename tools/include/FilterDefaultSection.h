@@ -32,7 +32,7 @@ public:
 	}
 
 private:
-	// Map of prefixes to FilterPrefixMapEntry objects, from the parsed prefixmap attribute.
+	// Container for the parsed prefixmap attribute.
 	FilterPrefixMap m_prefixMap;
 };
 

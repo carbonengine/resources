@@ -8,24 +8,48 @@
 namespace ResourceTools
 {
 
+// -------------------------------------------------------------
+// Description:
+//   Constructs a FilterPrefixMap object from a raw prefixmap string
+//   by calling the ParsePrefixMap() private function.
+// Arguments:
+//   rawPrefixMap - string representation of the raw prefixmap attribute
+// -------------------------------------------------------------
 FilterPrefixMap::FilterPrefixMap( const std::string& rawPrefixMap )
 {
-	m_prefixMapEntries.clear();
-
 	ParsePrefixMap( rawPrefixMap );
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Gets the map of keyed prefixes to FilterPrefixMapEntry objects.
+//   The FilterPrefixMapEntry objects contain a set of parsed paths for each prefix.
+// Return Value:
+//   map of prefixes to FilterPrefixMapEntry objects
+// -------------------------------------------------------------
 const std::map<std::string, FilterPrefixMapEntry>& FilterPrefixMap::GetMapEntries() const
 {
 	return m_prefixMapEntries;
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Parses the raw prefixmap string and populates m_prefixMapEntries
+//   with the corresponding FilterPrefixMapEntry objects.
+//   The raw prefixmap string is expected to be in the format:
+//     "prefix:path1;path2 prefix2:path3"
+//   The function throws std::invalid_argument if format is invalid.
+// Arguments:
+//   rawPrefixMap - string representation of the raw prefixmap attribute
+// Return Value:
+//   None (void)
+// -------------------------------------------------------------
 void FilterPrefixMap::ParsePrefixMap( const std::string& rawPrefixMap )
 {
 	std::size_t pos = 0;
 	while( pos < rawPrefixMap.size() )
 	{
-		// Find the prefix (or error out if missing a colon)
+		// Find the prefix (or error out if missing a colon ":")
 		std::size_t colon = rawPrefixMap.find( ':', pos );
 		if( colon == std::string::npos )
 		{
@@ -43,7 +67,9 @@ void FilterPrefixMap::ParsePrefixMap( const std::string& rawPrefixMap )
 
 		// Find end of paths (next whitespace or end of string)
 		std::size_t nextSpace = rawPrefixMap.find_first_of( " \t\r\n", pos );
-		std::string rawPaths = ( nextSpace == std::string::npos ) ? rawPrefixMap.substr( pos ) : rawPrefixMap.substr( pos, nextSpace - pos );
+		std::string rawPaths = ( nextSpace == std::string::npos ) ?
+			rawPrefixMap.substr( pos ) :
+			rawPrefixMap.substr( pos, nextSpace - pos );
 
 		if( rawPaths.empty() )
 		{
@@ -64,12 +90,16 @@ void FilterPrefixMap::ParsePrefixMap( const std::string& rawPrefixMap )
 
 		// Go to the next token in the rawPrefixMap (or break if at end)
 		if( nextSpace == std::string::npos )
+		{
 			break;
+		}
 		pos = nextSpace + 1;
 
 		// There was a whitespace, skip any additional spaces as well
 		while( pos < rawPrefixMap.size() && std::isspace( static_cast<unsigned char>( rawPrefixMap[pos] ) ) )
+		{
 			++pos;
+		}
 	}
 }
 
