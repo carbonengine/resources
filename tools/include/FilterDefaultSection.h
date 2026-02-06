@@ -9,16 +9,30 @@
 namespace ResourceTools
 {
 
+// -------------------------------------------------------------
+// Description:
+//   FilterDefaultSection is a class that represents the [DEFAULT]
+//   section attribute of a .ini filter file.
+// -------------------------------------------------------------
 class FilterDefaultSection
 {
 public:
 	FilterDefaultSection() = default;
 
-	explicit FilterDefaultSection( const std::string& prefixmapStr );
+	// Constructs a FilterDefaultSection object
+	explicit FilterDefaultSection(const std::string& rawPrefixMap)
+		: m_prefixMap(rawPrefixMap)
+	{
+	}
 
-	const FilterPrefixMap& GetPrefixMap() const;
+	// Gets the prefix map of the [DEFAULT] section
+	const FilterPrefixMap& GetPrefixMap() const
+	{
+		return m_prefixMap;
+	}
 
 private:
+	// Map of prefixes to FilterPrefixMapEntry objects, from the parsed prefixmap attribute.
 	FilterPrefixMap m_prefixMap;
 };
 

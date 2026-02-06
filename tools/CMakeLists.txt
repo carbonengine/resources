@@ -37,7 +37,6 @@ set(SRC_FILES
         src/Downloader.cpp
         src/FileDataStreamIn.cpp
         src/FileDataStreamOut.cpp
-        src/FilterDefaultSection.cpp
         src/FilterNamedSection.cpp
         src/FilterPrefixMap.cpp
         src/FilterPrefixMapEntry.cpp
