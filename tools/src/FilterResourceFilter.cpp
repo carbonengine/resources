@@ -67,7 +67,8 @@ const std::vector<std::string>& FilterResourceFilter::GetExcludeFilter() const
 // Description:
 //   Parses the raw filter string into the include and exclude
 //   filter vectors and places it in the correct vector.
-//   The raw filter string is expected to be in the format of one or more sections of the form:
+// Return Value:
+//   None (void).
 // -------------------------------------------------------------
 void FilterResourceFilter::ParseFilters()
 {
@@ -167,6 +168,8 @@ void FilterResourceFilter::ParseFilters()
 //   token - the filter token to place in the correct vector (e.g: ".yaml")
 //   fromVector - the vector to remove the token from (if present)
 //   toVector - the vector to add the token to (if not already present in it)
+// Return Value:
+//   None (void).
 // -------------------------------------------------------------
 void FilterResourceFilter::PlaceTokenInCorrectVector( const std::string& token, std::vector<std::string>& fromVector, std::vector<std::string>& toVector )
 {

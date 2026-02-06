@@ -37,6 +37,7 @@ public:
 	const std::vector<std::string>& GetExcludeFilter() const;
 
 private:
+	// Parse the incoming m_rawFilter string and populate the m_includeFilter and m_excludeFilter vectors accordingly.
 	void ParseFilters();
 
 	// Static helper function placing filter tokens in the correct include/exclude vector.
