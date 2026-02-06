@@ -37,7 +37,7 @@ const std::map<std::string, FilterPrefixMapEntry>& FilterPrefixMap::GetMapEntrie
 //   Parses the raw prefixmap string and populates m_prefixMapEntries
 //   with the corresponding FilterPrefixMapEntry objects.
 //   The raw prefixmap string is expected to be in the format:
-//     "prefix:path1;path2 prefix2:path3"
+//     "prefix1:pathA;pathB prefix2:pathC"
 //   The function throws std::invalid_argument if format is invalid.
 // Arguments:
 //   rawPrefixMap - string representation of the raw prefixmap attribute

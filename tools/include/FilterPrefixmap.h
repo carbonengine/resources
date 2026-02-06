@@ -15,7 +15,8 @@ namespace ResourceTools
 // -------------------------------------------------------------
 // Description:
 //   FilterPrefixMap is a class that represents the "prefixmap"
-//   attribute of a [DEFAULT] section inside a filter .ini file.
+//   attribute (e.g: "prefix1:pathA;pathB prefix2:pathC") of a
+//   [DEFAULT] section inside a filter .ini file.
 // -------------------------------------------------------------
 class FilterPrefixMap
 {
