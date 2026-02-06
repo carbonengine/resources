@@ -7,15 +7,15 @@ find_package(tiny-process-library CONFIG REQUIRED)
 include(GoogleTest)
 
 set(SRC_FILES
-        src/ResourcesTestFixture.cpp
-        src/ResourcesTestFixture.h
         src/CliTestFixture.cpp
         src/CliTestFixture.h
-        src/ResourcesLibraryTest.cpp
         src/ResourcesCliTest.cpp
+        src/ResourcesLibraryTest.cpp
+        src/ResourcesTestFixture.cpp
+        src/ResourcesTestFixture.h
+        src/ResourceToolsFilterTest.cpp
         src/ResourceToolsLibraryTest.cpp
-        src/ResourceFilterTest.cpp
-        src/ResourceFilterTest.h
+        src/ResourceToolsTest.h
 )
 
 add_executable(resources-test ${SRC_FILES})

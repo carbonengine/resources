@@ -1,5 +1,7 @@
 // Copyright © 2025 CCP ehf.
 
+#include "ResourceToolsTest.h"
+
 #include <ResourceGroup.h>
 #include <BundleResourceGroup.h>
 #include <PatchResourceGroup.h>
@@ -20,10 +22,6 @@
 #include "Md5ChecksumStream.h"
 #include "Patching.h"
 #include "RollingChecksum.h"
-
-struct ResourceToolsTest : public ResourcesTestFixture
-{
-};
 
 TEST_F( ResourceToolsTest, Md5ChecksumGeneration )
 {

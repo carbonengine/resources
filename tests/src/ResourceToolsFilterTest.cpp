@@ -1,6 +1,6 @@
 // Copyright © 2025 CCP ehf.
 
-#include "ResourceFilterTest.h"
+#include "ResourceToolsTest.h"
 
 #include <filesystem>
 #include <map>
@@ -18,7 +18,7 @@
 #include "FilterResourcePathFile.h"
 #include "ResourceFilter.h"
 
-TEST_F( ResourceFilterTest, LoadAndParseIniFile_example1Ini_UsingIniReader )
+TEST_F( ResourceToolsTest, LoadAndParseIniFile_example1Ini_UsingIniReader )
 {
 	// Use the test fixture's helper to get the absolute path
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/example1.ini" );
@@ -47,7 +47,7 @@ TEST_F( ResourceFilterTest, LoadAndParseIniFile_example1Ini_UsingIniReader )
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_IncludeFilterOnly )
+TEST_F( ResourceToolsTest, FilterResourceFilter_ApplyRule_IncludeFilterOnly )
 {
 	ResourceTools::FilterResourceFilter filter( "[ .this .is .included ]" );
 	const auto& includes = filter.GetIncludeFilter();
@@ -59,7 +59,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_IncludeFilterOnly )
 	EXPECT_TRUE( excludes.empty() );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_TopLevelExcludeFilterOnly )
+TEST_F( ResourceToolsTest, FilterResourceFilter_ApplyRule_TopLevelExcludeFilterOnly )
 {
 	// Top-level filter refers to the "filter" attribute of a NamedSection.
 	// When there is no include filter specified at the top-level "filter" attribute,
@@ -77,7 +77,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_TopLevelExcludeFilter
 	EXPECT_EQ( includes[0], "*" );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_InLineExcludeFilterOnly )
+TEST_F( ResourceToolsTest, FilterResourceFilter_ApplyRule_InLineExcludeFilterOnly )
 {
 	// "InLine" filter refers to an optional filter element at the end of a
 	// respaths/resfile attribute line (class FilterResourcePathFileEntry)
@@ -95,7 +95,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_InLineExcludeFilterOn
 	EXPECT_TRUE( includes.empty() );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRules_UseComplexIncludeExcludeFilters )
+TEST_F( ResourceToolsTest, FilterResourceFilter_ApplyRules_UseComplexIncludeExcludeFilters )
 {
 	ResourceTools::FilterResourceFilter filter( "[ .red .gr2 .dds .png .yaml ] [ .txt ] ![ .csv .xls ] [ .bat .sh ] ![ .blk .yel ]" );
 	const auto& includes = filter.GetIncludeFilter();
@@ -107,7 +107,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRules_UseComplexIncludeExc
 	EXPECT_EQ( excludes, expectedExcludes ) << "Exclude filters do not match expected values";
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_SimpleIncludeFilterOnly )
+TEST_F( ResourceToolsTest, FilterResourceFilter_ApplyRule_SimpleIncludeFilterOnly )
 {
 	ResourceTools::FilterResourceFilter filter( "[ .red ]" );
 	const auto& includes = filter.GetIncludeFilter();
@@ -116,7 +116,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_SimpleIncludeFilterOn
 	EXPECT_EQ( includes[0], ".red" );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_SimpleExcludeFilterOnly )
+TEST_F( ResourceToolsTest, FilterResourceFilter_ApplyRule_SimpleExcludeFilterOnly )
 {
 	ResourceTools::FilterResourceFilter filter( "![ .blk ]" );
 	const auto& excludes = filter.GetExcludeFilter();
@@ -125,7 +125,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_SimpleExcludeFilterOn
 	EXPECT_EQ( excludes[0], ".blk" );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_CombineIncludeExcludeIncludeFilters )
+TEST_F( ResourceToolsTest, FilterResourceFilter_ApplyRule_CombineIncludeExcludeIncludeFilters )
 {
 	// This test, combines multiple include and exclude filters, to test the logic of adding/removing filter elements:
 	// Include .in1 and .in2
@@ -143,7 +143,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_CombineIncludeExclude
 	EXPECT_EQ( excludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracketBeforeNextOpenExcludeBracket )
+TEST_F( ResourceToolsTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracketBeforeNextOpenExcludeBracket )
 {
 	try
 	{
@@ -162,7 +162,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncl
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWithoutOpenBracket )
+TEST_F( ResourceToolsTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWithoutOpenBracket )
 {
 	try
 	{
@@ -181,7 +181,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWitho
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWithoutOpenBracketAfterValidIncludeFilter )
+TEST_F( ResourceToolsTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWithoutOpenBracketAfterValidIncludeFilter )
 {
 	try
 	{
@@ -200,7 +200,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWitho
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWithoutBracketAfterValidIncludeAndExcludeFilters )
+TEST_F( ResourceToolsTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWithoutBracketAfterValidIncludeAndExcludeFilters )
 {
 	try
 	{
@@ -219,7 +219,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_ExcludeMarkerWitho
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingOpeningIncludeBracketAtStart )
+TEST_F( ResourceToolsTest, FilterResourceFilter_CheckFailure_MissingOpeningIncludeBracketAtStart )
 {
 	try
 	{
@@ -237,7 +237,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingOpeningIncl
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingOpeningIncludeBracketForSecondIncludeFilter )
+TEST_F( ResourceToolsTest, FilterResourceFilter_CheckFailure_MissingOpeningIncludeBracketForSecondIncludeFilter )
 {
 	try
 	{
@@ -256,7 +256,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingOpeningIncl
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracket )
+TEST_F( ResourceToolsTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracket )
 {
 	try
 	{
@@ -274,7 +274,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncl
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracketForSecondIncludeFilter )
+TEST_F( ResourceToolsTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracketForSecondIncludeFilter )
 {
 	try
 	{
@@ -292,7 +292,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncl
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracketForMiddleIncludeFilter )
+TEST_F( ResourceToolsTest, FilterResourceFilter_CheckFailure_MissingClosingIncludeBracketForMiddleIncludeFilter )
 {
 	try
 	{
@@ -310,7 +310,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_CheckFailure_MissingClosingIncl
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_UseCondensedValidIncludeExcludeIncludeFilters )
+TEST_F( ResourceToolsTest, FilterResourceFilter_ApplyRule_UseCondensedValidIncludeExcludeIncludeFilters )
 {
 	// This test filter combines multiple include and exclude filters without extra whitespaces.
 	// Done to test the logic of adding/removing filter elements and that the parsing logic is not dependent on whitespaces.
@@ -324,7 +324,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_UseCondensedValidIncl
 	EXPECT_EQ( excludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_UseCondensedValidExcludeIncludeExcludeFilters )
+TEST_F( ResourceToolsTest, FilterResourceFilter_ApplyRule_UseCondensedValidExcludeIncludeExcludeFilters )
 {
 	// This test filter combines multiple include and exclude filters without extra whitespaces.
 	// Done to test the logic of adding/removing filter elements and that the parsing logic is not dependent on whitespaces.
@@ -338,7 +338,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_UseCondensedValidExcl
 	EXPECT_EQ( excludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_EmptyTopLevelFilter )
+TEST_F( ResourceToolsTest, FilterResourceFilter_ApplyRule_EmptyTopLevelFilter )
 {
 	// When the top-level "filter" attribute of a NamedSection is empty,
 	// a wild-card "*" should be added to the include filter by default.
@@ -354,7 +354,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_EmptyTopLevelFilter )
 	EXPECT_TRUE( excludes.empty() );
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_EmptyInLineFilter )
+TEST_F( ResourceToolsTest, FilterResourceFilter_ApplyRule_EmptyInLineFilter )
 {
 	// When an in-line filter of (respaths/resfile line) is empty (the default behavior),
 	// no wildcard "*" should be added to the include filter.
@@ -371,7 +371,7 @@ TEST_F( ResourceFilterTest, FilterResourceFilter_ApplyRule_EmptyInLineFilter )
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_SinglePrefixWithMultiplePathsIsAllowed )
+TEST_F( ResourceToolsTest, FilterPrefixMap_Validate_SinglePrefixWithMultiplePathsIsAllowed )
 {
 	// This test validates that a single prefix (prefix1) with multiple different paths
 	// is correctly parsed and stored in the map.
@@ -389,7 +389,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_SinglePrefixWithMultiplePat
 	EXPECT_EQ( it->second.GetPaths(), expected ) << "Paths do not match expected values";
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_MultipleDifferentPrefixesAreAllowed )
+TEST_F( ResourceToolsTest, FilterPrefixMap_Validate_MultipleDifferentPrefixesAreAllowed )
 {
 	// This test validates that multiple different prefixes (prefix1 & prefix2)
 	// with their associated paths are correctly parsed and stored in the map.
@@ -413,7 +413,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_MultipleDifferentPrefixesAr
 	EXPECT_EQ( it2->second.GetPaths(), expected2 ) << "Paths do not match expected values";
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_DuplicateSamePrefixWithPathsInDifferentOrderIsAllowed )
+TEST_F( ResourceToolsTest, FilterPrefixMap_Validate_DuplicateSamePrefixWithPathsInDifferentOrderIsAllowed )
 {
 	// This test validates that if the same prefix (prefix1) is defined multiple times,
 	// with same paths but in different order (path1+path2 & path2+path1).
@@ -435,7 +435,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_DuplicateSamePrefixWithPath
 	EXPECT_EQ( it->first, it->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_MultipleSamePrefixesCanAppendToPaths )
+TEST_F( ResourceToolsTest, FilterPrefixMap_Validate_MultipleSamePrefixesCanAppendToPaths )
 {
 	// This test validates that if the same prefix (prefix1) is defined multiple times (first and last),
 	// with different paths (path2+path1 & path3+path1), that the paths are combined and stored in the map without duplicates.
@@ -459,7 +459,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_MultipleSamePrefixesCanAppe
 	EXPECT_EQ( it2->first, it2->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_DifferentWhitespacesBetweenPrefixesAreAllowed )
+TEST_F( ResourceToolsTest, FilterPrefixMap_Validate_DifferentWhitespacesBetweenPrefixesAreAllowed )
 {
 	// This test validates that different whitespaces (space, tab, new line)
 	// between prefix definitions are handled correctly.
@@ -489,7 +489,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_Validate_DifferentWhitespacesBetween
 	EXPECT_EQ( it3->first, it3->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_CheckFailure_MissingColonAfterPrefixBeforePaths )
+TEST_F( ResourceToolsTest, FilterPrefixMap_CheckFailure_MissingColonAfterPrefixBeforePaths )
 {
 	// This test validates that if a prefix definition is missing a colon ":"
 	// after the prefix and before the paths section, that an exception is thrown.
@@ -508,7 +508,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_CheckFailure_MissingColonAfterPrefix
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_CheckFailure_MissingPrefixBeforePaths )
+TEST_F( ResourceToolsTest, FilterPrefixMap_CheckFailure_MissingPrefixBeforePaths )
 {
 	// This test validates that if a prefix definition is missing the prefix itself
 	// (lhs of colon) before the paths section, that an exception is thrown.
@@ -527,7 +527,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_CheckFailure_MissingPrefixBeforePath
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMap_CheckFailure_MissingPathsAfterPrefix )
+TEST_F( ResourceToolsTest, FilterPrefixMap_CheckFailure_MissingPathsAfterPrefix )
 {
 	// This test validates that if a prefix definition is missing the paths section
 	// (rhs of colon) after the prefix, that an exception is thrown.
@@ -546,7 +546,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMap_CheckFailure_MissingPathsAfterPrefix
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMapEntry_CheckFailure_PrefixMissingInMapWhenAppendingPath )
+TEST_F( ResourceToolsTest, FilterPrefixMapEntry_CheckFailure_PrefixMissingInMapWhenAppendingPath )
 {
 	// This test validates that when trying to append paths to a FilterPrefixMapEntry
 	// with a different prefix than the existing one of the mapEntry that an exception is thrown.
@@ -566,7 +566,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMapEntry_CheckFailure_PrefixMissingInMap
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterPrefixMapEntry_CheckFailure_EmptyPathWhenAppendingPathToPrefix )
+TEST_F( ResourceToolsTest, FilterPrefixMapEntry_CheckFailure_EmptyPathWhenAppendingPathToPrefix )
 {
 	// This test validates that when trying to append an empty path to a FilterPrefixMapEntry
 	// that an exception is thrown, since empty paths are not allowed.
@@ -587,7 +587,7 @@ TEST_F( ResourceFilterTest, FilterPrefixMapEntry_CheckFailure_EmptyPathWhenAppen
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, FilterDefaultSection_Validate_DefaultSectionWithMultiplePrefixesIsAllowed )
+TEST_F( ResourceToolsTest, FilterDefaultSection_Validate_DefaultSectionWithMultiplePrefixesIsAllowed )
 {
 	// This test validates that a FilterDefaultSection can be initialized
 	// with multiple different prefixes and their associated paths.
@@ -611,7 +611,7 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_Validate_DefaultSectionWithMult
 	EXPECT_EQ( it2->first, it2->second.GetPrefix() ) << "Value of FilterPrefixMap.m_prefixMap key does not match associated FilterPrefixMapEntry.m_prefix";
 }
 
-TEST_F( ResourceFilterTest, FilterDefaultSection_CheckFailure_InitializeWithMissingColonInPrefixmap )
+TEST_F( ResourceToolsTest, FilterDefaultSection_CheckFailure_InitializeWithMissingColonInPrefixmap )
 {
 	// This test validates that when trying to initialize a FilterDefaultSection
 	// with a prefixmap string missing a colon ":" after the prefix definition
@@ -631,7 +631,7 @@ TEST_F( ResourceFilterTest, FilterDefaultSection_CheckFailure_InitializeWithMiss
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterDefaultSection_CheckFailure_InitializeWithEmptyPrefixInPrefixmap )
+TEST_F( ResourceToolsTest, FilterDefaultSection_CheckFailure_InitializeWithEmptyPrefixInPrefixmap )
 {
 	// This test validates that when trying to initialize a FilterDefaultSection
 	// with a prefixmap string missing the prefix definition (empty prefix)
@@ -714,7 +714,7 @@ void ValidatePathMap( const std::set<std::string>& expectedPaths,
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithNoInlineFilterIsAllowed )
+TEST_F( ResourceToolsTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithNoInlineFilterIsAllowed )
 {
 	// This test validates that a FilterResourcePathFile can be initialized with a single line attribute
 	// that contains a prefix and path, but no in-line filter.
@@ -735,7 +735,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_
 	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithInlineFilterNoOverridesIsAllowed )
+TEST_F( ResourceToolsTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithInlineFilterNoOverridesIsAllowed )
 {
 	// This test validates that a FilterResourcePathFile can be initialized with a single line attribute
 	// that contains a prefix and path, with an in-line filter that does not override any of the parent filters.
@@ -756,7 +756,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_
 	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithInlineFilterOverridingParentFilterIsAllowed )
+TEST_F( ResourceToolsTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithInlineFilterOverridingParentFilterIsAllowed )
 {
 	// This test validates that a FilterResourcePathFile can be initialized with a single
 	// line attribute with an in-line filter that overrides some of the parent filters by
@@ -779,7 +779,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_
 	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_MultiLineAttribute_WithMixedInlineFilterOverridesIsAllowed )
+TEST_F( ResourceToolsTest, FilterResourcePathFile_Validate_MultiLineAttribute_WithMixedInlineFilterOverridesIsAllowed )
 {
 	// This test validates that a FilterResourcePathFile can be initialized with a multi-line attribute
 	// that contains multiple prefixes and paths.
@@ -834,7 +834,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_MultiLineAttribute_W
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithDuplicateIncludeExcludeInlineOverridesIsAllowed )
+TEST_F( ResourceToolsTest, FilterResourcePathFile_Validate_SingleLineAttribute_WithDuplicateIncludeExcludeInlineOverridesIsAllowed )
 {
 	// This test validates that a FilterResourcePathFile can be initialized with a single line attribute.
 	// With an in-line filter that has duplicate include and exclude entries (some same as parent filters).
@@ -857,7 +857,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_Validate_SingleLineAttribute_
 	ValidatePathMap( expectedPaths, resolvedPathMap, expectedIncludes, expectedExcludes );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_CheckFailure_MissingPrefixThrowsException )
+TEST_F( ResourceToolsTest, FilterResourcePathFile_CheckFailure_MissingPrefixThrowsException )
 {
 	// This test validates that when trying to initialize a FilterResourcePathFile with an
 	// invalid raw attribute string (missing prefix), that an exception is thrown.
@@ -870,7 +870,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_CheckFailure_MissingPrefixThr
 	EXPECT_THROW( ResourceTools::FilterResourcePathFile pathFile( rawPathFileAttrib, prefixMap, parentFilter ), std::invalid_argument );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_CheckFailure_UnknownPrefixThrowsException )
+TEST_F( ResourceToolsTest, FilterResourcePathFile_CheckFailure_UnknownPrefixThrowsException )
 {
 	// This test validates that when trying to initialize a FilterResourcePathFile with an
 	// invalid raw attribute string (unknown prefix, not in the prefix map), that an exception is thrown.
@@ -883,7 +883,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_CheckFailure_UnknownPrefixThr
 	EXPECT_THROW( ResourceTools::FilterResourcePathFile pathFile( rawPathFileAttrib, prefixMap, parentFilter ), std::invalid_argument );
 }
 
-TEST_F( ResourceFilterTest, FilterResourcePathFile_CheckFailure_MalformedInlineFilterThrowsException )
+TEST_F( ResourceToolsTest, FilterResourcePathFile_CheckFailure_MalformedInlineFilterThrowsException )
 {
 	// This test validates that when trying to initialize a FilterResourcePathFile with an
 	// invalid raw attribute string (malformed in-line filter), that an exception is thrown.
@@ -898,7 +898,7 @@ TEST_F( ResourceFilterTest, FilterResourcePathFile_CheckFailure_MalformedInlineF
 
 // -----------------------------------------
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_SingleLineRespathIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_SingleLineRespathIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with a single line respath.
 	std::string sectionName = "FilterNamedSection_Validate_SingleLineRespathIsAllowed";
@@ -923,7 +923,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_SingleLineRespathIsAllow
 	ValidatePathMap( expectedPaths, combinedMap, expectedIncludes, expectedExcludes, "CombinedResolvedPathMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_EmptyTopLevelFilterIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_EmptyTopLevelFilterIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with an empty filter at top-level,
 	// which should add a wildcard "*" include filter.
@@ -949,7 +949,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_EmptyTopLevelFilterIsAll
 	ValidatePathMap( expectedPaths, combinedMap, expectedIncludes, expectedExcludes, "CombinedResolvedPathMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyTopLevelExcludeFilterIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyTopLevelExcludeFilterIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with only an exclude filter at top-level,
 	// which should add a wildcard "*" include filter.
@@ -975,7 +975,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyTopLevelExcludeFilte
 	ValidatePathMap( expectedPaths, combinedMap, expectedIncludes, expectedExcludes, "CombinedResolvedPathMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_MultiLineRespathWithSomeInlineOverridesIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_MultiLineRespathWithSomeInlineOverridesIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with a multi-line respath attribute.
 	// Some lines may have in-line filters that override the top-level filter, while others just use the top-level filter as-is.
@@ -1011,7 +1011,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_MultiLineRespathWithSome
 	ValidatePathMap( secondLinePaths, combinedMap, defaultIncludes, defaultExcludes, "SecondLine ResolvedRespathsMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedSingleLineRespathAndResfileAttributesIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_CombinedSingleLineRespathAndResfileAttributesIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both respath and resfile attributes.
 	// The combined resolved map contains entries from both attributes.
@@ -1049,7 +1049,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedSingleLineRespat
 }
 
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_RespathWithoutResfileAttributeIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_RespathWithoutResfileAttributeIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with only
 	// a respath attribute and no resfile attribute.
@@ -1082,7 +1082,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_RespathWithoutResfileAtt
 	ValidatePathMap( onlyValidPaths, combinedMap, defaultIncludes, defaultExcludes, "ResolvedCombinedMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_CheckFailure_MissingRespathAttributeThrowsException )
+TEST_F( ResourceToolsTest, FilterNamedSection_CheckFailure_MissingRespathAttributeThrowsException )
 {
 	// This test validates that when trying to initialize a FilterNamedSection
 	// with a missing respath attribute, that an exception is thrown.
@@ -1109,7 +1109,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_CheckFailure_MissingRespathAttrib
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedResolvedMapOnSamePrefixIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_CombinedResolvedMapOnSamePrefixIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both
 	// respath and resfile attributes using the same prefix, and that the combined
@@ -1147,7 +1147,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedResolvedMapOnSam
 	ValidatePathMap( combinedPaths, combinedMap, defaultIncludes, defaultExcludes, "ResolvedCombinedMap" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedResolvedMapWithEmptyTopLevelFilterIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_CombinedResolvedMapWithEmptyTopLevelFilterIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both
 	// respath and resfile attributes using the same prefix, and an empty top-level filter.
@@ -1193,7 +1193,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedResolvedMapWithE
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedResolvedMapWithOnlyExcludeTopLevelFilterIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_CombinedResolvedMapWithOnlyExcludeTopLevelFilterIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both
 	// respath and resfile attributes using the same prefix, and only an exclude filter at top-level.
@@ -1239,7 +1239,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedResolvedMapWithO
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_EmptyTopLevelFilterWithRespathOverrideIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_EmptyTopLevelFilterWithRespathOverrideIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both
 	// respath and resfile attributes using the same prefix, and an empty top-level filter.
@@ -1301,7 +1301,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_EmptyTopLevelFilterWithR
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_EmptyTopLevelFilterWithResfileOverrideIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_EmptyTopLevelFilterWithResfileOverrideIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both
 	// respath and resfile attributes using the same prefix, and an empty top-level filter.
@@ -1363,7 +1363,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_EmptyTopLevelFilterWithR
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeTopLevelFilterWithRespathOverrideIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyExcludeTopLevelFilterWithRespathOverrideIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both
 	// respath and resfile attributes using the same prefix, and only an exclude filter at top-level.
@@ -1427,7 +1427,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeTopLevelFilte
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeTopLevelFilterWithResfileOverrideIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyExcludeTopLevelFilterWithResfileOverrideIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both
 	// respath and resfile attributes using the same prefix, and only an exclude filter at top-level.
@@ -1491,7 +1491,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeTopLevelFilte
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedMapWithResfileOverrideIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_CombinedMapWithResfileOverrideIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both
 	// respath and resfile attributes using the same prefix, and that the combined
@@ -1534,7 +1534,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_CombinedMapWithResfileOv
 	ValidatePathMap( allPaths, respathsAgainMap, defaultIncludes, allExcludes, "ResolvedRespathsMap-Again" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_NoTopLevelFilterSameCombinedMapWithResfileOverrideIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_NoTopLevelFilterSameCombinedMapWithResfileOverrideIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both
 	// respath and resfile attributes using the same prefix and only default "*" top-level filter.
@@ -1586,7 +1586,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_NoTopLevelFilterSameComb
 	ValidatePathMap( allPaths, respathsAgainMap, defaultIncludes, allExcludes, "ResolvedRespathsMap-Again" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_NoTopLevelFilterSameCombinedMapWithRespathOverrideIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_NoTopLevelFilterSameCombinedMapWithRespathOverrideIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both
 	// respath and resfile attributes using the same prefix and only default "*" top-level filter.
@@ -1642,7 +1642,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_NoTopLevelFilterSameComb
 	ValidatePathMap( allPaths, resfileAgainMap, defaultIncludes, allExcludes, "ResolvedResfileMap-Again" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeFilterSameCombinedMapWithResfileOverrideIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyExcludeFilterSameCombinedMapWithResfileOverrideIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both respath and resfile
 	// attributes using the same prefix, and only an exclude filter at top-level (and default "*" include).
@@ -1694,7 +1694,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeFilterSameCom
 	ValidatePathMap( allPaths, respathsAgainMap, defaultIncludes, allExcludes, "ResolvedRespathsMap-Again" );
 }
 
-TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeFilterSameCombinedMapWithRespathsOverrideIsAllowed )
+TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyExcludeFilterSameCombinedMapWithRespathsOverrideIsAllowed )
 {
 	// This test validates that a FilterNamedSection can be initialized with both respath and resfile
 	// attributes using the same prefix, and only an exclude filter at top-level (and default "*" include).
@@ -1752,7 +1752,7 @@ TEST_F( ResourceFilterTest, FilterNamedSection_Validate_OnlyExcludeFilterSameCom
 
 // ------------------------------------------
 
-TEST_F( ResourceFilterTest, FilterResourceFile_ValidateSuccessfulFileLoad_example1_ini )
+TEST_F( ResourceToolsTest, FilterResourceFile_ValidateSuccessfulFileLoad_example1_ini )
 {
 	// This test validates that the example1.ini file can be loaded successfully
 	// and that the resolved paths match the expected values.
@@ -1790,7 +1790,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_ValidateSuccessfulFileLoad_exampl
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidMissingDefaultSection_ini )
+TEST_F( ResourceToolsTest, FilterResourceFile_ConfirmFileLoadFailure_invalidMissingDefaultSection_ini )
 {
 	// This test validates that loading an ini file missing the required [DEFAULT]
 	// section throws an exception.
@@ -1811,7 +1811,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidMis
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidMissingNamedSection_ini )
+TEST_F( ResourceToolsTest, FilterResourceFile_ConfirmFileLoadFailure_invalidMissingNamedSection_ini )
 {
 	// This test validates that loading an ini file missing any named sections
 	// throws an exception since at least one named section is required.
@@ -1832,7 +1832,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidMis
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_iniFileDoesNotExist )
+TEST_F( ResourceToolsTest, FilterResourceFile_ConfirmFileLoadFailure_iniFileDoesNotExist )
 {
 	// This test validates that loading a non-existent ini file throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/iniFileNotFound.ini" );
@@ -1852,7 +1852,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_iniFileDoe
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidPrefixmap_ini )
+TEST_F( ResourceToolsTest, FilterResourceFile_ConfirmFileLoadFailure_invalidPrefixmap_ini )
 {
 	// This test validates that loading an ini file with an invalid prefixmap format throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidPrefixmap.ini" );
@@ -1872,7 +1872,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidPre
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidSectionFilter_ini )
+TEST_F( ResourceToolsTest, FilterResourceFile_ConfirmFileLoadFailure_invalidSectionFilter_ini )
 {
 	// This test validates that loading an ini file with an invalid section filter format throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidSectionFilter.ini" );
@@ -1892,7 +1892,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidSec
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidInlineFilter_ini )
+TEST_F( ResourceToolsTest, FilterResourceFile_ConfirmFileLoadFailure_invalidInlineFilter_ini )
 {
 	// This test validates that loading an ini file with an invalid inline filter format throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidInlineFilter.ini" );
@@ -1912,7 +1912,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidInl
 	}
 }
 
-TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidPrefixMismatch_ini )
+TEST_F( ResourceToolsTest, FilterResourceFile_ConfirmFileLoadFailure_invalidPrefixMismatch_ini )
 {
 	// This test validates that loading an ini file with a prefix in the respaths/resfile
 	// attributes that does not match any prefix in the prefixmap throws an exception.
@@ -1935,7 +1935,7 @@ TEST_F( ResourceFilterTest, FilterResourceFile_ConfirmFileLoadFailure_invalidPre
 
 // ------------------------------------------
 
-TEST_F( ResourceFilterTest, ResourceFilter_ConfirmFileLoadFailure_SingleIniFileThatDoesNotExist )
+TEST_F( ResourceToolsTest, ResourceFilter_ConfirmFileLoadFailure_SingleIniFileThatDoesNotExist )
 {
 	// This test validates that initializing a ResourceFilter with a non-existent ini file throws an exception.
 	const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/noSuchFile.ini" );
@@ -1959,7 +1959,7 @@ TEST_F( ResourceFilterTest, ResourceFilter_ConfirmFileLoadFailure_SingleIniFileT
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_ConfirmFileLoadFailure_MultipleFilesOneThatDoesNotExist )
+TEST_F( ResourceToolsTest, ResourceFilter_ConfirmFileLoadFailure_MultipleFilesOneThatDoesNotExist )
 {
 	// This test validates that initializing a ResourceFilter with multiple ini files
 	// where one is valid and another does not exist, results in an exception being thrown.
@@ -1985,7 +1985,7 @@ TEST_F( ResourceFilterTest, ResourceFilter_ConfirmFileLoadFailure_MultipleFilesO
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_ConfirmSuccessfulFileLoad_example1_ini )
+TEST_F( ResourceToolsTest, ResourceFilter_ConfirmSuccessfulFileLoad_example1_ini )
 {
 	// This test validates that initializing a ResourceFilter with a valid ini file (example1.ini)
 	// successfully loads without throwing any exceptions.
@@ -2007,7 +2007,7 @@ TEST_F( ResourceFilterTest, ResourceFilter_ConfirmSuccessfulFileLoad_example1_in
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_Validate_RaiiClassCurrentWorkingDirectoryChanger_ChangesWorkingDirectoryForDurationOfTest )
+TEST_F( ResourceToolsTest, ResourceFilter_Validate_RaiiClassCurrentWorkingDirectoryChanger_ChangesWorkingDirectoryForDurationOfTest )
 {
 	// This test validates that the RAII CurrentWorkingDirectoryChanger class correctly changes
 	// the current working directory for the duration of the test.
@@ -2052,7 +2052,7 @@ TEST_F( ResourceFilterTest, ResourceFilter_Validate_RaiiClassCurrentWorkingDirec
 	ASSERT_NE( std::filesystem::current_path().lexically_normal().string(), testDataPath.lexically_normal().string() ) << "Current working directory should not be the TEST_DATA_BASE_PATH";
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativePaths_validSimpleExample1_ini )
+TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativePaths_validSimpleExample1_ini )
 {
 	// This test validates that initializing a ResourceFilter with a valid ini file (validSimpleExample1.ini),
 	// using relative paths, loads successfully and the expected paths and filters are present.
@@ -2097,7 +2097,7 @@ TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelati
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolutePaths_validSimpleExample1_ini )
+TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolutePaths_validSimpleExample1_ini )
 {
 	// This test validates that initializing a ResourceFilter with a valid ini file (validSimpleExample1.ini),
 	// using absolute paths, loads successfully and the expected paths and filters are present.
@@ -2143,7 +2143,7 @@ TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolu
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativePaths_validComplexExample1_ini )
+TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativePaths_validComplexExample1_ini )
 {
 	// This test validates that initializing a ResourceFilter with a valid ini file (validComplexExample1.ini),
 	// using relative paths, loads successfully and the expected paths and filters are present.
@@ -2254,7 +2254,7 @@ TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelati
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolutePath_validComplexExample1_ini )
+TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolutePath_validComplexExample1_ini )
 {
 	// This test validates that initializing a ResourceFilter with a valid ini file (validComplexExample1.ini),
 	// using absolute paths, loads successfully and the expected paths and filters are present.
@@ -2365,7 +2365,7 @@ TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolu
 	}
 }
 
-TEST_F( ResourceFilterTest, ResourceFilter_ValidateSuccessfulLoadOf2IniFiles_validComplexExample1_and_validSimpleExample1 )
+TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulLoadOf2IniFiles_validComplexExample1_and_validSimpleExample1 )
 {
 	// This test validates that initializing a ResourceFilter with two valid ini files
 	// (validComplexExample1.ini and validSimpleExample1.ini), using relative paths,
