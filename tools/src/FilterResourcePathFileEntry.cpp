@@ -8,39 +8,84 @@
 namespace ResourceTools
 {
 
-FilterResourcePathFileEntry::FilterResourcePathFileEntry( std::string rawPathLine,
+// -------------------------------------------------------------
+// Description:
+//   Construct a FilterResourcePathFileEntry object for a single resfile/respaths attribute line entry.
+// Arguments:
+//   rawPathLine - the raw string for this line entry from the .ini file
+//       e.g: "prefix1:/pathA/*  [ .txt ] ![ .yaml]
+//   parentPrefixMap - the FilterPrefixMap from the [DEFAULT] section,
+//       used to resolve prefixes in this line entry to actual paths.
+//   parentSectionFilter - the FilterResourceFilter from the same
+//       [namedSection] as this resfile/respaths attribute.
+//       Needed to create actual filter (with optional inline one) for this line entry.
+// -------------------------------------------------------------
+FilterResourcePathFileEntry::FilterResourcePathFileEntry( const std::string& rawPathLine,
 														  const FilterPrefixMap& parentPrefixMap,
 														  const FilterResourceFilter& parentSectionFilter ) :
-	m_rawPathLine( std::move( rawPathLine ) ),
 	m_parentPrefixMap( parentPrefixMap ),
 	m_parentSectionFilter( parentSectionFilter )
 {
-	ParseRawPathLine();
+	ParseRawPathLine( rawPathLine );
 }
 
-
+// -------------------------------------------------------------
+// Description:
+//   Gets the (possibly combined) filter for this resfile/respaths attribute line entry.
+// Return Value:
+//   FilterResourceFilter object representing the combined
+//   include/exclude filters for this line entry.
+// -------------------------------------------------------------
 const FilterResourceFilter& FilterResourcePathFileEntry::GetEntryFilter() const
 {
 	return m_entryFilter;
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Get resolved paths set for this resfile/respaths attribute line entry.
+// Return Value:
+//   Set of strings representing the resolved relative paths for this line entry.
+// -------------------------------------------------------------
 const std::set<std::string>& FilterResourcePathFileEntry::GetResolvedPaths() const
 {
 	return m_resolvedPaths;
 }
 
-void FilterResourcePathFileEntry::ParseRawPathLine()
+// -------------------------------------------------------------
+// Description:
+//   Parses the rawPathLine and constructs/populates the
+//   m_entryFilter and m_resolvedPaths members.
+// Arguments:
+//   rawPathLine - the raw string for this line entry
+//       e.g: "prefix1:/pathA/*  [ .txt ] ![ .yaml]"
+// -------------------------------------------------------------
+void FilterResourcePathFileEntry::ParseRawPathLine( const std::string& rawPathLine )
 {
-	// Split on whitespace: first token is pathPart, rest is (optional) filterPart
-	std::string rawPathToken;
-	std::string rawOptionalFilterPart;
+	std::string rawPrefixPathToken;
 	std::string combinedRawFilter;
 
-	std::istringstream iss( m_rawPathLine );
-	iss >> rawPathToken;
+	// Split on whitespace:
+	// - first token is the prefix:pathPart,
+	// - rest would be the (optional) filterPart (to be read at later stage)
+	std::istringstream iss( rawPathLine );
+	iss >> rawPrefixPathToken;
+
+	// Validate that the rawPathToken is of the correct format "prefix:pathPart"
+	size_t colon = rawPrefixPathToken.find( ':' );
+	if( colon == std::string::npos )
+	{
+		throw std::invalid_argument( std::string( "Missing prefix in path for: " ) + rawPathLine );
+	}
+	std::string prefixPart = rawPrefixPathToken.substr( 0, colon );
+	std::string pathPart = rawPrefixPathToken.substr( colon + 1 );
+
+	// Now figure out which filter to use (inline or parent)
 	if( !iss.eof() )
 	{
-		// There is an optional filter part. Construct it, will error out if wrong format
+		// There is more data, i.e. an optional filter exists.
+		// Construct it from the rest of the "line", will error out if filter format is wrong.
+		std::string rawOptionalFilterPart;
 		std::getline( iss, rawOptionalFilterPart );
 		FilterResourceFilter inlineFilter = FilterResourceFilter( rawOptionalFilterPart );
 
@@ -52,44 +97,39 @@ void FilterResourcePathFileEntry::ParseRawPathLine()
 		// No inline filter, use parent section filter as is
 		combinedRawFilter = m_parentSectionFilter.GetRawFilter();
 	}
+
+	// Construct the parsed (potentially) combined filter for this line entry.
 	m_entryFilter = FilterResourceFilter( combinedRawFilter );
 
-	// Validate the rawPathToken
-	size_t colon = rawPathToken.find( ':' );
-	if( colon == std::string::npos )
-	{
-		throw std::invalid_argument( std::string( "Missing prefix in path for: " ) + m_rawPathLine );
-	}
-	std::string prefix = rawPathToken.substr( 0, colon );
-	std::string rest = rawPathToken.substr( colon + 1 );
-
+	// Check that the prefix from the rawPathToken exists in the parent [DEFAULT] section prefix map.
 	const auto& prefixMapEntries = m_parentPrefixMap.GetMapEntries();
-	auto it = prefixMapEntries.find( prefix );
-	if( it == prefixMapEntries.end() )
+	auto foundPrefixMapEntry = prefixMapEntries.find( prefixPart );
+	if( foundPrefixMapEntry == prefixMapEntries.end() )
 	{
-		throw std::invalid_argument( std::string( "Prefix '" ) + prefix + "' not present in prefixMap for line: " + m_rawPathLine );
+		throw std::invalid_argument( std::string( "Prefix '" ) + prefixPart + "' not present in prefixMap for line: " + rawPathLine );
 	}
 
-	// Each FilterPrefixMapEntry may have multiple paths, combine/resolve all of them
-	const auto& prefixEntry = it->second;
-	const auto& prefixPaths = prefixEntry.GetPaths();
-	for( const auto& basePrefixPath : prefixPaths )
+	// Each FilterPrefixMapEntry may have multiple paths, combine/resolve for all of those paths
+	const auto& prefixEntry = foundPrefixMapEntry->second;
+	const auto& prefixPathsSet = prefixEntry.GetPaths();
+	for( const auto& basePrefixMapPath : prefixPathsSet )
 	{
 		// Ensure only one '/' at the join point
-		bool baseEndsWithSlash = !basePrefixPath.empty() && basePrefixPath.back() == '/';
-		bool restStartsWithSlash = !rest.empty() && rest.front() == '/';
-		std::string resolvedPath = basePrefixPath;
+		bool baseEndsWithSlash = !basePrefixMapPath.empty() && basePrefixMapPath.back() == '/';
+		bool restStartsWithSlash = !pathPart.empty() && pathPart.front() == '/';
+
+		std::string resolvedPath = basePrefixMapPath;
 		if( baseEndsWithSlash && restStartsWithSlash )
 		{
-			resolvedPath += rest.substr( 1 );
+			resolvedPath += pathPart.substr( 1 );
 		}
 		else if( !baseEndsWithSlash && !restStartsWithSlash )
 		{
-			resolvedPath += '/' + rest;
+			resolvedPath += '/' + pathPart;
 		}
 		else
 		{
-			resolvedPath = basePrefixPath + rest;
+			resolvedPath = basePrefixMapPath + pathPart;
 		}
 		m_resolvedPaths.insert( resolvedPath );
 	}
