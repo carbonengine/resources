@@ -12,20 +12,27 @@
 namespace ResourceTools
 {
 
-// Class representing a resfile/respaths attribute.
+// -------------------------------------------------------------
+// Description:
+//   FilterResourcePathFile is a class that represents a resfile/respaths
+//   attribute from a filter .ini file.
+//   Each "respaths" attribute may contain multiple line entries,
+//   stored in the FilterResourcePathFileEntry class.
+// -------------------------------------------------------------
 class FilterResourcePathFile
 {
 public:
-	explicit FilterResourcePathFile( std::string rawPathFileAttrib,
+	// Construct a FilterResourcePathFile object for a resfile/respaths attribute.
+	explicit FilterResourcePathFile( const std::string& rawPathFileAttrib,
 									 const FilterPrefixMap& parentPrefixMap,
 									 const FilterResourceFilter& parentSectionFilter );
 
-	// Get the map of fully resolved paths to their combined FilterResourceFilter objects.
+	// Gets a map of fully resolved relative paths and the associated FilterResourceFilter include/exclude filters.
 	const std::map<std::string, FilterResourceFilter>& GetResolvedPathMap() const;
 
 private:
-	// The raw (multiline) respath attribute (same for resfile).
-	std::string m_rawPathFileAttrib;
+	// Parse the rawPathFileAttrib and populate the m_resolvedPathMap.
+	void ParseRawPathFileAttribute( const std::string& rawPathFileAttrib );
 
 	// The "parent" prefix map from the [DEFAULT] section
 	const FilterPrefixMap& m_parentPrefixMap;
@@ -35,8 +42,6 @@ private:
 
 	// Map of fully resolved paths to their combined FilterResourceFilter objects.
 	std::map<std::string, FilterResourceFilter> m_resolvedPathMap;
-
-	void ParseRawPathFileAttribute();
 };
 
 }

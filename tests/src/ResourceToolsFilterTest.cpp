@@ -2095,7 +2095,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativ
 	}
 	catch( ... )
 	{
-		FAIL() << "Test [ResourceFilter_Load_validSimpleExample1_ini] failed when it should have passed.";
+		FAIL() << "Test failed when it should have passed.";
 	}
 }
 
@@ -2141,7 +2141,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolut
 	}
 	catch( ... )
 	{
-		FAIL() << "Test [ResourceFilter_Load_validSimpleExample1_ini_usingAbsolutePaths] failed when it should have passed.";
+		FAIL() << "Test failed when it should have passed.";
 	}
 }
 
@@ -2248,11 +2248,11 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativ
 	}
 	catch( const std::exception& e )
 	{
-		FAIL() << "Test [ResourceFilter_Load_validComplexExample1_ini_usingRelativePaths] failed with: " << e.what();
+		FAIL() << "Test failed with: " << e.what();
 	}
 	catch( ... )
 	{
-		FAIL() << "Test [ResourceFilter_Load_validComplexExample1_ini_usingRelativePaths] failed when it should have passed.";
+		FAIL() << "Test failed when it should have passed.";
 	}
 }
 
@@ -2359,11 +2359,11 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolut
 	}
 	catch( const std::exception& e )
 	{
-		FAIL() << "Test [ResourceFilter_Load_validComplexExample1_ini_usingRelativePaths] failed with: " << e.what();
+		FAIL() << "Test failed with: " << e.what();
 	}
 	catch( ... )
 	{
-		FAIL() << "Test [ResourceFilter_Load_validComplexExample1_ini_usingRelativePaths] failed when it should have passed.";
+		FAIL() << "Test failed when it should have passed.";
 	}
 }
 
@@ -2487,10 +2487,148 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulLoadOf2IniFiles_vali
 	}
 	catch( const std::exception& e )
 	{
-		FAIL() << "Test [ResourceFilter_Load2iniFiles_validComplexExample1_and_validSimpleExample1] failed with: " << e.what();
+		FAIL() << "Test failed with: " << e.what();
 	}
 	catch( ... )
 	{
-		FAIL() << "Test [ResourceFilter_Load2iniFiles_validComplexExample1_and_validSimpleExample1] failed when it should have passed.";
+		FAIL() << "Test failed when it should have passed.";
+	}
+}
+
+TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccess_FileLoadOverrideUsingDifferentRelativeButSameAbsolutePaths_validOverrideDifferentRelativeSameAbsolutePaths_ini )
+{
+	// This test validates that initializing a ResourceFilter with a valid ini file (validOverrideDifferentRelativeSameAbsolutePaths.ini),
+	// using two distinct relative paths (which result in the same absolute path), loads successfully and the expected paths and filters are present.
+	// See notes in the validOverrideDifferentRelativeSameAbsolutePaths.ini file for further details.
+
+	// Alter the current working directory for the duration of this test
+	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+	try
+	{
+		const std::filesystem::path iniPath = "ExampleIniFiles/validOverrideDifferentRelativeSameAbsolutePaths.ini";
+		std::vector<std::filesystem::path> paths = { iniPath };
+		ResourceTools::ResourceFilter resourceFilter;
+		resourceFilter.Initialize( paths );
+
+		// Validate correct included and exclude paths via the resourceFilter:
+		// - Because of the two distinct relative paths (./resourcesOnBranch/* and /resourcesOnBranch/*)
+		//   where one has both as include and the other both as exclude, then priority rules say that
+		//   both of the files should be EXCLUDED (i.e. equal priority means that exclude wins)
+		std::set<std::filesystem::path> validIncludeResolvedRelativePaths = {};
+		std::set<std::filesystem::path> validExcludeResolvedRelativePaths = {
+			"resourcesOnBranch/introMovie.txt",
+			"resourcesOnBranch/videoCardCategories.yaml"
+		};
+
+		ASSERT_EQ( resourceFilter.HasFilters(), true );
+		for( const auto& resolvedRelativeIncludePath : validIncludeResolvedRelativePaths )
+		{
+			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativeIncludePath ), true ) << "Should have included relative path: " << resolvedRelativeIncludePath.generic_string();
+		}
+		for( const auto& resolvedRelativeExcludePath : validExcludeResolvedRelativePaths )
+		{
+			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativeExcludePath ), false ) << "Should have excluded relative path: " << resolvedRelativeExcludePath.generic_string();
+		}
+
+		// Additional checks to make sure the FullResolvedPathMap contains correct include/exclude filter data
+		const auto& fullPathMap = resourceFilter.GetFullResolvedPathMap();
+		ASSERT_EQ( fullPathMap.size(), 2 );
+
+		std::set<std::string> expectedPaths = {
+			"./resourcesOnBranch/*",
+			"resourcesOnBranch/*"
+		};
+		MapContainsPaths( expectedPaths, fullPathMap, "FullResolvedPathMap from validOverrideDifferentRelativeSameAbsolutePaths.ini" );
+
+		for( const auto& kv : fullPathMap )
+		{
+			if( kv.first == "./resourcesOnBranch/*" )
+			{
+				EXPECT_EQ( kv.second.GetIncludeFilter().size(), 0 );
+				EXPECT_EQ( kv.second.GetExcludeFilter().size(), 2 );
+				EXPECT_TRUE( std::find( kv.second.GetExcludeFilter().begin(), kv.second.GetExcludeFilter().end(), ".yaml" ) != kv.second.GetExcludeFilter().end() );
+				EXPECT_TRUE( std::find( kv.second.GetExcludeFilter().begin(), kv.second.GetExcludeFilter().end(), ".txt" ) != kv.second.GetExcludeFilter().end() );
+			}
+			else if( kv.first == "resourcesOnBranch/*" )
+			{
+				EXPECT_EQ( kv.second.GetIncludeFilter().size(), 2 );
+				EXPECT_EQ( kv.second.GetExcludeFilter().size(), 0 );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".yaml" ) != kv.second.GetIncludeFilter().end() );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".txt" ) != kv.second.GetIncludeFilter().end() );
+			}
+			else
+			{
+				FAIL() << "Unexpected path found in FullResolvedPathMap: " << kv.first;
+			}
+		}
+	}
+	catch( ... )
+	{
+		FAIL() << "Test failed when it should have passed.";
+	}
+}
+
+TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccess_FileLoadRespathInlineOverrides_validInlineFilterOverrideOnSameRelativePath_ini )
+{
+	// This test validates that initializing a ResourceFilter with a valid ini file (validInlineFilterOverrideOnSameRelativePath.ini), using two
+	// identical "respath" path entries with distinct overriding include/exclude filters, loads successfully and the expected paths and filters are present.
+	// See notes in the validInlineFilterOverrideOnSameRelativePath.ini file for further details.
+
+	// Alter the current working directory for the duration of this test
+	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+	try
+	{
+		const std::filesystem::path iniPath = "ExampleIniFiles/validInlineFilterOverrideOnSameRelativePath.ini";
+		std::vector<std::filesystem::path> paths = { iniPath };
+		ResourceTools::ResourceFilter resourceFilter;
+		resourceFilter.Initialize( paths );
+
+		// Validate correct included and exclude paths via the resourceFilter:
+		// - Because of the overriding rules for the identical "respath" path entries.
+		//   We should end up with includes of BOTH .txt and .yaml files with no excludes.
+		std::set<std::filesystem::path> validIncludeResolvedRelativePaths = {
+			"resourcesOnBranch/introMovie.txt",
+			"resourcesOnBranch/videoCardCategories.yaml"
+		};
+		std::set<std::filesystem::path> validExcludeResolvedRelativePaths = {
+		};
+
+		ASSERT_EQ( resourceFilter.HasFilters(), true );
+		for( const auto& resolvedRelativeIncludePath : validIncludeResolvedRelativePaths )
+		{
+			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativeIncludePath ), true ) << "Should have included relative path: " << resolvedRelativeIncludePath.generic_string();
+		}
+		for( const auto& resolvedRelativeExcludePath : validExcludeResolvedRelativePaths )
+		{
+			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativeExcludePath ), false ) << "Should have excluded relative path: " << resolvedRelativeExcludePath.generic_string();
+		}
+
+		// Additional checks to make sure the FullResolvedPathMap contains correct include/exclude filter data
+		const auto& fullPathMap = resourceFilter.GetFullResolvedPathMap();
+		ASSERT_EQ( fullPathMap.size(), 1 );
+
+		std::set<std::string> expectedPaths = {
+			"resourcesOnBranch/*"
+		};
+		MapContainsPaths( expectedPaths, fullPathMap, "FullResolvedPathMap from validInlineFilterOverrideOnSameRelativePath.ini" );
+
+		for( const auto& kv : fullPathMap )
+		{
+			if( kv.first == "resourcesOnBranch/*" )
+			{
+				EXPECT_EQ( kv.second.GetIncludeFilter().size(), 2 );
+				EXPECT_EQ( kv.second.GetExcludeFilter().size(), 0 );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".txt" ) != kv.second.GetIncludeFilter().end() );
+				EXPECT_TRUE( std::find( kv.second.GetIncludeFilter().begin(), kv.second.GetIncludeFilter().end(), ".yaml" ) != kv.second.GetIncludeFilter().end() );
+			}
+			else
+			{
+				FAIL() << "Unexpected path found in FullResolvedPathMap: " << kv.first;
+			}
+		}
+	}
+	catch( ... )
+	{
+		FAIL() << "Test failed when it should have passed.";
 	}
 }
