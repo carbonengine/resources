@@ -97,8 +97,10 @@ bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::p
 
 		if( resolvedNormalAbsPathStr == inFileNormalAbsPathStr )
 		{
-			// If there is an exact match on the full filename path, this means highest priority and
-			// SHOULD BE considered an "INCLUDE" even though resolvedPath has filters that might say otherwise.
+			// If there is an exact match on the full filename path, this means highest priority
+			// and the file path should be considered an "include". This is even though resolvedPath
+			// may have filters that indicate exclude (explicitly specifying a full filename path
+			// should override any wildcard exclusion filters on the same file path).
 			bestIncludePriority = -1;
 			continue;
 		}
@@ -192,55 +194,54 @@ bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::p
 
 // pattern = The resolved path from the .ini file (can contain wildcards)
 // checkStr = The input file path to check against the pattern
-bool ResourceFilter::WildcardMatch( const std::string& pattern, const std::string& checkStr )
+bool ResourceFilter::WildcardMatch( std::string pattern, const std::string& checkStr )
 {
-	// Replace ... with a unique token
-	std::string pat = pattern;
-	std::string token = "\x01";
+	// Replace any "..." with a unique token (RECURSIVE_FOLDER_ELLIPSES_WILDCARD)
+	constexpr char RECURSIVE_FOLDER_ELLIPSES_WILDCARD = '\x01';
 	size_t pos;
-	while( ( pos = pat.find( "..." ) ) != std::string::npos )
+	while( ( pos = pattern.find( "..." ) ) != std::string::npos )
 	{
-		pat.replace( pos, 3, token );
+		pattern.replace( pos, 3, std::string(1, RECURSIVE_FOLDER_ELLIPSES_WILDCARD) );
 	}
 
-	// Escape special characters and deal with wildcards
-	std::string regexPat;
-	for( size_t i = 0; i < pat.size(); ++i )
+	// Escape special characters and deal with wildcards ("*" and "..." i.e. RECURSIVE_FOLDER_ELLIPSES_WILDCARD)
+	std::string regexPattern;
+	for( size_t i = 0; i < pattern.size(); ++i )
 	{
-		if( pat[i] == '*' )
+		if( pattern[i] == '*' )
 		{
-			regexPat += "[^/]*";
+			regexPattern += "[^/]*";
 		}
-		else if( pat[i] == '\x01' )
+		else if( pattern[i] == RECURSIVE_FOLDER_ELLIPSES_WILDCARD )
 		{
-			regexPat += ".*";
+			regexPattern += ".*";
 		}
-		else if( std::string( ".^$|()[]{}+?\\" ).find( pat[i] ) != std::string::npos )
+		else if( std::string( ".^$|()[]{}+?\\" ).find( pattern[i] ) != std::string::npos )
 		{
 			// Regex special characters that need escaping
-			regexPat += '\\';
-			regexPat += pat[i];
+			regexPattern += '\\';
+			regexPattern += pattern[i];
 		}
 		else
 		{
-			regexPat += pat[i];
+			regexPattern += pattern[i];
 		}
 	}
 
 	try
 	{
-		std::regex re( regexPat, std::regex::ECMAScript | std::regex::icase );
+		std::regex re( regexPattern, std::regex::ECMAScript | std::regex::icase );
 		bool regexResult = std::regex_match( checkStr, re );
 		return regexResult;
 	}
 	catch( const std::regex_error& e )
 	{
-		std::string errorMsg = "Regex Exception during WildcardMatching - regexPattern: " + regexPat + " checkString: " + checkStr + " - error details: " + e.what();
+		std::string errorMsg = "Regex Exception during WildcardMatching - regexPattern: " + regexPattern + " checkString: " + checkStr + " - error details: " + e.what();
 		throw std::runtime_error( errorMsg );
 	}
 	catch( const std::exception& e )
 	{
-		std::string errorMsg = "Standard Exception during WildcardMatching - regexPattern: " + regexPat + " checkString: " + checkStr + " - error details: " + e.what();
+		std::string errorMsg = "Standard Exception during WildcardMatching - regexPattern: " + regexPattern + " checkString: " + checkStr + " - error details: " + e.what();
 		throw std::runtime_error( errorMsg );
 	}
 }
