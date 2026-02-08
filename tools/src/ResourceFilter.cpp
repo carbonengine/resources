@@ -7,11 +7,24 @@
 namespace ResourceTools
 {
 
+// -------------------------------------------------------------
+// Description:
+//   Construct a ResourceFilter object by passing in filter .ini file(s).
+// -------------------------------------------------------------
 ResourceFilter::ResourceFilter( const std::vector<std::filesystem::path>& iniFilePaths )
 {
 	Initialize( iniFilePaths );
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Initializes the ResourceFilter by passing in and creating
+//   FilterResourceFile objects for each of the supplied filter .ini file(s).
+// Arguments:
+//   iniFilePaths - vector of file paths to the filter .ini files
+// Return Value:
+//   None (void).
+// -------------------------------------------------------------
 void ResourceFilter::Initialize( const std::vector<std::filesystem::path>& iniFilePaths )
 {
 	if( m_initialized )
@@ -37,11 +50,31 @@ void ResourceFilter::Initialize( const std::vector<std::filesystem::path>& iniFi
 	m_initialized = true;
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Determine if this ResourceFilter has any filters
+// Return Value:
+//   True = There are filter .ini files present
+//   False = There are no filter .ini files
+// -------------------------------------------------------------
 bool ResourceFilter::HasFilters() const
 {
 	return !m_filterFiles.empty();
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Returns the full resolved relative PathMaps from all FilterResourceFile(s)
+//   in this ResourceFilter.
+// Return Value:
+//   Map of resolved paths to their associated filters from all
+//   FilterResourceFile(s)
+//   Key = "resolved relative path"
+//   Value = FilterResourceFilter (with include/exclude filters)
+// Note:
+//   The full resolved path map is generated and then cached on
+//   the first call to this function.
+// -------------------------------------------------------------
 const std::map<std::string, FilterResourceFilter>& ResourceFilter::GetFullResolvedPathMap()
 {
 	if( m_fullResolvedPathMap.empty() )
@@ -72,6 +105,17 @@ const std::map<std::string, FilterResourceFilter>& ResourceFilter::GetFullResolv
 	return m_fullResolvedPathMap;
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Check if the inFilePath should be included or excluded based on
+//   the filtering rules from all .ini file(s) in this ResourceFilter.
+// Arguments:
+//   inFilePath - the file path to check against the filter rules,
+//                can be relative or absolute path.
+// Return Value:
+//   True = the file path matches the include filter rules and should be included
+//   False = the file path does not match the include filter rules and should be excluded
+// -------------------------------------------------------------
 bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::path& inFilePath )
 {
 	// Make sure we work with the absolute path representation of the input file
@@ -87,7 +131,6 @@ bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::p
 
 	// Get the full resolved path map and iterate through it (contains relative paths)
 	const auto& resolvedPathMap = GetFullResolvedPathMap();
-
 	for( const auto& [resolvedRelativePathStr, filter] : resolvedPathMap )
 	{
 		// Use normalized absolute paths for comparison
@@ -191,9 +234,19 @@ bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::p
 	return false;
 }
 
-
-// pattern = The resolved path from the .ini file (can contain wildcards)
-// checkStr = The input file path to check against the pattern
+// -------------------------------------------------------------
+// Description:
+//   Static helper function for wildcard matching path strings.
+//   Supports the following wildcards:
+//   - "*"   = matches any sequence of characters (at the same folder level)
+//   - "..." = matches any sequence of characters (as any recursive folder level)
+// Arguments:
+//   pattern - The resolved path from the .ini file (can contain wildcards)
+//   checkStr - The input file path to check against the pattern
+// Return Value:
+//   True = the checkStr matches the pattern (exact or with wildcards)
+//   False = the checkStr does not match the pattern (neither exact nor with wildcards)
+// -------------------------------------------------------------
 bool ResourceFilter::WildcardMatch( std::string pattern, const std::string& checkStr )
 {
 	// Replace any "..." with a unique token (RECURSIVE_FOLDER_ELLIPSES_WILDCARD)
@@ -246,6 +299,15 @@ bool ResourceFilter::WildcardMatch( std::string pattern, const std::string& chec
 	}
 }
 
+// -------------------------------------------------------------
+// Description:
+//   Static helper function to normalize paths by removing redundant
+//   path components such as "." and ".." and converting to a generic format.
+// Arguments:
+//   path - the file path to normalize
+// Return Value:
+//   Normalized path string in generic format (using '/' as separator)
+// -------------------------------------------------------------
 std::string ResourceFilter::NormalizePath( const std::string& path )
 {
 	std::filesystem::path p( path );

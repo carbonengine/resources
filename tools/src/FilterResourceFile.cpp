@@ -65,6 +65,8 @@ const std::map<std::string, FilterResourceFilter>& FilterResourceFile::GetIniFil
 //   m_namedSections members from the [DEFAULT] and [NamedSection(s)] respectively.
 // Arguments:
 //   iniFilePath - the file path to the resource .ini file to parse.
+// Return Value:
+//   None (void).
 // -------------------------------------------------------------
 void FilterResourceFile::ParseIniFile( const std::filesystem::path& iniFilePath )
 {
