@@ -13,26 +13,34 @@
 namespace ResourceTools
 {
 
+// -------------------------------------------------------------
+// Description:
+//   FilterResourceFile is a class that represents the fully
+//   parsed resource .ini file.
+// -------------------------------------------------------------
 class FilterResourceFile
 {
 public:
+	// Construct a FilterResourceFile object by parsing the supplied resource .ini file.
 	explicit FilterResourceFile( const std::filesystem::path& iniFilePath );
 
-	// Returns the full resolved PathMaps for all named sections defined in the resource .ini file
-	// Key is the "resolved path", Value is the associated FilterResourceFilter (include and exclude filters)
+	// Generate, cache and returns the fully resolved PathMaps for all named sections
+	// within this resource .ini file.
+	// Key = "resolved path", Value = associated include/exclude filters
 	const std::map<std::string, FilterResourceFilter>& GetIniFileResolvedPathMap();
 
 private:
-	std::filesystem::path m_iniFilePath;
+	// Parses the resource .ini file and populates the m_defaultSection and m_namedSections members.
+	void ParseIniFile( const std::filesystem::path& iniFilePath );
 
+	// The parsed [DEFAULT] section of the resource .ini file
 	FilterDefaultSection m_defaultSection;
 
+	// Vector of all th parsed [NamedSection(s)] defined in the .ini file
 	std::vector<FilterNamedSection> m_namedSections;
 
 	// Resolved PathMap for all named sections defined in a resource .ini file
 	std::map<std::string, FilterResourceFilter> m_iniFileResolvedPathMap;
-
-	void ParseIniFile();
 };
 
 }
