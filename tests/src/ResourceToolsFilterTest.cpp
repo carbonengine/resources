@@ -2033,7 +2033,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_Validate_RaiiClassCurrentWorkingDirect
 
 			// Check that the "binaryFileIndex_v0_0_0.txt" file (and it's path) is included correctly
 			std::filesystem::path oneValidRelativePath = "./Indicies/binaryFileIndex_v0_0_0.txt";
-			ASSERT_EQ( resourceFilter.ShouldInclude( oneValidRelativePath ), true );
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( oneValidRelativePath ), true );
 		}
 		catch( const std::exception& e )
 		{
@@ -2077,7 +2077,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativ
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
 		}
 
 		// Additional check to make sure the FullResolvedPathMap contains correct data (either include or exclude):
@@ -2123,7 +2123,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolut
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedAbsPath : validResolvedAbsolutePaths )
 		{
-			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedAbsPath ), true ) << "Should have included absolute path: " << resolvedAbsPath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedAbsPath ), true ) << "Should have included absolute path: " << resolvedAbsPath.generic_string();
 		}
 
 		// Additional check to make sure the FullResolvedPathMap contains correct data (either include or exclude):
@@ -2179,7 +2179,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativ
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
 		}
 
 		// Additional check to make sure the FullResolvedPathMap contains correct data (either include or exclude):
@@ -2290,7 +2290,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolut
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedAbsPath : validResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedAbsPath ), true ) << "Should have included relative path: " << resolvedAbsPath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedAbsPath ), true ) << "Should have included relative path: " << resolvedAbsPath.generic_string();
 		}
 
 		// Additional check to make sure the FullResolvedPathMap contains correct data (either include or exclude):
@@ -2409,7 +2409,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulLoadOf2IniFiles_vali
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
 		}
 
 		// Additional check to make sure the FullResolvedPathMap contains correct data (either include or exclude):
@@ -2523,11 +2523,11 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccess_FileLoadOverrideUsingD
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedRelativeIncludePath : validIncludeResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativeIncludePath ), true ) << "Should have included relative path: " << resolvedRelativeIncludePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativeIncludePath ), true ) << "Should have included relative path: " << resolvedRelativeIncludePath.generic_string();
 		}
 		for( const auto& resolvedRelativeExcludePath : validExcludeResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativeExcludePath ), false ) << "Should have excluded relative path: " << resolvedRelativeExcludePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativeExcludePath ), false ) << "Should have excluded relative path: " << resolvedRelativeExcludePath.generic_string();
 		}
 
 		// Additional checks to make sure the FullResolvedPathMap contains correct include/exclude filter data
@@ -2596,11 +2596,11 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccess_FileLoadRespathInlineO
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedRelativeIncludePath : validIncludeResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativeIncludePath ), true ) << "Should have included relative path: " << resolvedRelativeIncludePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativeIncludePath ), true ) << "Should have included relative path: " << resolvedRelativeIncludePath.generic_string();
 		}
 		for( const auto& resolvedRelativeExcludePath : validExcludeResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.ShouldInclude( resolvedRelativeExcludePath ), false ) << "Should have excluded relative path: " << resolvedRelativeExcludePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativeExcludePath ), false ) << "Should have excluded relative path: " << resolvedRelativeExcludePath.generic_string();
 		}
 
 		// Additional checks to make sure the FullResolvedPathMap contains correct include/exclude filter data

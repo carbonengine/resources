@@ -98,7 +98,7 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 				{
 					// Resource filtering:
 					// Check if the file, i.e. entry.path() should be included or excluded based on filtering rules
-					if( !resourceFilter.ShouldInclude( entry.path() ) )
+					if( !resourceFilter.FilePathMatchesIncludeFilterRules( entry.path() ) )
 					{
 						continue;
 					}

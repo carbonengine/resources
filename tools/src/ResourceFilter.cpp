@@ -14,8 +14,6 @@ ResourceFilter::ResourceFilter( const std::vector<std::filesystem::path>& iniFil
 
 void ResourceFilter::Initialize( const std::vector<std::filesystem::path>& iniFilePaths )
 {
-	m_fullResolvedPathMap.clear();
-
 	if( m_initialized )
 	{
 		throw std::runtime_error( "ResourceFilter is already initialized." );
@@ -37,6 +35,11 @@ void ResourceFilter::Initialize( const std::vector<std::filesystem::path>& iniFi
 	}
 
 	m_initialized = true;
+}
+
+bool ResourceFilter::HasFilters() const
+{
+	return !m_filterFiles.empty();
 }
 
 const std::map<std::string, FilterResourceFilter>& ResourceFilter::GetFullResolvedPathMap()
@@ -69,7 +72,7 @@ const std::map<std::string, FilterResourceFilter>& ResourceFilter::GetFullResolv
 	return m_fullResolvedPathMap;
 }
 
-bool ResourceFilter::ShouldInclude( const std::filesystem::path& inFilePath )
+bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::path& inFilePath )
 {
 	// Make sure we work with the absolute path representation of the input file
 	std::filesystem::path inFilePathAbs = std::filesystem::absolute( inFilePath );
