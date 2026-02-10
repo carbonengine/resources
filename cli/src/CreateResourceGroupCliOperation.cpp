@@ -152,7 +152,7 @@ void CreateResourceGroupCliOperation::PrintStartBanner(
 		std::cout << "Export Resources: Off" << std::endl;
 	}
 
-	if( createResourceGroupFromDirectoryParams.resourceFilterIniFiles.size() > 0 )
+	if( !createResourceGroupFromDirectoryParams.resourceFilterIniFiles.empty() )
 	{
 		std::cout << "Resource Filter INI File(s) used: " << std::endl;
 
