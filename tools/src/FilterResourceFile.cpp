@@ -90,7 +90,7 @@ void FilterResourceFile::ParseIniFile( const std::filesystem::path& iniFilePath 
 	if( allSections.size() <= 1 )
 	{
 		// No namedSections defined
-		throw std::invalid_argument( "No namedSections defined in INI file: " + iniFilePath.generic_string() );
+		throw std::invalid_argument( "No [namedSection] defined in INI file: " + iniFilePath.generic_string() );
 	}
 
 	// Parse all other named sections

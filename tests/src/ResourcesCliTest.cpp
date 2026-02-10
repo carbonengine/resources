@@ -460,6 +460,74 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
 }
 
+TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureParsingWronglyFormattedIniFile_UsingFilter_invalidMissingNamedSection_ini )
+{
+	// Test parameters:
+    std::string output;
+    std::string errorOutput;
+    std::vector<std::string> arguments;
+    std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+    std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_invalidMissingNamedSection.yaml" );
+    std::filesystem::path filterIniFilePath = "ExampleIniFiles/invalidMissingNamedSection.ini";
+
+    // Ensure any previous test output files are removed
+    RemoveFiles( { outputFilePath } );
+
+    arguments.push_back( "create-group" );
+    arguments.push_back( inputDirectoryPath.lexically_normal().string() );
+    arguments.push_back( "--verbosity-level" );
+    arguments.push_back( "3" );
+    arguments.push_back( "--filter-file" );
+    arguments.push_back( filterIniFilePath.lexically_normal().string() );
+    arguments.push_back( "--output-file" );
+    arguments.push_back( outputFilePath.lexically_normal().string() );
+
+    int res = RunCli( arguments, output, errorOutput, TEST_DATA_BASE_PATH );
+    std::cout << "--- RunCli() output: ---" << std::endl;
+    std::cout << output << std::endl;
+    std::cout << "------------------------" << std::endl;
+
+    // Should fail, expecting non-zero exit code
+    ASSERT_EQ( res, 1 ) << "CLI operation should fail for a filter .ini file with missing named section - with resultCode=1";
+    // Check for expected error message
+    EXPECT_TRUE( errorOutput.find("No [namedSection] defined in INI file") != std::string::npos )
+        << "Expected error message about missing [namedSection]. Actual error: " << errorOutput;
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureUsingNoExistentFilterFile_iniFileDoesNotExist )
+{
+	// Test parameters:
+    std::string output;
+    std::string errorOutput;
+    std::vector<std::string> arguments;
+    std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+    std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_iniFileDoesNotExist.yaml" );
+    std::filesystem::path filterIniFilePath = "ExampleIniFiles/iniFileNotFound.ini";
+
+    // Ensure any previous test output files are removed
+    RemoveFiles( { outputFilePath } );
+
+    arguments.push_back( "create-group" );
+    arguments.push_back( inputDirectoryPath.lexically_normal().string() );
+    arguments.push_back( "--verbosity-level" );
+    arguments.push_back( "3" );
+    arguments.push_back( "--filter-file" );
+    arguments.push_back( filterIniFilePath.lexically_normal().string() );
+    arguments.push_back( "--output-file" );
+    arguments.push_back( outputFilePath.lexically_normal().string() );
+
+    int res = RunCli( arguments, output, errorOutput, TEST_DATA_BASE_PATH );
+    std::cout << "--- RunCli() output: ---" << std::endl;
+    std::cout << output << std::endl;
+    std::cout << "------------------------" << std::endl;
+
+    // Should fail, expecting non-zero exit code
+    ASSERT_EQ( res, 1 ) << "CLI operation should fail for a non-existent filter .ini file - with resultCode=1";
+    // Check for expected error message
+    EXPECT_TRUE( errorOutput.find("unable to open file") != std::string::npos )
+        << "Expected error message about unable to open file. Actual error: " << errorOutput;
+}
+
 //---------------------------------------
 
 TEST_F( ResourcesCliTest, CreateBundle )

@@ -1825,7 +1825,7 @@ TEST_F( ResourceToolsTest, FilterResourceFile_ConfirmFileLoadFailure_invalidMiss
 	}
 	catch( const std::invalid_argument& e )
 	{
-		std::string expectedError = "No namedSections defined in INI file: " + iniPath.generic_string();
+		std::string expectedError = "No [namedSection] defined in INI file: " + iniPath.generic_string();
 		EXPECT_STREQ( e.what(), expectedError.c_str() );
 	}
 	catch( ... )
