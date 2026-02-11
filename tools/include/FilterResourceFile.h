@@ -24,14 +24,17 @@ public:
 	// Construct a FilterResourceFile object by parsing the supplied resource .ini file.
 	explicit FilterResourceFile( const std::filesystem::path& iniFilePath );
 
-	// Generate, cache and returns the fully resolved PathMaps for all named sections
+	// Returns the fully resolved PathMaps for all named sections
 	// within this resource .ini file.
 	// Key = "resolved path", Value = associated include/exclude filters
-	const std::map<std::string, FilterResourceFilter>& GetIniFileResolvedPathMap();
+	const std::map<std::string, FilterResourceFilter>& GetIniFileResolvedPathMap() const;
 
 private:
 	// Parses the resource .ini file and populates the m_defaultSection and m_namedSections members.
 	void ParseIniFile( const std::filesystem::path& iniFilePath );
+
+	// Populates the m_iniFileResolvedPathMap member by combining the resolved path maps from all named sections in this INI file.
+	void PopulateIniFileResolvedPathMap();
 
 	// The parsed [DEFAULT] section of the resource .ini file
 	FilterDefaultSection m_defaultSection;
