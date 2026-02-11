@@ -6,11 +6,8 @@
 
 #include <iostream>
 
-int CliTestFixture::RunCli( std::vector<std::string>& arguments, std::string& output, std::string& errorOutput, const std::string& workingDirectory /* = "" (empty = do not alter it) */ )
+int CliTestFixture::RunCli( std::vector<std::string>& arguments, std::string* standardOutput /* = nullptr */, std::string* errorOutput /* = nullptr */, const std::string& workingDirectory /* = "" (empty = do not alter it) */ )
 {
-	std::string processOutput;
-	std::string processError;
-
 	arguments.insert( arguments.begin(), CARBON_RESOURCES_CLI_EXE_FULLPATH );
 
 	std::cout << "--- RunCli() arguments: ---" << std::endl;
@@ -20,16 +17,15 @@ int CliTestFixture::RunCli( std::vector<std::string>& arguments, std::string& ou
 	}
 	std::cout << "---------------------------" << std::endl;
 
+	// Only populate the output and errorOutput if the caller provided non-nullptr for them, otherwise discard them
 	TinyProcessLib::Process process1a(
-		arguments, workingDirectory,
-		[&processOutput]( const char* bytes, size_t n ) { processOutput += std::string( bytes, n ); },
-		[&processError]( const char* bytes, size_t n ) { processError += std::string( bytes, n ); }
+		arguments,
+		workingDirectory,
+		[standardOutput]( const char* bytes, size_t n ) { if (standardOutput != nullptr) { *standardOutput += std::string( bytes, n ); } },
+		[errorOutput]( const char* bytes, size_t n ) { if (errorOutput != nullptr) { *errorOutput += std::string( bytes, n ); } }
 	);
 
 	auto exit_status = process1a.get_exit_status();
-
-	output = processOutput;
-	errorOutput = processError;
 
 	return exit_status;
 }
