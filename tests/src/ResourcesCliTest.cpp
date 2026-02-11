@@ -490,8 +490,8 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureParsingWronglyFormattedIniFi
     // Should fail, expecting non-zero exit code
     ASSERT_EQ( res, 1 ) << "CLI operation should fail for a filter .ini file with missing named section - with resultCode=1";
     // Check for expected error message
-    EXPECT_TRUE( errorOutput.find("No [namedSection] defined in INI file") != std::string::npos )
-        << "Expected error message about missing [namedSection]. Actual error: " << errorOutput;
+    EXPECT_TRUE( errorOutput.find("[ERROR: Failed to initialize ResourceFilter from .ini file]") != std::string::npos )
+        << "Expected generic (top-level) error message about failure to initialize ResourceFilter from .ini file. Actual error: " << errorOutput;
 }
 
 TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureUsingNoExistentFilterFile_iniFileDoesNotExist )
@@ -524,8 +524,8 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureUsingNoExistentFilterFile_in
     // Should fail, expecting non-zero exit code
     ASSERT_EQ( res, 1 ) << "CLI operation should fail for a non-existent filter .ini file - with resultCode=1";
     // Check for expected error message
-    EXPECT_TRUE( errorOutput.find("unable to open file") != std::string::npos )
-        << "Expected error message about unable to open file. Actual error: " << errorOutput;
+    EXPECT_TRUE( errorOutput.find("[ERROR: Failed to initialize ResourceFilter from .ini file]") != std::string::npos )
+        << "Expected generic (top-level) error message about failure to initialize ResourceFilter from .ini file. Actual error: " << errorOutput;
 }
 
 //---------------------------------------

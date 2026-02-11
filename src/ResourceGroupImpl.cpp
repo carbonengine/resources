@@ -79,7 +79,6 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 		catch( const std::exception& e )
 		{
 			std::string errorMsg = "Unable to create ResourceFilter - because of: " + std::string( e.what() );
-			std::cerr << errorMsg << std::endl;
 			return Result{ ResultType::FAILED_TO_INITIALIZE_RESOURCE_FILTER, errorMsg };
 		}
 	}
@@ -106,7 +105,6 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 				catch( const std::exception& e )
 				{
 					std::string errorMsg = "Unable to decide on include/exclude filtering for: " + entry.path().generic_string() + " - because of: " + std::string( e.what() );
-					std::cerr << errorMsg << std::endl;
 					return Result{ ResultType::FAILED_TO_APPLY_RESOURCE_FILTER_RULES, errorMsg };
 				}
 			}
