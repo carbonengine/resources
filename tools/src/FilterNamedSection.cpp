@@ -114,22 +114,21 @@ const std::map<std::string, FilterResourceFilter>& FilterNamedSection::GetResolv
 // Description:
 //   Gets the resolved path map from the optional "resfile" attribute only.
 // Return Value:
-//   Map of resolved paths to their associated FilterResourceFilter objects.
+//   Pointer to a map of resolved paths to their associated FilterResourceFilter objects,
+//   or nullptr if no resfile is present. This is a pointer (and not a reference) because of the optional m_resfile member.
 // Note:
 //   Users of this class should use the GetCombinedResolvedPathMap()
 //   function instead of this one to get the "full combined" result.
 //   This function is exposed only to enable tests to verify correctness of data.
 // -------------------------------------------------------------
-const std::map<std::string, FilterResourceFilter>& FilterNamedSection::GetResolvedResfileMap() const
+const std::map<std::string, FilterResourceFilter>* FilterNamedSection::GetResolvedResfileMap() const
 {
 	if( m_resfile )
 	{
-		return m_resfile->GetResolvedPathMap();
+		return &m_resfile->GetResolvedPathMap();
 	}
 
-	// Return empty map if no resfile present
-	static const std::map<std::string, FilterResourceFilter> emptyResfileMap;
-	return emptyResfileMap;
+	return nullptr;
 }
 
 }

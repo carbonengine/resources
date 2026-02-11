@@ -917,11 +917,11 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_SingleLineRespathIsAllowe
 	std::vector<std::string> expectedExcludes = { ".ex1" };
 
 	const auto& resolvedRespathMap = namedSection.GetResolvedRespathsMap();
-	const auto& resolvedResfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resolvedResfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ValidatePathMap( expectedPaths, resolvedRespathMap, expectedIncludes, expectedExcludes, "ResolvedRespathsMap" );
-	EXPECT_TRUE( resolvedResfileMap.empty() );
+	EXPECT_TRUE( !resolvedResfileMap || resolvedResfileMap->empty() );
 	ValidatePathMap( expectedPaths, combinedMap, expectedIncludes, expectedExcludes, "CombinedResolvedPathMap" );
 }
 
@@ -943,11 +943,11 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_EmptyTopLevelFilterIsAllo
 	std::vector<std::string> expectedExcludes = {};
 
 	const auto& resolvedRespathMap = namedSection.GetResolvedRespathsMap();
-	const auto& resolvedResfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resolvedResfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ValidatePathMap( expectedPaths, resolvedRespathMap, expectedIncludes, expectedExcludes, "ResolvedRespathsMap" );
-	EXPECT_TRUE( resolvedResfileMap.empty() );
+	EXPECT_TRUE( !resolvedResfileMap || resolvedResfileMap->empty() );
 	ValidatePathMap( expectedPaths, combinedMap, expectedIncludes, expectedExcludes, "CombinedResolvedPathMap" );
 }
 
@@ -969,11 +969,11 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyTopLevelExcludeFilter
 	std::vector<std::string> expectedExcludes = { ".ex1" };
 
 	const auto& resolvedRespathMap = namedSection.GetResolvedRespathsMap();
-	const auto& resolvedResfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resolvedResfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ValidatePathMap( expectedPaths, resolvedRespathMap, expectedIncludes, expectedExcludes, "ResolvedRespathsMap" );
-	EXPECT_TRUE( resolvedResfileMap.empty() );
+	EXPECT_TRUE( !resolvedResfileMap || resolvedResfileMap->empty() );
 	ValidatePathMap( expectedPaths, combinedMap, expectedIncludes, expectedExcludes, "CombinedResolvedPathMap" );
 }
 
@@ -1001,13 +1001,13 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_MultiLineRespathWithSomeI
 	std::vector<std::string> firstLineExcludes = { ".ex1", ".exLine1" };
 
 	const auto& resolvedRespathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resolvedResfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resolvedResfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	MapContainsPaths( allExpectedPaths, resolvedRespathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( firstLinePaths, resolvedRespathsMap, firstLineIncludes, firstLineExcludes, "FirstLine ResolvedRespathsMap" );
 	ValidatePathMap( secondLinePaths, resolvedRespathsMap, defaultIncludes, defaultExcludes, "SecondLine ResolvedRespathsMap" );
-	EXPECT_TRUE( resolvedResfileMap.empty() );
+	EXPECT_TRUE( !resolvedResfileMap || resolvedResfileMap->empty() );
 	MapContainsPaths( allExpectedPaths, combinedMap, "CombinedResolvedMap" );
 	ValidatePathMap( firstLinePaths, combinedMap, firstLineIncludes, firstLineExcludes, "FirstLine ResolvedRespathsMap" );
 	ValidatePathMap( secondLinePaths, combinedMap, defaultIncludes, defaultExcludes, "SecondLine ResolvedRespathsMap" );
@@ -1034,16 +1034,17 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_CombinedSingleLineRespath
 	std::vector<std::string> defaultExcludes = { ".ex1" };
 
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ASSERT_EQ( respathsMap.size(), 2 ); // prefix1 has two paths
 	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( respathsPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 1 ); // prefix2 has one path
-	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( resfilesPaths, resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 1 ); // prefix2 has one path
+	MapContainsPaths( resfilesPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, *resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 3 ); // 2 from respaths, 1 from resfile
 	MapContainsPaths( allExpectedPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1069,15 +1070,14 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_RespathWithoutResfileAttr
 	std::vector<std::string> defaultExcludes = { ".ex1" };
 
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ASSERT_EQ( respathsMap.size(), 1 );
 	MapContainsPaths( onlyValidPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( onlyValidPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 0 ); // Nothing in resfile
-	EXPECT_TRUE( resfileMap.empty() );
+	ASSERT_TRUE( !resfileMap || resfileMap->empty() ); // Nothing in resfile
 
 	ASSERT_EQ( combinedMap.size(), 1 ); // 1 from respaths, 0 from resfile
 	MapContainsPaths( onlyValidPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1133,16 +1133,17 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_CombinedResolvedMapOnSame
 	std::vector<std::string> defaultExcludes = {};
 
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar"
 	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( respathsPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar"
-	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( resfilesPaths, resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 1 ); // "/path1/loo/bar"
+	MapContainsPaths( resfilesPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, *resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // both
 	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1171,16 +1172,17 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_CombinedResolvedMapWithEm
 	std::vector<std::string> defaultExcludes = {};
 
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar"
 	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( respathsPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar"
-	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( resfilesPaths, resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 1 ); // "/path1/loo/bar"
+	MapContainsPaths( resfilesPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, *resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // both
 	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1217,16 +1219,17 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_CombinedResolvedMapWithOn
 	std::vector<std::string> defaultExcludes = { ".ex1" };
 
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar"
 	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( respathsPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar"
-	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( resfilesPaths, resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 1 ); // "/path1/loo/bar"
+	MapContainsPaths( resfilesPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, *resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // both
 	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1266,16 +1269,17 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_EmptyTopLevelFilterWithRe
 	std::vector<std::string> overrideExcludes = { ".inlineExclude" };
 
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar" + "[ *, .inlineInclude ] ![ .inlineExclude ]"
 	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( respathsPaths, respathsMap, overrideIncludes, overrideExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar" + "[ * ]"
-	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( resfilesPaths, resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 1 ); // "/path1/loo/bar" + "[ * ]"
+	MapContainsPaths( resfilesPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, *resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // both
 	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1328,16 +1332,17 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_EmptyTopLevelFilterWithRe
 	std::vector<std::string> overrideExcludes = { ".inlineExclude" };
 
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar" + "[ * ]"
 	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( respathsPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar" + "[ *, .inlineInclude ] ![ .inlineExclude ]"
-	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( resfilesPaths, resfileMap, overrideIncludes, overrideExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 1 ); // "/path1/loo/bar" + "[ *, .inlineInclude ] ![ .inlineExclude ]"
+	MapContainsPaths( resfilesPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, *resfileMap, overrideIncludes, overrideExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // both
 	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1390,16 +1395,17 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyExcludeTopLevelFilter
 	std::vector<std::string> overrideExcludes = { ".toplevelExclude", ".inlineExclude" };
 
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar" + "[ *, .inlineInclude ] ![ .toplevelExclude .inlineExclude ]"
 	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( respathsPaths, respathsMap, overrideIncludes, overrideExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar" + "[ * ]"
-	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( resfilesPaths, resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 1 ); // "/path1/loo/bar" + "[ * ]"
+	MapContainsPaths( resfilesPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, *resfileMap, defaultIncludes, defaultExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // both
 	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1454,16 +1460,17 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyExcludeTopLevelFilter
 	std::vector<std::string> overrideExcludes = { ".toplevelExclude", ".inlineExclude" };
 
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 
 	ASSERT_EQ( respathsMap.size(), 1 ); // "/path1/foo/bar" + "[ * ]"
 	MapContainsPaths( respathsPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( respathsPaths, respathsMap, defaultIncludes, defaultExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 1 ); // "/path1/loo/bar" + "[ *, .inlineInclude ] ![ .toplevelExclude .inlineExclude ]"
-	MapContainsPaths( resfilesPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( resfilesPaths, resfileMap, overrideIncludes, overrideExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 1 ); // "/path1/loo/bar" + "[ *, .inlineInclude ] ![ .toplevelExclude .inlineExclude ]"
+	MapContainsPaths( resfilesPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( resfilesPaths, *resfileMap, overrideIncludes, overrideExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // both
 	MapContainsPaths( combinedPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1516,15 +1523,16 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_CombinedMapWithResfileOve
 
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 
 	ASSERT_EQ( respathsMap.size(), 2 );
 	MapContainsPaths( allPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( allPaths, respathsMap, defaultIncludes, allExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 2 );
-	MapContainsPaths( allPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( allPaths, resfileMap, overrideIncludes, allExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 2 );
+	MapContainsPaths( allPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( allPaths, *resfileMap, overrideIncludes, allExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // Both, same count but now with overrides
 	MapContainsPaths( allPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1559,15 +1567,16 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_NoTopLevelFilterSameCombi
 
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 
 	ASSERT_EQ( respathsMap.size(), 2 );
 	MapContainsPaths( allPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( allPaths, respathsMap, defaultIncludes, allExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 2 );
-	MapContainsPaths( allPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( allPaths, resfileMap, overrideIncludes, allExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 2 );
+	MapContainsPaths( allPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( allPaths, *resfileMap, overrideIncludes, allExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // Both, same count but now with overrides
 	MapContainsPaths( allPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1611,15 +1620,16 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_NoTopLevelFilterSameCombi
 
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 
 	ASSERT_EQ( respathsMap.size(), 2 );
 	MapContainsPaths( allPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( allPaths, respathsMap, overrideIncludes, allExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 2 );
-	MapContainsPaths( allPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( allPaths, resfileMap, defaultIncludes, allExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 2 );
+	MapContainsPaths( allPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( allPaths, *resfileMap, defaultIncludes, allExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // Both, same count but now with overrides
 	MapContainsPaths( allPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1639,9 +1649,11 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_NoTopLevelFilterSameCombi
 	MapContainsPaths( allPaths, respathsAgainMap, "ResolvedRespathsMap-Again" );
 	ValidatePathMap( allPaths, respathsAgainMap, overrideIncludes, allExcludes, "ResolvedRespathsMap-Again" );
 
-	const auto& resfileAgainMap = namedSection.GetResolvedResfileMap();
-	MapContainsPaths( allPaths, resfileAgainMap, "ResolvedResfileMap-Again" );
-	ValidatePathMap( allPaths, resfileAgainMap, defaultIncludes, allExcludes, "ResolvedResfileMap-Again" );
+	const auto* resfileAgainMap = namedSection.GetResolvedResfileMap();
+	ASSERT_TRUE( resfileAgainMap != nullptr );
+	ASSERT_EQ( resfileAgainMap->size(), 2 );
+	MapContainsPaths( allPaths, *resfileAgainMap, "ResolvedResfileMap-Again" );
+	ValidatePathMap( allPaths, *resfileAgainMap, defaultIncludes, allExcludes, "ResolvedResfileMap-Again" );
 }
 
 TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyExcludeFilterSameCombinedMapWithResfileOverrideIsAllowed )
@@ -1667,15 +1679,16 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyExcludeFilterSameComb
 
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 
 	ASSERT_EQ( respathsMap.size(), 2 );
 	MapContainsPaths( allPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( allPaths, respathsMap, defaultIncludes, allExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 2 );
-	MapContainsPaths( allPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( allPaths, resfileMap, overrideIncludes, allExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 2 );
+	MapContainsPaths( allPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( allPaths, *resfileMap, overrideIncludes, allExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // Both, same count but now with overrides
 	MapContainsPaths( allPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1719,15 +1732,16 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyExcludeFilterSameComb
 
 	const auto& combinedMap = namedSection.GetCombinedResolvedPathMap();
 	const auto& respathsMap = namedSection.GetResolvedRespathsMap();
-	const auto& resfileMap = namedSection.GetResolvedResfileMap();
+	const auto* resfileMap = namedSection.GetResolvedResfileMap();
 
 	ASSERT_EQ( respathsMap.size(), 2 );
 	MapContainsPaths( allPaths, respathsMap, "ResolvedRespathsMap" );
 	ValidatePathMap( allPaths, respathsMap, overrideIncludes, allExcludes, "ResolvedRespathsMap" );
 
-	ASSERT_EQ( resfileMap.size(), 2 );
-	MapContainsPaths( allPaths, resfileMap, "ResolvedResfileMap" );
-	ValidatePathMap( allPaths, resfileMap, defaultIncludes, allExcludes, "ResolvedResfileMap" );
+	ASSERT_TRUE( resfileMap != nullptr );
+	ASSERT_EQ( resfileMap->size(), 2 );
+	MapContainsPaths( allPaths, *resfileMap, "ResolvedResfileMap" );
+	ValidatePathMap( allPaths, *resfileMap, defaultIncludes, allExcludes, "ResolvedResfileMap" );
 
 	ASSERT_EQ( combinedMap.size(), 2 ); // Both, same count but now with overrides
 	MapContainsPaths( allPaths, combinedMap, "ResolvedCombinedMap" );
@@ -1747,9 +1761,11 @@ TEST_F( ResourceToolsTest, FilterNamedSection_Validate_OnlyExcludeFilterSameComb
 	MapContainsPaths( allPaths, respathsAgainMap, "ResolvedRespathsMap-Again" );
 	ValidatePathMap( allPaths, respathsAgainMap, overrideIncludes, allExcludes, "ResolvedRespathsMap-Again" );
 
-	const auto& resfileAgainMap = namedSection.GetResolvedResfileMap();
-	MapContainsPaths( allPaths, resfileAgainMap, "ResolvedResfileMap-Again" );
-	ValidatePathMap( allPaths, resfileAgainMap, defaultIncludes, allExcludes, "ResolvedResfileMap-Again" );
+	const auto* resfileAgainMap = namedSection.GetResolvedResfileMap();
+	ASSERT_TRUE( resfileAgainMap != nullptr );
+	ASSERT_EQ( resfileAgainMap->size(), 2 );
+	MapContainsPaths( allPaths, *resfileAgainMap, "ResolvedResfileMap-Again" );
+	ValidatePathMap( allPaths, *resfileAgainMap, defaultIncludes, allExcludes, "ResolvedResfileMap-Again" );
 }
 
 // ------------------------------------------

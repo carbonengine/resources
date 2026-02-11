@@ -42,8 +42,8 @@ public:
 	// Return the resolved path map from the "respaths" attribute. Only used in tests to verify correctness of data.
 	const std::map<std::string, FilterResourceFilter>& GetResolvedRespathsMap() const;
 
-	// Return the resolved path map from the optional "resfile" attribute. Only used in tests to verify correctness of data.
-	const std::map<std::string, FilterResourceFilter>& GetResolvedResfileMap() const;
+	// Return a pointer to the resolved path map from the optional "resfile" attribute. Only used in tests to verify correctness of data.
+	const std::map<std::string, FilterResourceFilter>* GetResolvedResfileMap() const;
 
 private:
 	// The name of this section (e.g: [SomeSectionName]) from the .ini file.
