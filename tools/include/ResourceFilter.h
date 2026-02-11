@@ -36,13 +36,16 @@ public:
 
 	// Returns the full resolved relative PathMaps from all resource .ini file(s).
 	// Key = "resolved relative path", Value = FilterResourceFilter (include/exclude filters)
-	const std::map<std::string, FilterResourceFilter>& GetFullResolvedPathMap();
+	const std::map<std::string, FilterResourceFilter>& GetFullResolvedPathMap() const;
 
 	// Check if the inFilePath should be included or excluded based on
 	// filtering rules from all the filter .ini file(s)
 	bool FilePathMatchesIncludeFilterRules( const std::filesystem::path& inFilePath );
 
 private:
+	// Populate the full resolved path map from all .ini file(s) in this ResourceFilter.
+	void PopulateFullResolvedPathMap();
+
 	// Static helper function for wildcard matching path strings (supports "*" and "...")
 	static bool WildcardMatch( std::string pattern, const std::string& checkStr );
 

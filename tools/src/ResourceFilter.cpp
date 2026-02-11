@@ -47,6 +47,10 @@ void ResourceFilter::Initialize( const std::vector<std::filesystem::path>& iniFi
 		}
 	}
 
+	// Now we can populate the full resolved path map from all .ini file(s) in
+	// this ResourceFilter (combining filters for any overlapping paths).
+	PopulateFullResolvedPathMap();
+
 	m_initialized = true;
 }
 
@@ -71,37 +75,9 @@ bool ResourceFilter::HasFilters() const
 //   FilterResourceFile(s)
 //   Key = "resolved relative path"
 //   Value = FilterResourceFilter (with include/exclude filters)
-// Note:
-//   The full resolved path map is generated and then cached on
-//   the first call to this function.
 // -------------------------------------------------------------
-const std::map<std::string, FilterResourceFilter>& ResourceFilter::GetFullResolvedPathMap()
+const std::map<std::string, FilterResourceFilter>& ResourceFilter::GetFullResolvedPathMap() const
 {
-	if( m_fullResolvedPathMap.empty() )
-	{
-		// Populate the full resolved path map from all Filter INI files
-		for( auto& iniFile : m_filterFiles )
-		{
-			auto& iniFilePathMap = iniFile->GetIniFileResolvedPathMap();
-			for( const auto& kv : iniFilePathMap )
-			{
-				// Combine filters if the same path already exists
-				auto it = m_fullResolvedPathMap.find( kv.first );
-				if( it != m_fullResolvedPathMap.end() )
-				{
-					// Combine the filters (using raw filter strings)
-					std::string combinedRawFilter = it->second.GetRawFilter() + " " + kv.second.GetRawFilter();
-					FilterResourceFilter combinedFilter( combinedRawFilter );
-					m_fullResolvedPathMap.insert_or_assign( kv.first, combinedFilter );
-				}
-				else
-				{
-					m_fullResolvedPathMap.insert_or_assign( kv.first, kv.second );
-				}
-			}
-		}
-	}
-
 	return m_fullResolvedPathMap;
 }
 
@@ -236,6 +212,40 @@ bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::p
 
 // -------------------------------------------------------------
 // Description:
+//   Populates the full resolved path map from all .ini file(s) in this ResourceFilter.
+// Return Value:
+//   None (void).
+// -------------------------------------------------------------
+void ResourceFilter::PopulateFullResolvedPathMap()
+{
+	if( m_fullResolvedPathMap.empty() )
+	{
+		// Populate the full resolved path map from all Filter INI files
+		for( auto& iniFile : m_filterFiles )
+		{
+			auto& iniFilePathMap = iniFile->GetIniFileResolvedPathMap();
+			for( const auto& kv : iniFilePathMap )
+			{
+				// Combine filters if the same path already exists
+				auto it = m_fullResolvedPathMap.find( kv.first );
+				if( it != m_fullResolvedPathMap.end() )
+				{
+					// Combine the filters (using raw filter strings)
+					std::string combinedRawFilter = it->second.GetRawFilter() + " " + kv.second.GetRawFilter();
+					FilterResourceFilter combinedFilter( combinedRawFilter );
+					m_fullResolvedPathMap.insert_or_assign( kv.first, combinedFilter );
+				}
+				else
+				{
+					m_fullResolvedPathMap.insert( { kv.first, kv.second } );
+				}
+			}
+		}
+	}
+}
+
+// -------------------------------------------------------------
+// Description:
 //   Static helper function for wildcard matching path strings.
 //   Supports the following wildcards:
 //   - "*"   = matches any sequence of characters (at the same folder level)
@@ -254,7 +264,7 @@ bool ResourceFilter::WildcardMatch( std::string pattern, const std::string& chec
 	size_t pos;
 	while( ( pos = pattern.find( "..." ) ) != std::string::npos )
 	{
-		pattern.replace( pos, 3, std::string(1, RECURSIVE_FOLDER_ELLIPSES_WILDCARD) );
+		pattern.replace( pos, 3, std::string( 1, RECURSIVE_FOLDER_ELLIPSES_WILDCARD ) );
 	}
 
 	// Escape special characters and deal with wildcards ("*" and "..." i.e. RECURSIVE_FOLDER_ELLIPSES_WILDCARD)
