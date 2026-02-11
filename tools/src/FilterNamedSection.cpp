@@ -18,6 +18,9 @@ namespace ResourceTools
 //   resfile - the optional "resfile" attribute of this section (e.g: "prefix:/pathToSomeFile.txt")
 //   parentPrefixMap - the FilterPrefixMap from the [DEFAULT] section of the .ini file,
 //     used to resolve prefixes in "respaths" and "resfile" attributes to actual paths.
+// Note:
+//   The combined map from both the "respaths" and "resfile" attributes
+//   is populated on construction of this object.
 // -------------------------------------------------------------
 FilterNamedSection::FilterNamedSection( const std::string& sectionName,
 										const std::string& rawFilter,
@@ -33,6 +36,9 @@ FilterNamedSection::FilterNamedSection( const std::string& sectionName,
 	{
 		throw std::invalid_argument( "Respaths attribute is empty for section: " + m_sectionName );
 	}
+
+	// Populate the combined resolved path map from both "respaths" and optional "resfile" attributes.
+	PopulateCombinedResolvedPathMap();
 }
 
 // -------------------------------------------------------------
@@ -53,45 +59,9 @@ const std::string& FilterNamedSection::GetSectionName() const
 //   and their associated filters from within this section.
 // Return Value:
 //   Map of resolved paths to their associated FilterResourceFilter objects.
-// Note:
-//   The combined map from both the "respaths" and "resfile" attributes
-//   is populated during the first call to this function (and then cached).
 // -------------------------------------------------------------
-const std::map<std::string, FilterResourceFilter>& FilterNamedSection::GetCombinedResolvedPathMap()
+const std::map<std::string, FilterResourceFilter>& FilterNamedSection::GetCombinedResolvedPathMap() const
 {
-	// Only populate the Combined map if not already done so.
-	if( m_resolvedCombinedPathMap.empty() )
-	{
-		// Populate the combined map with "respaths" attribute entries first (as they are non-optional)
-		for( const auto& kv : m_respaths.GetResolvedPathMap() )
-		{
-			m_resolvedCombinedPathMap.insert_or_assign( kv.first, kv.second );
-		}
-
-		// Add the "resfile" attribute entries to the combined map (in case there are any).
-		// Make sure to combine any filters if the same key already exists from the "respaths" attribute.
-		if( m_resfile )
-		{
-			// Allow "resfile" to contain multiple entries (future proofing it, not currently utilized as such in existing .ini filter files)
-			for( const auto& kv : m_resfile->GetResolvedPathMap() )
-			{
-				// Combine filters of both if same key already exists (using the raw filter strings).
-				// Else just add the "resfile" attribue entry to the combined map as is.
-				auto it = m_resolvedCombinedPathMap.find( kv.first );
-				if( it != m_resolvedCombinedPathMap.end() )
-				{
-					std::string combinedRawFilter = it->second.GetRawFilter() + " " + kv.second.GetRawFilter();
-					FilterResourceFilter combinedFilter( combinedRawFilter );
-					m_resolvedCombinedPathMap.insert_or_assign( kv.first, combinedFilter );
-				}
-				else
-				{
-					m_resolvedCombinedPathMap.insert_or_assign( kv.first, kv.second );
-				}
-			}
-		}
-	}
-
 	return m_resolvedCombinedPathMap;
 }
 
@@ -129,6 +99,48 @@ const std::map<std::string, FilterResourceFilter>* FilterNamedSection::GetResolv
 	}
 
 	return nullptr;
+}
+
+// -------------------------------------------------------------
+// Description:
+//   Populates the combined resolved path map from both "respaths" and optional "resfile" attributes.
+// Return Value:
+//   None (void)
+// -------------------------------------------------------------
+void FilterNamedSection::PopulateCombinedResolvedPathMap()
+{
+	// Only populate the Combined map if not already done so.
+	if( m_resolvedCombinedPathMap.empty() )
+	{
+		// Populate the combined map with "respaths" attribute entries first (as they are non-optional)
+		for( const auto& kv : m_respaths.GetResolvedPathMap() )
+		{
+			m_resolvedCombinedPathMap.insert( {kv.first, kv.second } );
+		}
+
+		// Add the "resfile" attribute entries to the combined map (in case there are any).
+		// Make sure to combine any filters if the same key already exists from the "respaths" attribute.
+		if( m_resfile )
+		{
+			// Allow "resfile" to contain multiple entries (future proofing it, not currently utilized as such in existing .ini filter files)
+			for( const auto& kv : m_resfile->GetResolvedPathMap() )
+			{
+				// Combine filters of both if same key already exists (using the raw filter strings).
+				// Else just add the "resfile" attribue entry to the combined map as is.
+				auto it = m_resolvedCombinedPathMap.find( kv.first );
+				if( it != m_resolvedCombinedPathMap.end() )
+				{
+					std::string combinedRawFilter = it->second.GetRawFilter() + " " + kv.second.GetRawFilter();
+					FilterResourceFilter combinedFilter( combinedRawFilter );
+					m_resolvedCombinedPathMap.insert_or_assign( kv.first, combinedFilter );
+				}
+				else
+				{
+					m_resolvedCombinedPathMap.insert( {kv.first, kv.second } );
+				}
+			}
+		}
+	}
 }
 
 }
