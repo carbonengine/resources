@@ -86,7 +86,7 @@ bool CreateResourceGroupCliOperation::Execute( std::string& returnErrorMessage )
 
 	exportParams.outputDocumentVersion = createResourceGroupParams.outputDocumentVersion;
 
-	if( m_argumentParser->is_used( m_createResourceGroupIniFilterFilesArgumentId ))
+	if( m_argumentParser->is_used( m_createResourceGroupIniFilterFilesArgumentId ) )
 	{
 		std::vector<std::filesystem::path> filterIniFilePaths;
 		auto iniFileStringVector = m_argumentParser->get<std::vector<std::string>>( m_createResourceGroupIniFilterFilesArgumentId );
@@ -95,12 +95,8 @@ bool CreateResourceGroupCliOperation::Execute( std::string& returnErrorMessage )
 		{
 			if( !iniPathStr.empty() )
 			{
-				filterIniFilePaths.push_back( iniPathStr );
+				createResourceGroupParams.resourceFilterIniFiles.emplace_back( iniPathStr );
 			}
-		}
-		if ( !filterIniFilePaths.empty() )
-		{
-			createResourceGroupParams.resourceFilterIniFiles = filterIniFilePaths;
 		}
 	}
 
