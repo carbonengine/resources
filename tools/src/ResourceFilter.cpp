@@ -94,9 +94,9 @@ const std::map<std::string, FilterResourceFilter>& ResourceFilter::GetFullResolv
 // -------------------------------------------------------------
 bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::path& inFilePath )
 {
-	// Make sure we work with the absolute path representation of the input file
-	std::filesystem::path inFilePathAbs = std::filesystem::absolute( inFilePath );
-	std::string inFileNormalAbsPathStr = NormalizePath( inFilePathAbs.generic_string() );
+	// Make sure we work with relative paths (no matter if the inFilePath is relative or absolute)
+	std::filesystem::path inFilePathRel = std::filesystem::relative( inFilePath, std::filesystem::current_path() );
+	std::string inFileNormalRelPathStr = NormalizePath( inFilePathRel.generic_string() );
 
 	// Priority: lower is higher priority:
 	// -1 = exact match on filename (or folder)
@@ -109,12 +109,12 @@ bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::p
 	const auto& resolvedPathMap = GetFullResolvedPathMap();
 	for( const auto& [resolvedRelativePathStr, filter] : resolvedPathMap )
 	{
-		// Use normalized absolute paths for comparison
+		// Use normalized relative paths for comparison (make sure to convert resolved path to relative, in case there was absolute path in an .ini file)
 		std::filesystem::path resolvedRelativePath( resolvedRelativePathStr );
-		std::filesystem::path resolvedPathAbs = std::filesystem::absolute( resolvedRelativePath );
-		std::string resolvedNormalAbsPathStr = NormalizePath( resolvedPathAbs.generic_string() );
+		std::filesystem::path resolvedPathRel = std::filesystem::relative( resolvedRelativePath, std::filesystem::current_path() );
+		std::string resolvedNormalRelPathStr = NormalizePath( resolvedPathRel.generic_string() );
 
-		if( resolvedNormalAbsPathStr == inFileNormalAbsPathStr )
+		if( resolvedNormalRelPathStr == inFileNormalRelPathStr )
 		{
 			// If there is an exact match on the full filename path, this means highest priority
 			// and the file path should be considered an "include". This is even though resolvedPath
@@ -124,36 +124,32 @@ bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::p
 			continue;
 		}
 
-		// Make sure the resolvedNormalAbsPathStr contains the "..." (recursive folder wildcard) if the
-		// original resolvedRelativePathStr had it.
+		// Make sure the resolvedNormalRelPathStr contains the "..." (recursive folder wildcard)
+		// if the original resolvedRelativePathStr had it.
 		// Only check the end of the string for any combination of ["/...", "...", ".../"].
 		if( resolvedRelativePathStr.find( "...", resolvedRelativePathStr.size() - 4 ) != std::string::npos )
 		{
-			if( resolvedNormalAbsPathStr.find( "...", resolvedNormalAbsPathStr.size() - 4 ) == std::string::npos )
+			if( resolvedNormalRelPathStr.find( "...", resolvedNormalRelPathStr.size() - 4 ) == std::string::npos )
 			{
-				if( resolvedNormalAbsPathStr.back() != '/' )
+				if( resolvedNormalRelPathStr.back() != '/' )
 				{
-					resolvedNormalAbsPathStr += '/';
+					resolvedNormalRelPathStr += '/';
 				}
-				resolvedNormalAbsPathStr += "...";
+				resolvedNormalRelPathStr += "...";
 			}
 		}
 
-		// Perform Wildcard matching on the normalized absolute paths
-		if( !WildcardMatch( resolvedNormalAbsPathStr, inFileNormalAbsPathStr ) )
+		// Perform Wildcard matching on the normalized relative paths
+		if( !WildcardMatch( resolvedNormalRelPathStr, inFileNormalRelPathStr ) )
 		{
 			// There was NO wildcard match on paths, ignore this resolvedRelativePath entry
 			continue;
 		}
 
 		// There is a Wildcard match - determine the folder depth difference
-		// Reset the path variables to their Normalized absolute path components (in case they differ from non-Normalized version)
-		inFilePathAbs = std::filesystem::absolute( inFileNormalAbsPathStr );
-		resolvedPathAbs = std::filesystem::absolute( resolvedNormalAbsPathStr );
-
-		auto inFileIt = inFilePathAbs.begin();
-		auto resolvedIt = resolvedPathAbs.begin();
-		while( inFileIt != inFilePathAbs.end() && resolvedIt != resolvedPathAbs.end() && *inFileIt == *resolvedIt )
+		auto inFileIt = inFilePathRel.begin();
+		auto resolvedIt = resolvedPathRel.begin();
+		while( inFileIt != inFilePathRel.end() && resolvedIt != resolvedPathRel.end() && *inFileIt == *resolvedIt )
 		{
 			++inFileIt;
 			++resolvedIt;
@@ -161,7 +157,7 @@ bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::p
 
 		std::filesystem::path remainingPath;
 		int folderDiffDepthPriority = -1; // Start at -1 (making first iteration priority 0 = same folder level)
-		while( inFileIt != inFilePathAbs.end() )
+		while( inFileIt != inFilePathRel.end() )
 		{
 			++folderDiffDepthPriority;
 			remainingPath /= *inFileIt;
