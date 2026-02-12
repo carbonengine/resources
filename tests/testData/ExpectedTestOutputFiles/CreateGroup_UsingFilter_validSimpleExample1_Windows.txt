@@ -1,0 +1,2 @@
+resourcesOnBranch/introMovie.txt,1c/1c6368ffb440041a_e9fadf6f2d386a0a0786bc863f20fa34,e9fadf6f2d386a0a0786bc863f20fa34,9091,3232,33206
+resourcesOnBranch/videoCardCategories.yaml,ff/ffe4c396c9c935d4_90d25dac9f4ed3233c5fda72bee3dfe6,90d25dac9f4ed3233c5fda72bee3dfe6,32815,5003,33206

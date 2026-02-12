@@ -288,7 +288,7 @@ TEST_F( ResourcesCliTest, CreateResourceGroupFromDirectoryOldDocumentFormatWithP
 
 //---------------------------------------
 
-TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
+TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1_YamlOutput )
 {
 	// Setup test parameters
 	std::string output;
@@ -302,17 +302,15 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 	RemoveFiles( { outputFilePath } );
 
 	arguments.push_back( "create-group" );
-
 	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
-
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "3" );
-
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.1.0" );  // This is default YAML document version (setting it explicitly for clarity in test)
 
 	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
 	std::cout << "--- RunCli() output: ---" << std::endl;
@@ -332,7 +330,49 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1 )
 	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
 }
 
-TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
+TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1_CsvTxtOutput )
+{
+	// Setup test parameters
+	std::string output;
+	std::string errorOutput;
+	std::vector<std::string> arguments;
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleExample1.txt" );
+	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
+
+	// Ensure any previous test output files are removed
+	RemoveFiles( { outputFilePath } );
+
+	arguments.push_back( "create-group" );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+	arguments.push_back( "--filter-file" );
+	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--output-file" );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
+
+	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
+	std::cout << "--- RunCli() output: ---" << std::endl;
+	std::cout << output << std::endl;
+	std::cout << "------------------------" << std::endl;
+
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
+
+	// Check expected outcome
+#if _WIN64
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleExample1_Windows.txt" );
+#elif __APPLE__
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleExample1_macOS.txt" );
+#else
+#error Unsupported platform
+#endif
+	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1_YamlOutput )
 {
 	// Setup test parameters
 	std::string output;
@@ -346,17 +386,15 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 	RemoveFiles( { outputFilePath } );
 
 	arguments.push_back( "create-group" );
-
 	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
-
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "3" );
-
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.1.0" );  // This is default YAML document version (setting it explicitly for clarity in test)
 
 	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
 	std::cout << "--- RunCli() output: ---" << std::endl;
@@ -376,7 +414,49 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1 )
 	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
 }
 
-TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 )
+TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1_CsvTxtOutput )
+{
+	// Setup test parameters
+	std::string output;
+	std::string errorOutput;
+	std::vector<std::string> arguments;
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validComplexExample1.txt" );
+	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validComplexExample1.ini";
+
+	// Ensure any previous test output files are removed
+	RemoveFiles( { outputFilePath } );
+
+	arguments.push_back( "create-group" );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+	arguments.push_back( "--filter-file" );
+	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--output-file" );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
+
+	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
+	std::cout << "--- RunCli() output: ---" << std::endl;
+	std::cout << output << std::endl;
+	std::cout << "------------------------" << std::endl;
+
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
+
+	// Check expected outcome
+#if _WIN64
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validComplexExample1_Windows.txt" );
+#elif __APPLE__
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validComplexExample1_macOS.txt" );
+#else
+#error Unsupported platform
+#endif
+	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1_YamlOutput )
 {
 	// Setup test parameters
 	std::string output;
@@ -393,20 +473,18 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 	RemoveFiles( { outputFilePath } );
 
 	arguments.push_back( "create-group" );
-
 	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
-
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "3" );
-
 	for( auto filterFilePath : filterIniFilePaths )
 	{
 		arguments.push_back( "--filter-file" );
 		arguments.push_back( filterFilePath.lexically_normal().string() );
 	}
-
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.1.0" );  // This is default YAML document version (setting it explicitly for clarity in test)
 
 	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
 	std::cout << "--- RunCli() output: ---" << std::endl;
@@ -420,6 +498,54 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1 
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleAndComplexExample1_Windows.yaml" );
 #elif __APPLE__
 	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleAndComplexExample1_macOS.yaml" );
+#else
+#error Unsupported platform
+#endif
+	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1_CsvTxtOutput )
+{
+	// Setup test parameters
+	std::string output;
+	std::string errorOutput;
+	std::vector<std::string> arguments;
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleAndComplexExample1.txt" );
+	std::vector<std::filesystem::path> filterIniFilePaths = {
+		"ExampleIniFiles/validSimpleExample1.ini",
+		"ExampleIniFiles/validComplexExample1.ini"
+	};
+
+	// Ensure any previous test output files are removed
+	RemoveFiles( { outputFilePath } );
+
+	arguments.push_back( "create-group" );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+	for( auto filterFilePath : filterIniFilePaths )
+	{
+		arguments.push_back( "--filter-file" );
+		arguments.push_back( filterFilePath.lexically_normal().string() );
+	}
+	arguments.push_back( "--output-file" );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
+
+	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
+	std::cout << "--- RunCli() output: ---" << std::endl;
+	std::cout << output << std::endl;
+	std::cout << "------------------------" << std::endl;
+
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
+
+	// Check expected outcome
+#if _WIN64
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleAndComplexExample1_Windows.txt" );
+#elif __APPLE__
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleAndComplexExample1_macOS.txt" );
 #else
 #error Unsupported platform
 #endif
