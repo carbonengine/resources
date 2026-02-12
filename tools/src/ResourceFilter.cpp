@@ -147,6 +147,10 @@ bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::p
 		}
 
 		// There is a Wildcard match - determine the folder depth difference
+		// Reset the path variables to their Normalized absolute path components (in case they differ from non-Normalized version)
+		inFilePathAbs = std::filesystem::absolute( inFileNormalAbsPathStr );
+		resolvedPathAbs = std::filesystem::absolute( resolvedNormalAbsPathStr );
+
 		auto inFileIt = inFilePathAbs.begin();
 		auto resolvedIt = resolvedPathAbs.begin();
 		while( inFileIt != inFilePathAbs.end() && resolvedIt != resolvedPathAbs.end() && *inFileIt == *resolvedIt )
