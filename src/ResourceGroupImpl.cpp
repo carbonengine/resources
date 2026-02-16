@@ -74,7 +74,7 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 	{
 		try
 		{
-			resourceFilter.Initialize( params.resourceFilterIniFiles );
+			resourceFilter.Initialize( params.resourceFilterIniFiles, params.resourceFilterIniFilesBaseDirectory, params.directory );
 		}
 		catch( const std::exception& e )
 		{

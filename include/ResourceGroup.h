@@ -205,7 +205,9 @@ struct ResourceGroupExportToFileParams
     *  If export resources is set, specifies where the produced PatchResourceGroup will be saved.
     *  @see CreateResourceGroupFromDirectoryParams::exportResources
     *  @var CreateResourceGroupFromDirectoryParams::resourceFilterIniFiles
-	*  List of INI file(s) containing include/exclude rules for resource filtering
+    *  List of INI file(s) containing include/exclude rules for resource filtering
+    *  @var CreateResourceGroupFromDirectoryParams::resourceFilterIniFilesBaseDirectory
+    *  Base directory to resolve any relative paths contained within resourceFilterIniFiles.
     */
 struct CreateResourceGroupFromDirectoryParams
 {
@@ -219,13 +221,18 @@ struct CreateResourceGroupFromDirectoryParams
 
 	std::string resourcePrefix = "";
 
-    bool calculateCompressions = true;
+	bool calculateCompressions = true;
 
-    bool exportResources = false;
+	bool exportResources = false;
 
-    ResourceDestinationSettings exportResourcesDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_CDN, "ExportedResources" };
+	ResourceDestinationSettings exportResourcesDestinationSettings = {
+		CarbonResources::ResourceDestinationType::LOCAL_CDN,
+		"ExportedResources"
+	};
 
 	std::vector<std::filesystem::path> resourceFilterIniFiles = {};
+
+	std::filesystem::path resourceFilterIniFilesBaseDirectory = "";
 };
 
 /** @struct ResourceGroupMergeParams

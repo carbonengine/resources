@@ -1961,7 +1961,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ConfirmFileLoadFailure_SingleIniFileTh
 	ResourceTools::ResourceFilter resourceFilter;
 	try
 	{
-		resourceFilter.Initialize( paths );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
 		FAIL() << "Expected this test to fail: ResourceFilter_Load_SingleFile_ThatDoesNotExist";
 	}
 	catch( const std::exception& e )
@@ -1987,7 +1987,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ConfirmFileLoadFailure_MultipleFilesOn
 	ResourceTools::ResourceFilter resourceFilter;
 	try
 	{
-		resourceFilter.Initialize( paths );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
 		FAIL() << "Expected this test to fail: ResourceFilter_Load_MultipleFiles_OneThatDoesNotExist";
 	}
 	catch( const std::exception& e )
@@ -2012,7 +2012,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ConfirmSuccessfulFileLoad_example1_ini
 	ResourceTools::ResourceFilter resourceFilter;
 	try
 	{
-		resourceFilter.Initialize( paths );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
 		ASSERT_TRUE( true ); // If we got here, the file loaded successfully without any exceptions
 	}
 	catch( const std::exception& e )
@@ -2025,75 +2025,28 @@ TEST_F( ResourceToolsTest, ResourceFilter_ConfirmSuccessfulFileLoad_example1_ini
 	}
 }
 
-TEST_F( ResourceToolsTest, ResourceFilter_Validate_RaiiClassCurrentWorkingDirectoryChanger_ChangesWorkingDirectoryForDurationOfTest )
-{
-	// This test validates that the RAII CurrentWorkingDirectoryChanger class correctly changes
-	// the current working directory for the duration of the test.
-	std::filesystem::path pathBeforeChange = std::filesystem::current_path();
-	std::filesystem::path testDataPath = TEST_DATA_BASE_PATH;
-
-	{
-		// RAII class to change the current working directory for the duration of this test
-		// Needed so both relative paths in the .ini file resolve correctly,
-		// based on paths to the location of the example .ini files
-		CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
-
-		const std::filesystem::path iniPath1 = "ExampleIniFiles/example1.ini";
-		std::vector<std::filesystem::path> paths = { iniPath1 };
-		ResourceTools::ResourceFilter resourceFilter;
-		try
-		{
-			resourceFilter.Initialize( paths );
-			ASSERT_EQ( resourceFilter.HasFilters(), true );
-			ASSERT_EQ( resourceFilter.GetFullResolvedPathMap().size(), 7 );
-
-			// Check that the "binaryFileIndex_v0_0_0.txt" file (and it's path) is included correctly
-			std::filesystem::path oneValidRelativePath = "./Indicies/binaryFileIndex_v0_0_0.txt";
-			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( oneValidRelativePath ), true );
-		}
-		catch( const std::exception& e )
-		{
-			FAIL() << "Exception in test, should not have failed: " << e.what();
-		}
-		catch( ... )
-		{
-			FAIL() << "Unknown exception thrown while initializing ResourceFilter with example1.ini";
-		}
-
-		// Make sure the working directory is set to the testDataPath and not the original path
-		ASSERT_EQ( std::filesystem::current_path().lexically_normal().string(), testDataPath.lexically_normal().string() ) << "Current working directory should be the TEST_DATA_BASE_PATH";
-		ASSERT_NE( std::filesystem::current_path().lexically_normal().string(), pathBeforeChange.lexically_normal().string() ) << "Current working directory should not be same as at start of test";
-	}
-
-	// After the RAII object goes out of scope, the working directory should be restored to the original path
-	ASSERT_EQ( std::filesystem::current_path().lexically_normal().string(), pathBeforeChange.lexically_normal().string() ) << "Current working directory should have been restored";
-	ASSERT_NE( std::filesystem::current_path().lexically_normal().string(), testDataPath.lexically_normal().string() ) << "Current working directory should not be the TEST_DATA_BASE_PATH";
-}
-
 TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativePaths_validSimpleExample1_ini )
 {
 	// This test validates that initializing a ResourceFilter with a valid ini file (validSimpleExample1.ini),
-	// using relative paths, loads successfully and the expected paths and filters are present.
-
-	// Alter the current working directory for the duration of this test
-	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+	// using relative paths to .ini file, loads successfully and the expected paths and filters are present.
 	try
 	{
 		const std::filesystem::path iniPath1 = "ExampleIniFiles/validSimpleExample1.ini";
 		std::vector<std::filesystem::path> paths = { iniPath1 };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
 
-		// Validate correct included paths via the resourceFilter:
+		// Validate correct included paths via the resourceFilter
+		// Always compare those based on absolute paths:
 		std::set<std::filesystem::path> validResolvedRelativePaths = {
-			"resourcesOnBranch/introMovie.txt",
-			"resourcesOnBranch/videoCardCategories.yaml"
+			GetTestFileFileAbsolutePath( "resourcesOnBranch/introMovie.txt" ) ,
+			GetTestFileFileAbsolutePath( "resourcesOnBranch/videoCardCategories.yaml" )
 		};
 
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativePath ), true ) << "Should have included absolute path: " << resolvedRelativePath.generic_string();
 		}
 
 		// Additional check to make sure the FullResolvedPathMap contains correct data (either include or exclude):
@@ -2109,6 +2062,10 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativ
 		MapContainsPaths( expectedPaths, fullPathMap, "FullResolvedPathMap from validSimpleExample1.ini" );
 		ValidatePathMap( expectedPaths, fullPathMap, expectedIncludes, expectedExcludes, "FullResolvedPathMap from validSimpleExample1.ini" );
 	}
+	catch( const std::exception& e )
+	{
+		FAIL() << "Test failed with: " << e.what();
+	}
 	catch( ... )
 	{
 		FAIL() << "Test failed when it should have passed.";
@@ -2118,22 +2075,19 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativ
 TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolutePaths_validSimpleExample1_ini )
 {
 	// This test validates that initializing a ResourceFilter with a valid ini file (validSimpleExample1.ini),
-	// using absolute paths, loads successfully and the expected paths and filters are present.
-
-	// Alter the current working directory for the duration of this test
-	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+	// using absolute path to .ini file, loads successfully and the expected paths and filters are present.
 	try
 	{
-		const std::filesystem::path iniPath1 = "ExampleIniFiles/validSimpleExample1.ini";
-		std::filesystem::path iniPath1Abs = std::filesystem::absolute( iniPath1 );
-		std::vector<std::filesystem::path> paths = { iniPath1Abs };
+		const std::filesystem::path iniPath1 = GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" );
+		//std::filesystem::path iniPath1Abs = std::filesystem::absolute( iniPath1 );
+		std::vector<std::filesystem::path> paths = { iniPath1 };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
 
-		// Validate correct included paths via the resourceFilter:
+		// Validate correct included paths via the resourceFilter (compare absolute paths):
 		std::set<std::filesystem::path> validResolvedAbsolutePaths = {
-			std::filesystem::absolute( "resourcesOnBranch/introMovie.txt" ),
-			std::filesystem::absolute( "resourcesOnBranch/videoCardCategories.yaml" )
+			GetTestFileFileAbsolutePath( "resourcesOnBranch/introMovie.txt" ),
+			GetTestFileFileAbsolutePath( "resourcesOnBranch/videoCardCategories.yaml" )
 		};
 
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
@@ -2155,6 +2109,10 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolut
 		MapContainsPaths( expectedPaths, fullPathMap, "FullResolvedPathMap from validSimpleExample1.ini" );
 		ValidatePathMap( expectedPaths, fullPathMap, expectedIncludes, expectedExcludes, "FullResolvedPathMap from validSimpleExample1.ini" );
 	}
+	catch( const std::exception& e )
+	{
+		FAIL() << "Test failed with: " << e.what();
+	}
 	catch( ... )
 	{
 		FAIL() << "Test failed when it should have passed.";
@@ -2164,38 +2122,35 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolut
 TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativePaths_validComplexExample1_ini )
 {
 	// This test validates that initializing a ResourceFilter with a valid ini file (validComplexExample1.ini),
-	// using relative paths, loads successfully and the expected paths and filters are present.
-
-	// Alter the current working directory for the duration of this test
-	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+	// using relative path to .ini file, loads successfully and the expected paths and filters are present.
 	try
 	{
 		const std::filesystem::path iniPath1 = "ExampleIniFiles/validComplexExample1.ini";
 		std::vector<std::filesystem::path> paths = { iniPath1 };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
 
-		// Validate correct included paths via the resourceFilter:
+		// Validate correct included paths via the resourceFilter (compare absolute paths):
 		std::set<std::filesystem::path> validResolvedRelativePaths = {
 			//"PatchWithInputChunk/NextBuildResources/introMovie.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ]
-			"PatchWithInputChunk/NextBuildResources/introMoviePrefixed.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resLocalCDN:/../NextBuildResources/introMoviePrefixed.txt
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/introMoviePrefixed.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resLocalCDN:/../NextBuildResources/introMoviePrefixed.txt
 			//"PatchWithInputChunk/NextBuildResources/introMovieSomewhatChanged.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ]
-			"PatchWithInputChunk/NextBuildResources/testResource2.txt",
-			"PatchWithInputChunk/NextBuildResources/videoCardCategories.yaml",
-			"PatchWithInputChunk/PreviousBuildResources/introMovie.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
-			"PatchWithInputChunk/PreviousBuildResources/introMoviePrefixed.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
-			"PatchWithInputChunk/PreviousBuildResources/introMovieSomewhatChanged.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/testResource2.txt" ) ,
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/videoCardCategories.yaml" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/introMovie.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/introMoviePrefixed.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/introMovieSomewhatChanged.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
 			//"PatchWithInputChunk/PreviousBuildResources/testResource.txt", // resRoot:/PatchWithInputChunk/PreviousBuildResources/* ![ testResource.txt ]
-			"PatchWithInputChunk/PreviousBuildResources/videoCardCategories.yaml",
-			"PatchWithInputChunk/PatchResourceGroup_previousBuild_latestBuild.yaml",
-			"PatchWithInputChunk/resFileIndexShort_build_next.txt",
-			"PatchWithInputChunk/resFileIndexShort_build_previous.txt",
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/videoCardCategories.yaml" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PatchResourceGroup_previousBuild_latestBuild.yaml" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/resFileIndexShort_build_next.txt" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/resFileIndexShort_build_previous.txt" ),
 		};
 
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativePath ), true ) << "Should have included absolute path: " << resolvedRelativePath.generic_string();
 		}
 
 		// Additional check to make sure the FullResolvedPathMap contains correct data (either include or exclude):
@@ -2275,38 +2230,35 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativ
 TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolutePath_validComplexExample1_ini )
 {
 	// This test validates that initializing a ResourceFilter with a valid ini file (validComplexExample1.ini),
-	// using absolute paths, loads successfully and the expected paths and filters are present.
-
-	// Alter the current working directory for the duration of this test
-	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
+	// using absolute path to .ini file, loads successfully and the expected paths and filters are present.
 	try
 	{
-		const std::filesystem::path iniPath1 = "ExampleIniFiles/validComplexExample1.ini";
-		std::vector<std::filesystem::path> pathsAbs = { std::filesystem::absolute( iniPath1 ) };
+		const std::filesystem::path iniPath1 = GetTestFileFileAbsolutePath( "ExampleIniFiles/validComplexExample1.ini" );
+		std::vector<std::filesystem::path> pathsAbs = { iniPath1 };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( pathsAbs );
+		resourceFilter.Initialize( pathsAbs, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
 
 		// Validate correct included paths via the resourceFilter:
 		std::set<std::filesystem::path> validResolvedRelativePaths = {
 			//"PatchWithInputChunk/NextBuildResources/introMovie.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ]
-			std::filesystem::absolute( "PatchWithInputChunk/NextBuildResources/introMoviePrefixed.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resLocalCDN:/../NextBuildResources/introMoviePrefixed.txt
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/introMoviePrefixed.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resLocalCDN:/../NextBuildResources/introMoviePrefixed.txt
 			//"PatchWithInputChunk/NextBuildResources/introMovieSomewhatChanged.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ]
-			std::filesystem::absolute( "PatchWithInputChunk/NextBuildResources/testResource2.txt" ),
-			std::filesystem::absolute( "PatchWithInputChunk/NextBuildResources/videoCardCategories.yaml" ),
-			std::filesystem::absolute( "PatchWithInputChunk/PreviousBuildResources/introMovie.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
-			std::filesystem::absolute( "PatchWithInputChunk/PreviousBuildResources/introMoviePrefixed.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
-			std::filesystem::absolute( "PatchWithInputChunk/PreviousBuildResources/introMovieSomewhatChanged.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/testResource2.txt" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/videoCardCategories.yaml" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/introMovie.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/introMoviePrefixed.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/introMovieSomewhatChanged.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
 			//"PatchWithInputChunk/PreviousBuildResources/testResource.txt", // resRoot:/PatchWithInputChunk/PreviousBuildResources/* ![ testResource.txt ]
-			std::filesystem::absolute( "PatchWithInputChunk/PreviousBuildResources/videoCardCategories.yaml" ),
-			std::filesystem::absolute( "PatchWithInputChunk/PatchResourceGroup_previousBuild_latestBuild.yaml" ),
-			std::filesystem::absolute( "PatchWithInputChunk/resFileIndexShort_build_next.txt" ),
-			std::filesystem::absolute( "PatchWithInputChunk/resFileIndexShort_build_previous.txt" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/videoCardCategories.yaml" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PatchResourceGroup_previousBuild_latestBuild.yaml" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/resFileIndexShort_build_next.txt" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/resFileIndexShort_build_previous.txt" ),
 		};
 
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedAbsPath : validResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedAbsPath ), true ) << "Should have included relative path: " << resolvedAbsPath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedAbsPath ), true ) << "Should have included absolute path: " << resolvedAbsPath.generic_string();
 		}
 
 		// Additional check to make sure the FullResolvedPathMap contains correct data (either include or exclude):
@@ -2386,46 +2338,43 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolut
 TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulLoadOf2IniFiles_validComplexExample1_and_validSimpleExample1 )
 {
 	// This test validates that initializing a ResourceFilter with two valid ini files
-	// (validComplexExample1.ini and validSimpleExample1.ini), using relative paths,
+	// (validComplexExample1.ini and validSimpleExample1.ini), using absolute paths,
 	// loads successfully and the expected paths and filters from both ini files are
 	// present in the resulting ResourceFilter.
-
-	// Alter the current working directory for the duration of this test
-	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
 	try
 	{
 		std::vector<std::filesystem::path> paths = {
-			"ExampleIniFiles/validComplexExample1.ini",
-			"ExampleIniFiles/validSimpleExample1.ini"
+			GetTestFileFileAbsolutePath( "ExampleIniFiles/validComplexExample1.ini" ),
+			GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" )
 		};
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
 
 		// Validate correct included paths via the resourceFilter:
 		std::set<std::filesystem::path> validResolvedRelativePaths = {
 			// From validComplexExample1:
 			//"PatchWithInputChunk/NextBuildResources/introMovie.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ]
-			"PatchWithInputChunk/NextBuildResources/introMoviePrefixed.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resLocalCDN:/../NextBuildResources/introMoviePrefixed.txt
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/introMoviePrefixed.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resLocalCDN:/../NextBuildResources/introMoviePrefixed.txt
 			//"PatchWithInputChunk/NextBuildResources/introMovieSomewhatChanged.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ]
-			"PatchWithInputChunk/NextBuildResources/testResource2.txt",
-			"PatchWithInputChunk/NextBuildResources/videoCardCategories.yaml",
-			"PatchWithInputChunk/PreviousBuildResources/introMovie.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
-			"PatchWithInputChunk/PreviousBuildResources/introMoviePrefixed.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
-			"PatchWithInputChunk/PreviousBuildResources/introMovieSomewhatChanged.txt", // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/testResource2.txt" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/videoCardCategories.yaml" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/introMovie.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/introMoviePrefixed.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/introMovieSomewhatChanged.txt" ), // resRoot:/PatchWithInputChunk/... ![ Movie ] + resPrevious:/* [ Movie ]
 			//"PatchWithInputChunk/PreviousBuildResources/testResource.txt", // resRoot:/PatchWithInputChunk/PreviousBuildResources/* ![ testResource.txt ]
-			"PatchWithInputChunk/PreviousBuildResources/videoCardCategories.yaml",
-			"PatchWithInputChunk/PatchResourceGroup_previousBuild_latestBuild.yaml",
-			"PatchWithInputChunk/resFileIndexShort_build_next.txt",
-			"PatchWithInputChunk/resFileIndexShort_build_previous.txt",
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PreviousBuildResources/videoCardCategories.yaml" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/PatchResourceGroup_previousBuild_latestBuild.yaml" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/resFileIndexShort_build_next.txt" ),
+			GetTestFileFileAbsolutePath( "PatchWithInputChunk/resFileIndexShort_build_previous.txt" ),
 			// From validSimpleExample1.ini:
-			"resourcesOnBranch/introMovie.txt",
-			"resourcesOnBranch/videoCardCategories.yaml"
+			GetTestFileFileAbsolutePath( "resourcesOnBranch/introMovie.txt" ),
+			GetTestFileFileAbsolutePath( "resourcesOnBranch/videoCardCategories.yaml" )
 		};
 
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedRelativePath : validResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativePath ), true ) << "Should have included relative path: " << resolvedRelativePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativePath ), true ) << "Should have included absolute path: " << resolvedRelativePath.generic_string();
 		}
 
 		// Additional check to make sure the FullResolvedPathMap contains correct data (either include or exclude):
@@ -2516,15 +2465,12 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccess_FileLoadOverrideUsingD
 	// This test validates that initializing a ResourceFilter with a valid ini file (validOverrideDifferentRelativeSameAbsolutePaths.ini),
 	// using two distinct relative paths (which result in the same absolute path), loads successfully and the expected paths and filters are present.
 	// See notes in the validOverrideDifferentRelativeSameAbsolutePaths.ini file for further details.
-
-	// Alter the current working directory for the duration of this test
-	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
 	try
 	{
-		const std::filesystem::path iniPath = "ExampleIniFiles/validOverrideDifferentRelativeSameAbsolutePaths.ini";
+		const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validOverrideDifferentRelativeSameAbsolutePaths.ini" );
 		std::vector<std::filesystem::path> paths = { iniPath };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
 
 		// Validate correct included and exclude paths via the resourceFilter:
 		// - Because of the two distinct relative paths (./resourcesOnBranch/* and /resourcesOnBranch/*)
@@ -2532,18 +2478,18 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccess_FileLoadOverrideUsingD
 		//   both of the files should be EXCLUDED (i.e. equal priority means that exclude wins)
 		std::set<std::filesystem::path> validIncludeResolvedRelativePaths = {};
 		std::set<std::filesystem::path> validExcludeResolvedRelativePaths = {
-			"resourcesOnBranch/introMovie.txt",
-			"resourcesOnBranch/videoCardCategories.yaml"
+			GetTestFileFileAbsolutePath( "resourcesOnBranch/introMovie.txt" ),
+			GetTestFileFileAbsolutePath( "resourcesOnBranch/videoCardCategories.yaml" )
 		};
 
 		ASSERT_EQ( resourceFilter.HasFilters(), true );
 		for( const auto& resolvedRelativeIncludePath : validIncludeResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativeIncludePath ), true ) << "Should have included relative path: " << resolvedRelativeIncludePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativeIncludePath ), true ) << "Should have included absolute path: " << resolvedRelativeIncludePath.generic_string();
 		}
 		for( const auto& resolvedRelativeExcludePath : validExcludeResolvedRelativePaths )
 		{
-			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativeExcludePath ), false ) << "Should have excluded relative path: " << resolvedRelativeExcludePath.generic_string();
+			ASSERT_EQ( resourceFilter.FilePathMatchesIncludeFilterRules( resolvedRelativeExcludePath ), false ) << "Should have excluded absolute path: " << resolvedRelativeExcludePath.generic_string();
 		}
 
 		// Additional checks to make sure the FullResolvedPathMap contains correct include/exclude filter data
@@ -2589,22 +2535,19 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccess_FileLoadRespathInlineO
 	// This test validates that initializing a ResourceFilter with a valid ini file (validInlineFilterOverrideOnSameRelativePath.ini), using two
 	// identical "respath" path entries with distinct overriding include/exclude filters, loads successfully and the expected paths and filters are present.
 	// See notes in the validInlineFilterOverrideOnSameRelativePath.ini file for further details.
-
-	// Alter the current working directory for the duration of this test
-	CurrentWorkingDirectoryChanger cwdRAII( TEST_DATA_BASE_PATH );
 	try
 	{
-		const std::filesystem::path iniPath = "ExampleIniFiles/validInlineFilterOverrideOnSameRelativePath.ini";
+		const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validInlineFilterOverrideOnSameRelativePath.ini" );
 		std::vector<std::filesystem::path> paths = { iniPath };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
 
 		// Validate correct included and exclude paths via the resourceFilter:
 		// - Because of the overriding rules for the identical "respath" path entries.
 		//   We should end up with includes of BOTH .txt and .yaml files with no excludes.
 		std::set<std::filesystem::path> validIncludeResolvedRelativePaths = {
-			"resourcesOnBranch/introMovie.txt",
-			"resourcesOnBranch/videoCardCategories.yaml"
+			GetTestFileFileAbsolutePath( "resourcesOnBranch/introMovie.txt" ),
+			GetTestFileFileAbsolutePath( "resourcesOnBranch/videoCardCategories.yaml" )
 		};
 		std::set<std::filesystem::path> validExcludeResolvedRelativePaths = {
 		};

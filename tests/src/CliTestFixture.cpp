@@ -6,7 +6,10 @@
 
 #include <iostream>
 
-int CliTestFixture::RunCli( std::vector<std::string>& arguments, std::string* standardOutput /* = nullptr */, std::string* errorOutput /* = nullptr */, const std::string& workingDirectory /* = "" (empty = do not alter it) */ )
+int CliTestFixture::RunCli( std::vector<std::string>& arguments,
+							std::string* standardOutput /* = nullptr */,
+							std::string* errorOutput /* = nullptr */,
+							const std::string& workingDirectory /* = "" (empty = do not alter it) */ )
 {
 	arguments.insert( arguments.begin(), CARBON_RESOURCES_CLI_EXE_FULLPATH );
 

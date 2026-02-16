@@ -16,7 +16,8 @@ CreateResourceGroupCliOperation::CreateResourceGroupCliOperation() :
 	m_createResourceGroupExportResourcesId( "--export-resources" ),
 	m_createResourceGroupExportResourcesDestinationTypeId( "--export-resources-destination-type" ),
 	m_createResourceGroupExportResourcesDestinationPathId( "--export-resources-destination-path" ),
-	m_createResourceGroupIniFilterFilesArgumentId( "--filter-file" )
+	m_createResourceGroupIniFilterFilesArgumentId( "--filter-file" ),
+	m_createResourceGroupIniFilterFilesBasePathArgumentId( "--filter-file-basepath" )
 {
 
 	AddRequiredPositionalArgument( m_createResourceGroupPathArgumentId, "Base directory to create resource group from." );
@@ -43,6 +44,8 @@ CreateResourceGroupCliOperation::CreateResourceGroupCliOperation() :
 	AddArgument( m_createResourceGroupExportResourcesDestinationPathId, "Represents the base path where the exported resources will be saved. Requires --export-resources", false, false, defaultImportParams.exportResourcesDestinationSettings.basePath.string() );
 
 	AddArgument( m_createResourceGroupIniFilterFilesArgumentId, "Path to INI file(s) for resource filtering.", false, true, "" );
+
+	AddArgument( m_createResourceGroupIniFilterFilesBasePathArgumentId, "Base directory for resolving relative paths contained within filter INI file(s).", false, false, "" );
 }
 
 bool CreateResourceGroupCliOperation::Execute( std::string& returnErrorMessage ) const
@@ -98,6 +101,8 @@ bool CreateResourceGroupCliOperation::Execute( std::string& returnErrorMessage )
 				createResourceGroupParams.resourceFilterIniFiles.emplace_back( iniPathStr );
 			}
 		}
+
+		createResourceGroupParams.resourceFilterIniFilesBaseDirectory = m_argumentParser->get<std::string>( m_createResourceGroupIniFilterFilesBasePathArgumentId );
 	}
 
 	PrintStartBanner( createResourceGroupParams, exportParams );
@@ -156,6 +161,8 @@ void CreateResourceGroupCliOperation::PrintStartBanner(
 		{
 			std::cout << " - " << iniPath.generic_string() << std::endl;
 		}
+
+		std::cout << "Base Directory for Resolving Relative Paths in Filter INI File(s): " << createResourceGroupFromDirectoryParams.resourceFilterIniFilesBaseDirectory << std::endl;
 	}
 	else
 	{

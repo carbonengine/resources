@@ -307,12 +307,14 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1_YamlOutput
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
 	arguments.push_back( "--document-version" );
 	arguments.push_back( "0.1.0" );  // This is default YAML document version (setting it explicitly for clarity in test)
 
-	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
+	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
 	std::cout << "------------------------" << std::endl;
@@ -349,12 +351,14 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1_CsvTxtOutp
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
 	arguments.push_back( "--document-version" );
 	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
 
-	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
+	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
 	std::cout << "------------------------" << std::endl;
@@ -370,6 +374,248 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1_CsvTxtOutp
 #error Unsupported platform
 #endif
 	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_ConfirmWorks_UsingFilter_validSimpleExample1_WithRelativeFilterFilePathAndBasePathSet )
+{
+	// Setup test parameters
+	std::string output;
+	std::string errorOutput;
+	std::vector<std::string> arguments;
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmWorks_UsingFilter_validSimpleExample1_WithRelativeFilterFilePathAndBasePathSet.txt" );
+	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
+
+	// Ensure any previous test output files are removed
+	RemoveFiles( { outputFilePath } );
+
+	arguments.push_back( "create-group" );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+	arguments.push_back( "--filter-file" );
+	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( TEST_DATA_BASE_PATH );
+	arguments.push_back( "--output-file" );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
+
+	int res = RunCli( arguments, &output, &errorOutput );
+	std::cout << "--- RunCli() output: ---" << std::endl;
+	std::cout << output << std::endl;
+	std::cout << "------------------------" << std::endl;
+
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
+
+	// Check expected outcome
+#if _WIN64
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleExample1_Windows.txt" );
+#elif __APPLE__
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleExample1_macOS.txt" );
+#else
+#error Unsupported platform
+#endif
+	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_ConfirmWorks_UsingFilter_validSimpleExample1_WithAbsoluteFilterFilePathAndBasePathSet )
+{
+	// Setup test parameters
+	std::string output;
+	std::string errorOutput;
+	std::vector<std::string> arguments;
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmWorks_UsingFilter_validSimpleExample1_WithAbsoluteFilterFilePathAndBasePathSet.txt" );
+	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" );
+
+	// Ensure any previous test output files are removed
+	RemoveFiles( { outputFilePath } );
+
+	arguments.push_back( "create-group" );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+	arguments.push_back( "--filter-file" );
+	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( TEST_DATA_BASE_PATH );
+	arguments.push_back( "--output-file" );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
+
+	int res = RunCli( arguments, &output, &errorOutput );
+	std::cout << "--- RunCli() output: ---" << std::endl;
+	std::cout << output << std::endl;
+	std::cout << "------------------------" << std::endl;
+
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
+
+	// Check expected outcome
+#if _WIN64
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleExample1_Windows.txt" );
+#elif __APPLE__
+	std::filesystem::path goldFile = GetTestFileFileAbsolutePath( "ExpectedTestOutputFiles/CreateGroup_UsingFilter_validSimpleExample1_macOS.txt" );
+#else
+#error Unsupported platform
+#endif
+	EXPECT_TRUE( FilesMatch( goldFile, outputFilePath ) ) << " Output file does not match expected gold file.";
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithRelativeFilterFilePathAndWrongBasePathSet )
+{
+	// Setup test parameters
+	std::string output;
+	std::string errorOutput;
+	std::vector<std::string> arguments;
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithRelativeFilterFilePathAndWrongBasePathSet.txt" );
+	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
+
+	// Ensure any previous test output files are removed
+	RemoveFiles( { outputFilePath } );
+
+	arguments.push_back( "create-group" );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+	arguments.push_back( "--filter-file" );
+	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "Some/Incorrect/Base/Path" );
+	arguments.push_back( "--output-file" );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
+
+	int res = RunCli( arguments, &output, &errorOutput );
+	std::cout << "--- RunCli() output: ---" << std::endl;
+	std::cout << output << std::endl;
+	std::cout << "------------------------" << std::endl;
+
+	// Should fail, expecting non-zero exit code
+	ASSERT_EQ( res, 1 ) << "CLI operation should fail for a reading relative filter .ini files with wrong --filter-base-path parameter - with resultCode=1";
+	// Check for expected error message
+	EXPECT_TRUE( errorOutput.find( "[ERROR: Failed to initialize ResourceFilter from .ini file]" ) != std::string::npos )
+		<< "Expected generic (top-level) error message about failure to initialize ResourceFilter from .ini file. Actual error: " << errorOutput;
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithAbsoluteFilterFilePathAndWrongBasePathSet )
+{
+	// Setup test parameters
+	std::string output;
+	std::string errorOutput;
+	std::vector<std::string> arguments;
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithAbsoluteFilterFilePathAndWrongBasePathSet.txt" );
+	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" );
+
+	// Ensure any previous test output files are removed
+	RemoveFiles( { outputFilePath } );
+
+	arguments.push_back( "create-group" );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+	arguments.push_back( "--filter-file" );
+	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "Some/Incorrect/Base/Path" );
+	arguments.push_back( "--output-file" );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
+
+	int res = RunCli( arguments, &output, &errorOutput );
+	std::cout << "--- RunCli() output: ---" << std::endl;
+	std::cout << output << std::endl;
+	std::cout << "------------------------" << std::endl;
+
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
+
+	// Because of the absolute path to the .ini file, the operation will be successful even though the
+	// basepath parameter is wrong (the .ini file can still be found and read successfully).
+	// However, the rules applied from the filter .ini file will resolve to absolute paths that do not exist.
+	// Therefore, no files will match the filter criteria and the output file will be empty.
+	EXPECT_TRUE( std::filesystem::exists( outputFilePath ) ) << " Empty output file [" << outputFilePath.generic_string() << "] was not created, when it should have been.";
+	EXPECT_TRUE( std::filesystem::is_empty( outputFilePath ) ) << " Output file should be empty due to filter .ini file rules not matching any files because of wrong basepath.";
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithRelativeFilterFilePathAndNoBasePath )
+{
+	// Setup test parameters
+	std::string output;
+	std::string errorOutput;
+	std::vector<std::string> arguments;
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithRelativeFilterFilePathAndNoBasePath.txt" );
+	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
+
+	// Ensure any previous test output files are removed
+	RemoveFiles( { outputFilePath } );
+
+	arguments.push_back( "create-group" );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+	arguments.push_back( "--filter-file" );
+	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--output-file" );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
+
+	int res = RunCli( arguments, &output, &errorOutput );
+	std::cout << "--- RunCli() output: ---" << std::endl;
+	std::cout << output << std::endl;
+	std::cout << "------------------------" << std::endl;
+
+	// Should fail, expecting non-zero exit code
+	ASSERT_EQ( res, 1 ) << "CLI operation should fail for a reading relative filter .ini files with wrong --filter-base-path parameter - with resultCode=1";
+	// Check for expected error message
+	EXPECT_TRUE( errorOutput.find( "[ERROR: Failed to initialize ResourceFilter from .ini file]" ) != std::string::npos )
+		<< "Expected generic (top-level) error message about failure to initialize ResourceFilter from .ini file. Actual error: " << errorOutput;
+}
+
+TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithAbsoluteFilterFilePathAndNoBasePath )
+{
+	// Setup test parameters
+	std::string output;
+	std::string errorOutput;
+	std::vector<std::string> arguments;
+	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithAbsoluteFilterFilePathAndNoBasePath.txt" );
+	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" );
+
+	// Ensure any previous test output files are removed
+	RemoveFiles( { outputFilePath } );
+
+	arguments.push_back( "create-group" );
+	arguments.push_back( inputDirectoryPath.lexically_normal().string() );
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "3" );
+	arguments.push_back( "--filter-file" );
+	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--output-file" );
+	arguments.push_back( outputFilePath.lexically_normal().string() );
+	arguments.push_back( "--document-version" );
+	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
+
+	int res = RunCli( arguments, &output, &errorOutput );
+	std::cout << "--- RunCli() output: ---" << std::endl;
+	std::cout << output << std::endl;
+	std::cout << "------------------------" << std::endl;
+
+	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
+
+	// Because of the absolute path to the .ini file, the operation will be successful even though the
+	// basepath parameter is wrong (the .ini file can still be found and read successfully).
+	// However, the rules applied from the filter .ini file will resolve to absolute paths that do not exist.
+	// Therefore, no files will match the filter criteria and the output file will be empty.
+	EXPECT_TRUE( std::filesystem::exists( outputFilePath ) ) << " Empty output file [" << outputFilePath.generic_string() << "] was not created, when it should have been.";
+	EXPECT_TRUE( std::filesystem::is_empty( outputFilePath ) ) << " Output file should be empty due to filter .ini file rules not matching any files because of wrong basepath.";
 }
 
 TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1_YamlOutput )
@@ -391,12 +637,14 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1_YamlOutpu
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
 	arguments.push_back( "--document-version" );
 	arguments.push_back( "0.1.0" );  // This is default YAML document version (setting it explicitly for clarity in test)
 
-	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
+	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
 	std::cout << "------------------------" << std::endl;
@@ -433,12 +681,14 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1_CsvTxtOut
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
 	arguments.push_back( "--document-version" );
 	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
 
-	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
+	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
 	std::cout << "------------------------" << std::endl;
@@ -481,12 +731,14 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1_
 		arguments.push_back( "--filter-file" );
 		arguments.push_back( filterFilePath.lexically_normal().string() );
 	}
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
 	arguments.push_back( "--document-version" );
 	arguments.push_back( "0.1.0" );  // This is default YAML document version (setting it explicitly for clarity in test)
 
-	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
+	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
 	std::cout << "------------------------" << std::endl;
@@ -529,12 +781,14 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1_
 		arguments.push_back( "--filter-file" );
 		arguments.push_back( filterFilePath.lexically_normal().string() );
 	}
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
 	arguments.push_back( "--document-version" );
 	arguments.push_back( "0.0.0" );  // This is the "old style" csv (txt) document version
 
-	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
+	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
 	std::cout << "------------------------" << std::endl;
@@ -571,12 +825,15 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureParsingWronglyFormattedIniFi
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
 
-	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
+	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
+	std::cout << "errorOutput: " << errorOutput << std::endl;
 	std::cout << "------------------------" << std::endl;
 
 	// Should fail, expecting non-zero exit code
@@ -605,12 +862,15 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureUsingNoExistentFilterFile_in
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
+	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
 
-	int res = RunCli( arguments, &output, &errorOutput, TEST_DATA_BASE_PATH );
+	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
+	std::cout << "errorOutput: " << errorOutput << std::endl;
 	std::cout << "------------------------" << std::endl;
 
 	// Should fail, expecting non-zero exit code

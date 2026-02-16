@@ -44,6 +44,8 @@ private:
 	std::string m_createResourceGroupExportResourcesDestinationPathId;
 
 	std::string m_createResourceGroupIniFilterFilesArgumentId;
+
+	std::string m_createResourceGroupIniFilterFilesBasePathArgumentId;
 };
 
 #endif // CreateResourceGroupCliOperation_H
