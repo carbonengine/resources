@@ -14,6 +14,8 @@
 
 #include "BundleResourceGroup.h"
 
+#include "StatusSettings.h"
+
 namespace YAML
 {
 class Emitter;
@@ -33,7 +35,6 @@ struct ResourceGroupSubtractionParams
 
 	std::vector<std::filesystem::path> removedResources;
 
-	StatusCallback statusCallback = nullptr;
 };
 
 enum class DocumentType
@@ -49,31 +50,31 @@ public:
 
 	virtual ~ResourceGroupImpl();
 
-	Result CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params );
+	Result CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params, StatusSettings& statusSettings );
 
-	Result ImportFromFile( const ResourceGroupImportFromFileParams& params );
+	Result ImportFromFile( const ResourceGroupImportFromFileParams& params, StatusSettings& statusSettings );
 
-	Result ImportFromData( const std::string& data, DocumentType documentType = DocumentType::YAML );
+	Result ImportFromData( const std::string& data, StatusSettings& statusSettings, DocumentType documentType = DocumentType::YAML );
 
-	Result ExportToFile( const ResourceGroupExportToFileParams& params ) const;
+	Result ExportToFile( const ResourceGroupExportToFileParams& params, StatusSettings& statusSettings ) const;
 
-	Result ExportToData( std::string& data, VersionInternal outputDocumentVersion = S_DOCUMENT_VERSION ) const;
+	Result ExportToData( std::string& data, StatusSettings& statusSettings, VersionInternal outputDocumentVersion = S_DOCUMENT_VERSION ) const;
 
-	Result CreateBundle( const BundleCreateParams& params ) const;
+	Result CreateBundle( const BundleCreateParams& params, StatusSettings& statusSettings ) const;
 
 	Result ConstructPatchResourceInfo( const PatchCreateParams& params, int patchId, uintmax_t dataOffset, uint64_t patchSourceOffset, ResourceInfo* resourceNext, PatchResourceInfo*& patchResource ) const;
 
-	Result CreatePatch( const PatchCreateParams& params ) const;
+	Result CreatePatch( const PatchCreateParams& params, StatusSettings& statusSettings ) const;
 
 	Result AddResource( ResourceInfo* resource );
 
-	Result Diff( ResourceGroupSubtractionParams& params ) const;
+	Result Diff( ResourceGroupSubtractionParams& params, StatusSettings& statusSettings ) const;
 
-	Result DiffChangesAsLists( const ResourceGroupDiffAgainstGroupParams& params ) const;
+	Result DiffChangesAsLists( const ResourceGroupDiffAgainstGroupParams& params, StatusSettings& statusSettings ) const;
 
-	Result Merge( const ResourceGroupMergeParams& params );
+	Result Merge( const ResourceGroupMergeParams& params, StatusSettings& statusSettings );
 
-	Result RemoveResources( const ResourceGroupRemoveResourcesParams& params );
+	Result RemoveResources( const ResourceGroupRemoveResourcesParams& params, StatusSettings& statusSettings );
 
 	virtual std::string GetType() const;
 
@@ -93,9 +94,9 @@ public:
 
 	size_t GetSize() const;
 
-	Result ImportFromYamlString( const std::string& data, StatusCallback statusCallback = nullptr );
+	Result ImportFromYamlString( const std::string& data, StatusSettings& statusSettings );
 
-	Result ImportFromYaml( YAML::Node& data, StatusCallback statusCallback = nullptr );
+	Result ImportFromYaml( YAML::Node& data, StatusSettings& statusSettings );
 
 	virtual Result GetGroupSpecificResourcesToBundle( std::vector<ResourceInfo*>& toBundle ) const;
 
@@ -110,11 +111,11 @@ private:
 	virtual Result ExportGroupSpecialisedYaml( YAML::Emitter& out, VersionInternal outputDocumentVersion ) const;
 
 	[[deprecated( "Prefer yaml" )]]
-	virtual Result ImportFromCSV( const std::string& data, StatusCallback statusCallback = nullptr );
+	virtual Result ImportFromCSV( const std::string& data, StatusSettings& statusCallback );
 
-	Result ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback = nullptr ) const;
+	Result ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, StatusSettings& statusCallback ) const;
 
-	Result ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback = nullptr ) const;
+	Result ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusSettings& statusCallback ) const;
 
 	Result ProcessChunk( ResourceTools::GetChunk& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroup::BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const;
 

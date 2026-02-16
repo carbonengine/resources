@@ -20,6 +20,19 @@ class PatchResourceGroup;
 class BundleResourceGroup;
 struct Result;
 
+/** @struct CallbackSettings
+    *  @brief Parameters relating to status callback.
+    *  @var CallbackSettings::statusCallback
+    *  Optional status function callback. Callback is triggered at status update events.
+    *  @var CallbackSettings::verbosityLevel
+    *  Level of verbosity for status updates. Number represents nesting level of jobs. Use -1 to register for all updates.
+    */
+struct CallbackSettings
+{
+	StatusCallback statusCallback = nullptr;
+	int verbosityLevel = -1;
+};
+
 /** @struct ResourceSourceSettings
     *  @brief Parameters to represent where and how a resource is sourced.
     *  @var ResourceSourceSettings::sourceType
@@ -64,8 +77,8 @@ struct ResourceDestinationSettings
     *  Size of chunks to read files in. Default is 10000000.
     *  @var BundleCreateParams::resourceBundleResourceGroupDestinationSettings
     *  Where to save the resulting BundleResourceGroup
-    *  @var BundleCreateParams::statusCallback
-    *  Optional status function callback. Callback is triggered at key status update events.
+    *  @var BundleCreateParams::CallbackSettings
+    *  Settings relating to status callback messaging
     *  @var BundleCreateParams::downloadRetrySeconds
     *  Delay before a failed download is retried (seconds)
     *  @var BundleCreateParams::calculateCompressions
@@ -87,7 +100,7 @@ struct BundleCreateParams
 
 	ResourceDestinationSettings resourceBundleResourceGroupDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_RELATIVE, "BundleOut/" };
 
-	StatusCallback statusCallback = nullptr;
+	CallbackSettings callbackSettings;
 
 	std::chrono::seconds downloadRetrySeconds{ 120 };
 
@@ -114,13 +127,13 @@ struct BundleCreateParams
     *  Where the produced binary patches will be saved.
     *  @var PatchCreateParams::resourcePatchResourceGroupDestinationSettings
     *  Where the produced PatchResourceGroup will be saved.
-    *  @var PatchCreateParams::statusCallback
-    *  Optional status function callback. Callback is triggered at key status update events.
+    *  @var PatchCreateParams::CallbackSettings
+    *  Settings relating to status callback messaging
     *  @var PatchCreateParams::downloadRetrySeconds
     *  Delay before a failed download is retried (seconds)
     *  @var PatchCreateParams::indexFolder
     *  Directory to store index calculation files during patch creation.
-    *  @var BundleCreateParams::calculateCompressions
+    *  @var PatchCreateParams::calculateCompressions
     *  Specifies if compression will be calculated for the generated bundle chunks
     */
 struct PatchCreateParams
@@ -140,10 +153,10 @@ struct PatchCreateParams
 	ResourceSourceSettings resourceSourceSettingsNext = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE };
 
 	ResourceDestinationSettings resourcePatchBinaryDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_CDN, "PatchOut/Patches/" };
-	;
+	
 	ResourceDestinationSettings resourcePatchResourceGroupDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_RELATIVE, "PatchOut/" };
 
-	StatusCallback statusCallback = nullptr;
+	CallbackSettings callbackSettings;
 
 	std::chrono::seconds downloadRetrySeconds{ 120 };
 
@@ -156,14 +169,14 @@ struct PatchCreateParams
     *  @brief Function Parameters required for CarbonResources::ResourceGroup::ImportFromFile
     *  @var ResourceGroupImportFromFileParams::filename
     *  Full filename of input file.
-    *  @var ResourceGroupImportFromFileParams::statusCallback
-    *  Optional status function callback. Callback is triggered at key status update events.
+    *  @var ResourceGroupImportFromFileParams::CallbackSettings
+    *  Settings relating to status callback messaging
     */
 struct ResourceGroupImportFromFileParams
 {
 	std::filesystem::path filename;
 
-	StatusCallback statusCallback = nullptr;
+	CallbackSettings callbackSettings;
 };
 
 /** @struct ResourceGroupExportToFileParams
@@ -172,8 +185,8 @@ struct ResourceGroupImportFromFileParams
     *  Full filename of output file. If directory doesn't exist it will be created.
     *  @var ResourceGroupExportToFileParams::outputDocumentVersion
     *  Document version to output. By default this will be latest supported by the library.
-    *  @var ResourceGroupExportToFileParams::statusCallback
-    *  Optional status function callback. Callback is triggered at key status update events.
+    *  @var ResourceGroupExportToFileParams::CallbackSettings
+    *  Settings relating to status callback messaging
     */
 struct ResourceGroupExportToFileParams
 {
@@ -181,7 +194,7 @@ struct ResourceGroupExportToFileParams
 
 	Version outputDocumentVersion = S_DOCUMENT_VERSION;
 
-	StatusCallback statusCallback = nullptr;
+    CallbackSettings callbackSettings;
 };
 
 /** @struct CreateResourceGroupFromDirectoryParams
@@ -192,8 +205,8 @@ struct ResourceGroupExportToFileParams
     *  Files encountered that are above this the threshold value will be streamed in. Value is in bytes, default: 10000000
     *  @var CreateResourceGroupFromDirectoryParams::outputDocumentVersion
     *  Document version to output. By default this will be latest supported by the library.
-    *  @var CreateResourceGroupFromDirectoryParams::statusCallback
-    *  Optional status function callback. Callback is triggered at key status update events.
+    *  @var CreateResourceGroupFromDirectoryParams::CallbackSettings
+    *  Settings relating to status callback messaging
     *  @var CreateResourceGroupFromDirectoryParams::resourcePrefix
     *  Resource prefix setting, e.g. res.
     *  @var CreateResourceGroupFromDirectoryParams::calculateCompressions
@@ -217,7 +230,7 @@ struct CreateResourceGroupFromDirectoryParams
 
 	Version outputDocumentVersion = S_DOCUMENT_VERSION;
 
-	StatusCallback statusCallback = nullptr;
+	CallbackSettings callbackSettings;
 
 	std::string resourcePrefix = "";
 
@@ -241,12 +254,16 @@ struct CreateResourceGroupFromDirectoryParams
     *  ResourceGroup to merge
     *  @var ResourceGroupMergeParams::mergedResourceGroup
     *  Resulting ResourceGroup after merge
+    *  @var ResourceGroupMergeParams::CallbackSettings
+    *  Settings relating to status callback messaging
     */
 struct ResourceGroupMergeParams
 {
 	ResourceGroup* resourceGroupToMerge = nullptr;
 
 	ResourceGroup* mergedResourceGroup = nullptr;
+
+    CallbackSettings callbackSettings;
 };
 
 /** @struct ResourceGroupRemoveResourcesParams
@@ -255,12 +272,16 @@ struct ResourceGroupMergeParams
     *  List of Resources to remove identified by RelativePath.
     *  @var ResourceGroupRemoveResourcesParams::errorIfResourceNotFound
     *  If true the function will return an error state if supplied Resource is not present in ResourceGroup
+    *  @var ResourceGroupRemoveResourcesParams::CallbackSettings
+    *  Settings relating to status callback messaging
     */
 struct ResourceGroupRemoveResourcesParams
 {
 	std::vector<std::filesystem::path>* resourcesToRemove = nullptr;
 
 	bool errorIfResourceNotFound = true;
+
+    CallbackSettings callbackSettings;
 };
 
 /** @struct ResourceGroupDiffAgainstGroupParams
@@ -271,6 +292,8 @@ struct ResourceGroupRemoveResourcesParams
     *  Output list of relative paths that have been added or modified on second group.
     *  @var ResourceGroupDiffAgainstGroupParams::subtractions
     *  Output list of relative paths that have been removed on second group.
+    *  @var ResourceGroupDiffAgainstGroupParams::CallbackSettings
+    *  Settings relating to status callback messaging
     */
 struct ResourceGroupDiffAgainstGroupParams
 {
@@ -279,6 +302,8 @@ struct ResourceGroupDiffAgainstGroupParams
 	std::vector<std::filesystem::path>* additions = nullptr;
 
 	std::vector<std::filesystem::path>* subtractions = nullptr;
+
+    CallbackSettings callbackSettings;
 };
 
 /** @class ResourceGroup

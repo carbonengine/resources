@@ -28,7 +28,6 @@ set(SRC_FILES
         include/ResourceTools.h
         include/RollingChecksum.h
         include/ScopedFile.h
-        include/StatusCallback.h
 
         src/BundleStreamIn.cpp
         src/BundleStreamOut.cpp

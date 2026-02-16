@@ -191,7 +191,7 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 
     createPatchParams.calculateCompressions = !skipCompressionCalculation;
 
-	if( s_verbosityLevel != CarbonResources::StatusLevel::OFF )
+	if( ShowCliStatusUpdates() )
 	{
 		PrintStartBanner( previousResourceGroupParams, nextResourceGroupParams, createPatchParams );
 	}
@@ -261,17 +261,19 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 	CarbonResources::StatusCallback statusCallback = GetStatusCallback();
 
 	// Get status callback relevant to verbosity level
-	createPatchParams.statusCallback = statusCallback;
+	createPatchParams.callbackSettings.statusCallback = statusCallback;
+	createPatchParams.callbackSettings.verbosityLevel = GetVerbosityLevel();
 
 	// Previous ResourceGroup
-	if( createPatchParams.statusCallback )
-	{
-		createPatchParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Loading previous resource group." );
-	}
-
 	CarbonResources::ResourceGroup resourceGroupPrevious;
 
-	previousResourceGroupParams.statusCallback = statusCallback;
+	previousResourceGroupParams.callbackSettings.statusCallback = statusCallback;
+	previousResourceGroupParams.callbackSettings.verbosityLevel = GetVerbosityLevel();
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Importing previous Resource Group from file." );
+	}
 
 	CarbonResources::Result importPreviousFromFileResult = resourceGroupPrevious.ImportFromFile( previousResourceGroupParams );
 
@@ -283,14 +285,15 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 	}
 
 	// Latest ResourceGroup
-	if( createPatchParams.statusCallback )
-	{
-		createPatchParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 50, "Loading latest resource group." );
-	}
-
 	CarbonResources::ResourceGroup resourceGroupLatest;
 
-	nextResourceGroupParams.statusCallback = statusCallback;
+	nextResourceGroupParams.callbackSettings.statusCallback = statusCallback;
+	nextResourceGroupParams.callbackSettings.verbosityLevel = GetVerbosityLevel();
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Importing next Resource Group from file." );
+	}
 
 	CarbonResources::Result importNextFromFileResult = resourceGroupLatest.ImportFromFile( nextResourceGroupParams );
 
@@ -304,9 +307,9 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 	createPatchParams.previousResourceGroup = &resourceGroupPrevious;
 
 	// Create Patch
-	if( createPatchParams.statusCallback )
+	if( ShowCliStatusUpdates() )
 	{
-		createPatchParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 75, "Creating Patch." );
+		CliStatusUpdate( "Creating Patch." );
 	}
 
 	CarbonResources::Result createPatchResult = resourceGroupLatest.CreatePatch( createPatchParams );
@@ -318,9 +321,9 @@ bool CreatePatchCliOperation::CreatePatch( CarbonResources::ResourceGroupImportF
 		return false;
 	}
 
-	if( createPatchParams.statusCallback )
+    if( ShowCliStatusUpdates() )
 	{
-		createPatchParams.statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Patch created succesfully." );
+		CliStatusUpdate( "Operation complete." );
 	}
 
 	return true;

@@ -41,10 +41,6 @@ public:
 
 	std::string GetDescription() const;
 
-	std::string VerbosityLevelToString( CarbonResources::StatusLevel level ) const;
-
-	static std::string GetVerbosityLevelIndent( CarbonResources::StatusLevel level );
-
 protected:
 	void PrintCommonOperationHeaderInformation() const;
 
@@ -82,24 +78,28 @@ protected:
 
 	bool ParseDocumentVersion( const std::string& version, CarbonResources::Version& documentVersion ) const;
 
-private:
-	static void StatusUpdate( CarbonResources::StatusLevel level, CarbonResources::StatusProgressType type, int progress, const std::string& info );
+    bool ShowCliStatusUpdates() const;
 
-	static char GetBusyChar();
+    void CliStatusUpdate( const std::string& info ) const;
+
+private:
+
+	static void CarbonResourcesStatusUpdate( CarbonResources::StatusProgressType type, float processProgress, float overallProgress, float sizeOfJob, unsigned int nestingLevel, const std::string& info );
 
 	bool SetVerbosityLevel();
 
 protected:
-	static inline CarbonResources::StatusLevel s_verbosityLevel = CarbonResources::StatusLevel::OFF;
+
+    int GetVerbosityLevel() const;
 
 private:
+	int m_verbosityLevel;
+
 	std::string m_verbosityLevelId;
 
 	std::string m_name;
 
 	std::string m_description;
-
-	static inline char s_currentBusyAnimationChar = '/';
 };
 
 std::string PathsToString( const std::vector<std::filesystem::path>& v );

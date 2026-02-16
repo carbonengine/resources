@@ -1,7 +1,7 @@
 # Copyright © 2025 CCP ehf.
 
 cmake_minimum_required(VERSION 3.31.0)
-project(resources VERSION 3.2.0)
+project(resources VERSION 4.0.0)
 
 include(cmake/CcpTargetConfigurations.cmake)
 include(cmake/CcpDocsGenerator.cmake)
@@ -49,6 +49,8 @@ set(SRC_FILES
         src/ResourceInfo/PatchResourceGroupInfo.cpp
         src/ResourceInfo/BundleResourceGroupInfo.h
         src/ResourceInfo/BundleResourceGroupInfo.cpp
+        src/StatusSettings.h
+        src/StatusSettings.cpp
         src/ParameterVersion.h
         src/ParameterVersion.cpp
 )
@@ -81,8 +83,6 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
         PREFIX "Sources"
         FILES ${_SOURCES}
 )
-
-set_target_properties(resources PROPERTIES OUTPUT_NAME "_resources")
 
 add_subdirectory(cli)
 
@@ -131,41 +131,23 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         add_dependencies(Sphinx resources)
     endif ()
 
-    set(INSTALL_BIN_ONLY OFF CACHE BOOL "Do not Install configuration files meant to be read by projects using this project as a dependency (Cmake Config/ header files etc . . .). Set this to ON when installing this component to the perforce vendor folder")
-    if (INSTALL_BIN_ONLY)
-        # Install rule to ensure that our runtime files are in the expected, platform-specific folder
-        install(
-                TARGETS resources
-                EXPORT resourcesTarget
-                CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
-                LIBRARY DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
-                ARCHIVE DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
-                RUNTIME DESTINATION bin/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
-        )
-    else ()
-        # Install rule to ensure that our runtime and linker files are in the expected, platform-specific folders
-        install(
-                TARGETS resources
-                EXPORT resourcesTarget
-                CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
-                LIBRARY DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
-                ARCHIVE DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
-                RUNTIME DESTINATION bin/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
-        )
-        # Install rule for available public headers
-        install(DIRECTORY include DESTINATION . FILES_MATCHING PATTERN "*.h")
-
-        install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include DESTINATION . FILES_MATCHING PATTERN "*.h")
-
-        install(
-                EXPORT resourcesTarget
-                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/carbon-resources
-                FILE carbon-resources.cmake
-        )
-        install(
-                FILES carbon-resourcesConfig.cmake
-                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/carbon-resources
-        )
-    endif ()
+    
+    # Install rule to ensure that our runtime files are in the expected, platform-specific folder
+    install(
+            TARGETS resources
+            EXPORT resourcesTarget
+            CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
+            LIBRARY DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
+            ARCHIVE DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
+            RUNTIME DESTINATION bin/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
+    )
+    install(
+            TARGETS resources-tools
+            EXPORT resourcesToolsTarget
+            CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
+            LIBRARY DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
+            ARCHIVE DESTINATION lib/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
+            RUNTIME DESTINATION bin/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
+    )
 
 endif ()

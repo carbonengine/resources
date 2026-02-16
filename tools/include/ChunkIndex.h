@@ -7,14 +7,12 @@
 #include <unordered_set>
 #include <vector>
 
-#include "StatusCallback.h"
-
 namespace ResourceTools
 {
 class ChunkIndex
 {
 public:
-	ChunkIndex( std::filesystem::path fileToIndex, uint32_t chunkSize, const std::filesystem::path& indexFolder, StatusCallback statusCallback = nullptr );
+	ChunkIndex( std::filesystem::path fileToIndex, uint32_t chunkSize, const std::filesystem::path& indexFolder );
 	~ChunkIndex();
 	bool Generate();
 	bool FindChunkOffsets( uint32_t chunk, std::vector<size_t>& offsets );
@@ -30,7 +28,6 @@ private:
 	uint32_t m_chunkSize;
 	std::vector<std::filesystem::path> m_indexFiles;
 	size_t m_currentIndexFile;
-	StatusCallback m_statusCallback;
 	std::filesystem::path m_indexFolder;
 	std::unordered_set<uint32_t> m_checksumFilter;
 };

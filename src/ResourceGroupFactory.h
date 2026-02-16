@@ -4,10 +4,11 @@
 #define RESOURCEGROUPFACTORY_H
 #include "ResourceGroup.h"
 #include "ResourceInfo/ResourceInfo.h"
+#include "StatusSettings.h"
 
 namespace CarbonResources
 {
-Result CreateResourceGroupFromYamlString( const std::string& yamlString, std::shared_ptr<ResourceGroup::ResourceGroupImpl>& out );
+Result CreateResourceGroupFromYamlString( const std::string& yamlString, std::shared_ptr<ResourceGroup::ResourceGroupImpl>& out, StatusSettings& statusSettings );
 
 Result CreateResourceGroupFromString( std::string& string, std::shared_ptr<ResourceGroup::ResourceGroupImpl>& out );
 

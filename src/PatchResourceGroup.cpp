@@ -18,7 +18,11 @@ PatchResourceGroup::~PatchResourceGroup()
 
 Result PatchResourceGroup::Apply( const PatchApplyParams& params )
 {
-	return m_impl->Apply( params );
+	StatusSettings statusSettings;
+	statusSettings.SetCallbackSettings( params.callbackSettings );
+    statusSettings.Update( CarbonResources::StatusProgressType::START, 0, 0, "Starting Process" );
+
+	return m_impl->Apply( params, statusSettings );
 }
 
 }

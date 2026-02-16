@@ -26,8 +26,8 @@ namespace CarbonResources
     *  Location where to place patched resources. This can match PatchApplyParams::resourcesToPatchSourceSettings to overwrite. Allows creation of staging area in case of failure.
     *  @var PatchApplyParams::temporaryFilePath
     *  Name of a temporary filename to use when patching large files. This file will be cleaned up on process completion. 
-    *  @var PatchApplyParams::statusCallback
-    *  Optional status function callback. Callback is triggered at key status update events.
+    *  @var PatchApplyParams::CallbackSettings
+    *  Settings relating to status callback messaging
     */
 struct PatchApplyParams final
 {
@@ -41,7 +41,7 @@ struct PatchApplyParams final
 
 	std::filesystem::path temporaryFilePath = "tempFile.resource";
 
-	StatusCallback statusCallback = nullptr;
+	CallbackSettings callbackSettings;
 };
 
 /** @class PatchResourceGroup

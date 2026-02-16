@@ -71,18 +71,16 @@ bool MergeResourceGroupCliOperation::Execute( std::string& returnErrorMessage ) 
 
 	exportParams.outputDocumentVersion = documentVersion;
 
-	PrintStartBanner( importParamsBase, importParamsMerge, exportParams, version );
+    if (ShowCliStatusUpdates())
+    {
+		PrintStartBanner( importParamsBase, importParamsMerge, exportParams, version );
+    }
 
 	return Merge( importParamsBase, importParamsMerge, exportParams );
 }
 
-void MergeResourceGroupCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, const CarbonResources::ResourceGroupImportFromFileParams& importParamsMerge, CarbonResources::ResourceGroupExportToFileParams exportParams, const std::string& version ) const
+void MergeResourceGroupCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, const CarbonResources::ResourceGroupImportFromFileParams& importParamsMerge, CarbonResources::ResourceGroupExportToFileParams& exportParams, const std::string& version ) const
 {
-	if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
-	{
-		return;
-	}
-
 	std::cout << "---Merging Groups---" << std::endl;
 
 	PrintCommonOperationHeaderInformation();
@@ -96,10 +94,20 @@ void MergeResourceGroupCliOperation::PrintStartBanner( const CarbonResources::Re
 			  << std::endl;
 }
 
-bool MergeResourceGroupCliOperation::Merge( const CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, const CarbonResources::ResourceGroupImportFromFileParams& importParamsMerge, CarbonResources::ResourceGroupExportToFileParams exportParams ) const
+bool MergeResourceGroupCliOperation::Merge( CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, CarbonResources::ResourceGroupImportFromFileParams& importParamsMerge, CarbonResources::ResourceGroupExportToFileParams& exportParams ) const
 {
+	CarbonResources::StatusCallback statusCallback = GetStatusCallback();
+
 	// Import base Resource Group
 	CarbonResources::ResourceGroup baseResourceGroup;
+
+    importParamsBase.callbackSettings.statusCallback = statusCallback;
+	importParamsBase.callbackSettings.verbosityLevel = GetVerbosityLevel();
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Importing base Resource Group from file." );
+	}
 
 	CarbonResources::Result importBaseGroupResult = baseResourceGroup.ImportFromFile( importParamsBase );
 
@@ -112,6 +120,14 @@ bool MergeResourceGroupCliOperation::Merge( const CarbonResources::ResourceGroup
 
 	// Import merge Resource Group
 	CarbonResources::ResourceGroup mergeResourceGroup;
+
+    importParamsMerge.callbackSettings.statusCallback = statusCallback;
+	importParamsMerge.callbackSettings.verbosityLevel = GetVerbosityLevel();
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Importing merge Resource Group from file." );
+	}
 
 	CarbonResources::Result importMergeGroupResult = mergeResourceGroup.ImportFromFile( importParamsMerge );
 
@@ -131,6 +147,14 @@ bool MergeResourceGroupCliOperation::Merge( const CarbonResources::ResourceGroup
 
 	mergeParams.mergedResourceGroup = &mergedResultResourceGroup;
 
+    mergeParams.callbackSettings.statusCallback = statusCallback;
+	mergeParams.callbackSettings.verbosityLevel = GetVerbosityLevel();
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Merging Resource Groups." );
+	}
+
 	CarbonResources::Result mergeResult = baseResourceGroup.Merge( mergeParams );
 
 	if( mergeResult.type != CarbonResources::ResultType::SUCCESS )
@@ -141,6 +165,14 @@ bool MergeResourceGroupCliOperation::Merge( const CarbonResources::ResourceGroup
 	}
 
 	// Export
+	exportParams.callbackSettings.statusCallback = statusCallback;
+	exportParams.callbackSettings.verbosityLevel = GetVerbosityLevel();
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Exporting resulting Resource Group to file." );
+	}
+
 	CarbonResources::Result exportResult = mergedResultResourceGroup.ExportToFile( exportParams );
 
 	if( exportResult.type != CarbonResources::ResultType::SUCCESS )
@@ -148,6 +180,11 @@ bool MergeResourceGroupCliOperation::Merge( const CarbonResources::ResourceGroup
 		PrintCarbonResourcesError( exportResult );
 
 		return false;
+	}
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Operation complete." );
 	}
 
 	return true;

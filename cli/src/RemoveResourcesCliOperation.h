@@ -15,7 +15,7 @@ public:
 private:
 	void PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParams, std::filesystem::path& resourcesToRemoveFile, CarbonResources::ResourceGroupExportToFileParams& exportParams, bool ignoreMissingResources, const std::string& version ) const;
 
-	bool RemoveResources( const CarbonResources::ResourceGroupImportFromFileParams& importParams, std::filesystem::path& resourcesToRemoveFile, CarbonResources::ResourceGroupExportToFileParams& exportParams, bool ignoreMissingResources ) const;
+	bool RemoveResources( CarbonResources::ResourceGroupImportFromFileParams& importParams, std::filesystem::path& resourcesToRemoveFile, CarbonResources::ResourceGroupExportToFileParams& exportParams, bool ignoreMissingResources ) const;
 
 	bool ReadResourcesToRemoveFile( std::filesystem::path& pathToResourcesToRemoveFile, std::vector<std::filesystem::path>& resourcesToRemoveOut ) const;
 

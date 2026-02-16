@@ -39,7 +39,7 @@
         {
           "name": "python3",
           "host": true,
-          "version>=": "3.12.3#1"
+          "version>=": "3.12.9#1"
         }
       ]
     },

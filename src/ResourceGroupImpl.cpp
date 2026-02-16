@@ -47,13 +47,10 @@ ResourceGroup::ResourceGroupImpl::~ResourceGroupImpl()
 	}
 }
 
-Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params )
+Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params, StatusSettings& statusSettings )
 {
 	// Update status
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Processing Files: " + params.directory.string() );
-	}
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 10, "Creating resource group from directory: " + params.directory.string() );
 
 	if( !std::filesystem::exists( params.directory ) )
 	{
@@ -86,291 +83,289 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 	// Walk directory and create a resource from each file using data
 	auto recursiveDirectoryIter = std::filesystem::recursive_directory_iterator( params.directory );
 
-	for( const std::filesystem::directory_entry& entry : recursiveDirectoryIter )
-	{
-		if( entry.is_regular_file() )
+    {
+		StatusSettings fileProcessingInnerStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 10, 90, "Processing Files", &fileProcessingInnerStatusSettings );
+
+		for( const std::filesystem::directory_entry& entry : recursiveDirectoryIter )
 		{
-			// Apply Resource filtering (in case any filters are supplied)
-			if( resourceFilter.HasFilters() )
+			if( entry.is_regular_file() )
 			{
-				try
+				// Apply Resource filtering (in case any filters are supplied)
+				if( resourceFilter.HasFilters() )
 				{
-					// Resource filtering:
-					// Check if the file, i.e. entry.path() should be included or excluded based on filtering rules
-					if( !resourceFilter.FilePathMatchesIncludeFilterRules( entry.path() ) )
+					try
 					{
-						continue;
+						// Resource filtering:
+						// Check if the file, i.e. entry.path() should be included or excluded based on filtering rules
+						if( !resourceFilter.FilePathMatchesIncludeFilterRules( entry.path() ) )
+						{
+							continue;
+						}
 					}
-				}
-				catch( const std::exception& e )
-				{
-					std::string errorMsg = "Unable to decide on include/exclude filtering for: " + entry.path().generic_string() + " - because of: " + std::string( e.what() );
-					return Result{ ResultType::FAILED_TO_APPLY_RESOURCE_FILTER_RULES, errorMsg };
-				}
-			}
-
-			// Update status
-			if( params.statusCallback )
-			{
-				params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::UNBOUNDED, 0, "Processing File: " + entry.path().string() );
-			}
-
-			// Create resource
-			auto fileSize = entry.file_size();
-
-			if( fileSize < params.resourceStreamThreshold )
-			{
-				// Create resource from data
-				ResourceInfoParams resourceParams;
-
-				resourceParams.relativePath = std::filesystem::relative( entry.path(), params.directory );
-
-				resourceParams.binaryOperation = ResourceTools::CalculateBinaryOperation( entry.path() );
-
-				resourceParams.prefix = params.resourcePrefix;
-
-				ResourceInfo* resource = new ResourceInfo( resourceParams );
-
-				std::string resourceData;
-
-				ResourceGetDataParams resourceGetDataParams;
-
-				resourceGetDataParams.resourceSourceSettings.basePaths = { params.directory };
-
-				resourceGetDataParams.resourceSourceSettings.sourceType = ResourceSourceType::LOCAL_RELATIVE;
-
-				resourceGetDataParams.data = &resourceData;
-
-				Result getResourceDataResult = resource->GetData( resourceGetDataParams );
-
-				if( getResourceDataResult.type != ResultType::SUCCESS )
-				{
-					return getResourceDataResult;
-				}
-
-				Result setParametersFromDataResult = resource->SetParametersFromData( resourceData, params.calculateCompressions );
-
-				if( setParametersFromDataResult.type != ResultType::SUCCESS )
-				{
-					return setParametersFromDataResult;
-				}
-
-				Result addResourceResult = AddResource( resource );
-
-				if( addResourceResult.type != ResultType::SUCCESS )
-				{
-					return addResourceResult;
-				}
-
-				// If resources are set to be exported, then export as specified
-				if( params.exportResources )
-				{
-					ResourcePutDataParams putDataParams;
-
-					putDataParams.resourceDestinationSettings = params.exportResourcesDestinationSettings;
-
-					putDataParams.data = &resourceData;
-
-					Result putDataResult = resource->PutData( putDataParams );
-
-					if( putDataResult.type != ResultType::SUCCESS )
+					catch( const std::exception& e )
 					{
-						return putDataResult;
-					}
-				}
-			}
-			else
-			{
-				// Process data via stream
-				ResourceTools::Md5ChecksumStream checksumStream;
-				std::string compressedData;
-
-				ResourceTools::GzipCompressionStream compressionStream( &compressedData );
-
-				ResourceTools::FileDataStreamIn fileStreamIn( params.resourceStreamThreshold );
-
-				if( params.calculateCompressions )
-				{
-					if( !compressionStream.Start() )
-					{
-						return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
+						std::string errorMsg = "Unable to decide on include/exclude filtering for: " + entry.path().generic_string() + " - because of: " + std::string( e.what() );
+						return Result{ ResultType::FAILED_TO_APPLY_RESOURCE_FILTER_RULES, errorMsg };
 					}
 				}
 
-				if( !fileStreamIn.StartRead( entry.path() ) )
+				// Update status
+				fileProcessingInnerStatusSettings.Update( CarbonResources::StatusProgressType::UNBOUNDED, 0, 0, "Processing File: " + entry.path().string() );
+
+				// Create resource
+				auto fileSize = entry.file_size();
+
+				if( fileSize < params.resourceStreamThreshold )
 				{
-					return Result{ ResultType::FAILED_TO_OPEN_FILE_STREAM };
+					// Create resource from data
+					ResourceInfoParams resourceParams;
+
+					resourceParams.relativePath = std::filesystem::relative( entry.path(), params.directory );
+
+					resourceParams.binaryOperation = ResourceTools::CalculateBinaryOperation( entry.path() );
+
+					resourceParams.prefix = params.resourcePrefix;
+
+					ResourceInfo* resource = new ResourceInfo( resourceParams );
+
+					std::string resourceData;
+
+					ResourceGetDataParams resourceGetDataParams;
+
+					resourceGetDataParams.resourceSourceSettings.basePaths = { params.directory };
+
+					resourceGetDataParams.resourceSourceSettings.sourceType = ResourceSourceType::LOCAL_RELATIVE;
+
+					resourceGetDataParams.data = &resourceData;
+
+					Result getResourceDataResult = resource->GetData( resourceGetDataParams );
+
+					if( getResourceDataResult.type != ResultType::SUCCESS )
+					{
+						return getResourceDataResult;
+					}
+
+					Result setParametersFromDataResult = resource->SetParametersFromData( resourceData, params.calculateCompressions );
+
+					if( setParametersFromDataResult.type != ResultType::SUCCESS )
+					{
+						return setParametersFromDataResult;
+					}
+
+					Result addResourceResult = AddResource( resource );
+
+					if( addResourceResult.type != ResultType::SUCCESS )
+					{
+						return addResourceResult;
+					}
+
+					// If resources are set to be exported, then export as specified
+					if( params.exportResources )
+					{
+						ResourcePutDataParams putDataParams;
+
+						putDataParams.resourceDestinationSettings = params.exportResourcesDestinationSettings;
+
+						putDataParams.data = &resourceData;
+
+						Result putDataResult = resource->PutData( putDataParams );
+
+						if( putDataResult.type != ResultType::SUCCESS )
+						{
+							return putDataResult;
+						}
+					}
 				}
-
-				uintmax_t compressedDataSize = 0;
-
-				while( !fileStreamIn.IsFinished() )
+				else
 				{
-					// Update status
-					if( params.statusCallback )
-					{
-						auto percentage = static_cast<unsigned int>( ( 100 * fileStreamIn.GetCurrentPosition() ) / fileStreamIn.Size() );
-						params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentage, "Percentage Update" );
-					}
+					// Process data via stream
+					ResourceTools::Md5ChecksumStream checksumStream;
+					std::string compressedData;
 
-					std::string fileData;
+					ResourceTools::GzipCompressionStream compressionStream( &compressedData );
 
-					if( !( fileStreamIn >> fileData ) )
-					{
-						return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
-					}
-
-					if( !( checksumStream << fileData ) )
-					{
-						return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
-					}
+					ResourceTools::FileDataStreamIn fileStreamIn( params.resourceStreamThreshold );
 
 					if( params.calculateCompressions )
 					{
-						if( !( compressionStream << &fileData ) )
+						if( !compressionStream.Start() )
 						{
 							return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
 						}
 					}
-
-					compressedDataSize += compressedData.size();
-					compressedData.clear();
-				}
-
-				if( params.calculateCompressions )
-				{
-					if( !compressionStream.Finish() )
-					{
-						return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
-					}
-
-					compressedDataSize += compressedData.size();
-					compressedData.clear();
-				}
-
-				std::string checksum;
-
-				if( !checksumStream.FinishAndRetrieve( checksum ) )
-				{
-					return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
-				}
-
-				// Create resource from parameters
-				ResourceInfoParams resourceParams;
-
-				resourceParams.relativePath = std::filesystem::relative( entry.path(), params.directory );
-
-				resourceParams.uncompressedSize = fileSize;
-
-				resourceParams.compressedSize = compressedDataSize;
-
-				resourceParams.checksum = checksum;
-
-				resourceParams.binaryOperation = ResourceTools::CalculateBinaryOperation( entry.path() );
-
-				Location l;
-
-				Result calculateLocationResult = l.SetFromRelativePathAndDataChecksum( resourceParams.relativePath, resourceParams.checksum );
-
-				if( calculateLocationResult.type != ResultType::SUCCESS )
-				{
-					return calculateLocationResult;
-				}
-
-				resourceParams.location = l.ToString();
-
-				ResourceInfo* resource = new ResourceInfo( resourceParams );
-
-				Result addResourceResult = AddResource( resource );
-
-				if( addResourceResult.type != ResultType::SUCCESS )
-				{
-					return addResourceResult;
-				}
-
-				// If resources are set to be exported, then export as specified.
-				// This is slow with large files as each need to be streamed again
-				// The problem is that checksum of the whole file needs to be calculated first
-				// in order to get the correct destination CDN path
-				// If compression is not skipped and REMOTE_CDN is chosen as destination then
-				// compression will also be calculated twice.
-				// This can be improved with a refactor but currently this code path not
-				// likely to be relied upon often
-				if( params.exportResources )
-				{
-					ResourcePutDataStreamParams putDataStreamParams;
-
-					// Create the correct file data streaming for the desination
-					std::unique_ptr<ResourceTools::FileDataStreamOut> resourceDataStreamOut;
-
-					if( params.exportResourcesDestinationSettings.destinationType == ResourceDestinationType::REMOTE_CDN )
-					{
-						// REMOTE_CDN requires compression
-						resourceDataStreamOut = std::make_unique<ResourceTools::CompressedFileDataStreamOut>();
-					}
-					else
-					{
-						// Else just stream out uncompressed
-						resourceDataStreamOut = std::make_unique<ResourceTools::FileDataStreamOut>();
-					}
-
-					putDataStreamParams.resourceDestinationSettings = params.exportResourcesDestinationSettings;
-
-					putDataStreamParams.dataStream = resourceDataStreamOut.get();
-
-					Result putDataStreamResult = resource->PutDataStream( putDataStreamParams );
-
-					if( putDataStreamResult.type != ResultType::SUCCESS )
-					{
-						return putDataStreamResult;
-					}
-
-					// Export resource using streaming
-					ResourceTools::FileDataStreamIn fileStreamIn( params.resourceStreamThreshold );
 
 					if( !fileStreamIn.StartRead( entry.path() ) )
 					{
 						return Result{ ResultType::FAILED_TO_OPEN_FILE_STREAM };
 					}
 
+					uintmax_t compressedDataSize = 0;
+
 					while( !fileStreamIn.IsFinished() )
 					{
-						std::string data = "";
+						// Update status
+						if( fileProcessingInnerStatusSettings.RequiresStatusUpdates() )
+						{
+							float step = static_cast<float>( 100.0 / fileStreamIn.Size() );
+							float percentage = static_cast<float>( fileStreamIn.GetCurrentPosition() * step );
+							fileProcessingInnerStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentage, step, "Percentage Update" );
+						}
 
-						if( !( fileStreamIn >> data ) )
+						std::string fileData;
+
+						if( !( fileStreamIn >> fileData ) )
 						{
 							return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
 						}
 
-						if( !( resourceDataStreamOut->operator<<( data ) ) )
+						if( !( checksumStream << fileData ) )
+						{
+							return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+						}
+
+						if( params.calculateCompressions )
+						{
+							if( !( compressionStream << &fileData ) )
+							{
+								return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
+							}
+						}
+
+						compressedDataSize += compressedData.size();
+						compressedData.clear();
+					}
+
+					if( params.calculateCompressions )
+					{
+						if( !compressionStream.Finish() )
+						{
+							return Result{ ResultType::FAILED_TO_COMPRESS_DATA };
+						}
+
+						compressedDataSize += compressedData.size();
+						compressedData.clear();
+					}
+
+					std::string checksum;
+
+					if( !checksumStream.FinishAndRetrieve( checksum ) )
+					{
+						return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+					}
+
+					// Create resource from parameters
+					ResourceInfoParams resourceParams;
+
+					resourceParams.relativePath = std::filesystem::relative( entry.path(), params.directory );
+
+					resourceParams.uncompressedSize = fileSize;
+
+					resourceParams.compressedSize = compressedDataSize;
+
+					resourceParams.checksum = checksum;
+
+					resourceParams.binaryOperation = ResourceTools::CalculateBinaryOperation( entry.path() );
+
+					Location l;
+
+					Result calculateLocationResult = l.SetFromRelativePathAndDataChecksum( resourceParams.relativePath, resourceParams.checksum );
+
+					if( calculateLocationResult.type != ResultType::SUCCESS )
+					{
+						return calculateLocationResult;
+					}
+
+					resourceParams.location = l.ToString();
+
+					ResourceInfo* resource = new ResourceInfo( resourceParams );
+
+					Result addResourceResult = AddResource( resource );
+
+					if( addResourceResult.type != ResultType::SUCCESS )
+					{
+						return addResourceResult;
+					}
+
+					// If resources are set to be exported, then export as specified.
+					// This is slow with large files as each need to be streamed again
+					// The problem is that checksum of the whole file needs to be calculated first
+					// in order to get the correct destination CDN path
+					// If compression is not skipped and REMOTE_CDN is chosen as destination then
+					// compression will also be calculated twice.
+					// This can be improved with a refactor but currently this code path not
+					// likely to be relied upon often
+					if( params.exportResources )
+					{
+						ResourcePutDataStreamParams putDataStreamParams;
+
+						// Create the correct file data streaming for the desination
+						std::unique_ptr<ResourceTools::FileDataStreamOut> resourceDataStreamOut;
+
+						if( params.exportResourcesDestinationSettings.destinationType == ResourceDestinationType::REMOTE_CDN )
+						{
+							// REMOTE_CDN requires compression
+							resourceDataStreamOut = std::make_unique<ResourceTools::CompressedFileDataStreamOut>();
+						}
+						else
+						{
+							// Else just stream out uncompressed
+							resourceDataStreamOut = std::make_unique<ResourceTools::FileDataStreamOut>();
+						}
+
+						putDataStreamParams.resourceDestinationSettings = params.exportResourcesDestinationSettings;
+
+						putDataStreamParams.dataStream = resourceDataStreamOut.get();
+
+						Result putDataStreamResult = resource->PutDataStream( putDataStreamParams );
+
+						if( putDataStreamResult.type != ResultType::SUCCESS )
+						{
+							return putDataStreamResult;
+						}
+
+						// Export resource using streaming
+						ResourceTools::FileDataStreamIn fileStreamIn( params.resourceStreamThreshold );
+
+						if( !fileStreamIn.StartRead( entry.path() ) )
+						{
+							return Result{ ResultType::FAILED_TO_OPEN_FILE_STREAM };
+						}
+
+						while( !fileStreamIn.IsFinished() )
+						{
+							std::string data = "";
+
+							if( !( fileStreamIn >> data ) )
+							{
+								return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+							}
+
+							if( !( resourceDataStreamOut->operator<<( data ) ) )
+							{
+								return Result{ ResultType::FAILED_TO_SAVE_TO_STREAM };
+							}
+						}
+
+						if( !resourceDataStreamOut->Finish() )
 						{
 							return Result{ ResultType::FAILED_TO_SAVE_TO_STREAM };
 						}
 					}
-
-					if( !resourceDataStreamOut->Finish() )
-					{
-						return Result{ ResultType::FAILED_TO_SAVE_TO_STREAM };
-					}
 				}
 			}
 		}
-	}
 
-	if( !params.calculateCompressions )
-	{
-		m_totalResourcesSizeCompressed.Reset();
-	}
-
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Resource group successfully created from directory" );
+		if( !params.calculateCompressions )
+		{
+			m_totalResourcesSizeCompressed.Reset();
+		}
 	}
 
 	return Result{ ResultType::SUCCESS };
 }
 
-Result ResourceGroup::ResourceGroupImpl::ImportFromData( const std::string& data, DocumentType documentType /* = DocumentType::YAML */ )
+Result ResourceGroup::ResourceGroupImpl::ImportFromData( const std::string& data, StatusSettings& statusSettings, DocumentType documentType /* = DocumentType::YAML */ )
 {
 	switch( documentType )
 	{
@@ -382,14 +377,14 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromData( const std::string& data
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif
-		return ImportFromCSV( data );
+		return ImportFromCSV( data, statusSettings );
 #ifdef _MSC_VER
 #pragma warning( pop )
 #elif __APPLE__
 #pragma clang diagnostic pop
 #endif
 	case DocumentType::YAML:
-		return ImportFromYamlString( data );
+		return ImportFromYamlString( data, statusSettings );
 	default:
 		return Result{ ResultType::UNSUPPORTED_FILE_FORMAT };
 	}
@@ -397,13 +392,9 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromData( const std::string& data
 	return Result{ ResultType::FAIL };
 }
 
-Result ResourceGroup::ResourceGroupImpl::ImportFromFile( const ResourceGroupImportFromFileParams& params )
+Result ResourceGroup::ResourceGroupImpl::ImportFromFile( const ResourceGroupImportFromFileParams& params, StatusSettings& statusSettings )
 {
-	// Status update
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Importing Resource Group from file." );
-	}
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 20, "Importing Resource Group from file." );
 
 	if( params.filename.empty() )
 	{
@@ -424,8 +415,12 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromFile( const ResourceGroupImpo
 
 	Result importResult;
 
-	if( extension == ".txt" )
-	{
+    {
+		StatusSettings nestedStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 20, 80, "Importing Resource Group from file.", &nestedStatusSettings );
+
+		if( extension == ".txt" )
+		{
 #ifdef _MSC_VER
 #pragma warning( push )
 #pragma warning( disable : 4996 ) // Suppress deprecation warning.
@@ -433,58 +428,64 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromFile( const ResourceGroupImpo
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif
-		importResult = ImportFromCSV( data, params.statusCallback );
+			importResult = ImportFromCSV( data, nestedStatusSettings );
 #ifdef _MSC_VER
 #pragma warning( pop )
 #elif __APPLE__
 #pragma clang diagnostic pop
 #endif
-	}
-	else if( extension == ".yml" || extension == ".yaml" || extension.empty() )
-	{
-		importResult = ImportFromYamlString( data, params.statusCallback );
-	}
-	else
-	{
-		return Result{ ResultType::UNSUPPORTED_FILE_FORMAT };
-	}
-
-	if( params.statusCallback )
-	{
-		if( importResult.type == ResultType::SUCCESS )
-		{
-			params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Successfully imported ResourceGroup" );
 		}
-	}
+		else if( extension == ".yml" || extension == ".yaml" || extension.empty() )
+		{
+			importResult = ImportFromYamlString( data, nestedStatusSettings );
+		}
+		else
+		{
+			return Result{ ResultType::UNSUPPORTED_FILE_FORMAT };
+		}
 
-	return importResult;
+		if( importResult.type != ResultType::SUCCESS )
+		{
+			return importResult;
+		}
+    }
+
+    return importResult;
 }
 
-Result ResourceGroup::ResourceGroupImpl::ExportToFile( const ResourceGroupExportToFileParams& params ) const
+Result ResourceGroup::ResourceGroupImpl::ExportToFile( const ResourceGroupExportToFileParams& params, StatusSettings& statusSettings ) const
 {
 	// Update status
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Exporting Resource Group to file: " + params.filename.string() );
-	}
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 10, "Exporting Resource Group to file: " + params.filename.string() );
 
 	std::string data = "";
 
 	if( params.outputDocumentVersion.major == 0 && params.outputDocumentVersion.minor == 0 )
 	{
-		Result exportCsvResult = ExportCsv( params.outputDocumentVersion, data, params.statusCallback );
-		if( exportCsvResult.type != ResultType::SUCCESS )
 		{
-			return exportCsvResult;
+			StatusSettings exportCsvstatusSettings;
+			statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 10, 90, "Exporting Resource Group to file: " + params.filename.string(), &exportCsvstatusSettings );
+
+
+			Result exportCsvResult = ExportCsv( params.outputDocumentVersion, data, exportCsvstatusSettings );
+			if( exportCsvResult.type != ResultType::SUCCESS )
+			{
+				return exportCsvResult;
+			}
 		}
 	}
 	else
 	{
-		Result exportYamlResult = ExportYaml( params.outputDocumentVersion, data, params.statusCallback );
-
-		if( exportYamlResult.type != ResultType::SUCCESS )
 		{
-			return exportYamlResult;
+			StatusSettings exportYamlstatusSettings;
+			statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 10, 90, "Exporting Resource Group to file: " + params.filename.string(), &exportYamlstatusSettings );
+
+			Result exportYamlResult = ExportYaml( params.outputDocumentVersion, data, exportYamlstatusSettings );
+
+			if( exportYamlResult.type != ResultType::SUCCESS )
+			{
+				return exportYamlResult;
+			}
 		}
 	}
 
@@ -493,17 +494,12 @@ Result ResourceGroup::ResourceGroupImpl::ExportToFile( const ResourceGroupExport
 		return Result{ ResultType::FAILED_TO_SAVE_FILE };
 	}
 
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Resource group successfully exported." );
-	}
-
 	return Result{ ResultType::SUCCESS };
 }
 
-Result ResourceGroup::ResourceGroupImpl::ExportToData( std::string& data, VersionInternal outputDocumentVersion /* = S_DOCUMENT_VERSION*/ ) const
+Result ResourceGroup::ResourceGroupImpl::ExportToData( std::string& data, StatusSettings& statusSettings, VersionInternal outputDocumentVersion /* = S_DOCUMENT_VERSION*/ ) const
 {
-	Result exportYamlResult = ExportYaml( outputDocumentVersion, data );
+	Result exportYamlResult = ExportYaml( outputDocumentVersion, data, statusSettings );
 
 	if( exportYamlResult.type != ResultType::SUCCESS )
 	{
@@ -513,13 +509,10 @@ Result ResourceGroup::ResourceGroupImpl::ExportToData( std::string& data, Versio
 	return Result{ ResultType::SUCCESS };
 }
 
-Result ResourceGroup::ResourceGroupImpl::ImportFromCSV( const std::string& data, StatusCallback statusCallback /* = nullptr */ )
+Result ResourceGroup::ResourceGroupImpl::ImportFromCSV( const std::string& data, StatusSettings& statusSettings )
 {
 	// Status update
-	if( statusCallback )
-	{
-		statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 5, "Importing Resource Group from CSV file." );
-	}
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 10, "Importing Resource Group from CSV file." );
 
 	std::stringstream inputStream;
 
@@ -527,103 +520,63 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromCSV( const std::string& data,
 
 	std::string stringIn;
 
-	while( !inputStream.eof() )
-	{
-		std::getline( inputStream, stringIn );
+    {
+		StatusSettings detailStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 10, 90, "Importing Resource Group from CSV file.", &detailStatusSettings );
 
-		if( stringIn == "" )
+		while( !inputStream.eof() )
 		{
-			continue;
-		}
+			std::getline( inputStream, stringIn );
 
-		std::stringstream ss( stringIn );
+			if( stringIn == "" )
+			{
+				continue;
+			}
 
-		std::string value;
+			std::stringstream ss( stringIn );
 
-		char delimiter = ',';
+			std::string value;
 
-		ResourceInfoParams resourceParams;
+			char delimiter = ',';
 
-		if( !std::getline( ss, value, delimiter ) )
-		{
-			return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
-		}
+			ResourceInfoParams resourceParams;
 
-		// Split filename and prefix
-		std::string resourcePrefixDelimiter = ":/";
-		std::string filename = value.substr( value.find( resourcePrefixDelimiter ) + resourcePrefixDelimiter.size() );
-		std::string resourcePrefix = value.substr( 0, value.find( ":" ) );
+			if( !std::getline( ss, value, delimiter ) )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+			}
 
-		resourceParams.relativePath = filename;
+			// Split filename and prefix
+			std::string resourcePrefixDelimiter = ":/";
+			std::string filename = value.substr( value.find( resourcePrefixDelimiter ) + resourcePrefixDelimiter.size() );
+			std::string resourcePrefix = value.substr( 0, value.find( ":" ) );
 
-		resourceParams.prefix = resourcePrefix;
+			resourceParams.relativePath = filename;
 
-		if( !std::getline( ss, value, delimiter ) )
-		{
-			return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
-		}
+			resourceParams.prefix = resourcePrefix;
 
-		resourceParams.location = value;
+			if( !std::getline( ss, value, delimiter ) )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+			}
 
-		if( !std::getline( ss, value, delimiter ) )
-		{
-			return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
-		}
+			resourceParams.location = value;
 
-		resourceParams.checksum = value;
+			if( !std::getline( ss, value, delimiter ) )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+			}
 
-		if( !std::getline( ss, value, delimiter ) )
-		{
-			return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
-		}
+			resourceParams.checksum = value;
 
-		try
-		{
-			resourceParams.uncompressedSize = std::stoull( value.c_str() );
-		}
-		catch( std::invalid_argument& )
-		{
-			return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
-		}
-		catch( std::out_of_range& )
-		{
-			return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
-		}
+			if( !std::getline( ss, value, delimiter ) )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+			}
 
-		if( !std::getline( ss, value, delimiter ) )
-		{
-			return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
-		}
-
-		try
-		{
-			resourceParams.compressedSize = std::stoull( value.c_str() );
-		}
-		catch( std::invalid_argument& )
-		{
-			return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
-		}
-		catch( std::out_of_range& )
-		{
-			return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
-		}
-
-		if( !std::getline( ss, value, delimiter ) )
-		{
-			resourceParams.binaryOperation = 0;
-		}
-		else
-		{
 			try
 			{
-				unsigned long long valueToULongLong = std::stoull( value.c_str() );
-
-				if( valueToULongLong > std::numeric_limits<uint32_t>::max() )
-				{
-					return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
-				}
-
-				resourceParams.binaryOperation = static_cast<uint32_t>( valueToULongLong );
+				resourceParams.uncompressedSize = std::stoull( value.c_str() );
 			}
 			catch( std::invalid_argument& )
 			{
@@ -633,24 +586,66 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromCSV( const std::string& data,
 			{
 				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
 			}
-		}
 
-		// ResourceGroup gets upgraded to 0.1.0
-		m_versionParameter = VersionInternal{ 0, 1, 0 };
+			if( !std::getline( ss, value, delimiter ) )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+			}
 
-		// Create a Resource
-		ResourceInfo* resource = new ResourceInfo( resourceParams );
+			try
+			{
+				resourceParams.compressedSize = std::stoull( value.c_str() );
+			}
+			catch( std::invalid_argument& )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+			}
+			catch( std::out_of_range& )
+			{
+				return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+			}
 
-		Result addResourceResult = AddResource( resource );
+			if( !std::getline( ss, value, delimiter ) )
+			{
+				resourceParams.binaryOperation = 0;
+			}
+			else
+			{
+				try
+				{
+					unsigned long long valueToULongLong = std::stoull( value.c_str() );
 
-		if( addResourceResult.type != ResultType::SUCCESS )
-		{
-			return addResourceResult;
-		}
+					if( valueToULongLong > std::numeric_limits<uint32_t>::max() )
+					{
+						return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+					}
 
-		if( statusCallback )
-		{
-			statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::UNBOUNDED, 0, "Imported resource: " + resourceParams.relativePath.string() );
+					resourceParams.binaryOperation = static_cast<uint32_t>( valueToULongLong );
+				}
+				catch( std::invalid_argument& )
+				{
+					return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+				}
+				catch( std::out_of_range& )
+				{
+					return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+				}
+			}
+
+			// ResourceGroup gets upgraded to 0.1.0
+			m_versionParameter = VersionInternal{ 0, 1, 0 };
+
+			// Create a Resource
+			ResourceInfo* resource = new ResourceInfo( resourceParams );
+
+			Result addResourceResult = AddResource( resource );
+
+			if( addResourceResult.type != ResultType::SUCCESS )
+			{
+				return addResourceResult;
+			}
+
+			detailStatusSettings.Update( CarbonResources::StatusProgressType::UNBOUNDED, 0, 0, "Imported resource: " + resourceParams.relativePath.string() );
 		}
 	}
 
@@ -743,7 +738,7 @@ Result ResourceGroup::ResourceGroupImpl::CreateResourceFromYaml( YAML::Node& res
 	}
 }
 
-Result ResourceGroup::ResourceGroupImpl::ImportFromYamlString( const std::string& data, StatusCallback statusCallback /* = nullptr */ )
+Result ResourceGroup::ResourceGroupImpl::ImportFromYamlString( const std::string& data, StatusSettings& statusSettings )
 {
 	YAML::Node resourceGroupFile;
 	try
@@ -754,11 +749,13 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromYamlString( const std::string
 	{
 		return Result{ ResultType::FAILED_TO_PARSE_YAML };
 	}
-	return ImportFromYaml( resourceGroupFile, statusCallback );
+	return ImportFromYaml( resourceGroupFile, statusSettings );
 }
 
-Result ResourceGroup::ResourceGroupImpl::ImportFromYaml( YAML::Node& resourceGroupFile, StatusCallback statusCallback )
+Result ResourceGroup::ResourceGroupImpl::ImportFromYaml( YAML::Node& resourceGroupFile, StatusSettings& statusSettings )
 {
+	statusSettings.Update( StatusProgressType::PERCENTAGE, 0, 30, "Importing from Yaml file." );
+
 	YAML::Node typeNode = resourceGroupFile[m_type.GetTag()];
 	if( !typeNode.IsDefined() )
 	{
@@ -789,10 +786,8 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromYaml( YAML::Node& resourceGro
 	// If version is greater than the max version supported at compile then ceil to that
 	if( version > S_DOCUMENT_VERSION )
 	{
-		if( statusCallback )
-		{
-			statusCallback( StatusLevel::OVERVIEW, StatusProgressType::WARNING, 0, "Supplied resource group version greater than resources build max version. Some data may be lost during import." );
-		}
+		statusSettings.Update( StatusProgressType::WARNING, 0, 0, "Supplied resource group version greater than resources build max version. Some data may be lost during import." );
+
 		version = S_DOCUMENT_VERSION;
 	}
 
@@ -827,27 +822,52 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromYaml( YAML::Node& resourceGro
 		return Result{ ResultType::MALFORMED_RESOURCE_GROUP };
 	}
 
-	for( auto iter = resources.begin(); iter != resources.end(); iter++ )
-	{
-		// This bit is a sequence
-		YAML::Node resourceNode = ( *iter );
+    {
+		StatusSettings resourcesStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 30, 70, "Processing Resources.", &resourcesStatusSettings );
 
-		ResourceInfo* resource = nullptr;
+		int i = 0;
 
-		Result createResourceFromYamlResult = CreateResourceFromYaml( resourceNode, resource );
-
-		if( createResourceFromYamlResult.type != ResultType::SUCCESS )
+		for( auto iter = resources.begin(); iter != resources.end(); iter++ )
 		{
-			return createResourceFromYamlResult;
-		}
+			// This bit is a sequence
+			YAML::Node resourceNode = ( *iter );
 
-		Result addResourceResult = AddResource( resource );
+			ResourceInfo* resource = nullptr;
 
-		if( addResourceResult.type != ResultType::SUCCESS )
-		{
-			return addResourceResult;
+			Result createResourceFromYamlResult = CreateResourceFromYaml( resourceNode, resource );
+
+			if( createResourceFromYamlResult.type != ResultType::SUCCESS )
+			{
+				return createResourceFromYamlResult;
+			}
+
+            if (resourcesStatusSettings.RequiresStatusUpdates())
+            {
+				float step = static_cast<float>( 100.0 / resources.size() );
+				float progress = static_cast<float>( i * step );
+
+                std::filesystem::path resourcePath;
+				Result getResourcePathResult = resource->GetRelativePath( resourcePath );
+
+                if( getResourcePathResult.type != ResultType::SUCCESS )
+                {
+					return getResourcePathResult;
+                }
+
+				resourcesStatusSettings.Update( StatusProgressType::PERCENTAGE, progress, step, "Adding resource: " + resourcePath.string() );
+            }
+
+			Result addResourceResult = AddResource( resource );
+
+			if( addResourceResult.type != ResultType::SUCCESS )
+			{
+				return addResourceResult;
+			}
+
+			i++;
 		}
-	}
+    }
 
 	return Result{ ResultType::SUCCESS };
 }
@@ -872,8 +892,9 @@ Result ResourceGroup::ResourceGroupImpl::ExportGroupSpecialisedYaml( YAML::Emitt
 	return Result{ ResultType::SUCCESS };
 }
 
-Result ResourceGroup::ResourceGroupImpl::ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback /*= nullptr*/ ) const
+Result ResourceGroup::ResourceGroupImpl::ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, StatusSettings& statusSettings ) const
 {
+	statusSettings.Update( StatusProgressType::PERCENTAGE, 0, 20, "Exporting Yaml" );
 
 	YAML::Emitter out;
 
@@ -935,52 +956,61 @@ Result ResourceGroup::ResourceGroupImpl::ExportYaml( const VersionInternal& outp
 
 	int i = 0;
 
-	for( ResourceInfo* r : m_resourcesParameter )
-	{
-		// Update status
-		if( statusCallback )
+    {
+		StatusSettings detailExportingStatusSettings;
+		statusSettings.Update( StatusProgressType::PERCENTAGE, 20, 80, "Exporting Yaml", &detailExportingStatusSettings );
+
+		for( ResourceInfo* r : m_resourcesParameter )
 		{
-			std::filesystem::path relativePath;
-
-			Result getRelativePathResult = r->GetRelativePath( relativePath );
-
-			if( getRelativePathResult.type != ResultType::SUCCESS )
+			// Update status
+			if( detailExportingStatusSettings.RequiresStatusUpdates() )
 			{
-				return Result{ ResultType::FAIL };
+				std::filesystem::path relativePath;
+
+				Result getRelativePathResult = r->GetRelativePath( relativePath );
+
+				if( getRelativePathResult.type != ResultType::SUCCESS )
+				{
+					return Result{ ResultType::FAIL };
+				}
+
+				float step = static_cast<float>( 100.0 / m_resourcesParameter.GetSize() );
+				float percentage = static_cast<float>( step * i );
+
+				std::string message = "Exporting: " + relativePath.string();
+
+				detailExportingStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentage, step, message );
+
+				i++;
 			}
 
-			auto percentage = static_cast<unsigned int>( ( 100 * i ) / m_resourcesParameter.GetValue()->size() );
+			out << YAML::BeginMap;
 
-			std::string message = "Exporting: " + relativePath.string();
+			Result resourceExportResult = r->ExportToYaml( out, sanitisedOutputDocumentVersion );
 
-			statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentage, message );
+			if( resourceExportResult.type != ResultType::SUCCESS )
+			{
+				return resourceExportResult;
+			}
 
-			i++;
+			out << YAML::EndMap;
 		}
 
-		out << YAML::BeginMap;
-
-		Result resourceExportResult = r->ExportToYaml( out, sanitisedOutputDocumentVersion );
-
-		if( resourceExportResult.type != ResultType::SUCCESS )
-		{
-			return resourceExportResult;
-		}
+		out << YAML::EndSeq;
 
 		out << YAML::EndMap;
-	}
 
-	out << YAML::EndSeq;
+		data = out.c_str();
+    }
 
-	out << YAML::EndMap;
-
-	data = out.c_str();
 
 	return Result{ ResultType::SUCCESS };
 }
 
-Result ResourceGroup::ResourceGroupImpl::ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusCallback statusCallback /*= nullptr*/ ) const
+Result ResourceGroup::ResourceGroupImpl::ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusSettings& statusSettings ) const
 {
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 10, "Exporting  to CSV" );
+
 	if( outputDocumentVersion.getMajor() > 0 || outputDocumentVersion.getMinor() > 0 || outputDocumentVersion.getPatch() > 0 )
 	{
 		return Result{ ResultType::UNSUPPORTED_FILE_FORMAT };
@@ -1002,23 +1032,31 @@ Result ResourceGroup::ResourceGroupImpl::ExportCsv( const VersionInternal& outpu
 		} );
 
 	int i{ 0 };
-	for( ResourceInfo* r : m_resourcesParameter )
-	{
-		// Update status
-		if( statusCallback )
-		{
-			auto percentage = static_cast<unsigned int>( ( 100 * i ) / m_resourcesParameter.GetValue()->size() );
-			statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentage, "Percentage Update" );
-			i++;
-		}
 
-		Result resourceExportResult = r->ExportToCsv( out, m_versionParameter.GetValue() );
-		if( resourceExportResult.type != ResultType::SUCCESS )
+    {
+		StatusSettings detailExportStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 10, 90, "Exporting  to CSV", &detailExportStatusSettings );
+
+		for( ResourceInfo* r : m_resourcesParameter )
 		{
-			return resourceExportResult;
+			// Update status
+			if( detailExportStatusSettings.RequiresStatusUpdates() )
+			{
+				float step = static_cast<float>( 100.0 / m_resourcesParameter.GetValue()->size() );
+				float percentage = static_cast<float>( step * i );
+				detailExportStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentage, step, "Percentage Update" );
+				i++;
+			}
+
+			Result resourceExportResult = r->ExportToCsv( out, m_versionParameter.GetValue() );
+			if( resourceExportResult.type != ResultType::SUCCESS )
+			{
+				return resourceExportResult;
+			}
+			data += out + "\n";
 		}
-		data += out + "\n";
-	}
+    }
+
 	return Result{ ResultType::SUCCESS };
 }
 
@@ -1116,13 +1154,10 @@ Result ResourceGroup::ResourceGroupImpl::ProcessChunk( ResourceTools::GetChunk& 
 	return Result{ ResultType::SUCCESS };
 }
 
-Result ResourceGroup::ResourceGroupImpl::CreateBundle( const BundleCreateParams& params ) const
+Result ResourceGroup::ResourceGroupImpl::CreateBundle( const BundleCreateParams& params, StatusSettings& statusSettings ) const
 {
 	// Update status
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Bundle" );
-	}
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 5, "Creating Bundle" );
 
 	uintmax_t numberOfChunks = 0;
 
@@ -1141,10 +1176,7 @@ Result ResourceGroup::ResourceGroupImpl::CreateBundle( const BundleCreateParams&
 
 
 	// Update status
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 5, "Generating Chunks" );
-	}
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 5, 40, "Generating Chunks" );
 
 	int i = 0;
 
@@ -1160,114 +1192,113 @@ Result ResourceGroup::ResourceGroupImpl::CreateBundle( const BundleCreateParams&
 	}
 
 	// Loop through all resources and send data for chunking
-	for( ResourceInfo* resource : toBundle )
 	{
-		std::string location;
+		StatusSettings fileProcessingDetailStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 45, 35, "Generating Chunks", &fileProcessingDetailStatusSettings );
 
-		Result getLocationResult = resource->GetLocation( location );
 
-		if( getLocationResult.type != ResultType::SUCCESS )
+		for( ResourceInfo* resource : toBundle )
 		{
-			return getLocationResult;
-		}
+			std::string location;
 
-		if( params.statusCallback )
-		{
-			std::filesystem::path relativePath;
+			Result getLocationResult = resource->GetLocation( location );
 
-			Result getRelativePathResult = resource->GetRelativePath( relativePath );
-
-			if( getRelativePathResult.type != ResultType::SUCCESS )
+			if( getLocationResult.type != ResultType::SUCCESS )
 			{
-				return getRelativePathResult;
+				return getLocationResult;
 			}
 
-			std::string message;
+			if( fileProcessingDetailStatusSettings.RequiresStatusUpdates() )
+			{
+				std::filesystem::path relativePath;
 
+				Result getRelativePathResult = resource->GetRelativePath( relativePath );
+
+				if( getRelativePathResult.type != ResultType::SUCCESS )
+				{
+					return getRelativePathResult;
+				}
+
+				std::string message;
+
+				if( location.empty() )
+				{
+					message = "No file to process: " + relativePath.string();
+				}
+				else
+				{
+					message = "Processing: " + relativePath.string();
+				}
+
+				float step = static_cast<float>( 100.0 / toBundle.size() );
+				float percentComplete = static_cast<float>( step * i );
+
+				i++;
+
+				fileProcessingDetailStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, step, message );
+			}
 			if( location.empty() )
 			{
-				message = "No file to process: " + relativePath.string();
-			}
-			else
-			{
-				message = "Processing: " + relativePath.string();
+				continue;
 			}
 
-			auto percentComplete = static_cast<unsigned int>( ( 100 * i ) / toBundle.size() );
+			auto resourceDataStream = std::make_shared<ResourceTools::FileDataStreamIn>( params.fileReadChunkSize );
 
-			i++;
+			ResourceGetDataStreamParams resourceGetDataParams;
 
-			params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, message );
-		}
-		if( location.empty() )
-		{
-			continue;
-		}
+			resourceGetDataParams.resourceSourceSettings = params.resourceSourceSettings;
 
-		auto resourceDataStream = std::make_shared<ResourceTools::FileDataStreamIn>( params.fileReadChunkSize );
+			resourceGetDataParams.dataStream = resourceDataStream;
 
-		ResourceGetDataStreamParams resourceGetDataParams;
+			resourceGetDataParams.downloadRetrySeconds = params.downloadRetrySeconds;
 
-		resourceGetDataParams.resourceSourceSettings = params.resourceSourceSettings;
+			Result resourceGetDataResult = resource->GetDataStream( resourceGetDataParams );
 
-		resourceGetDataParams.dataStream = resourceDataStream;
+			bundleStream << resourceDataStream;
 
-		resourceGetDataParams.downloadRetrySeconds = params.downloadRetrySeconds;
-
-		Result resourceGetDataResult = resource->GetDataStream( resourceGetDataParams );
-
-		bundleStream << resourceDataStream;
-
-		if( resourceGetDataResult.type != ResultType::SUCCESS )
-		{
-			return resourceGetDataResult;
-		}
-
-		while( !resourceDataStream->IsFinished() )
-		{
-			std::string resourceDataChunk;
-
-			if( !( *resourceDataStream >> resourceDataChunk ) )
+			if( resourceGetDataResult.type != ResultType::SUCCESS )
 			{
-				return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+				return resourceGetDataResult;
 			}
 
-			// Loop through possible created chunks
-			ResourceTools::GetChunk chunkFile;
 
-			chunkFile.clearCache = false;
-
-			bool bundleReadOk{ true };
-
-			while( ( bundleReadOk = bundleStream >> chunkFile ) && !chunkFile.outOfChunks )
+			while( !resourceDataStream->IsFinished() )
 			{
-				std::stringstream ss;
-				ss << chunkBaseName << numberOfChunks << ".chunk";
-				std::string chunkName = ss.str();
+				std::string resourceDataChunk;
 
-				std::filesystem::path chunkPath = params.chunkDestinationSettings.basePath / ss.str();
+				if( !( *resourceDataStream >> resourceDataChunk ) )
+				{
+					return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+				}
 
-				if( params.statusCallback )
+				// Loop through possible created chunks
+				ResourceTools::GetChunk chunkFile;
+
+				chunkFile.clearCache = false;
+
+				bool bundleReadOk{ true };
+
+				while( ( bundleReadOk = bundleStream >> chunkFile ) && !chunkFile.outOfChunks )
 				{
 					std::stringstream ss;
+					ss << chunkBaseName << numberOfChunks << ".chunk";
+					std::string chunkName = ss.str();
 
-					ss << "Generating Chunk: " << chunkPath;
+					std::filesystem::path chunkPath = params.chunkDestinationSettings.basePath / ss.str();
 
-					params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::UNBOUNDED, 0, ss.str() );
+					Result processChunkResult = ProcessChunk( chunkFile, chunkPath, bundleResourceGroup, params.chunkDestinationSettings );
+
+					if( processChunkResult.type != ResultType::SUCCESS )
+					{
+						return processChunkResult;
+					}
+
+					numberOfChunks++;
 				}
-
-				Result processChunkResult = ProcessChunk( chunkFile, chunkPath, bundleResourceGroup, params.chunkDestinationSettings );
-
-				if( processChunkResult.type != ResultType::SUCCESS )
+				if( !bundleReadOk )
 				{
-					return processChunkResult;
+					return Result( { ResultType::FAILED_TO_READ_FROM_STREAM } );
 				}
-
-				numberOfChunks++;
-			}
-			if( !bundleReadOk )
-			{
-				return Result( { ResultType::FAILED_TO_READ_FROM_STREAM } );
 			}
 		}
 	}
@@ -1300,86 +1331,86 @@ Result ResourceGroup::ResourceGroupImpl::CreateBundle( const BundleCreateParams&
 	// Export this resource list
 	//
 	// Update status
-	if( params.statusCallback )
 	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 75, "Exporting ResourceGroups" );
+		StatusSettings exportStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 80, 10, "Exporting ResourceGroups", &exportStatusSettings );
+
+		std::string resourceGroupData;
+
+		Result exportToDataResult = ExportToData( resourceGroupData, exportStatusSettings );
+
+		if( exportToDataResult.type != ResultType::SUCCESS )
+		{
+			return exportToDataResult;
+		}
+
+
+		ResourceGroupInfo resourceGroupInfo( { params.resourceGroupRelativePath } );
+
+		Result setParametersFromDataResult = resourceGroupInfo.SetParametersFromData( resourceGroupData );
+
+		if( setParametersFromDataResult.type != ResultType::SUCCESS )
+		{
+			return setParametersFromDataResult;
+		}
+
+		ResourcePutDataParams putDataParams;
+
+		putDataParams.resourceDestinationSettings = params.chunkDestinationSettings;
+
+		putDataParams.data = &resourceGroupData;
+
+		Result subtractionResourcePutResult = resourceGroupInfo.PutData( putDataParams );
+
+		if( subtractionResourcePutResult.type != ResultType::SUCCESS )
+		{
+			return subtractionResourcePutResult;
+		}
+
+		// Export the bundleGroup
+		Result setResourceGroupResult = bundleResourceGroup.SetResourceGroup( resourceGroupInfo );
+
+		if( setResourceGroupResult.type != ResultType::SUCCESS )
+		{
+			return setResourceGroupResult;
+		}
 	}
 
-	std::string resourceGroupData;
+    {
+		std::string patchResourceGroupData;
 
-	Result exportToDataResult = ExportToData( resourceGroupData );
+		StatusSettings exportToDataStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 90, 10, "Exporting ResourceGroups", &exportToDataStatusSettings );
 
-	if( exportToDataResult.type != ResultType::SUCCESS )
-	{
-		return exportToDataResult;
-	}
+		Result exportBundleResourceGroupToDataResult = bundleResourceGroup.ExportToData( patchResourceGroupData, exportToDataStatusSettings );
 
-	ResourceGroupInfo resourceGroupInfo( { params.resourceGroupRelativePath } );
+		if( exportBundleResourceGroupToDataResult.type != ResultType::SUCCESS )
+		{
+			return exportBundleResourceGroupToDataResult;
+		}
 
-	Result setParametersFromDataResult = resourceGroupInfo.SetParametersFromData( resourceGroupData );
+		BundleResourceGroupInfo patchResourceGroupInfo( { params.resourceGroupBundleRelativePath } );
 
-	if( setParametersFromDataResult.type != ResultType::SUCCESS )
-	{
-		return setParametersFromDataResult;
-	}
+		Result setPatchParametersFromDataResult = patchResourceGroupInfo.SetParametersFromData( patchResourceGroupData );
 
-	ResourcePutDataParams putDataParams;
+		if( setPatchParametersFromDataResult.type != ResultType::SUCCESS )
+		{
+			return setPatchParametersFromDataResult;
+		}
 
-	putDataParams.resourceDestinationSettings = params.chunkDestinationSettings;
+		ResourcePutDataParams bundlePutDataParams;
 
-	putDataParams.data = &resourceGroupData;
+		bundlePutDataParams.resourceDestinationSettings = params.resourceBundleResourceGroupDestinationSettings;
 
-	Result subtractionResourcePutResult = resourceGroupInfo.PutData( putDataParams );
+		bundlePutDataParams.data = &patchResourceGroupData;
 
-	if( subtractionResourcePutResult.type != ResultType::SUCCESS )
-	{
-		return subtractionResourcePutResult;
-	}
+		Result patchResourceGroupPutResult = patchResourceGroupInfo.PutData( bundlePutDataParams );
 
-	// Export the bundleGroup
-	Result setResourceGroupResult = bundleResourceGroup.SetResourceGroup( resourceGroupInfo );
-
-	if( setResourceGroupResult.type != ResultType::SUCCESS )
-	{
-		return setResourceGroupResult;
-	}
-
-	std::string patchResourceGroupData;
-
-	Result exportBundleResourceGroupToDataResult = bundleResourceGroup.ExportToData( patchResourceGroupData );
-
-	if( exportBundleResourceGroupToDataResult.type != ResultType::SUCCESS )
-	{
-		return exportBundleResourceGroupToDataResult;
-	}
-
-	BundleResourceGroupInfo patchResourceGroupInfo( { params.resourceGroupBundleRelativePath } );
-
-	Result setPatchParametersFromDataResult = patchResourceGroupInfo.SetParametersFromData( patchResourceGroupData );
-
-	if( setPatchParametersFromDataResult.type != ResultType::SUCCESS )
-	{
-		return setPatchParametersFromDataResult;
-	}
-
-	ResourcePutDataParams bundlePutDataParams;
-
-	bundlePutDataParams.resourceDestinationSettings = params.resourceBundleResourceGroupDestinationSettings;
-
-	bundlePutDataParams.data = &patchResourceGroupData;
-
-	Result patchResourceGroupPutResult = patchResourceGroupInfo.PutData( bundlePutDataParams );
-
-	if( patchResourceGroupPutResult.type != ResultType::SUCCESS )
-	{
-		return patchResourceGroupPutResult;
-	}
-
-	// Update status
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Bundle Creation Complete." );
-	}
+		if( patchResourceGroupPutResult.type != ResultType::SUCCESS )
+		{
+			return patchResourceGroupPutResult;
+		}
+    }
 
 	return Result{ ResultType::SUCCESS };
 }
@@ -1405,13 +1436,10 @@ Result ResourceGroup::ResourceGroupImpl::ConstructPatchResourceInfo( const Patch
 	return Result{ ResultType::SUCCESS };
 }
 
-Result ResourceGroup::ResourceGroupImpl::CreatePatch( const PatchCreateParams& params ) const
+Result ResourceGroup::ResourceGroupImpl::CreatePatch( const PatchCreateParams& params, StatusSettings& statusSettings ) const
 {
 	// Update status
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Patch" );
-	}
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 20, "Creating Patch" );
 
 	std::string previousGroupType = params.previousResourceGroup->m_impl->GetType();
 
@@ -1460,19 +1488,16 @@ Result ResourceGroup::ResourceGroupImpl::CreatePatch( const PatchCreateParams& p
 
 	resourceGroupSubtractionParams.result2 = resourceGroupSubtractionNext.get();
 
-	resourceGroupSubtractionParams.statusCallback = params.statusCallback;
+    {
+		StatusSettings diffStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 20, 20, "Creating Patch", &diffStatusSettings );
 
-	// Update status
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 20, "Calculaing resourceGroups delta." );
-	}
+		Result subtractionResult = Diff( resourceGroupSubtractionParams, diffStatusSettings );
 
-	Result subtractionResult = Diff( resourceGroupSubtractionParams );
-
-	if( subtractionResult.type != ResultType::SUCCESS )
-	{
-		return subtractionResult;
+		if( subtractionResult.type != ResultType::SUCCESS )
+		{
+			return subtractionResult;
+		}
 	}
 
 	// Ensure that the diff results have the same number of members
@@ -1484,406 +1509,389 @@ Result ResourceGroup::ResourceGroupImpl::CreatePatch( const PatchCreateParams& p
 	int patchId = 0;
 
 	// Update status
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 40, "Generating Patches" );
-	}
+    {
+		StatusSettings resourceStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 40, 20, "Generating Patches", &resourceStatusSettings );
 
-	for( int i = 0; i < resourceGroupSubtractionNext->m_resourcesParameter.GetSize(); i++ )
-	{
-
-		ResourceInfo* resourcePrevious = resourceGroupSubtractionPrevious->m_resourcesParameter.At( i );
-
-		ResourceInfo* resourceNext = resourceGroupSubtractionNext->m_resourcesParameter.At( i );
-
-		if( params.statusCallback )
+		for( int i = 0; i < resourceGroupSubtractionNext->m_resourcesParameter.GetSize(); i++ )
 		{
-			auto percentageComplete = static_cast<unsigned int>( ( 100 * i ) / resourceGroupSubtractionNext->m_resourcesParameter.GetSize() );
 
-			std::filesystem::path relativePath;
+			ResourceInfo* resourcePrevious = resourceGroupSubtractionPrevious->m_resourcesParameter.At( i );
 
-			Result getRelativePathResult = resourcePrevious->GetRelativePath( relativePath );
+			ResourceInfo* resourceNext = resourceGroupSubtractionNext->m_resourcesParameter.At( i );
 
-			if( getRelativePathResult.type != ResultType::SUCCESS )
+			if( resourceStatusSettings.RequiresStatusUpdates() )
 			{
-				return getRelativePathResult;
-			}
+				float step = static_cast<float>( 100.0 / resourceGroupSubtractionNext->m_resourcesParameter.GetSize() );
+				float percentageComplete = static_cast<float>( step * i );
 
-			std::string message = "Creating patch for: " + relativePath.string();
+				std::filesystem::path relativePath;
 
-			params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentageComplete, message );
-		}
+				Result getRelativePathResult = resourcePrevious->GetRelativePath( relativePath );
 
-		size_t patchSourceOffset{ 0 };
-		uint64_t patchSourceOffsetDelta{ 0 };
-
-		// Check to see if previous entry contains dummy information
-		// Suggesting that this is a new entry in latest
-		// In which case there is no reason to create a patch
-		// The new entry will be stored with the ResourceGroup related to the PatchResourceGroup
-		uintmax_t previousUncompressedSize;
-
-		Result getResourcePreviousCompressedSizeResult = resourcePrevious->GetUncompressedSize( previousUncompressedSize );
-
-		if( getResourcePreviousCompressedSizeResult.type != ResultType::SUCCESS )
-		{
-			return getResourcePreviousCompressedSizeResult;
-		}
-
-
-
-		uintmax_t nextUncompressedSize;
-
-		Result getResourceNextCompressedSizeResult = resourceNext->GetUncompressedSize( nextUncompressedSize );
-
-		if( getResourceNextCompressedSizeResult.type != ResultType::SUCCESS )
-		{
-			return getResourceNextCompressedSizeResult;
-		}
-
-
-		// If previous size is 0 this suggests that this is a new entry in latest
-		// In which case there is no reason to create a patch
-		if( previousUncompressedSize != 0 )
-		{
-			// Get resource data previous
-			auto previousFileDataStream = std::make_shared<ResourceTools::FileDataStreamIn>( params.maxInputFileChunkSize );
-
-			ResourceGetDataStreamParams previousResourceGetDataStreamParams;
-
-			previousResourceGetDataStreamParams.resourceSourceSettings = params.resourceSourceSettingsPrevious;
-
-			previousResourceGetDataStreamParams.downloadRetrySeconds = params.downloadRetrySeconds;
-
-			previousResourceGetDataStreamParams.dataStream = previousFileDataStream;
-
-			Result getPreviousDataStreamResult = resourcePrevious->GetDataStream( previousResourceGetDataStreamParams );
-
-			if( getPreviousDataStreamResult.type != ResultType::SUCCESS )
-			{
-				return getPreviousDataStreamResult;
-			}
-
-			// Get resource data next
-			auto nextFileDataStream = std::make_shared<ResourceTools::FileDataStreamIn>( params.maxInputFileChunkSize );
-
-			ResourceGetDataStreamParams nextResourceGetDataStreamParams;
-
-			nextResourceGetDataStreamParams.resourceSourceSettings = params.resourceSourceSettingsNext;
-
-			nextResourceGetDataStreamParams.dataStream = nextFileDataStream;
-
-			Result getNextDataStreamResult = resourceNext->GetDataStream( nextResourceGetDataStreamParams );
-
-			if( getNextDataStreamResult.type != ResultType::SUCCESS )
-			{
-				return getNextDataStreamResult;
-			}
-
-			std::filesystem::path relativePath;
-			Result getRelativePathResult = resourcePrevious->GetRelativePath( relativePath );
-			if( getRelativePathResult.type != ResultType::SUCCESS )
-			{
-				return getRelativePathResult;
-			}
-
-			std::function<void( unsigned int, const std::string& )> callback = [params]( unsigned int percent, const std::string& msg ) {
-				if( params.statusCallback )
+				if( getRelativePathResult.type != ResultType::SUCCESS )
 				{
-					params.statusCallback( StatusLevel::DETAIL, StatusProgressType::PERCENTAGE, percent, msg );
-				}
-			};
-			ResourceTools::ChunkIndex index( previousFileDataStream->GetPath(), params.maxInputFileChunkSize, params.indexFolder, callback );
-			if( params.statusCallback )
-			{
-				std::string message = "Generating index for " + relativePath.string();
-				params.statusCallback( StatusLevel::DETAIL, StatusProgressType::PERCENTAGE, 0, message );
-			}
-			index.GenerateChecksumFilter( nextFileDataStream->GetPath() );
-			if( !index.Generate() )
-			{
-				std::string message = "Index generation failed for " + relativePath.string();
-				params.statusCallback( StatusLevel::DETAIL, StatusProgressType::PERCENTAGE, 0, message );
-			}
-
-			// Process one chunk at a time
-			for( uintmax_t dataOffset = 0; dataOffset < nextUncompressedSize; dataOffset += params.maxInputFileChunkSize )
-			{
-				std::string previousFileData = "";
-
-				if( previousFileDataStream->IsFinished() )
-				{
-					if( previousFileDataStream->Size() > nextFileDataStream->GetCurrentPosition() )
-					{
-						// We ran out of data because we found a chunk match later in the file,
-						// but we can rewind back to where the read stream is in hopes
-						// of getting a good diff, rather than just treating it as new data.
-						previousFileDataStream->StartRead( previousFileDataStream->GetPath() );
-					}
+					return getRelativePathResult;
 				}
 
-				// Handling if previous file is smaller than next file
-				// If so then previousFileData will be nothing and
-				// All next data will be used for the patch
-				if( !previousFileDataStream->IsFinished() )
+				std::string message = "Creating patch for: " + relativePath.string();
+
+				resourceStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentageComplete, step, message );
+			}
+
+			size_t patchSourceOffset{ 0 };
+			uint64_t patchSourceOffsetDelta{ 0 };
+
+			// Check to see if previous entry contains dummy information
+			// Suggesting that this is a new entry in latest
+			// In which case there is no reason to create a patch
+			// The new entry will be stored with the ResourceGroup related to the PatchResourceGroup
+			uintmax_t previousUncompressedSize;
+
+			Result getResourcePreviousCompressedSizeResult = resourcePrevious->GetUncompressedSize( previousUncompressedSize );
+
+			if( getResourcePreviousCompressedSizeResult.type != ResultType::SUCCESS )
+			{
+				return getResourcePreviousCompressedSizeResult;
+			}
+
+
+
+			uintmax_t nextUncompressedSize;
+
+			Result getResourceNextCompressedSizeResult = resourceNext->GetUncompressedSize( nextUncompressedSize );
+
+			if( getResourceNextCompressedSizeResult.type != ResultType::SUCCESS )
+			{
+				return getResourceNextCompressedSizeResult;
+			}
+
+
+			// If previous size is 0 this suggests that this is a new entry in latest
+			// In which case there is no reason to create a patch
+			if( previousUncompressedSize != 0 )
+			{
+				// Get resource data previous
+				auto previousFileDataStream = std::make_shared<ResourceTools::FileDataStreamIn>( params.maxInputFileChunkSize );
+
+				ResourceGetDataStreamParams previousResourceGetDataStreamParams;
+
+				previousResourceGetDataStreamParams.resourceSourceSettings = params.resourceSourceSettingsPrevious;
+
+				previousResourceGetDataStreamParams.downloadRetrySeconds = params.downloadRetrySeconds;
+
+				previousResourceGetDataStreamParams.dataStream = previousFileDataStream;
+
+				Result getPreviousDataStreamResult = resourcePrevious->GetDataStream( previousResourceGetDataStreamParams );
+
+				if( getPreviousDataStreamResult.type != ResultType::SUCCESS )
 				{
-					if( !( *previousFileDataStream >> previousFileData ) )
-					{
-						return Result{ ResultType::FAILED_TO_RETRIEVE_CHUNK_DATA };
-					}
+					return getPreviousDataStreamResult;
 				}
 
-				size_t nextStreamPosition = nextFileDataStream->GetCurrentPosition();
-				// Note: in the case that the next file is smaller than previous
-				// nothing is stored, application of the patch will chop off the extra file data
-				std::string nextFileData;
+				// Get resource data next
+				auto nextFileDataStream = std::make_shared<ResourceTools::FileDataStreamIn>( params.maxInputFileChunkSize );
 
-				if( !nextFileDataStream->IsFinished() )
+				ResourceGetDataStreamParams nextResourceGetDataStreamParams;
+
+				nextResourceGetDataStreamParams.resourceSourceSettings = params.resourceSourceSettingsNext;
+
+				nextResourceGetDataStreamParams.dataStream = nextFileDataStream;
+
+				Result getNextDataStreamResult = resourceNext->GetDataStream( nextResourceGetDataStreamParams );
+
+				if( getNextDataStreamResult.type != ResultType::SUCCESS )
 				{
-					if( !( *nextFileDataStream >> nextFileData ) )
-					{
-						return Result{ ResultType::FAILED_TO_RETRIEVE_CHUNK_DATA };
-					}
+					return getNextDataStreamResult;
 				}
 
-				// Create a patch
-				// Create a patch from the data
-				std::string patchData;
-
-				bool chunkMatchFound{ false };
-				size_t matchCount{ 0 };
-
-
-				if( previousFileData != "" )
+				std::filesystem::path relativePath;
+				Result getRelativePathResult = resourcePrevious->GetRelativePath( relativePath );
+				if( getRelativePathResult.type != ResultType::SUCCESS )
 				{
-					// Here's how this should work:
-					// We find a matching chunk if it exists. If the chunk exists we make a patch with no data, because we'll get
-					// the data from the source file using the patch info. Consecutive patches should be collapsed into one big one.
-					// If we can't find a matching chunk, we will base the current diff off the chunk in the source starting after the final byte
-					// in the chunk from the source file that we last used.
-					// These should keep our patches pretty minimal, even if lots of data gets added early in the file causing offsets.
-					// It should also handle small changes in moved parts of the file pretty well.
-					if( params.statusCallback )
+					return getRelativePathResult;
+				}
+
+				ResourceTools::ChunkIndex index( previousFileDataStream->GetPath(), params.maxInputFileChunkSize, params.indexFolder );
+
+				index.GenerateChecksumFilter( nextFileDataStream->GetPath() );
+
+				if( !index.Generate() )
+				{
+					std::string message = "Index generation failed for " + relativePath.string();
+					resourceStatusSettings.Update( StatusProgressType::WARNING, 0, 0, message );
+				}
+
+				// Process one chunk at a time
+				for( uintmax_t dataOffset = 0; dataOffset < nextUncompressedSize; dataOffset += params.maxInputFileChunkSize )
+				{
+					std::string previousFileData = "";
+
+					if( previousFileDataStream->IsFinished() )
 					{
-						unsigned int progress = static_cast<uint32_t>( ( dataOffset * 100 ) / nextUncompressedSize );
-						std::stringstream ss;
-						ss << "Generating patch files: " << relativePath.string();
-						params.statusCallback( StatusLevel::DETAIL, StatusProgressType::PERCENTAGE, progress, ss.str() );
-					}
-
-					chunkMatchFound = index.FindMatchingChunk( nextFileData, patchSourceOffset );
-
-					if( chunkMatchFound )
-					{
-						matchCount = 1;
-						matchCount += ResourceTools::CountMatchingChunks(
-							nextFileDataStream->GetPath(),
-							nextFileDataStream->GetCurrentPosition(),
-							previousFileDataStream->GetPath(),
-							patchSourceOffset + params.maxInputFileChunkSize,
-							params.maxInputFileChunkSize );
-
-						size_t matchSize = std::min( params.maxInputFileChunkSize * matchCount, previousFileDataStream->Size() - patchSourceOffset );
-
-						PatchResourceInfo* patchResource{ nullptr };
-
-						ConstructPatchResourceInfo( params, patchId, dataOffset, patchSourceOffset, resourceNext, patchResource );
-
-						if( previousFileDataStream->IsFinished() )
+						if( previousFileDataStream->Size() > nextFileDataStream->GetCurrentPosition() )
 						{
+							// We ran out of data because we found a chunk match later in the file,
+							// but we can rewind back to where the read stream is in hopes
+							// of getting a good diff, rather than just treating it as new data.
 							previousFileDataStream->StartRead( previousFileDataStream->GetPath() );
 						}
+					}
 
-						previousFileDataStream->Seek( patchSourceOffset );
-
-						patchResource->SetParametersFromSourceStream( *previousFileDataStream, matchSize );
-
-						// Advance the first stream by the size of the matching data,
-						// but move the point we generate patches from for the previous
-						// file data stream to the end of the match.
-						// It's hard to tell if it would be smarter to simply advance
-						// the destination data by the same amount of the source data,
-						// or perhaps even not to move it at all.
-						nextFileDataStream->Seek( std::min( nextFileDataStream->Size(), nextStreamPosition + matchSize ) );
-
-						previousFileDataStream->Seek( std::min( previousFileDataStream->Size(), patchSourceOffset + matchSize ) );
-
-						dataOffset += matchSize - params.maxInputFileChunkSize;
-
-						patchSourceOffset += matchSize;
-
-						if( nextStreamPosition == 0 && patchSourceOffset == 0 )
+					// Handling if previous file is smaller than next file
+					// If so then previousFileData will be nothing and
+					// All next data will be used for the patch
+					if( !previousFileDataStream->IsFinished() )
+					{
+						if( !( *previousFileDataStream >> previousFileData ) )
 						{
-							// This is the beginning of the file and it matches.
-							// There is no need to write patch data.
+							return Result{ ResultType::FAILED_TO_RETRIEVE_CHUNK_DATA };
+						}
+					}
+
+					size_t nextStreamPosition = nextFileDataStream->GetCurrentPosition();
+					// Note: in the case that the next file is smaller than previous
+					// nothing is stored, application of the patch will chop off the extra file data
+					std::string nextFileData;
+
+					if( !nextFileDataStream->IsFinished() )
+					{
+						if( !( *nextFileDataStream >> nextFileData ) )
+						{
+							return Result{ ResultType::FAILED_TO_RETRIEVE_CHUNK_DATA };
+						}
+					}
+
+					// Create a patch
+					// Create a patch from the data
+					std::string patchData;
+
+					bool chunkMatchFound{ false };
+					size_t matchCount{ 0 };
+
+
+					if( previousFileData != "" )
+					{
+						// Here's how this should work:
+						// We find a matching chunk if it exists. If the chunk exists we make a patch with no data, because we'll get
+						// the data from the source file using the patch info. Consecutive patches should be collapsed into one big one.
+						// If we can't find a matching chunk, we will base the current diff off the chunk in the source starting after the final byte
+						// in the chunk from the source file that we last used.
+						// These should keep our patches pretty minimal, even if lots of data gets added early in the file causing offsets.
+						// It should also handle small changes in moved parts of the file pretty well.
+						chunkMatchFound = index.FindMatchingChunk( nextFileData, patchSourceOffset );
+
+						if( chunkMatchFound )
+						{
+							matchCount = 1;
+							matchCount += ResourceTools::CountMatchingChunks(
+								nextFileDataStream->GetPath(),
+								nextFileDataStream->GetCurrentPosition(),
+								previousFileDataStream->GetPath(),
+								patchSourceOffset + params.maxInputFileChunkSize,
+								params.maxInputFileChunkSize );
+
+							size_t matchSize = std::min( params.maxInputFileChunkSize * matchCount, previousFileDataStream->Size() - patchSourceOffset );
+
+							PatchResourceInfo* patchResource{ nullptr };
+
+							ConstructPatchResourceInfo( params, patchId, dataOffset, patchSourceOffset, resourceNext, patchResource );
+
+							if( previousFileDataStream->IsFinished() )
+							{
+								previousFileDataStream->StartRead( previousFileDataStream->GetPath() );
+							}
+
+							previousFileDataStream->Seek( patchSourceOffset );
+
+							patchResource->SetParametersFromSourceStream( *previousFileDataStream, matchSize );
+
+							// Advance the first stream by the size of the matching data,
+							// but move the point we generate patches from for the previous
+							// file data stream to the end of the match.
+							// It's hard to tell if it would be smarter to simply advance
+							// the destination data by the same amount of the source data,
+							// or perhaps even not to move it at all.
+							nextFileDataStream->Seek( std::min( nextFileDataStream->Size(), nextStreamPosition + matchSize ) );
+
+							previousFileDataStream->Seek( std::min( previousFileDataStream->Size(), patchSourceOffset + matchSize ) );
+
+							dataOffset += matchSize - params.maxInputFileChunkSize;
+
+							patchSourceOffset += matchSize;
+
+							if( nextStreamPosition == 0 && patchSourceOffset == 0 )
+							{
+								// This is the beginning of the file and it matches.
+								// There is no need to write patch data.
+								continue;
+							}
+
+							// Add the patch resource to the patchResourceGroup
+							Result addResourceResult = patchResourceGroup.AddResource( patchResource );
+
+							if( addResourceResult.type != ResultType::SUCCESS )
+							{
+								delete patchResource;
+
+								return addResourceResult;
+							}
+
+							patchId++;
+
 							continue;
 						}
-
-						// Add the patch resource to the patchResourceGroup
-						Result addResourceResult = patchResourceGroup.AddResource( patchResource );
-
-						if( addResourceResult.type != ResultType::SUCCESS )
+						else
 						{
-							delete patchResource;
-
-							return addResourceResult;
+							// Previous and next data chunk are different, create a patch
+							if( !ResourceTools::CreatePatch( previousFileData, nextFileData, patchData ) )
+							{
+								return Result{ ResultType::FAILED_TO_CREATE_PATCH };
+							}
+							patchSourceOffsetDelta = previousFileData.size();
 						}
-
-						patchId++;
-
-						continue;
 					}
 					else
 					{
-						// Previous and next data chunk are different, create a patch
-						if( !ResourceTools::CreatePatch( previousFileData, nextFileData, patchData ) )
+						// If there is no previous data then just store the data straight from the file
+						// All this data is new
+						if( !ResourceTools::CreatePatch( "", nextFileData, patchData ) )
 						{
 							return Result{ ResultType::FAILED_TO_CREATE_PATCH };
 						}
-						patchSourceOffsetDelta = previousFileData.size();
+						patchSourceOffsetDelta = nextFileData.size();
 					}
-				}
-				else
-				{
-					// If there is no previous data then just store the data straight from the file
-					// All this data is new
-					if( !ResourceTools::CreatePatch( "", nextFileData, patchData ) )
+
+					PatchResourceInfo* patchResource{ nullptr };
+					ConstructPatchResourceInfo( params, patchId, dataOffset, patchSourceOffset, resourceNext, patchResource );
+					patchSourceOffset += patchSourceOffsetDelta;
+					if( !patchData.empty() )
 					{
-						return Result{ ResultType::FAILED_TO_CREATE_PATCH };
+						Result setParametersFromDataResult = patchResource->SetParametersFromData( patchData, params.calculateCompressions );
+
+						if( setParametersFromDataResult.type != ResultType::SUCCESS )
+						{
+							return setParametersFromDataResult;
+						}
+
+						// Export patch file
+						ResourcePutDataParams resourcePutDataParams;
+
+						resourcePutDataParams.resourceDestinationSettings = params.resourcePatchBinaryDestinationSettings;
+
+						resourcePutDataParams.data = &patchData;
+
+						Result putPatchDataResult = patchResource->PutData( resourcePutDataParams );
+
+						if( putPatchDataResult.type != ResultType::SUCCESS )
+						{
+							delete patchResource;
+
+							return putPatchDataResult;
+						}
 					}
-					patchSourceOffsetDelta = nextFileData.size();
-				}
 
-				PatchResourceInfo* patchResource{ nullptr };
-				ConstructPatchResourceInfo( params, patchId, dataOffset, patchSourceOffset, resourceNext, patchResource );
-				patchSourceOffset += patchSourceOffsetDelta;
-				if( !patchData.empty() )
-				{
-					Result setParametersFromDataResult = patchResource->SetParametersFromData( patchData, params.calculateCompressions );
+					// Add the patch resource to the patchResourceGroup
+					Result addResourceResult = patchResourceGroup.AddResource( patchResource );
 
-					if( setParametersFromDataResult.type != ResultType::SUCCESS )
-					{
-						return setParametersFromDataResult;
-					}
-
-					// Export patch file
-					ResourcePutDataParams resourcePutDataParams;
-
-					resourcePutDataParams.resourceDestinationSettings = params.resourcePatchBinaryDestinationSettings;
-
-					resourcePutDataParams.data = &patchData;
-
-					Result putPatchDataResult = patchResource->PutData( resourcePutDataParams );
-
-					if( putPatchDataResult.type != ResultType::SUCCESS )
+					if( addResourceResult.type != ResultType::SUCCESS )
 					{
 						delete patchResource;
 
-						return putPatchDataResult;
+						return addResourceResult;
 					}
+
+					patchId++;
 				}
-
-				// Add the patch resource to the patchResourceGroup
-				Result addResourceResult = patchResourceGroup.AddResource( patchResource );
-
-				if( addResourceResult.type != ResultType::SUCCESS )
-				{
-					delete patchResource;
-
-					return addResourceResult;
-				}
-
-				patchId++;
 			}
 		}
-	}
+    }
+
 
 	patchResourceGroup.SetRemovedResourceRelativePaths( resourceGroupSubtractionParams.removedResources );
 
 	// Update status
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 60, "Exporting ResourceGroups." );
-	}
+    {
+		StatusSettings exportToDataStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 60, 20, "Export ResourceGroups.", &exportToDataStatusSettings );
 
-	// Export the subtraction ResourceGroup
-	std::string resourceGroupData;
-
-	Result exportResourceGroupSubtractionLatestResult = resourceGroupSubtractionNext->ExportToData( resourceGroupData );
-
-	if( exportResourceGroupSubtractionLatestResult.type != ResultType::SUCCESS )
-	{
-		return exportResourceGroupSubtractionLatestResult;
-	}
-
-	ResourceGroupInfo subtractionResourceGroupInfo( { params.resourceGroupRelativePath } );
-
-	Result setParametersFromDataResult = subtractionResourceGroupInfo.SetParametersFromData( resourceGroupData );
-
-	if( setParametersFromDataResult.type != ResultType::SUCCESS )
-	{
-		return setParametersFromDataResult;
-	}
-
-	ResourcePutDataParams putDataParams;
-
-	putDataParams.resourceDestinationSettings = params.resourcePatchBinaryDestinationSettings;
-
-	putDataParams.data = &resourceGroupData;
-
-	Result subtractionResourcePutResult = subtractionResourceGroupInfo.PutData( putDataParams );
-
-	if( subtractionResourcePutResult.type != ResultType::SUCCESS )
-	{
-		return subtractionResourcePutResult;
-	}
+		// Export the subtraction ResourceGroup
+		std::string resourceGroupData;
 
 
+		Result exportResourceGroupSubtractionLatestResult = resourceGroupSubtractionNext->ExportToData( resourceGroupData, exportToDataStatusSettings );
 
-	// Export the patchGroup
-	Result setResourceGroupResult = patchResourceGroup.SetResourceGroup( subtractionResourceGroupInfo );
+		if( exportResourceGroupSubtractionLatestResult.type != ResultType::SUCCESS )
+		{
+			return exportResourceGroupSubtractionLatestResult;
+		}
 
-	if( setResourceGroupResult.type != ResultType::SUCCESS )
-	{
-		return setResourceGroupResult;
-	}
+		ResourceGroupInfo subtractionResourceGroupInfo( { params.resourceGroupRelativePath } );
+
+		Result setParametersFromDataResult = subtractionResourceGroupInfo.SetParametersFromData( resourceGroupData );
+
+		if( setParametersFromDataResult.type != ResultType::SUCCESS )
+		{
+			return setParametersFromDataResult;
+		}
+
+		ResourcePutDataParams putDataParams;
+
+		putDataParams.resourceDestinationSettings = params.resourcePatchBinaryDestinationSettings;
+
+		putDataParams.data = &resourceGroupData;
+
+		Result subtractionResourcePutResult = subtractionResourceGroupInfo.PutData( putDataParams );
+
+		if( subtractionResourcePutResult.type != ResultType::SUCCESS )
+		{
+			return subtractionResourcePutResult;
+		}
+
+		// Export the patchGroup
+		Result setResourceGroupResult = patchResourceGroup.SetResourceGroup( subtractionResourceGroupInfo );
+
+		if( setResourceGroupResult.type != ResultType::SUCCESS )
+		{
+			return setResourceGroupResult;
+		}
+    }
 
 	std::string patchResourceGroupData;
+    {
+		StatusSettings exportPatchResourceGroupStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 80, 20, "Export ResourceGroups.", &exportPatchResourceGroupStatusSettings );
 
-	Result exportToDataResult = patchResourceGroup.ExportToData( patchResourceGroupData );
 
-	if( exportToDataResult.type != ResultType::SUCCESS )
-	{
-		return exportToDataResult;
-	}
+		Result exportToDataResult = patchResourceGroup.ExportToData( patchResourceGroupData, exportPatchResourceGroupStatusSettings );
 
-	PatchResourceGroupInfo patchResourceGroupInfo( { params.resourceGroupPatchRelativePath } );
+		if( exportToDataResult.type != ResultType::SUCCESS )
+		{
+			return exportToDataResult;
+		}
 
-	Result setPatchParametersFromDataResult = patchResourceGroupInfo.SetParametersFromData( patchResourceGroupData );
+		PatchResourceGroupInfo patchResourceGroupInfo( { params.resourceGroupPatchRelativePath } );
 
-	if( setPatchParametersFromDataResult.type != ResultType::SUCCESS )
-	{
-		return setPatchParametersFromDataResult;
-	}
+		Result setPatchParametersFromDataResult = patchResourceGroupInfo.SetParametersFromData( patchResourceGroupData );
 
-	ResourcePutDataParams patchPutDataParams;
+		if( setPatchParametersFromDataResult.type != ResultType::SUCCESS )
+		{
+			return setPatchParametersFromDataResult;
+		}
 
-	patchPutDataParams.resourceDestinationSettings = params.resourcePatchResourceGroupDestinationSettings;
+		ResourcePutDataParams patchPutDataParams;
 
-	patchPutDataParams.data = &patchResourceGroupData;
+		patchPutDataParams.resourceDestinationSettings = params.resourcePatchResourceGroupDestinationSettings;
 
-	Result patchResourceGroupPutResult = patchResourceGroupInfo.PutData( patchPutDataParams );
+		patchPutDataParams.data = &patchResourceGroupData;
 
-	if( patchResourceGroupPutResult.type != ResultType::SUCCESS )
-	{
-		return patchResourceGroupPutResult;
-	}
+		Result patchResourceGroupPutResult = patchResourceGroupInfo.PutData( patchPutDataParams );
 
-	// Update status
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Patch Created" );
-	}
+		if( patchResourceGroupPutResult.type != ResultType::SUCCESS )
+		{
+			return patchResourceGroupPutResult;
+		}
+    }
 
 	return Result{ ResultType::SUCCESS };
 }
@@ -1918,39 +1926,56 @@ Result ResourceGroup::ResourceGroupImpl::AddResource( ResourceInfo* resource )
 	return Result{ ResultType::SUCCESS };
 }
 
-Result ResourceGroup::ResourceGroupImpl::RemoveResources( const ResourceGroupRemoveResourcesParams& params )
+Result ResourceGroup::ResourceGroupImpl::RemoveResources( const ResourceGroupRemoveResourcesParams& params, StatusSettings& statusSettings )
 {
+	// Update status
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 5, "Removing resources from Resource Group" );
+
 	if( !params.resourcesToRemove )
 	{
 		return Result{ ResultType::RESOURCE_LIST_NOT_SET };
 	}
 
-	for( std::filesystem::path& relativePath : *params.resourcesToRemove )
-	{
-		// Construct a ResourceInfo from relativePath
-		ResourceInfoParams resourceInfoParams;
+    {
+		StatusSettings nestedStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 5, 95, "Removing resources from Resource Group", &nestedStatusSettings );
 
-		resourceInfoParams.relativePath = relativePath;
-
-		ResourceInfo resource( resourceInfoParams );
-
-		Result removeResourceResult = RemoveResource( resource );
-
-		if( removeResourceResult.type != ResultType::SUCCESS )
+        int i = 0;
+		for( std::filesystem::path& relativePath : *params.resourcesToRemove )
 		{
-			if( removeResourceResult.type != ResultType::RESOURCE_NOT_FOUND )
+            if (nestedStatusSettings.RequiresStatusUpdates())
+            {
+				float step = static_cast<float>( 100.0 / params.resourcesToRemove->size() );
+				float percentComplete = static_cast<float>( step * i );
+                nestedStatusSettings.Update( StatusProgressType::PERCENTAGE, percentComplete, step, "Removing resource: " + relativePath.string() );
+				i++;
+            }
+
+			// Construct a ResourceInfo from relativePath
+			ResourceInfoParams resourceInfoParams;
+
+			resourceInfoParams.relativePath = relativePath;
+
+			ResourceInfo resource( resourceInfoParams );
+
+			Result removeResourceResult = RemoveResource( resource );
+
+			if( removeResourceResult.type != ResultType::SUCCESS )
 			{
-				return removeResourceResult;
-			}
-			else
-			{
-				if( params.errorIfResourceNotFound == true )
+				if( removeResourceResult.type != ResultType::RESOURCE_NOT_FOUND )
 				{
 					return removeResourceResult;
 				}
+				else
+				{
+					if( params.errorIfResourceNotFound == true )
+					{
+						return removeResourceResult;
+					}
+				}
 			}
 		}
-	}
+    }
 
 	return Result{ ResultType::SUCCESS };
 }
@@ -1999,8 +2024,10 @@ Result ResourceGroup::ResourceGroupImpl::RemoveResource( ResourceInfo& resource 
 	return Result{ ResultType::SUCCESS };
 }
 
-Result ResourceGroup::ResourceGroupImpl::Merge( const ResourceGroupMergeParams& params )
+Result ResourceGroup::ResourceGroupImpl::Merge( const ResourceGroupMergeParams& params, StatusSettings& statusSettings )
 {
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 20, "Merging resource groups." );
+
 	if( params.mergedResourceGroup == nullptr )
 	{
 		return Result{ ResultType::RESOURCE_GROUP_NOT_SET };
@@ -2026,31 +2053,47 @@ Result ResourceGroup::ResourceGroupImpl::Merge( const ResourceGroupMergeParams& 
 		std::back_inserter( unionResources ),
 		[]( const ResourceInfo* a, const ResourceInfo* b ) { return *a < *b; } );
 
-	// Add result to merge ResourceGroup output
-	for( auto resource : unionResources )
-	{
-		ResourceInfo* resourceCopy = nullptr;
+    {
+		StatusSettings nestedStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 20, 80, "Merging resource groups.", &nestedStatusSettings );
 
-		Result createResourceFromResourceResult = CreateResourceFromResource( *resource, resourceCopy );
-
-		if( createResourceFromResourceResult.type != ResultType::SUCCESS )
+		// Add result to merge ResourceGroup output
+		int i = 0;
+		for( auto resource : unionResources )
 		{
-			return createResourceFromResourceResult;
-		}
+            if (nestedStatusSettings.RequiresStatusUpdates())
+            {
+				float step = static_cast<float>( 100.0 / unionResources.size() );
+				float percentComplete = static_cast<float>( step * i );
+				nestedStatusSettings.Update( StatusProgressType::PERCENTAGE, percentComplete, step, "Merging Resource" );
+				i++;
+            }
 
-		Result addResourceResult = params.mergedResourceGroup->m_impl->AddResource( resourceCopy );
+			ResourceInfo* resourceCopy = nullptr;
 
-		if( addResourceResult.type != ResultType::SUCCESS )
-		{
-			return addResourceResult;
+			Result createResourceFromResourceResult = CreateResourceFromResource( *resource, resourceCopy );
+
+			if( createResourceFromResourceResult.type != ResultType::SUCCESS )
+			{
+				return createResourceFromResourceResult;
+			}
+
+			Result addResourceResult = params.mergedResourceGroup->m_impl->AddResource( resourceCopy );
+
+			if( addResourceResult.type != ResultType::SUCCESS )
+			{
+				return addResourceResult;
+			}
 		}
-	}
+    }
 
 	return Result{ ResultType::SUCCESS };
 }
 
-Result ResourceGroup::ResourceGroupImpl::DiffChangesAsLists( const ResourceGroupDiffAgainstGroupParams& params ) const
+Result ResourceGroup::ResourceGroupImpl::DiffChangesAsLists( const ResourceGroupDiffAgainstGroupParams& params, StatusSettings& statusSettings ) const
 {
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 20, "Diffing changes as lists." );
+
 	if( !params.resourceGroupToDiffAgainst )
 	{
 		return Result{ ResultType::RESOURCE_GROUP_NOT_SET };
@@ -2073,41 +2116,72 @@ Result ResourceGroup::ResourceGroupImpl::DiffChangesAsLists( const ResourceGroup
 
 	subtractionParams.result2 = result2.m_impl;
 
-	Result diffResult = Diff( subtractionParams );
+    {
+		StatusSettings diffStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 20, 60, "Diffing changes as lists.", &diffStatusSettings );
 
-	if( diffResult.type != ResultType::SUCCESS )
-	{
-		return diffResult;
-	}
+		Result diffResult = Diff( subtractionParams, diffStatusSettings );
 
-	for( auto removedResource : subtractionParams.removedResources )
-	{
-		params.subtractions->push_back( removedResource );
-	}
-
-	for( auto resource : result1.m_impl->m_resourcesParameter )
-	{
-		std::filesystem::path relativePath;
-
-		Result getRelativePathResult = resource->GetRelativePath( relativePath );
-
-		if( getRelativePathResult.type != ResultType::SUCCESS )
+		if( diffResult.type != ResultType::SUCCESS )
 		{
-			return getRelativePathResult;
+			return diffResult;
 		}
-
-		params.additions->push_back( relativePath );
 	}
+
+    {
+		StatusSettings subtractionsStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 80, 10, "Collating subtractions.", &subtractionsStatusSettings );
+
+        int i = 0;
+		for( auto removedResource : subtractionParams.removedResources )
+		{
+			if( subtractionsStatusSettings.RequiresStatusUpdates() )
+            {
+				float step = static_cast<float>( 100.0 / subtractionParams.removedResources.size() );
+				float percentage = static_cast<float>( i * step );
+				subtractionsStatusSettings.Update( StatusProgressType::PERCENTAGE, percentage, step, removedResource.string() );
+				i++;
+            }
+
+			params.subtractions->push_back( removedResource );
+		}
+	}
+
+    {
+		StatusSettings additionsStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 90, 10, "Collating additions.", &additionsStatusSettings );
+
+        int i = 0;
+		for( auto resource : result1.m_impl->m_resourcesParameter )
+		{
+
+			std::filesystem::path relativePath;
+
+			Result getRelativePathResult = resource->GetRelativePath( relativePath );
+
+            if( additionsStatusSettings.RequiresStatusUpdates() )
+			{
+				float step = static_cast<float>( 100.0 / result1.m_impl->m_resourcesParameter.GetSize() );
+				float percentage = static_cast<float>( i * step );
+				additionsStatusSettings.Update( StatusProgressType::PERCENTAGE, percentage, step, relativePath.string() );
+				i++;
+			}
+
+			if( getRelativePathResult.type != ResultType::SUCCESS )
+			{
+				return getRelativePathResult;
+			}
+
+			params.additions->push_back( relativePath );
+		}
+    }
 
 	return Result{ ResultType::SUCCESS };
 }
 
-Result ResourceGroup::ResourceGroupImpl::Diff( ResourceGroupSubtractionParams& params ) const
+Result ResourceGroup::ResourceGroupImpl::Diff( ResourceGroupSubtractionParams& params, StatusSettings& statusSettings ) const
 {
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Calculating diff between two resource groups." );
-	}
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 20, "Calculating diff between two resource groups." );
 
 	DocumentParameterCollection<ResourceInfo*> subtractionResources = params.subtractResourceGroup->m_resourcesParameter;
 	// Iterate through all resources
@@ -2140,157 +2214,171 @@ Result ResourceGroup::ResourceGroupImpl::Diff( ResourceGroupSubtractionParams& p
 		std::back_inserter( potentiallyModifiedResources ),
 		[]( const ResourceInfo* a, const ResourceInfo* b ) { return *a < *b; } );
 
-	for( ResourceInfo* resource : potentiallyModifiedResources )
-	{
-		if( params.statusCallback )
+    {
+		StatusSettings processingResourcesStatus;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 20, 20, "Calculating diff between two resource groups.", &processingResourcesStatus );
+
+
+		for( ResourceInfo* resource : potentiallyModifiedResources )
 		{
-			std::filesystem::path relativePath;
-
-			Result getRelativePathResult = resource->GetRelativePath( relativePath );
-
-			if( getRelativePathResult.type != ResultType::SUCCESS )
+			if( processingResourcesStatus.RequiresStatusUpdates() )
 			{
-				return getRelativePathResult;
+				std::filesystem::path relativePath;
+
+				Result getRelativePathResult = resource->GetRelativePath( relativePath );
+
+				if( getRelativePathResult.type != ResultType::SUCCESS )
+				{
+					return getRelativePathResult;
+				}
+
+				std::string message = "Processing: " + relativePath.string();
+
+				float step = static_cast<float>( 100.0 / m_resourcesParameter.GetSize() );
+				float percentComplete = static_cast<float>( step * i );
+
+				processingResourcesStatus.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, step, message );
+
+				i++;
 			}
 
-			std::string message = "Processing: " + relativePath.string();
+			ResourceInfo* resource2 = *std::lower_bound(
+				sortedSubtractionResources.begin(), sortedSubtractionResources.end(), resource, []( const ResourceInfo* a, const ResourceInfo* b ) { return *a < *b; } );
 
-			auto percentComplete = static_cast<unsigned int>( ( 100 * i ) / m_resourcesParameter.GetSize() );
+			std::string resource1Checksum;
 
-			params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, message );
+			Result getResource1ChecksumResult = resource->GetChecksum( resource1Checksum );
 
-			i++;
+			if( getResource1ChecksumResult.type != ResultType::SUCCESS )
+			{
+				return getResource1ChecksumResult;
+			}
+
+			std::string resource2Checksum;
+
+			Result getResource2ChecksumResult = resource2->GetChecksum( resource2Checksum );
+
+			if( getResource2ChecksumResult.type != ResultType::SUCCESS )
+			{
+				return getResource2ChecksumResult;
+			}
+
+			// Has this resource changed?
+			if( resource1Checksum != resource2Checksum )
+			{
+				// The binary data has changed between versions, record an entry in both lists
+
+				// Create a copy of the resource to result 2 (Latest)
+				ResourceInfo* resourceCopy1 = nullptr;
+
+				Result createResourceFromResource1Result = CreateResourceFromResource( *resource, resourceCopy1 );
+
+				if( createResourceFromResource1Result.type != ResultType::SUCCESS )
+				{
+					return createResourceFromResource1Result;
+				}
+
+				params.result2->AddResource( resourceCopy1 );
+
+				ResourceInfo* resourceCopy2 = nullptr;
+
+				Result createResourceFromResource2Result = CreateResourceFromResource( *resource2, resourceCopy2 );
+
+				if( createResourceFromResource2Result.type != ResultType::SUCCESS )
+				{
+					return createResourceFromResource2Result;
+				}
+
+				params.result1->AddResource( resourceCopy2 );
+			}
 		}
+    }
 
-		ResourceInfo* resource2 = *std::lower_bound(
-			sortedSubtractionResources.begin(), sortedSubtractionResources.end(), resource,
-			[]( const ResourceInfo* a, const ResourceInfo* b ) { return *a < *b; } );
-
-		std::string resource1Checksum;
-
-		Result getResource1ChecksumResult = resource->GetChecksum( resource1Checksum );
-
-		if( getResource1ChecksumResult.type != ResultType::SUCCESS )
+    {
+		StatusSettings addResourceStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 40, 20, "Calculating diff between two resource groups.", &addResourceStatusSettings );
+		i = 0;
+		for( auto resource : addedResources )
 		{
-			return getResource1ChecksumResult;
-		}
+			// This is a new resource, add it to target
+			// Note: Could be made optional, perhaps it is desirable to only include patch updates
+			// Not new files, probably make as optional pass in setting
+			if( addResourceStatusSettings.RequiresStatusUpdates() )
+			{
+				std::filesystem::path relativePath;
+				Result getRelativePathResult = resource->GetRelativePath( relativePath );
+				if( getRelativePathResult.type != ResultType::SUCCESS )
+				{
+					return getRelativePathResult;
+				}
+				std::string message = "Processing new resource: " + relativePath.string();
+				float step = static_cast<float>( 100.0 / m_resourcesParameter.GetSize() );
+				float percentComplete = static_cast<float>( step * i );
+				addResourceStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, step, message );
+				i++;
+			}
 
-		std::string resource2Checksum;
-
-		Result getResource2ChecksumResult = resource2->GetChecksum( resource2Checksum );
-
-		if( getResource2ChecksumResult.type != ResultType::SUCCESS )
-		{
-			return getResource2ChecksumResult;
-		}
-
-		// Has this resource changed?
-		if( resource1Checksum != resource2Checksum )
-		{
-			// The binary data has changed between versions, record an entry in both lists
-
-			// Create a copy of the resource to result 2 (Latest)
 			ResourceInfo* resourceCopy1 = nullptr;
 
-			Result createResourceFromResource1Result = CreateResourceFromResource( *resource, resourceCopy1 );
+			Result createResourceFromResourceResult = CreateResourceFromResource( *resource, resourceCopy1 );
 
-			if( createResourceFromResource1Result.type != ResultType::SUCCESS )
+			if( createResourceFromResourceResult.type != ResultType::SUCCESS )
 			{
-				return createResourceFromResource1Result;
+				return createResourceFromResourceResult;
 			}
 
 			params.result2->AddResource( resourceCopy1 );
 
-			ResourceInfo* resourceCopy2 = nullptr;
+			// Place in a dummy entry into result1 which shows that resource is new
+			// This ensures that both lists stay the same size which makes it easier
+			// To parse later
+			std::filesystem::path resourceRelativePath;
 
-			Result createResourceFromResource2Result = CreateResourceFromResource( *resource2, resourceCopy2 );
+			Result getResourceRelativepathResult = resource->GetRelativePath( resourceRelativePath );
 
-			if( createResourceFromResource2Result.type != ResultType::SUCCESS )
+			if( getResourceRelativepathResult.type != ResultType::SUCCESS )
 			{
-				return createResourceFromResource2Result;
+				return getResourceRelativepathResult;
 			}
 
-			params.result1->AddResource( resourceCopy2 );
-		}
-	}
+			ResourceInfoParams dummyResourceParams;
+			dummyResourceParams.relativePath = resourceRelativePath;
 
-	for( auto resource : addedResources )
-	{
-		// This is a new resource, add it to target
-		// Note: Could be made optional, perhaps it is desirable to only include patch updates
-		// Not new files, probably make as optional pass in setting
-		if( params.statusCallback )
+			ResourceInfo* dummyResource = new ResourceInfo( dummyResourceParams );
+			params.result1->AddResource( dummyResource );
+		}
+    }
+
+    {
+		StatusSettings removeResourceStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 60, 40, "Calculating diff between two resource groups.", &removeResourceStatusSettings );
+
+        i = 0;
+		for( auto resource : removedResources )
 		{
-			std::filesystem::path relativePath;
-			Result getRelativePathResult = resource->GetRelativePath( relativePath );
-			if( getRelativePathResult.type != ResultType::SUCCESS )
+			if( removeResourceStatusSettings.RequiresStatusUpdates() )
 			{
-				return getRelativePathResult;
+				std::filesystem::path relativePath;
+				Result getRelativePathResult = resource->GetRelativePath( relativePath );
+				if( getRelativePathResult.type != ResultType::SUCCESS )
+				{
+					return getRelativePathResult;
+				}
+				std::string message = "Processing removed resource: " + relativePath.string();
+				float step = static_cast<float>( 100.0 / m_resourcesParameter.GetSize() );
+				float percentComplete = static_cast<float>( step * i );
+				removeResourceStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, step, message );
+				i++;
 			}
-			std::string message = "Processing new resource: " + relativePath.string();
-			auto percentComplete = static_cast<unsigned int>( ( 100 * i ) / m_resourcesParameter.GetSize() );
-			params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, message );
-			i++;
-		}
-
-		ResourceInfo* resourceCopy1 = nullptr;
-
-		Result createResourceFromResourceResult = CreateResourceFromResource( *resource, resourceCopy1 );
-
-		if( createResourceFromResourceResult.type != ResultType::SUCCESS )
-		{
-			return createResourceFromResourceResult;
-		}
-
-		params.result2->AddResource( resourceCopy1 );
-
-		// Place in a dummy entry into result1 which shows that resource is new
-		// This ensures that both lists stay the same size which makes it easier
-		// To parse later
-		std::filesystem::path resourceRelativePath;
-
-		Result getResourceRelativepathResult = resource->GetRelativePath( resourceRelativePath );
-
-		if( getResourceRelativepathResult.type != ResultType::SUCCESS )
-		{
-			return getResourceRelativepathResult;
-		}
-
-		ResourceInfoParams dummyResourceParams;
-		dummyResourceParams.relativePath = resourceRelativePath;
-
-		ResourceInfo* dummyResource = new ResourceInfo( dummyResourceParams );
-		params.result1->AddResource( dummyResource );
-	}
-
-	for( auto resource : removedResources )
-	{
-		if( params.statusCallback )
-		{
-			std::filesystem::path relativePath;
-			Result getRelativePathResult = resource->GetRelativePath( relativePath );
-			if( getRelativePathResult.type != ResultType::SUCCESS )
+			std::filesystem::path path;
+			auto result = resource->GetRelativePath( path );
+			if( result.type != ResultType::SUCCESS )
 			{
-				return getRelativePathResult;
+				return result;
 			}
-			std::string message = "Processing removed resource: " + relativePath.string();
-			auto percentComplete = static_cast<uint32_t>( ( 100 * i ) / m_resourcesParameter.GetSize() );
-			params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, message );
-			i++;
+			params.removedResources.push_back( path );
 		}
-		std::filesystem::path path;
-		auto result = resource->GetRelativePath( path );
-		if( result.type != ResultType::SUCCESS )
-		{
-			return result;
-		}
-		params.removedResources.push_back( path );
-	}
-
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Diff calculation complete." );
-	}
+    }
 
 	return Result{ ResultType::SUCCESS };
 }

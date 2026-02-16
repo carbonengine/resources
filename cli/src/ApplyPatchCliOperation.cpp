@@ -127,20 +127,18 @@ bool ApplyPatchCliOperation::Execute( std::string& returnErrorMessage ) const
 
 	patchApplyParams.temporaryFilePath = "tempFile.resource";
 
-	PrintStartBanner( importParamsPrevious, patchApplyParams );
+    if( ShowCliStatusUpdates() )
+	{
+		PrintStartBanner( importParamsPrevious, patchApplyParams );
+	}
 
 	return ApplyPatch( importParamsPrevious, patchApplyParams );
 }
 
 
 
-void ApplyPatchCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams patchApplyParams ) const
+void ApplyPatchCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, const CarbonResources::PatchApplyParams& patchApplyParams ) const
 {
-	if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
-	{
-		return;
-	}
-
 	std::cout << "---Applying Patch---" << std::endl;
 
 	PrintCommonOperationHeaderInformation();
@@ -159,31 +157,33 @@ void ApplyPatchCliOperation::PrintStartBanner( const CarbonResources::ResourceGr
 			  << std::endl;
 }
 
-bool ApplyPatchCliOperation::ApplyPatch( CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, CarbonResources::PatchApplyParams patchApplyParams ) const
+bool ApplyPatchCliOperation::ApplyPatch( CarbonResources::ResourceGroupImportFromFileParams& importParamsPrevious, CarbonResources::PatchApplyParams& patchApplyParams ) const
 {
 	CarbonResources::StatusCallback statusCallback = GetStatusCallback();
 
-	if( statusCallback )
+    if( ShowCliStatusUpdates() )
 	{
-		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Applying Patch." );
+		CliStatusUpdate( "Import Resource Group from file." );
 	}
 
 	// Load the patch file
 	CarbonResources::PatchResourceGroup patchResourceGroup;
 
-	importParamsPrevious.statusCallback = statusCallback;
+	importParamsPrevious.callbackSettings.statusCallback = statusCallback;
+	importParamsPrevious.callbackSettings.verbosityLevel = GetVerbosityLevel();
 
 	if( patchResourceGroup.ImportFromFile( importParamsPrevious ).type != CarbonResources::ResultType::SUCCESS )
 	{
 		return false;
 	}
 
-	if( statusCallback )
+    if( ShowCliStatusUpdates() )
 	{
-		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 20, "Applying patches from resource group" );
+		CliStatusUpdate( "Applying Patch." );
 	}
 
-	patchApplyParams.statusCallback = statusCallback;
+	patchApplyParams.callbackSettings.statusCallback = statusCallback;
+	patchApplyParams.callbackSettings.verbosityLevel = GetVerbosityLevel();
 
 	// Apply the patch
 	CarbonResources::Result applyPatchResult = patchResourceGroup.Apply( patchApplyParams );
@@ -193,16 +193,16 @@ bool ApplyPatchCliOperation::ApplyPatch( CarbonResources::ResourceGroupImportFro
 		std::string out;
 		CarbonResources::ResultTypeToString( applyPatchResult.type, out );
 		std::cerr << "Failed to apply patch: " << out << std::endl;
-		if( s_verbosityLevel >= CarbonResources::StatusLevel::DETAIL && !applyPatchResult.info.empty() )
+		if( ShowCliStatusUpdates() && !applyPatchResult.info.empty() )
 		{
 			std::cerr << applyPatchResult.info;
 		}
 		exit( 1 );
 	}
 
-	if( statusCallback )
+    if( ShowCliStatusUpdates() )
 	{
-		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Successfully applied patch" );
+		CliStatusUpdate( "Operation complete." );
 	}
 
 	return true;

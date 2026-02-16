@@ -74,18 +74,16 @@ bool RemoveResourcesCliOperation::Execute( std::string& returnErrorMessage ) con
 
 	bool ignoreMissingResources = m_argumentParser->get<bool>( m_ignoreMissingResources );
 
-	PrintStartBanner( importParams, resourcesToRemovePath, exportParams, ignoreMissingResources, version );
+    if (ShowCliStatusUpdates())
+    {
+		PrintStartBanner( importParams, resourcesToRemovePath, exportParams, ignoreMissingResources, version );
+    }
 
 	return RemoveResources( importParams, resourcesToRemovePath, exportParams, ignoreMissingResources );
 }
 
 void RemoveResourcesCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParams, std::filesystem::path& resourcesToRemoveFile, CarbonResources::ResourceGroupExportToFileParams& exportParams, bool ignoreMissingResources, const std::string& version ) const
 {
-	if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
-	{
-		return;
-	}
-
 	std::cout << "---Removing Resources---" << std::endl;
 
 	PrintCommonOperationHeaderInformation();
@@ -127,10 +125,19 @@ bool RemoveResourcesCliOperation::ReadResourcesToRemoveFile( std::filesystem::pa
 	return true;
 }
 
-bool RemoveResourcesCliOperation::RemoveResources( const CarbonResources::ResourceGroupImportFromFileParams& importParams, std::filesystem::path& resourcesToRemoveFile, CarbonResources::ResourceGroupExportToFileParams& exportParams, bool ignoreMissingResources ) const
+bool RemoveResourcesCliOperation::RemoveResources( CarbonResources::ResourceGroupImportFromFileParams& importParams, std::filesystem::path& resourcesToRemoveFile, CarbonResources::ResourceGroupExportToFileParams& exportParams, bool ignoreMissingResources ) const
 {
+	CarbonResources::StatusCallback statusCallback = GetStatusCallback();
+
 	// Import base Resource Group
 	CarbonResources::ResourceGroup resourceGroup;
+
+    importParams.callbackSettings.statusCallback = statusCallback;
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Import Resource Group from file." );
+	}
 
 	CarbonResources::Result importResourceGroupResult = resourceGroup.ImportFromFile( importParams );
 
@@ -142,6 +149,11 @@ bool RemoveResourcesCliOperation::RemoveResources( const CarbonResources::Resour
 	}
 
 	// Get resources to remove
+	if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Reading resources to remove file." );
+	}
+
 	std::vector<std::filesystem::path> resourcesToRemove;
 
 	if( !ReadResourcesToRemoveFile( resourcesToRemoveFile, resourcesToRemove ) )
@@ -157,6 +169,12 @@ bool RemoveResourcesCliOperation::RemoveResources( const CarbonResources::Resour
 
 	removeParams.errorIfResourceNotFound = !ignoreMissingResources;
 
+    removeParams.callbackSettings.statusCallback = statusCallback;
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Removing Resources." );
+	}
 
 	CarbonResources::Result removeResult = resourceGroup.RemoveResources( removeParams );
 
@@ -167,6 +185,13 @@ bool RemoveResourcesCliOperation::RemoveResources( const CarbonResources::Resour
 		return false;
 	}
 
+    exportParams.callbackSettings.statusCallback = statusCallback;
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Exporting result Resource Group to file." );
+	}
+
 	CarbonResources::Result exportResult = resourceGroup.ExportToFile( exportParams );
 
 	if( exportResult.type != CarbonResources::ResultType::SUCCESS )
@@ -174,6 +199,11 @@ bool RemoveResourcesCliOperation::RemoveResources( const CarbonResources::Resour
 		PrintCarbonResourcesError( exportResult );
 
 		return false;
+	}
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Operation complete." );
 	}
 
 	return true;

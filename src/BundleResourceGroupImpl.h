@@ -26,7 +26,7 @@ public:
 
 	Result SetResourceGroup( const ResourceGroupInfo& resourceGroup );
 
-	Result Unpack( const BundleUnpackParams& params );
+	Result Unpack( const BundleUnpackParams& params, StatusSettings& statusSettings );
 
 	virtual std::string GetType() const override;
 

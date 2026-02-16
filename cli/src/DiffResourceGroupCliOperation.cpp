@@ -46,8 +46,10 @@ bool DiffResourceGroupCliOperation::Execute( std::string& returnErrorMessage ) c
 
 	std::filesystem::path outputPath = m_argumentParser->get( m_diffOutputPath );
 
-
-	PrintStartBanner( importParamsBase, importParamsDiff, outputPath );
+    if (ShowCliStatusUpdates())
+    {
+		PrintStartBanner( importParamsBase, importParamsDiff, outputPath );
+    }
 
 	return Diff( importParamsBase, importParamsDiff, outputPath );
 }
@@ -56,11 +58,6 @@ bool DiffResourceGroupCliOperation::Execute( std::string& returnErrorMessage ) c
 
 void DiffResourceGroupCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, const CarbonResources::ResourceGroupImportFromFileParams& importParamsDiff, std::filesystem::path& outputPath ) const
 {
-	if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
-	{
-		return;
-	}
-
 	std::cout << "---Running Diff---" << std::endl;
 
 	PrintCommonOperationHeaderInformation();
@@ -73,17 +70,20 @@ void DiffResourceGroupCliOperation::PrintStartBanner( const CarbonResources::Res
 			  << std::endl;
 }
 
-bool DiffResourceGroupCliOperation::Diff( const CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, const CarbonResources::ResourceGroupImportFromFileParams& importParamsDiff, std::filesystem::path& outputPath ) const
+bool DiffResourceGroupCliOperation::Diff( CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, CarbonResources::ResourceGroupImportFromFileParams& importParamsDiff, std::filesystem::path& outputPath ) const
 {
-	CarbonResources::StatusCallback statusCallback = GetStatusCallback();
 
-	if( statusCallback )
-	{
-		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Calculating Diff." );
-	}
+    CarbonResources::StatusCallback statusCallback = GetStatusCallback();
 
-	// Import base resource group
 	CarbonResources::ResourceGroup baseResourceGroup;
+
+    importParamsBase.callbackSettings.statusCallback = statusCallback;
+	importParamsBase.callbackSettings.verbosityLevel = GetVerbosityLevel();
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Importing Base Resource Group From File" );
+	}
 
 	CarbonResources::Result importBaseGroupResult = baseResourceGroup.ImportFromFile( importParamsBase );
 
@@ -94,8 +94,15 @@ bool DiffResourceGroupCliOperation::Diff( const CarbonResources::ResourceGroupIm
 		return false;
 	}
 
-	// Import diff resource group
 	CarbonResources::ResourceGroup diffResourceGroup;
+
+    importParamsDiff.callbackSettings.statusCallback = statusCallback;
+	importParamsDiff.callbackSettings.verbosityLevel = GetVerbosityLevel();
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Importing Diff Resource Group From File" );
+	}
 
 	CarbonResources::Result importDiffGroupResult = diffResourceGroup.ImportFromFile( importParamsDiff );
 
@@ -119,6 +126,14 @@ bool DiffResourceGroupCliOperation::Diff( const CarbonResources::ResourceGroupIm
 
 	diffParams.subtractions = &subtractions;
 
+    diffParams.callbackSettings.statusCallback = statusCallback;
+	diffParams.callbackSettings.verbosityLevel = GetVerbosityLevel();
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Calculating Diff." );
+	}
+
 	CarbonResources::Result diffResult = diffResourceGroup.DiffAgainstGroup( diffParams );
 
 	if( diffResult.type != CarbonResources::ResultType::SUCCESS )
@@ -129,6 +144,11 @@ bool DiffResourceGroupCliOperation::Diff( const CarbonResources::ResourceGroupIm
 	}
 
 	// Output the results to file
+	if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Saving Results to file." );
+	}
+
 	std::ofstream out;
 
 	out.open( outputPath, std::ios::out | std::ios::binary );
@@ -154,10 +174,9 @@ bool DiffResourceGroupCliOperation::Diff( const CarbonResources::ResourceGroupIm
 
 	out.close();
 
-
-	if( statusCallback )
+    if( ShowCliStatusUpdates() )
 	{
-		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Diff complete" );
+		CliStatusUpdate( "Operation complete." );
 	}
 
 	return true;

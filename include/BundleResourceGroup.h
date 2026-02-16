@@ -19,8 +19,8 @@ namespace CarbonResources
     *  Location where chunks can be sourced.
     *  @var BundleUnpackParams::resourceDestinationSettings
     *  Location where the unpacked resources should be saved.
-    *  @var BundleUnpackParams::statusCallback
-    *  Optional status function callback. Callback is triggered at key status update events.
+    *  @var BundleUnpackParams::CallbackSettings
+    *  Settings relating to status callback messaging
     */
 struct BundleUnpackParams final
 {
@@ -28,7 +28,7 @@ struct BundleUnpackParams final
 
 	ResourceDestinationSettings resourceDestinationSettings;
 
-	StatusCallback statusCallback = nullptr;
+	CallbackSettings callbackSettings;
 };
 
 /** @class BundleResourceGroup

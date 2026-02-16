@@ -10,13 +10,14 @@ CliOperation::CliOperation( const std::string& name, const std::string& descript
 	m_verbosityLevelId( "--verbosity-level" ),
 	m_name( name ),
 	m_description( description ),
-	m_argumentParser( nullptr )
+	m_argumentParser( nullptr ),
+	m_verbosityLevel(-1)
 {
 	m_argumentParser = new argparse::ArgumentParser( name );
 
 	m_argumentParser->add_description( description );
 
-	AddArgument( m_verbosityLevelId, "Set verbosity to level", false, false, "0", "0,1,2,3" );
+	AddArgument( m_verbosityLevelId, "Set verbosity to level", false, false, "0", "1 - n to register for updates from n nested processes, -1 for all, 0 for none." );
 }
 
 CliOperation ::~CliOperation()
@@ -118,7 +119,7 @@ void CliOperation::PrintError( std::string message /*= ""*/ ) const
 
 void CliOperation::PrintCommonOperationHeaderInformation() const
 {
-	std::cout << "Verbosity Level: " << VerbosityLevelToString( s_verbosityLevel ) << std::endl;
+	std::cout << "Verbosity Level: " << m_verbosityLevel  << std::endl;
 }
 
 void CliOperation::PrintCarbonResourcesError( CarbonResources::Result result ) const
@@ -139,87 +140,49 @@ void CliOperation::PrintCarbonResourcesError( CarbonResources::Result result ) c
 	std::cout << std::endl;
 }
 
-char CliOperation::GetBusyChar()
-{
-	switch( s_currentBusyAnimationChar )
-	{
-	case '/': {
-		s_currentBusyAnimationChar = '-';
-
-		break;
-	}
-
-	case '-': {
-		s_currentBusyAnimationChar = '\\';
-
-		break;
-	}
-
-	case '\\': {
-		s_currentBusyAnimationChar = '|';
-
-		break;
-	}
-
-	case '|': {
-		s_currentBusyAnimationChar = '/';
-
-		break;
-	}
-
-	default: {
-		s_currentBusyAnimationChar = '-';
-	}
-	}
-
-	return s_currentBusyAnimationChar;
-}
-
 CarbonResources::StatusCallback CliOperation::GetStatusCallback() const
 {
-	return s_verbosityLevel != CarbonResources::StatusLevel::OFF ? &StatusUpdate : nullptr;
+	return &CarbonResourcesStatusUpdate;
 }
 
-void CliOperation::StatusUpdate( CarbonResources::StatusLevel level, CarbonResources::StatusProgressType type, int progress, const std::string& info )
+void CliOperation::CliStatusUpdate( const std::string& info) const
 {
-	// No update is shown for status updates for layers greater than the verbosity level
-	if( level > s_verbosityLevel )
-	{
+	std::cout << "\n---" << info << "---" << std::endl;
+}
+
+void CliOperation::CarbonResourcesStatusUpdate( CarbonResources::StatusProgressType type, float processProgress, float overallProgress, float sizeOfJob, unsigned int nestingLevel, const std::string& info )
+{
+    // The nesting level is an internal value to carbon-resources
+    // carbon-resources has no information regarding outside processes
+    // This CLI also has to track its progress of overall tasks
+    // The CLI values will show with zero indent
+    // Therefore carbon-resources updates need shifting by one indent.
+
+    if (type == CarbonResources::StatusProgressType::START)
+    {
+        // Update function doesn need to process progress start types
 		return;
-	}
+    }
 
-	// Verbosity level affects if a progres bar is shown or detail.
-	// This level can be incremented to adjust detail of log output
-	if( level <= s_verbosityLevel )
+	unsigned int localNestingLevel = nestingLevel + 1;
+
+	// Show detail of the process
+	std::stringstream ss;
+
+	ss << "[" << static_cast<int>( overallProgress )<< "%] ";
+
+	// Apply indent based on layer
+	for( unsigned int i = 0; i < localNestingLevel; i++ )
 	{
-		// Show detail of the process
-		std::stringstream ss;
-
-		// Apply indent based on layer
-		ss << GetVerbosityLevelIndent( level );
-
-		ss << "[";
-
-		// If progress is unbounded then show busy
-		// Else print percentage progress
-		if( type == CarbonResources::StatusProgressType::UNBOUNDED )
-		{
-			ss << GetBusyChar();
-		}
-		else
-		{
-			ss << progress << "%";
-		}
-
-		ss << "] " << info;
-
-		std::string message = ss.str();
-
-		std::cout << "\r";
-
-		std::cout << message;
-		std::cout << std::endl;
+		ss << "\t";
 	}
+
+	ss << info;
+
+	std::string message = ss.str();
+	std::cout << message;
+	std::cout << std::endl;
+    
 }
 
 bool CliOperation::ProcessCommandLine( int argc, char** argv )
@@ -264,48 +227,6 @@ std::string CliOperation::GetName() const
 std::string CliOperation::GetDescription() const
 {
 	return m_description;
-}
-
-std::string CliOperation::VerbosityLevelToString( CarbonResources::StatusLevel level ) const
-{
-	switch( level )
-	{
-	case CarbonResources::StatusLevel::OFF:
-		return "0 - (Off)";
-
-	case CarbonResources::StatusLevel::OVERVIEW:
-		return "1 - (Overview)";
-
-	case CarbonResources::StatusLevel::PROCEDURE:
-		return "2 - (Procedure)";
-
-	case CarbonResources::StatusLevel::DETAIL:
-		return "3 - (Detail)";
-
-	default:
-		return "Unknown";
-	}
-}
-
-std::string CliOperation::GetVerbosityLevelIndent( CarbonResources::StatusLevel level )
-{
-	switch( level )
-	{
-	case CarbonResources::StatusLevel::OFF:
-		return "";
-
-	case CarbonResources::StatusLevel::OVERVIEW:
-		return "";
-
-	case CarbonResources::StatusLevel::PROCEDURE:
-		return "\t";
-
-	case CarbonResources::StatusLevel::DETAIL:
-		return "\t\t";
-
-	default:
-		return "";
-	}
 }
 
 bool CliOperation::StringToResourceSourceType( const std::string& stringRepresentation, CarbonResources::ResourceSourceType& out ) const
@@ -456,32 +377,34 @@ std::string PathsToString( const std::vector<std::filesystem::path>& v )
 	return result;
 }
 
+int CliOperation::GetVerbosityLevel() const
+{
+	return m_verbosityLevel;
+}
+
 bool CliOperation::SetVerbosityLevel()
 {
 	std::string verbosityLevelString = m_argumentParser->get<std::string>( m_verbosityLevelId );
-
-	if( verbosityLevelString == "0" )
-	{
-		s_verbosityLevel = CarbonResources::StatusLevel::OFF;
-	}
-	else if( verbosityLevelString == "1" )
-	{
-		s_verbosityLevel = CarbonResources::StatusLevel::OVERVIEW;
-	}
-	else if( verbosityLevelString == "2" )
-	{
-		s_verbosityLevel = CarbonResources::StatusLevel::PROCEDURE;
-	}
-	else if( verbosityLevelString == "3" )
-	{
-		s_verbosityLevel = CarbonResources::StatusLevel::DETAIL;
-	}
-	else
+    try
+    {
+		int verbosityLevelInt = std::stoi( verbosityLevelString );
+		m_verbosityLevel = verbosityLevelInt;
+		return true;
+    }
+	catch( std::invalid_argument& )
+    {
+		return false;
+    }
+	catch( std::out_of_range& )
 	{
 		return false;
 	}
+	
+}
 
-	return true;
+bool CliOperation::ShowCliStatusUpdates() const
+{
+	return m_verbosityLevel > 0 || m_verbosityLevel == -1;
 }
 
 

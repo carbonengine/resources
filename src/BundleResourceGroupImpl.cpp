@@ -52,12 +52,9 @@ Result BundleResourceGroup::BundleResourceGroupImpl::SetResourceGroup( const Res
 	return m_resourceGroupParameter.GetValue()->SetParametersFromResource( &resourceGroup, m_versionParameter.GetValue() );
 }
 
-Result BundleResourceGroup::BundleResourceGroupImpl::Unpack( const BundleUnpackParams& params )
+Result BundleResourceGroup::BundleResourceGroupImpl::Unpack( const BundleUnpackParams& params, StatusSettings& statusSettings )
 {
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Unpacking" );
-	}
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 20, "Rebuilding resources." );
 
 	ResourceGroupInfo* resourceGroupResource = m_resourceGroupParameter.GetValue();
 
@@ -85,29 +82,32 @@ Result BundleResourceGroup::BundleResourceGroupImpl::Unpack( const BundleUnpackP
 		return resourceGroupGetDataResult;
 	}
 
-	std::shared_ptr<ResourceGroupImpl> resourceGroup;
-	Result createResult = CreateResourceGroupFromYamlString( resourceGroupData, resourceGroup );
-	if( createResult.type != ResultType::SUCCESS )
-	{
-		std::stringstream ss;
-		ss << "Failed to import resource group data from the following paths:";
-		for( auto path : resourceGroupDataParams.resourceSourceSettings.basePaths )
+    std::shared_ptr<ResourceGroupImpl> resourceGroup;
+
+    {
+		StatusSettings createResourceGroupFromYamlStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 20, 20, "Rebuilding resources.", &createResourceGroupFromYamlStatusSettings );
+
+		
+		Result createResult = CreateResourceGroupFromYamlString( resourceGroupData, resourceGroup, createResourceGroupFromYamlStatusSettings );
+		if( createResult.type != ResultType::SUCCESS )
 		{
-			ss << " \"" << path.string() << "\"";
+			std::stringstream ss;
+			ss << "Failed to import resource group data from the following paths:";
+			for( auto path : resourceGroupDataParams.resourceSourceSettings.basePaths )
+			{
+				ss << " \"" << path.string() << "\"";
+			}
+			createResult.info = ss.str();
+			return createResult;
 		}
-		createResult.info = ss.str();
-		return createResult;
-	}
+    }
+    
 
 	// Create stream
 	ResourceTools::BundleStreamIn bundleStream( m_chunkSize.GetValue() );
 
 	auto chunkIterator = m_resourcesParameter.begin();
-
-	if( params.statusCallback )
-	{
-		params.statusCallback( CarbonResources::StatusLevel::PROCEDURE, CarbonResources::StatusProgressType::PERCENTAGE, 20, "Rebuilding resources." );
-	}
 
 	// Reconstitute the resources in the bundle
 	auto numResources = resourceGroup->GetSize();
@@ -124,192 +124,204 @@ Result BundleResourceGroup::BundleResourceGroupImpl::Unpack( const BundleUnpackP
 		return getGroupSpecificResourcesToBundleResult;
 	}
 
-	for( ResourceInfo* resource : toBundle )
-	{
-		std::string location;
+    {
+		StatusSettings innerStatusUpdate;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 40, 40, "Rebuilding resources.", &innerStatusUpdate );
 
-		Result getLocationResult = resource->GetLocation( location );
-
-		if( getLocationResult.type != ResultType::SUCCESS )
+		for( ResourceInfo* resource : toBundle )
 		{
-			return getLocationResult;
-		}
+			std::string location;
 
-		if( params.statusCallback )
-		{
-			std::filesystem::path relativePath;
+			Result getLocationResult = resource->GetLocation( location );
 
-			if( resource->GetRelativePath( relativePath ).type != ResultType::SUCCESS )
+			if( getLocationResult.type != ResultType::SUCCESS )
 			{
-				return Result{ ResultType::FAIL };
+				return getLocationResult;
 			}
 
-			std::string message;
-
-			if( location.empty() )
+			// Only process if required for the process
+			if( innerStatusUpdate.RequiresStatusUpdates() )
 			{
-				message = "Nothing to rebuild: " + relativePath.string();
-			}
-			else
-			{
-				message = "Rebuilding: " + relativePath.string();
-			}
+				std::filesystem::path relativePath;
 
-			auto percentage = static_cast<unsigned int>( ( 100 * numProcessed ) / numResources );
-
-			params.statusCallback( CarbonResources::StatusLevel::DETAIL, CarbonResources::StatusProgressType::PERCENTAGE, percentage, message );
-
-			numProcessed++;
-		}
-
-		if( location.empty() )
-		{
-			continue;
-		}
-
-		uintmax_t resourceFileUncompressedSize;
-
-		Result getUncompressedDataSizeResult = resource->GetUncompressedSize( resourceFileUncompressedSize );
-
-		if( getUncompressedDataSizeResult.type != ResultType::SUCCESS )
-		{
-			return getUncompressedDataSizeResult;
-		}
-
-
-		ResourceTools::FileDataStreamOut resourceDataStreamOut;
-
-		ResourcePutDataStreamParams resourcePutDataStreamParams;
-
-		resourcePutDataStreamParams.resourceDestinationSettings = params.resourceDestinationSettings;
-
-		resourcePutDataStreamParams.dataStream = &resourceDataStreamOut;
-
-		Result resourcePutDataStreamResult = resource->PutDataStream( resourcePutDataStreamParams );
-
-		if( resourcePutDataStreamResult.type != ResultType::SUCCESS )
-		{
-			return resourcePutDataStreamResult;
-		}
-
-		ResourceTools::GetFile file;
-
-		file.fileSize = resourceFileUncompressedSize;
-
-		// Calculate checksum while processing chunks
-		ResourceTools::Md5ChecksumStream resourceChecksumStream;
-
-		while( resourceDataStreamOut.GetFileSize() < resourceFileUncompressedSize )
-		{
-			if( chunkIterator != m_resourcesParameter.end() )
-			{
-				ResourceInfo* chunk = ( *chunkIterator );
-
-				// Get chunk data
-				std::string chunkData;
-
-				ResourceGetDataParams resourceGetDataParams;
-
-				resourceGetDataParams.resourceSourceSettings = params.chunkSourceSettings;
-
-				resourceGetDataParams.data = &chunkData;
-
-				Result getChunkChecksumResult = chunk->GetChecksum( resourceGetDataParams.expectedChecksum );
-
-				if( getChunkChecksumResult.type != ResultType::SUCCESS )
-				{
-					return getChunkChecksumResult;
-				}
-
-				Result getChunkDataResult = chunk->GetData( resourceGetDataParams );
-
-				if( getChunkDataResult.type != ResultType::SUCCESS )
-				{
-					return getChunkDataResult;
-				}
-
-				// Add to chunk stream
-				if( !( bundleStream << chunkData ) )
+				if( resource->GetRelativePath( relativePath ).type != ResultType::SUCCESS )
 				{
 					return Result{ ResultType::FAIL };
 				}
-			}
-			else
-			{
-				if( bundleStream.GetCacheSize() == 0 )
+
+				std::string message;
+
+				if( location.empty() )
 				{
-					return Result{ ResultType::UNEXPECTED_END_OF_CHUNKS };
+					message = "Nothing to rebuild: " + relativePath.string();
 				}
+				else
+				{
+					message = "Rebuilding: " + relativePath.string();
+				}
+
+				float step = static_cast<float>( 100 * numProcessed );
+				float percentage = static_cast<float>( step / toBundle.size() );
+
+				innerStatusUpdate.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentage, step, message );
+
+				numProcessed++;
 			}
 
-
-			std::string resourceChunkData;
-
-			file.data = &resourceChunkData;
-
-			// Retreive chunk from stream
-			// This ensures that we only get the data expected
-			// for this resource, extra is cached for next resource
-			if( !( bundleStream >> file ) )
+			if( location.empty() )
 			{
-				return Result{ ResultType::FAILED_TO_RETRIEVE_CHUNK_DATA };
+				continue;
 			}
 
-			if( !( resourceChecksumStream << resourceChunkData ) )
+			uintmax_t resourceFileUncompressedSize;
+
+			Result getUncompressedDataSizeResult = resource->GetUncompressedSize( resourceFileUncompressedSize );
+
+			if( getUncompressedDataSizeResult.type != ResultType::SUCCESS )
 			{
-				return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+				return getUncompressedDataSizeResult;
 			}
 
-			if( !( resourceDataStreamOut << resourceChunkData ) )
+
+			ResourceTools::FileDataStreamOut resourceDataStreamOut;
+
+			ResourcePutDataStreamParams resourcePutDataStreamParams;
+
+			resourcePutDataStreamParams.resourceDestinationSettings = params.resourceDestinationSettings;
+
+			resourcePutDataStreamParams.dataStream = &resourceDataStreamOut;
+
+			Result resourcePutDataStreamResult = resource->PutDataStream( resourcePutDataStreamParams );
+
+			if( resourcePutDataStreamResult.type != ResultType::SUCCESS )
 			{
-				return Result{ ResultType::FAILED_TO_SAVE_TO_STREAM };
+				return resourcePutDataStreamResult;
 			}
 
-			if( chunkIterator != m_resourcesParameter.end() )
-			{
-				chunkIterator++;
-			}
-		}
+			ResourceTools::GetFile file;
 
-		// Validate the resource data
-		std::string recreatedResourceChecksum;
+			file.fileSize = resourceFileUncompressedSize;
 
-		if( !resourceChecksumStream.FinishAndRetrieve( recreatedResourceChecksum ) )
+            // Calculate checksum while processing chunks
+            ResourceTools::Md5ChecksumStream resourceChecksumStream;
+
+            while (resourceDataStreamOut.GetFileSize() < resourceFileUncompressedSize)
+            {
+                if (chunkIterator != m_resourcesParameter.end())
+                {
+                    ResourceInfo* chunk = (*chunkIterator);
+
+                    // Get chunk data
+                    std::string chunkData;
+
+                    ResourceGetDataParams resourceGetDataParams;
+
+                    resourceGetDataParams.resourceSourceSettings = params.chunkSourceSettings;
+
+                    resourceGetDataParams.data = &chunkData;
+
+                    Result getChunkChecksumResult = chunk->GetChecksum(resourceGetDataParams.expectedChecksum);
+
+                    if (getChunkChecksumResult.type != ResultType::SUCCESS)
+                    {
+                        return getChunkChecksumResult;
+                    }
+
+                    Result getChunkDataResult = chunk->GetData(resourceGetDataParams);
+
+                    if (getChunkDataResult.type != ResultType::SUCCESS)
+                    {
+                        return getChunkDataResult;
+                    }
+
+                    // Add to chunk stream
+                    if (!(bundleStream << chunkData))
+                    {
+                        return Result{ ResultType::FAIL };
+                    }
+                }
+                else
+                {
+                    if (bundleStream.GetCacheSize() == 0)
+                    {
+                        return Result{ ResultType::UNEXPECTED_END_OF_CHUNKS };
+                    }
+                }
+
+
+                std::string resourceChunkData;
+
+                file.data = &resourceChunkData;
+
+                // Retreive chunk from stream
+                // This ensures that we only get the data expected
+                // for this resource, extra is cached for next resource
+                if (!(bundleStream >> file))
+                {
+                    return Result{ ResultType::FAILED_TO_RETRIEVE_CHUNK_DATA };
+                }
+
+                if (!(resourceChecksumStream << resourceChunkData))
+                {
+                    return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+                }
+
+                if (!(resourceDataStreamOut << resourceChunkData))
+                {
+                    return Result{ ResultType::FAILED_TO_SAVE_TO_STREAM };
+                }
+
+                if (chunkIterator != m_resourcesParameter.end())
+                {
+                    chunkIterator++;
+                }
+            }
+
+            // Validate the resource data
+            std::string recreatedResourceChecksum;
+
+            if (!resourceChecksumStream.FinishAndRetrieve(recreatedResourceChecksum))
+            {
+                return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+            }
+
+
+            std::string resourceChecksum;
+
+            Result getChecksumResult = resource->GetChecksum(resourceChecksum);
+
+            if (getChecksumResult.type != ResultType::SUCCESS)
+            {
+                return getChecksumResult;
+            }
+
+            if (recreatedResourceChecksum != resourceChecksum)
+            {
+                return Result{ ResultType::UNEXPECTED_CHUNK_CHECKSUM_RESULT };
+            }
+        }
+    }
+
+    {
+		StatusSettings exportStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 80, 20, "Exporting data.", &exportStatusSettings );
+
+		// Export the resource group file.
+		ResourceGroupExportToFileParams exportParams;
+		std::filesystem::path resourceGroupRelativePath;
+		Result getResourceGroupRelativePathResult = resourceGroupResource->GetRelativePath( resourceGroupRelativePath );
+		if( getResourceGroupRelativePathResult.type != ResultType::SUCCESS )
 		{
-			return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+			return getResourceGroupRelativePathResult;
 		}
+		exportParams.filename = params.resourceDestinationSettings.basePath / resourceGroupRelativePath;
 
-
-		std::string resourceChecksum;
-
-		Result getChecksumResult = resource->GetChecksum( resourceChecksum );
-
-		if( getChecksumResult.type != ResultType::SUCCESS )
+		Result exportResult = resourceGroup->ExportToFile( exportParams, exportStatusSettings );
+		if( exportResult.type != ResultType::SUCCESS )
 		{
-			return getChecksumResult;
+			return exportResult;
 		}
-
-		if( recreatedResourceChecksum != resourceChecksum )
-		{
-			return Result{ ResultType::UNEXPECTED_CHUNK_CHECKSUM_RESULT };
-		}
-	}
-
-	// Export the resource group file.
-	ResourceGroupExportToFileParams exportParams;
-	std::filesystem::path resourceGroupRelativePath;
-	Result getResourceGroupRelativePathResult = resourceGroupResource->GetRelativePath( resourceGroupRelativePath );
-	if( getResourceGroupRelativePathResult.type != ResultType::SUCCESS )
-	{
-		return getResourceGroupRelativePathResult;
-	}
-	exportParams.filename = params.resourceDestinationSettings.basePath / resourceGroupRelativePath;
-	exportParams.statusCallback = params.statusCallback;
-	Result exportResult = resourceGroup->ExportToFile( exportParams );
-	if( exportResult.type != ResultType::SUCCESS )
-	{
-		return exportResult;
-	}
+    }
 
 	return Result{ ResultType::SUCCESS };
 }

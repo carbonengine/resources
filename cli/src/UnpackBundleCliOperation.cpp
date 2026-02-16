@@ -76,18 +76,16 @@ bool UnpackBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 
 	unpackParams.resourceDestinationSettings.basePath = m_argumentParser->get( m_resourceDestinationBasePathArgumentId );
 
-	PrintStartBanner( importParams, unpackParams );
+    if (ShowCliStatusUpdates())
+    {
+		PrintStartBanner( importParams, unpackParams );
+    }
 
 	return Unpack( importParams, unpackParams );
 }
 
 void UnpackBundleCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParams, const CarbonResources::BundleUnpackParams& unpackParams ) const
 {
-	if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
-	{
-		return;
-	}
-
 	std::cout << "---Unpacking Bundle---" << std::endl;
 
 	PrintCommonOperationHeaderInformation();
@@ -106,27 +104,29 @@ bool UnpackBundleCliOperation::Unpack( CarbonResources::ResourceGroupImportFromF
 {
 	CarbonResources::StatusCallback statusCallback = GetStatusCallback();
 
-	if( statusCallback )
-	{
-		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Unpacking Bundle." );
-	}
-
 	// Load the bundle file
 	CarbonResources::BundleResourceGroup bundleResourceGroup;
 
-	importParams.statusCallback = statusCallback;
+    importParams.callbackSettings.statusCallback = statusCallback;
+	importParams.callbackSettings.verbosityLevel = GetVerbosityLevel();
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Importing Bundle Resource Group from file." );
+	}
 
 	if( bundleResourceGroup.ImportFromFile( importParams ).type != CarbonResources::ResultType::SUCCESS )
 	{
 		return false;
 	}
 
-	if( statusCallback )
-	{
-		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 50, "Unpacking" );
-	}
+	unpackParams.callbackSettings.statusCallback = statusCallback;
+	unpackParams.callbackSettings.verbosityLevel = GetVerbosityLevel();
 
-	unpackParams.statusCallback = statusCallback;
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Unpacking Bundle." );
+	}
 
 	auto unpackResult = bundleResourceGroup.Unpack( unpackParams );
 
@@ -135,16 +135,16 @@ bool UnpackBundleCliOperation::Unpack( CarbonResources::ResourceGroupImportFromF
 		std::string out;
 		CarbonResources::ResultTypeToString( unpackResult.type, out );
 		std::cerr << "Failed to unpack bundle: " << out << std::endl;
-		if( s_verbosityLevel >= CarbonResources::StatusLevel::DETAIL && !unpackResult.info.empty() )
+		if( ShowCliStatusUpdates() && !unpackResult.info.empty() )
 		{
 			std::cerr << unpackResult.info;
 		}
 		exit( 1 );
 	}
 
-	if( statusCallback )
+    if( ShowCliStatusUpdates() )
 	{
-		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Successfully unpacked Bundle." );
+		CliStatusUpdate( "Operation complete." );
 	}
 
 	return true;

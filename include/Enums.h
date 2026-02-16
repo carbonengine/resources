@@ -15,25 +15,6 @@
 namespace CarbonResources
 {
 
-/** @enum StatusLevel
-    *  @brief Reports the granularity level of the reported update.
-    *  @var StatusLevel::OFF
-    *  No status level specified.
-    *  @var StatusLevel::OVERVIEW
-    *  Highest level status update
-    *  @var StatusLevel::PROCEDURE
-    *  Mid level status update
-    *  @var StatusLevel::DETAIL
-    *  Low level status update
-    */
-enum class StatusLevel
-{
-	OFF,
-	OVERVIEW,
-	PROCEDURE,
-	DETAIL,
-};
-
 /** @enum StatusProgressType
     *  @brief Type of progress reported in callback
     *  @var StatusProgressType::UNBOUNDED
@@ -42,21 +23,29 @@ enum class StatusLevel
     *  Status update with accompanying percentage progress. When set the progress integer reports percentage complete.
     *  @var StatusProgressType::WARNING
     *  Warning message. When set the progress integer doesn't report progress
+    *  @var StatusProgressType::START
+    *  Emitted at the start of a process, note that many updates may contain START type messages due to nesting.
+    *  @var StatusProgressType::END
+    *  Emitted at the end of a process, note that many updates may contain END type messages due to nesting.
     */
 enum class StatusProgressType
 {
 	UNBOUNDED,
 	PERCENTAGE,
-	WARNING
+	WARNING,
+    START,
+    END
 };
 
 /** Status Callback function signature.
-    * @param statusLevel The status granularity level for the update.
-    * @param statusProgressType Type of progress update to expect in update. Affects how progress parameter may be interpreted.
-    * @param progress Progress, format is inferred from statusProgressType.
-    * @param info Update message string.
+    * @param statusProgressType Type of progress update to expect in update. Affects how progress parameter should be interpreted.
+    * @param processProgress Current process progress (%), format is inferred from statusProgressType.
+    * @param overallProgress Overall progress of job (%), format is inferred from statusProgressType.
+    * @param percentageSizeOfJob The full size for the current process (%).
+    * @param nestLevel The nesting level of the current job.
+    * @param info Update message string giving information on the current process step.
     */
-using StatusCallback = std::function<void( StatusLevel statusLevel, StatusProgressType statusProgressType, unsigned int progress, const std::string& info )>;
+using StatusCallback = std::function<void( StatusProgressType statusProgressType, float processProgress, float overallProgress, float percentageSizeOfJob, unsigned int nestLevel, const std::string& info )>;
 
 /**
     * @enum CarbonResources::ResultType

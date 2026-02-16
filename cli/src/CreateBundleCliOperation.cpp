@@ -116,7 +116,7 @@ bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 	}
 	bundleCreateParams.downloadRetrySeconds = std::chrono::seconds( retrySeconds );
 
-	if( s_verbosityLevel != CarbonResources::StatusLevel::OFF )
+	if( ShowCliStatusUpdates() )
 	{
 		PrintStartBanner( resourceGroupParams, bundleCreateParams );
 	}
@@ -124,13 +124,8 @@ bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 	return CreateBundle( resourceGroupParams, bundleCreateParams, returnErrorMessage );
 }
 
-void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams ) const
+void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams& bundleCreateParams ) const
 {
-	if( s_verbosityLevel == CarbonResources::StatusLevel::OFF )
-	{
-		return;
-	}
-
 	std::cout << "---Running Bundle Creation---" << std::endl;
 
 	PrintCommonOperationHeaderInformation();
@@ -164,14 +159,9 @@ void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::Resource
 			  << std::endl;
 }
 
-bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams bundleCreateParams, std::string& returnErrorMessage ) const
+bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImportFromFileParams& resourceGroupParams, CarbonResources::BundleCreateParams& bundleCreateParams, std::string& returnErrorMessage ) const
 {
 	CarbonResources::StatusCallback statusCallback = GetStatusCallback();
-
-	if( statusCallback )
-	{
-		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 0, "Creating Bundle." );
-	}
 
 	if( !std::filesystem::exists( resourceGroupParams.filename ) )
 	{
@@ -233,7 +223,13 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
 		return false;
 	}
 
-	resourceGroupParams.statusCallback = statusCallback;
+	resourceGroupParams.callbackSettings.statusCallback = statusCallback;
+	resourceGroupParams.callbackSettings.verbosityLevel = GetVerbosityLevel();
+
+    if( ShowCliStatusUpdates() )
+	{
+		CliStatusUpdate( "Importing Resource Group from file." );
+	}
 
 	CarbonResources::Result importResourceGroupResult = resourceGroup->ImportFromFile( resourceGroupParams );
 
@@ -244,11 +240,12 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
 		return false;
 	}
 
-	bundleCreateParams.statusCallback = GetStatusCallback();
+    bundleCreateParams.callbackSettings.statusCallback = GetStatusCallback();
+	bundleCreateParams.callbackSettings.verbosityLevel = GetVerbosityLevel();
 
-	if( statusCallback )
+	if( ShowCliStatusUpdates() )
 	{
-		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 50, "Processing bundle files." );
+		CliStatusUpdate( "Creating Bundle." );
 	}
 
 	CarbonResources::Result createBundleResult = resourceGroup->CreateBundle( bundleCreateParams );
@@ -262,9 +259,9 @@ bool CreateBundleCliOperation::CreateBundle( CarbonResources::ResourceGroupImpor
 		return false;
 	}
 
-	if( statusCallback )
+    if( ShowCliStatusUpdates() )
 	{
-		statusCallback( CarbonResources::StatusLevel::OVERVIEW, CarbonResources::StatusProgressType::PERCENTAGE, 100, "Bundle created succesfully" );
+		CliStatusUpdate( "Operation complete." );
 	}
 
 	return true;

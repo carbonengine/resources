@@ -13,9 +13,9 @@ public:
 	bool Execute( std::string& returnErrorMessage ) const final;
 
 private:
-	void PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, const CarbonResources::ResourceGroupImportFromFileParams& importParamsMerge, CarbonResources::ResourceGroupExportToFileParams exportParams, const std::string& version ) const;
+	void PrintStartBanner( const CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, const CarbonResources::ResourceGroupImportFromFileParams& importParamsMerge, CarbonResources::ResourceGroupExportToFileParams& exportParams, const std::string& version ) const;
 
-	bool Merge( const CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, const CarbonResources::ResourceGroupImportFromFileParams& importParamsMerge, CarbonResources::ResourceGroupExportToFileParams exportParams ) const;
+	bool Merge( CarbonResources::ResourceGroupImportFromFileParams& importParamsBase, CarbonResources::ResourceGroupImportFromFileParams& importParamsMerge, CarbonResources::ResourceGroupExportToFileParams& exportParams ) const;
 
 	std::string m_baseResourceGroupPathArgumentId;
 	std::string m_mergeResourceGroupPathArgumentId;

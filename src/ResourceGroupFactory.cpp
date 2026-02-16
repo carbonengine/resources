@@ -18,8 +18,10 @@
 
 namespace CarbonResources
 {
-Result CreateResourceGroupFromYamlString( const std::string& yamlString, std::shared_ptr<ResourceGroup::ResourceGroupImpl>& out )
+Result CreateResourceGroupFromYamlString( const std::string& yamlString, std::shared_ptr<ResourceGroup::ResourceGroupImpl>& out, StatusSettings& statusSettings )
 {
+	statusSettings.Update( StatusProgressType::PERCENTAGE, 0, 30, "Creating resource group from Yaml" );
+
 	YAML::Node root;
 	try
 	{
@@ -43,7 +45,19 @@ Result CreateResourceGroupFromYamlString( const std::string& yamlString, std::sh
 		return createFromStringResult;
 	}
 
-	return out->ImportFromYaml( root );
+    {
+		StatusSettings importFromYamlStatusSettings;
+		statusSettings.Update( StatusProgressType::PERCENTAGE, 30, 70, "Creating resource group from Yaml", &importFromYamlStatusSettings );
+
+		Result importFromYamlResult = out->ImportFromYaml( root, importFromYamlStatusSettings );
+
+		if( importFromYamlResult.type != ResultType::SUCCESS )
+		{
+			return importFromYamlResult;
+		}
+    }
+    
+	return Result{ ResultType::SUCCESS };
 }
 
 Result CreateResourceGroupFromString( std::string& string, std::shared_ptr<ResourceGroup::ResourceGroupImpl>& out )
