@@ -307,7 +307,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1_YamlOutput
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
@@ -351,7 +351,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1_CsvTxtOutp
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
@@ -395,7 +395,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmWorks_UsingFilter_validSimpleExampl
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
@@ -439,7 +439,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmWorks_UsingFilter_validSimpleExampl
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
@@ -483,7 +483,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExampl
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( "Some/Incorrect/Base/Path" );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
@@ -521,7 +521,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExampl
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( "Some/Incorrect/Base/Path" );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
@@ -637,7 +637,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1_YamlOutpu
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
@@ -681,7 +681,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1_CsvTxtOut
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
@@ -731,7 +731,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1_
 		arguments.push_back( "--filter-file" );
 		arguments.push_back( filterFilePath.lexically_normal().string() );
 	}
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
@@ -781,7 +781,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1_
 		arguments.push_back( "--filter-file" );
 		arguments.push_back( filterFilePath.lexically_normal().string() );
 	}
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
@@ -825,7 +825,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureParsingWronglyFormattedIniFi
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );
@@ -862,7 +862,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureUsingNoExistentFilterFile_in
 	arguments.push_back( "3" );
 	arguments.push_back( "--filter-file" );
 	arguments.push_back( filterIniFilePath.lexically_normal().string() );
-	arguments.push_back( "--filter-file-basepath" );
+	arguments.push_back( "--filter-file-prefixmap-basepath" );
 	arguments.push_back( TEST_DATA_BASE_PATH );
 	arguments.push_back( "--output-file" );
 	arguments.push_back( outputFilePath.lexically_normal().string() );

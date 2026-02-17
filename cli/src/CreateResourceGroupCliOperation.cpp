@@ -17,7 +17,7 @@ CreateResourceGroupCliOperation::CreateResourceGroupCliOperation() :
 	m_createResourceGroupExportResourcesDestinationTypeId( "--export-resources-destination-type" ),
 	m_createResourceGroupExportResourcesDestinationPathId( "--export-resources-destination-path" ),
 	m_createResourceGroupIniFilterFilesArgumentId( "--filter-file" ),
-	m_createResourceGroupIniFilterFilesBasePathArgumentId( "--filter-file-basepath" )
+	m_createResourceGroupIniFilterFilesBasePathArgumentId( "--filter-file-prefixmap-basepath" )
 {
 
 	AddRequiredPositionalArgument( m_createResourceGroupPathArgumentId, "Base directory to create resource group from." );
@@ -43,9 +43,9 @@ CreateResourceGroupCliOperation::CreateResourceGroupCliOperation() :
 
 	AddArgument( m_createResourceGroupExportResourcesDestinationPathId, "Represents the base path where the exported resources will be saved. Requires --export-resources", false, false, defaultImportParams.exportResourcesDestinationSettings.basePath.string() );
 
-	AddArgument( m_createResourceGroupIniFilterFilesArgumentId, "Path to INI file(s) for resource filtering.", false, true, "" );
+	AddArgument( m_createResourceGroupIniFilterFilesArgumentId, "Path to INI file for resource filtering.", false, true, "" );
 
-	AddArgument( m_createResourceGroupIniFilterFilesBasePathArgumentId, "Base directory for resolving relative paths contained within filter INI file(s).", false, false, "" );
+	AddArgument( m_createResourceGroupIniFilterFilesBasePathArgumentId, "Base directory for resolving relative paths contained within filter INI file(s) prefixmap attribute.", false, false, "" );
 }
 
 bool CreateResourceGroupCliOperation::Execute( std::string& returnErrorMessage ) const
