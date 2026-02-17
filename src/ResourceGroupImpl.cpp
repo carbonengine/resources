@@ -71,7 +71,7 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 	{
 		try
 		{
-			resourceFilter.Initialize( params.resourceFilterIniFiles, params.resourceFilterIniFilesPrefixmapBaseDirectory, params.directory );
+			resourceFilter.Initialize( params.resourceFilterIniFiles, params.resourceFilterIniFilesPrefixmapBaseDirectory );
 		}
 		catch( const std::exception& e )
 		{

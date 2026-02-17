@@ -296,7 +296,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1_YamlOutput
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleExample1.yaml" );
-	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
+	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" );
 
 	// Ensure any previous test output files are removed
 	RemoveFiles( { outputFilePath } );
@@ -340,7 +340,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1_CsvTxtOutp
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleExample1.txt" );
-	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
+	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" );
 
 	// Ensure any previous test output files are removed
 	RemoveFiles( { outputFilePath } );
@@ -493,10 +493,11 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExampl
 	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
+	std::cout << "errorOutput: " << errorOutput << std::endl;
 	std::cout << "------------------------" << std::endl;
 
 	// Should fail, expecting non-zero exit code
-	ASSERT_EQ( res, 1 ) << "CLI operation should fail for a reading relative filter .ini files with wrong --filter-base-path parameter - with resultCode=1";
+	ASSERT_EQ( res, 1 ) << "CLI operation should fail for a reading relative filter .ini files with wrong --filter-file-prefixmap-basepath - with resultCode=1";
 	// Check for expected error message
 	EXPECT_TRUE( errorOutput.find( "[ERROR: Failed to initialize ResourceFilter from .ini file]" ) != std::string::npos )
 		<< "Expected generic (top-level) error message about failure to initialize ResourceFilter from .ini file. Actual error: " << errorOutput;
@@ -531,6 +532,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExampl
 	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
+	std::cout << "errorOutput: " << errorOutput << std::endl;
 	std::cout << "------------------------" << std::endl;
 
 	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
@@ -570,10 +572,11 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExampl
 	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
+	std::cout << "errorOutput: " << errorOutput << std::endl;
 	std::cout << "------------------------" << std::endl;
 
 	// Should fail, expecting non-zero exit code
-	ASSERT_EQ( res, 1 ) << "CLI operation should fail for a reading relative filter .ini files with wrong --filter-base-path parameter - with resultCode=1";
+	ASSERT_EQ( res, 1 ) << "CLI operation should fail for a reading relative filter .ini files with missing --filter-file-prefixmap-basepath - with resultCode=1";
 	// Check for expected error message
 	EXPECT_TRUE( errorOutput.find( "[ERROR: Failed to initialize ResourceFilter from .ini file]" ) != std::string::npos )
 		<< "Expected generic (top-level) error message about failure to initialize ResourceFilter from .ini file. Actual error: " << errorOutput;
@@ -606,6 +609,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExampl
 	int res = RunCli( arguments, &output, &errorOutput );
 	std::cout << "--- RunCli() output: ---" << std::endl;
 	std::cout << output << std::endl;
+	std::cout << "errorOutput: " << errorOutput << std::endl;
 	std::cout << "------------------------" << std::endl;
 
 	ASSERT_EQ( res, 0 ) << "CLI operation failed, errorOutput: " << errorOutput;
@@ -626,7 +630,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1_YamlOutpu
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validComplexExample1.yaml" );
-	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validComplexExample1.ini";
+	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validComplexExample1.ini" );
 
 	// Ensure any previous test output files are removed
 	RemoveFiles( { outputFilePath } );
@@ -670,7 +674,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1_CsvTxtOut
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validComplexExample1.txt" );
-	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validComplexExample1.ini";
+	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validComplexExample1.ini" );
 
 	// Ensure any previous test output files are removed
 	RemoveFiles( { outputFilePath } );
@@ -715,8 +719,8 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1_
 	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleAndComplexExample1.yaml" );
 	std::vector<std::filesystem::path> filterIniFilePaths = {
-		"ExampleIniFiles/validSimpleExample1.ini",
-		"ExampleIniFiles/validComplexExample1.ini"
+		GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" ),
+		GetTestFileFileAbsolutePath( "ExampleIniFiles/validComplexExample1.ini" )
 	};
 
 	// Ensure any previous test output files are removed
@@ -765,8 +769,8 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1_
 	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleAndComplexExample1.txt" );
 	std::vector<std::filesystem::path> filterIniFilePaths = {
-		"ExampleIniFiles/validSimpleExample1.ini",
-		"ExampleIniFiles/validComplexExample1.ini"
+		GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" ),
+		GetTestFileFileAbsolutePath( "ExampleIniFiles/validComplexExample1.ini" )
 	};
 
 	// Ensure any previous test output files are removed
@@ -814,7 +818,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureParsingWronglyFormattedIniFi
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_invalidMissingNamedSection.yaml" );
-	std::filesystem::path filterIniFilePath = "ExampleIniFiles/invalidMissingNamedSection.ini";
+	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/invalidMissingNamedSection.ini" );
 
 	// Ensure any previous test output files are removed
 	RemoveFiles( { outputFilePath } );
@@ -851,7 +855,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureUsingNoExistentFilterFile_in
 	std::vector<std::string> arguments;
 	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_iniFileDoesNotExist.yaml" );
-	std::filesystem::path filterIniFilePath = "ExampleIniFiles/iniFileNotFound.ini";
+	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/iniFileNotFound.ini" );
 
 	// Ensure any previous test output files are removed
 	RemoveFiles( { outputFilePath } );

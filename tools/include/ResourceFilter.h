@@ -25,15 +25,15 @@ class ResourceFilter
 public:
 	ResourceFilter() = default;
 
-	// Construct a ResourceFilter object by passing it a list of filter .ini file(s) and relevant paths.
-	explicit ResourceFilter( const std::vector<std::filesystem::path>& iniFilePaths,
-							 const std::filesystem::path& filterFilesAbsoluteBasePath,
-							 const std::filesystem::path& operationalBasePath );
+	// Construct a ResourceFilter object by passing it a list of filter .ini file(s) and prefixmap base path.
+	explicit ResourceFilter(
+		const std::vector<std::filesystem::path>& iniFilePaths,
+		const std::filesystem::path& prefixmapAbsoluteBasePath );
 
-	// Initializes the ResourceFilter by passing in and parsing the supplied filter .ini file(s) and relevant paths.
-	void Initialize( const std::vector<std::filesystem::path>& iniFilePaths,
-					 const std::filesystem::path& filterFilesAbsoluteBasePath,
-					 const std::filesystem::path& operationalBasePath );
+	// Initializes the ResourceFilter by passing in and parsing the supplied filter .ini file(s) and prefixmap base path.
+	void Initialize(
+		const std::vector<std::filesystem::path>& iniFilePaths,
+		const std::filesystem::path& prefixmapAbsoluteBasePath );
 
 	// Returns true if this ResourceFilter has any filter .ini files, false otherwise.
 	bool HasFilters() const;
@@ -57,20 +57,16 @@ private:
 	static std::string NormalizePath( const std::string& path );
 
 	// Static helper function to get an absolute path by combining a relative path with an absolute base path (if not already absolute)
-	static std::filesystem::path GetAbsolutePathFromBase( const std::filesystem::path& relativeOrAbsolutePath,
-														  const std::filesystem::path& absoluteBasePath );
+	static std::filesystem::path GetAbsolutePathFromBase(
+		const std::filesystem::path& relativeOrAbsolutePath,
+		const std::filesystem::path& absoluteBasePath );
 
 	// A flag used to prevent multiple initializations of the ResourceFilter
 	bool m_initialized{ false };
 
-	// The absolute base file path to the location of filter .ini file(s)
-	// Needed when resolving the relative paths contained within those files.
-	std::filesystem::path m_filterFilesAbsoluteBasePath;
-
-	// The "operational base path" is the base path for callers initializing this object.
-	// E.g. in case of an orign call from ResourceGroup::ResourceGroupImpl::CreateFromDirectory()
-	// this corresponds to the "params.directory" parameter.
-	std::filesystem::path m_operationalBasePath;
+	// The filter .ini file(s) prefixmap attribute absolute base path
+	// Needed in order to resolve any relative paths from within those files
+	std::filesystem::path m_prefixmapAbsoluteBasePath;
 
 	// Vector of all the filter .ini files (wrapped in FilterResourceFile objects)
 	std::vector<std::unique_ptr<FilterResourceFile>> m_filterFiles;

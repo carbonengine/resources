@@ -12,15 +12,13 @@ namespace ResourceTools
 //   Construct a ResourceFilter object by passing in filter .ini file(s).
 // Arguments:
 //   iniFilePaths - vector of file paths to the filter .ini files
-//   filterFilesAbsoluteBasePath - absolute base path to the location of filter .ini file(s)
-//   operationalBasePath - absolute base path to use for resolving relative input file paths when checking against filter rules
+//   prefixmapAbsoluteBasePath - absolute base path for resolving prefixmap attribute within filter .ini file(s)
 // -------------------------------------------------------------
 ResourceFilter::ResourceFilter(
 	const std::vector<std::filesystem::path>& iniFilePaths,
-	const std::filesystem::path& filterFilesAbsoluteBasePath,
-	const std::filesystem::path& operationalBasePath )
+	const std::filesystem::path& prefixmapAbsoluteBasePath )
 {
-	Initialize( iniFilePaths, filterFilesAbsoluteBasePath, operationalBasePath );
+	Initialize( iniFilePaths, prefixmapAbsoluteBasePath );
 }
 
 // -------------------------------------------------------------
@@ -29,30 +27,31 @@ ResourceFilter::ResourceFilter(
 //   FilterResourceFile objects for each of the supplied filter .ini file(s).
 // Arguments:
 //   iniFilePaths - vector of file paths to the filter .ini files
-//   filterFilesAbsoluteBasePath - absolute base path to the location of filter .ini file(s)
-//   operationalBasePath - absolute base path to use for resolving relative input file paths when checking against filter rules
+//   prefixmapAbsoluteBasePath - absolute base path for resolving prefixmap attribute within filter .ini file(s)
 // Return Value:
 //   None (void).
 // -------------------------------------------------------------
-void ResourceFilter::Initialize( const std::vector<std::filesystem::path>& iniFilePaths,
-								 const std::filesystem::path& filterFilesAbsoluteBasePath,
-								 const std::filesystem::path& operationalBasePath )
+void ResourceFilter::Initialize(
+	const std::vector<std::filesystem::path>& iniFilePaths,
+	const std::filesystem::path& prefixmapAbsoluteBasePath )
 {
 	if( m_initialized )
 	{
 		throw std::runtime_error( "ResourceFilter is already initialized." );
 	}
 
-	m_filterFilesAbsoluteBasePath = filterFilesAbsoluteBasePath;
-	m_operationalBasePath = operationalBasePath;
+	m_prefixmapAbsoluteBasePath = prefixmapAbsoluteBasePath;
 
 	std::set<std::filesystem::path> uniquePaths( iniFilePaths.begin(), iniFilePaths.end() );
 	for( const auto& path : uniquePaths )
 	{
 		try
 		{
-			// Make sure we initialize the FilterResourceFile based on the absolute path of the .ini file
-			m_filterFiles.emplace_back( std::make_unique<FilterResourceFile>( GetAbsolutePathFromBase( path, m_filterFilesAbsoluteBasePath ) ) );
+			// Supplied filter .ini files should already be passed in with absolute path.
+			// In case they are not, fallback to resolving absolute path based on the
+			// m_prefixmapAbsoluteBasePath property insted of the current working directory.
+			// That property is otherwise intended for resolving relative paths within those filter .ini files.
+			m_filterFiles.emplace_back( std::make_unique<FilterResourceFile>( GetAbsolutePathFromBase( path, m_prefixmapAbsoluteBasePath ) ) );
 		}
 		catch( const std::exception& e )
 		{
@@ -108,13 +107,8 @@ const std::map<std::string, FilterResourceFilter>& ResourceFilter::GetFullResolv
 // -------------------------------------------------------------
 bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::path& inFilePath )
 {
-	// Make sure we work with the lexically normalized absolute path representation of the input file
-	// In case the inFilePath is not already absolute, we'll set the base path to the "params.directory".
-	// - This is because when called from ResourceGroup::ResourceGroupImpl::CreateFromDirectory() function
-	//   it will be iterating over files from that location.
-	//   If it is already absolute, then fine. If not, we will resolve it relative to whatever the
-	//   "operational base path" is for this ResourceFilter (i.e. "params.directory" when called from CLI).
-	std::string inFileNormalAbsPathStr = NormalizePath( GetAbsolutePathFromBase( inFilePath, m_operationalBasePath ).generic_string() );
+	// Make sure we work with the lexically normalized (already absolute) path representation of the input file.
+	std::string inFileNormalAbsPathStr = NormalizePath( inFilePath.generic_string() );
 	std::filesystem::path inFilePathAbs = std::filesystem::absolute( inFileNormalAbsPathStr );
 
 	// Priority: lower is higher priority:
@@ -128,8 +122,9 @@ bool ResourceFilter::FilePathMatchesIncludeFilterRules( const std::filesystem::p
 	const auto& resolvedPathMap = GetFullResolvedPathMap();
 	for( const auto& [resolvedRelativePathStr, filter] : resolvedPathMap )
 	{
-		// Convert the relative path to a lexically normalized absolute path for comparison
-		std::string resolvedNormalAbsPathStr = NormalizePath( GetAbsolutePathFromBase( resolvedRelativePathStr, m_filterFilesAbsoluteBasePath ).generic_string() );
+		// Convert the relative path from the filter rules .ini file(s) to a lexically normalized absolute path
+		// for comparison with the similarly lexically normalized absolute path of the input file (inFilePath).
+		std::string resolvedNormalAbsPathStr = NormalizePath( GetAbsolutePathFromBase( resolvedRelativePathStr, m_prefixmapAbsoluteBasePath ).generic_string() );
 		std::filesystem::path resolvedPathAbs = std::filesystem::absolute( resolvedNormalAbsPathStr );
 
 		if( resolvedNormalAbsPathStr == inFileNormalAbsPathStr )

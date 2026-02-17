@@ -1961,7 +1961,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ConfirmFileLoadFailure_SingleIniFileTh
 	ResourceTools::ResourceFilter resourceFilter;
 	try
 	{
-		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH );
 		FAIL() << "Expected this test to fail: ResourceFilter_Load_SingleFile_ThatDoesNotExist";
 	}
 	catch( const std::exception& e )
@@ -1987,7 +1987,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ConfirmFileLoadFailure_MultipleFilesOn
 	ResourceTools::ResourceFilter resourceFilter;
 	try
 	{
-		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH );
 		FAIL() << "Expected this test to fail: ResourceFilter_Load_MultipleFiles_OneThatDoesNotExist";
 	}
 	catch( const std::exception& e )
@@ -2012,7 +2012,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ConfirmSuccessfulFileLoad_example1_ini
 	ResourceTools::ResourceFilter resourceFilter;
 	try
 	{
-		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH );
 		ASSERT_TRUE( true ); // If we got here, the file loaded successfully without any exceptions
 	}
 	catch( const std::exception& e )
@@ -2034,7 +2034,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativ
 		const std::filesystem::path iniPath1 = "ExampleIniFiles/validSimpleExample1.ini";
 		std::vector<std::filesystem::path> paths = { iniPath1 };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH );
 
 		// Validate correct included paths via the resourceFilter
 		// Always compare those based on absolute paths:
@@ -2079,10 +2079,9 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolut
 	try
 	{
 		const std::filesystem::path iniPath1 = GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" );
-		//std::filesystem::path iniPath1Abs = std::filesystem::absolute( iniPath1 );
 		std::vector<std::filesystem::path> paths = { iniPath1 };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH );
 
 		// Validate correct included paths via the resourceFilter (compare absolute paths):
 		std::set<std::filesystem::path> validResolvedAbsolutePaths = {
@@ -2128,7 +2127,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingRelativ
 		const std::filesystem::path iniPath1 = "ExampleIniFiles/validComplexExample1.ini";
 		std::vector<std::filesystem::path> paths = { iniPath1 };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH );
 
 		// Validate correct included paths via the resourceFilter (compare absolute paths):
 		std::set<std::filesystem::path> validResolvedRelativePaths = {
@@ -2236,7 +2235,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulFileLoadUsingAbsolut
 		const std::filesystem::path iniPath1 = GetTestFileFileAbsolutePath( "ExampleIniFiles/validComplexExample1.ini" );
 		std::vector<std::filesystem::path> pathsAbs = { iniPath1 };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( pathsAbs, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
+		resourceFilter.Initialize( pathsAbs, TEST_DATA_BASE_PATH );
 
 		// Validate correct included paths via the resourceFilter:
 		std::set<std::filesystem::path> validResolvedRelativePaths = {
@@ -2348,7 +2347,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccessfulLoadOf2IniFiles_vali
 			GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" )
 		};
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH );
 
 		// Validate correct included paths via the resourceFilter:
 		std::set<std::filesystem::path> validResolvedRelativePaths = {
@@ -2470,7 +2469,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccess_FileLoadOverrideUsingD
 		const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validOverrideDifferentRelativeSameAbsolutePaths.ini" );
 		std::vector<std::filesystem::path> paths = { iniPath };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH );
 
 		// Validate correct included and exclude paths via the resourceFilter:
 		// - Because of the two distinct relative paths (./resourcesOnBranch/* and /resourcesOnBranch/*)
@@ -2540,7 +2539,7 @@ TEST_F( ResourceToolsTest, ResourceFilter_ValidateSuccess_FileLoadRespathInlineO
 		const std::filesystem::path iniPath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validInlineFilterOverrideOnSameRelativePath.ini" );
 		std::vector<std::filesystem::path> paths = { iniPath };
 		ResourceTools::ResourceFilter resourceFilter;
-		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH, std::filesystem::current_path() );
+		resourceFilter.Initialize( paths, TEST_DATA_BASE_PATH );
 
 		// Validate correct included and exclude paths via the resourceFilter:
 		// - Because of the overriding rules for the identical "respath" path entries.

@@ -49,7 +49,7 @@ void FilterResourceFile::ParseIniFile( const std::filesystem::path& iniFilePath 
 	INIReader reader( iniFilePath.generic_string() );
 	if( reader.ParseError() != 0 )
 	{
-		throw std::runtime_error( "Failed to parse INI file: " + iniFilePath.generic_string() + " - " + reader.ParseErrorMessage() );
+		throw std::runtime_error( "Failed to parse INI file: " + std::filesystem::absolute(iniFilePath ).generic_string() + " - " + reader.ParseErrorMessage() );
 	}
 
 	// Parse the [DEFAULT] section
