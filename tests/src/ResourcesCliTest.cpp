@@ -294,7 +294,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1_YamlOutput
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleExample1.yaml" );
 	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
 
@@ -338,7 +338,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleExample1_CsvTxtOutp
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleExample1.txt" );
 	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
 
@@ -382,7 +382,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmWorks_UsingFilter_validSimpleExampl
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmWorks_UsingFilter_validSimpleExample1_WithRelativeFilterFilePathAndBasePathSet.txt" );
 	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
 
@@ -426,7 +426,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmWorks_UsingFilter_validSimpleExampl
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmWorks_UsingFilter_validSimpleExample1_WithAbsoluteFilterFilePathAndBasePathSet.txt" );
 	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" );
 
@@ -470,7 +470,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExampl
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithRelativeFilterFilePathAndWrongBasePathSet.txt" );
 	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
 
@@ -508,7 +508,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExampl
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithAbsoluteFilterFilePathAndWrongBasePathSet.txt" );
 	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" );
 
@@ -549,7 +549,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExampl
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithRelativeFilterFilePathAndNoBasePath.txt" );
 	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validSimpleExample1.ini";
 
@@ -585,7 +585,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFails_UsingFilter_validSimpleExampl
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_ConfirmFails_UsingFilter_validSimpleExample1_WithAbsoluteFilterFilePathAndNoBasePath.txt" );
 	std::filesystem::path filterIniFilePath = GetTestFileFileAbsolutePath( "ExampleIniFiles/validSimpleExample1.ini" );
 
@@ -624,7 +624,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1_YamlOutpu
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validComplexExample1.yaml" );
 	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validComplexExample1.ini";
 
@@ -668,7 +668,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validComplexExample1_CsvTxtOut
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validComplexExample1.txt" );
 	std::filesystem::path filterIniFilePath = "ExampleIniFiles/validComplexExample1.ini";
 
@@ -712,7 +712,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1_
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleAndComplexExample1.yaml" );
 	std::vector<std::filesystem::path> filterIniFilePaths = {
 		"ExampleIniFiles/validSimpleExample1.ini",
@@ -762,7 +762,7 @@ TEST_F( ResourcesCliTest, CreateGroup_UsingFilter_validSimpleAndComplexExample1_
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_validSimpleAndComplexExample1.txt" );
 	std::vector<std::filesystem::path> filterIniFilePaths = {
 		"ExampleIniFiles/validSimpleExample1.ini",
@@ -812,7 +812,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureParsingWronglyFormattedIniFi
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_invalidMissingNamedSection.yaml" );
 	std::filesystem::path filterIniFilePath = "ExampleIniFiles/invalidMissingNamedSection.ini";
 
@@ -849,7 +849,7 @@ TEST_F( ResourcesCliTest, CreateGroup_ConfirmFailureUsingNoExistentFilterFile_in
 	std::string output;
 	std::string errorOutput;
 	std::vector<std::string> arguments;
-	std::filesystem::path inputDirectoryPath = GetTestFileFileAbsolutePath( "" ); // The base testData directory
+	std::filesystem::path inputDirectoryPath = TEST_DATA_BASE_PATH;
 	std::filesystem::path outputFilePath = std::filesystem::absolute( "CliFilterCreateGroupOut/CreateGroup_UsingFilter_iniFileDoesNotExist.yaml" );
 	std::filesystem::path filterIniFilePath = "ExampleIniFiles/iniFileNotFound.ini";
 
