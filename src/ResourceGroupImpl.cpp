@@ -87,6 +87,7 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 		StatusSettings fileProcessingInnerStatusSettings;
 		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 10, 90, "Processing Files", &fileProcessingInnerStatusSettings );
 
+		int fileSkipCount = 0;
 		for( const std::filesystem::directory_entry& entry : recursiveDirectoryIter )
 		{
 			if( entry.is_regular_file() )
@@ -100,6 +101,11 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 						// Check if the file, i.e. entry.path() should be included or excluded based on filtering rules
 						if( !resourceFilter.FilePathMatchesIncludeFilterRules( entry.path() ) )
 						{
+							if( fileSkipCount++ % 25 == 0 )
+							{
+								std::string skipMessage = "Skipping file [" + std::to_string( fileSkipCount - 1 ) + "] as it doesn't match filters: " + entry.path().string();
+								fileProcessingInnerStatusSettings.Update( CarbonResources::StatusProgressType::UNBOUNDED, 0, 0, skipMessage );
+							}
 							continue;
 						}
 					}
