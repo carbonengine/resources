@@ -8,8 +8,7 @@
 
 int CliTestFixture::RunCli( std::vector<std::string>& arguments,
 							std::string* standardOutput /* = nullptr */,
-							std::string* errorOutput /* = nullptr */,
-							const std::string& workingDirectory /* = "" (empty = do not alter it) */ )
+							std::string* errorOutput /* = nullptr */ )
 {
 	arguments.insert( arguments.begin(), CARBON_RESOURCES_CLI_EXE_FULLPATH );
 
@@ -23,7 +22,7 @@ int CliTestFixture::RunCli( std::vector<std::string>& arguments,
 	// Only populate the output and errorOutput if the caller provided non-nullptr for them, otherwise discard them
 	TinyProcessLib::Process process1a(
 		arguments,
-		workingDirectory,
+		"",
 		[standardOutput]( const char* bytes, size_t n ) { if (standardOutput != nullptr) { *standardOutput += std::string( bytes, n ); } },
 		[errorOutput]( const char* bytes, size_t n ) { if (errorOutput != nullptr) { *errorOutput += std::string( bytes, n ); } }
 	);
