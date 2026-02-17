@@ -219,8 +219,8 @@ struct ResourceGroupExportToFileParams
     *  @see CreateResourceGroupFromDirectoryParams::exportResources
     *  @var CreateResourceGroupFromDirectoryParams::resourceFilterIniFiles
     *  List of INI file(s) containing include/exclude rules for resource filtering
-    *  @var CreateResourceGroupFromDirectoryParams::resourceFilterIniFilesBaseDirectory
-    *  Base directory to resolve any relative paths contained within resourceFilterIniFiles.
+    *  @var CreateResourceGroupFromDirectoryParams::resourceFilterIniFilesPrefixmapBaseDirectory
+    *  Base directory for resolving relative paths contained within resourceFilterIniFiles prefixmap attribute
     */
 struct CreateResourceGroupFromDirectoryParams
 {
@@ -245,7 +245,7 @@ struct CreateResourceGroupFromDirectoryParams
 
 	std::vector<std::filesystem::path> resourceFilterIniFiles = {};
 
-	std::filesystem::path resourceFilterIniFilesBaseDirectory = "";
+	std::filesystem::path resourceFilterIniFilesPrefixmapBaseDirectory = "";
 };
 
 /** @struct ResourceGroupMergeParams

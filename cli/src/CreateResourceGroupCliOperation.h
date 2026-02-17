@@ -45,7 +45,7 @@ private:
 
 	std::string m_createResourceGroupIniFilterFilesArgumentId;
 
-	std::string m_createResourceGroupIniFilterFilesBasePathArgumentId;
+	std::string m_createResourceGroupIniFilterFilesPrefixmapBasePathArgumentId;
 };
 
 #endif // CreateResourceGroupCliOperation_H
