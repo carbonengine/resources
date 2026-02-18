@@ -8,3 +8,4 @@ Documents contained in this section detail design approaches in resources.
    
    DesignDocuments/filesystemDesign
    DesignDocuments/resourceGroupFileFormat
+   DesignDocuments/filterIniFiles
