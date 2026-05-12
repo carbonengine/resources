@@ -27,7 +27,11 @@ class Publish(perforce_publish_path: String) : BuildType({
         param("env.TC_BUILD_URL", "%teamcity.serverUrl%/viewLog.html?buildId=%teamcity.build.id%")
         text("eve_branch_shortname", "", label = "Branch Name", description = """The name of the branch, for example MAINLINE""", display = ParameterDisplay.PROMPT, allowEmpty = false)
         param("env.TC_BUILDID", "%teamcity.build.id%")
+<<<<<<< HEAD
         param("env.TC_BUILD_NUMBER", "Carbon Resources #%build.number%")
+=======
+        param("env.TC_BUILD_NUMBER", "Carbon Template #%build.number%")
+>>>>>>> template/carbonengine/resources-updates
         param("env.P4PORT", "p4is.ccp.ad.local:1666")
         param("env.TC_EVE_BRANCH_SHORTNAME", "%eve_branch_shortname%")
         param("env.TC_EVE_PROJECT", "%project%")
@@ -259,4 +263,8 @@ class Publish(perforce_publish_path: String) : BuildType({
     }
 })
 
+<<<<<<< HEAD
 val PublishToPerforce = Publish("vendor/github.com/carbonengine/resources")
+=======
+val PublishToPerforce = Publish("vendor/github.com/ccpgames/carbon-template")
+>>>>>>> template/carbonengine/resources-updates

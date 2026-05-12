@@ -70,7 +70,11 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: false
 SpacesInParentheses: true
 SpacesInSquareBrackets: false
+<<<<<<< HEAD
 Standard: Cpp11
+=======
+Standard: Cpp17
+>>>>>>> template/carbonengine/resources-updates
 TabWidth: 4
 UseTab: ForContinuationAndIndentation
 ---
@@ -146,7 +150,14 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: false
 SpacesInParentheses: true
 SpacesInSquareBrackets: false
+<<<<<<< HEAD
 Standard: Cpp11
 TabWidth: 4
 UseTab: ForContinuationAndIndentation
 ...
+=======
+Standard: Cpp17
+TabWidth: 4
+UseTab: ForContinuationAndIndentation
+...
+>>>>>>> template/carbonengine/resources-updates

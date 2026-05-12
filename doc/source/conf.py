@@ -6,8 +6,13 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+<<<<<<< HEAD
 project = 'resources'
 copyright = 'Copyright © 2025 CCP ehf'
+=======
+project = 'project_name'
+copyright = '2024, CCP Games'
+>>>>>>> template/carbonengine/resources-updates
 author = 'CCP Games'
 release = '0.1'
 

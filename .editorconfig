@@ -1,11 +1,16 @@
 [*]
 charset = utf-8
+<<<<<<< HEAD
 end_of_line = crlf
+=======
+end_of_line = lf
+>>>>>>> template/carbonengine/resources-updates
 indent_size = 4
 indent_style = space
 insert_final_newline = false
 max_line_length = 120
 tab_width = 4
+<<<<<<< HEAD
 ij_continuation_indent_size = 8
 ij_formatter_off_tag = @formatter:off
 ij_formatter_on_tag = @formatter:on
@@ -946,3 +951,25 @@ ij_python_wrap_long_lines = false
 
 [{*.toml,Cargo.lock,Cargo.toml.orig,Gopkg.lock,Pipfile,poetry.lock}]
 ij_toml_keep_indents_on_empty_lines = false
+=======
+trim_trailing_whitespace = true
+
+[{*.yaml,*.yml,.clang-format,.clang-tidy,_clang-format}]
+# In yaml, a two-space indent is used by default in many of the solutions we integrate with.
+# Examples are GitHub Actions and Kubernetes
+indent_size = 2
+
+[{*.h,*.hpp,*.hxx,*.c,*.cpp,*.cxx}]
+# .clang-format should take precedence, but for editors which do not do that we're adding those settings here, too.
+indent_style = tab
+
+[*.red]
+# Those are yaml files, but do use a 4 space indent
+indent_size = 4
+
+[{*.markdown,*.md}]
+# In markdown a [double whitespace at the end of a line acts as a line break](https://www.markdownguide.org/basic-syntax/#line-breaks).
+# Even though it's controversial to use it for that purpose (there are alternatives like using the `<br />` html tag),
+# let's not break it accidentally in files that already use the double whitespace.
+trim_trailing_whitespace = false
+>>>>>>> template/carbonengine/resources-updates

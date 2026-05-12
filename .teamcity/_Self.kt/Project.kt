@@ -8,7 +8,11 @@ import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot
 
 object Project : Project({
 
+<<<<<<< HEAD
     description = "Build / Publish pipeline for https://github.com/carbonengine/resources"
+=======
+    description = "Build / Publish pipeline for https://github.com/ccpgames/carbon-template"
+>>>>>>> template/carbonengine/resources-updates
 
     params {
         /* before changing carbon_ref, make sure to disable automatic settings synchronization on teamcity */
