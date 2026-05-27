@@ -71,7 +71,11 @@ SpacesInContainerLiterals: false
 SpacesInParentheses: true
 SpacesInSquareBrackets: false
 <<<<<<< HEAD
+<<<<<<< HEAD
 Standard: Cpp11
+=======
+Standard: Cpp17
+>>>>>>> template/carbonengine/resources-updates
 =======
 Standard: Cpp17
 >>>>>>> template/carbonengine/resources-updates
@@ -151,10 +155,17 @@ SpacesInContainerLiterals: false
 SpacesInParentheses: true
 SpacesInSquareBrackets: false
 <<<<<<< HEAD
+<<<<<<< HEAD
 Standard: Cpp11
 TabWidth: 4
 UseTab: ForContinuationAndIndentation
 ...
+=======
+Standard: Cpp17
+TabWidth: 4
+UseTab: ForContinuationAndIndentation
+...
+>>>>>>> template/carbonengine/resources-updates
 =======
 Standard: Cpp17
 TabWidth: 4

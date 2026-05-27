@@ -28,7 +28,11 @@ class Publish(perforce_publish_path: String) : BuildType({
         text("eve_branch_shortname", "", label = "Branch Name", description = """The name of the branch, for example MAINLINE""", display = ParameterDisplay.PROMPT, allowEmpty = false)
         param("env.TC_BUILDID", "%teamcity.build.id%")
 <<<<<<< HEAD
+<<<<<<< HEAD
         param("env.TC_BUILD_NUMBER", "Carbon Resources #%build.number%")
+=======
+        param("env.TC_BUILD_NUMBER", "Carbon Template #%build.number%")
+>>>>>>> template/carbonengine/resources-updates
 =======
         param("env.TC_BUILD_NUMBER", "Carbon Template #%build.number%")
 >>>>>>> template/carbonengine/resources-updates
@@ -212,7 +216,11 @@ class Publish(perforce_publish_path: String) : BuildType({
             }
 
             artifacts {
+<<<<<<< HEAD
                 artifactRules = "**/*=>%perforce_path_to_publish_into%/${MacOS.arm64_Release.depParamRefs["env.GIT_TAG_HASH"]}"
+=======
+                artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${MacOS.arm64_Release.depParamRefs["env.GIT_TAG_HASH"]}"
+>>>>>>> template/carbonengine/resources-updates
             }
         }
         dependency(Windows.Debug) {
@@ -221,7 +229,11 @@ class Publish(perforce_publish_path: String) : BuildType({
             }
 
             artifacts {
+<<<<<<< HEAD
                 artifactRules = "**/*=>%perforce_path_to_publish_into%/${Windows.Debug.depParamRefs["env.GIT_TAG_HASH"]}"
+=======
+                artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.Debug.depParamRefs["env.GIT_TAG_HASH"]}"
+>>>>>>> template/carbonengine/resources-updates
             }
         }
         dependency(Windows.Internal) {
@@ -230,7 +242,11 @@ class Publish(perforce_publish_path: String) : BuildType({
             }
 
             artifacts {
+<<<<<<< HEAD
                 artifactRules = "**/*=>%perforce_path_to_publish_into%/${Windows.Internal.depParamRefs["env.GIT_TAG_HASH"]}"
+=======
+                artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.Internal.depParamRefs["env.GIT_TAG_HASH"]}"
+>>>>>>> template/carbonengine/resources-updates
             }
         }
         dependency(Windows.Release) {
@@ -239,7 +255,11 @@ class Publish(perforce_publish_path: String) : BuildType({
             }
 
             artifacts {
+<<<<<<< HEAD
                 artifactRules = "**/*=>%perforce_path_to_publish_into%/${Windows.Release.depParamRefs["env.GIT_TAG_HASH"]}"
+=======
+                artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.Release.depParamRefs["env.GIT_TAG_HASH"]}"
+>>>>>>> template/carbonengine/resources-updates
             }
         }
         dependency(Windows.TrinityDev) {
@@ -248,7 +268,11 @@ class Publish(perforce_publish_path: String) : BuildType({
             }
 
             artifacts {
+<<<<<<< HEAD
                 artifactRules = "**/*=>%perforce_path_to_publish_into%/${Windows.TrinityDev.depParamRefs["env.GIT_TAG_HASH"]}"
+=======
+                artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.TrinityDev.depParamRefs["env.GIT_TAG_HASH"]}"
+>>>>>>> template/carbonengine/resources-updates
             }
         }
         artifacts(AbsoluteId("Infrastructure_MetaTeamCity_Tools_TeamcityChanges")) {
@@ -264,7 +288,11 @@ class Publish(perforce_publish_path: String) : BuildType({
 })
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 val PublishToPerforce = Publish("vendor/github.com/carbonengine/resources")
+=======
+val PublishToPerforce = Publish("vendor/github.com/ccpgames/carbon-template")
+>>>>>>> template/carbonengine/resources-updates
 =======
 val PublishToPerforce = Publish("vendor/github.com/ccpgames/carbon-template")
 >>>>>>> template/carbonengine/resources-updates

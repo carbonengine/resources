@@ -25,7 +25,10 @@ val Internal = CarbonBuildWindows("Internal Windows", "Internal", "x64-windows-i
 val TrinityDev = CarbonBuildWindows("TrinityDev Windows", "TrinityDev", "x64-windows-trinitydev")
 val Release = CarbonBuildWindows("Release Windows", "Release", "x64-windows-release")
 <<<<<<< HEAD
+<<<<<<< HEAD
 val ReleaseDevFeatures = CarbonBuildWindows("Release Windows with Dev Features", "Release", "x64-windows-release-with-dev-features")
+=======
+>>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
 
@@ -38,7 +41,10 @@ object Project : Project({
     buildType(TrinityDev)
     buildType(Release)
 <<<<<<< HEAD
+<<<<<<< HEAD
     buildType(ReleaseDevFeatures)
+=======
+>>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
 })
@@ -48,7 +54,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
     id(buildName.toId())
     this.name = buildName
 
+<<<<<<< HEAD
     artifactRules = "%env.CMAKE_INSTALL_PREFIX%"
+=======
+    artifactRules = "%env.CMAKE_INSTALL_PREFIX% => artifact.zip"
+>>>>>>> template/carbonengine/resources-updates
 
     params {
         param("env.GIT_TAG_HASH_OVERRIDE", "")
@@ -70,7 +80,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
         param("env.X_VCPKG_REGISTRIES_CACHE", "%teamcity.build.checkoutDir%/%github_checkout_folder%/regcache")
         param("env.CMAKE_BUILD_PARALLEL_LEVEL", "8")
 <<<<<<< HEAD
+<<<<<<< HEAD
         param("env.CTEST_PARALLEL_LEVEL", "1")
+=======
+        param("env.CTEST_PARALLEL_LEVEL", "8")
+>>>>>>> template/carbonengine/resources-updates
 =======
         param("env.CTEST_PARALLEL_LEVEL", "8")
 >>>>>>> template/carbonengine/resources-updates
@@ -102,7 +116,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
                 REM unfortunately ninja does not find the VS environment otherwise
                 REM NB: the exported PATH also contains the location where we installed sentry-cli, e.g. teamcity.agent.work.dir
 <<<<<<< HEAD
+<<<<<<< HEAD
                 call "%%ProgramFiles(x86)%%\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\vsdevcmd.bat" -arch=x64
+=======
+                call "%env.VSDEV_BAT_PATH%" -arch=x64
+>>>>>>> template/carbonengine/resources-updates
 =======
                 call "%env.VSDEV_BAT_PATH%" -arch=x64
 >>>>>>> template/carbonengine/resources-updates

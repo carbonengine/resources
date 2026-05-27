@@ -2,6 +2,7 @@
   "dependencies": [
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
       "name": "argparse",
       "version>=": "2.2"
     },
@@ -65,6 +66,8 @@
       "name": "argparse",
       "version": "2.2"
 =======
+=======
+>>>>>>> template/carbonengine/resources-updates
       "name": "python3",
       "version>=": "3.12.9#1",
       "host": true
@@ -74,6 +77,9 @@
     {
       "name": "protobuf",
       "version": "3.6.0.1"
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
     }
   ]
