@@ -8,8 +8,13 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 project = 'resources'
 copyright = 'Copyright © 2025 CCP ehf'
+=======
+project = 'project_name'
+copyright = '2024, CCP Games'
+>>>>>>> template/carbonengine/resources-updates
 =======
 project = 'project_name'
 copyright = '2024, CCP Games'

@@ -3,7 +3,11 @@
     "kind": "git",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "baseline": "bea476a80218a581bcb5318595849520217c825e",
+=======
+    "baseline": "242ac6932a9cd2607332969129e9572516f28d65",
+>>>>>>> template/carbonengine/resources-updates
 =======
     "baseline": "242ac6932a9cd2607332969129e9572516f28d65",
 >>>>>>> template/carbonengine/resources-updates
@@ -17,10 +21,13 @@
       "kind": "git",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       "repository": "git@github.com:carbonengine/vcpkg-registry.git",
       "baseline": "addd8867a1553f4b7866bb7a36deb84bd59bd1f9",
       "packages": ["carbon-*", "python3", "bsdiff-drake127"]
 =======
+=======
+>>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
       "repository": "git@github.com:ccpgames/carbon-vcpkg-registry.git",
@@ -33,6 +40,9 @@
       "baseline": "303eacceb8ce9a0aa9a061f00ab2c11e8725ab2d",
       "packages": ["python3", "carbon-core", "carbon-scheduler", "tracy", "greenlet", "ccp-debug-info", "crashpad", "zlib"]
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates

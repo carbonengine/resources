@@ -14,6 +14,7 @@
         "VCPKG_USE_HOST_TOOLS": "ON",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/customized_toolchain/triplets",
         "BUILD_DOCUMENTATION": "ON",
@@ -25,11 +26,16 @@
 =======
 =======
 >>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/vendor/github.com/carbonengine/vcpkg-registry/triplets"
       },
       "environment": {
         "PATH_TO_VCPKG_ROOT": "${sourceDir}/vendor/github.com/microsoft/vcpkg"
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
@@ -62,7 +68,11 @@
       "cacheVariables": {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/customized_toolchain/toolchains/x64-windows-carbon.cmake"
+=======
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/vendor/github.com/carbonengine/vcpkg-registry/toolchains/x64-windows-carbon.cmake"
+>>>>>>> template/carbonengine/resources-updates
 =======
         "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/vendor/github.com/carbonengine/vcpkg-registry/toolchains/x64-windows-carbon.cmake"
 >>>>>>> template/carbonengine/resources-updates
@@ -79,7 +89,11 @@
         "CMAKE_OSX_ARCHITECTURES": "arm64",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/customized_toolchain/toolchains/arm64-osx-carbon.cmake"
+=======
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/vendor/github.com/carbonengine/vcpkg-registry/toolchains/arm64-osx-carbon.cmake"
+>>>>>>> template/carbonengine/resources-updates
 =======
         "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/vendor/github.com/carbonengine/vcpkg-registry/toolchains/arm64-osx-carbon.cmake"
 >>>>>>> template/carbonengine/resources-updates
@@ -96,7 +110,11 @@
         "CMAKE_OSX_ARCHITECTURES": "x86_64",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/customized_toolchain/toolchains/x64-osx-carbon.cmake"
+=======
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/vendor/github.com/carbonengine/vcpkg-registry/toolchains/x64-osx-carbon.cmake"
+>>>>>>> template/carbonengine/resources-updates
 =======
         "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/vendor/github.com/carbonengine/vcpkg-registry/toolchains/x64-osx-carbon.cmake"
 >>>>>>> template/carbonengine/resources-updates
@@ -145,6 +163,7 @@
     {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       "name": "x64-windows-release-with-dev-features",
       "inherits": "x64-windows-release",
       "cacheVariables": {
@@ -152,6 +171,8 @@
       }
     },
     {
+=======
+>>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
 =======

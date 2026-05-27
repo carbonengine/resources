@@ -10,7 +10,11 @@ object Project : Project({
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     description = "Build / Publish pipeline for https://github.com/carbonengine/resources"
+=======
+    description = "Build / Publish pipeline for https://github.com/ccpgames/carbon-template"
+>>>>>>> template/carbonengine/resources-updates
 =======
     description = "Build / Publish pipeline for https://github.com/ccpgames/carbon-template"
 >>>>>>> template/carbonengine/resources-updates

@@ -52,7 +52,11 @@ class CarbonBuildMacOS(buildName: String, configType: String, preset: String, ag
     name = buildName
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     artifactRules = "%env.CMAKE_INSTALL_PREFIX%"
+=======
+    artifactRules = "%env.CMAKE_INSTALL_PREFIX% => artifact.zip"
+>>>>>>> template/carbonengine/resources-updates
 =======
     artifactRules = "%env.CMAKE_INSTALL_PREFIX% => artifact.zip"
 >>>>>>> template/carbonengine/resources-updates
@@ -79,7 +83,11 @@ class CarbonBuildMacOS(buildName: String, configType: String, preset: String, ag
         param("env.CMAKE_BUILD_PARALLEL_LEVEL", "8")
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         param("env.CTEST_PARALLEL_LEVEL", "1")
+=======
+        param("env.CTEST_PARALLEL_LEVEL", "8")
+>>>>>>> template/carbonengine/resources-updates
 =======
         param("env.CTEST_PARALLEL_LEVEL", "8")
 >>>>>>> template/carbonengine/resources-updates
