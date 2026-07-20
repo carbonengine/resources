@@ -690,6 +690,89 @@ TEST_F( ResourcesLibraryTest, CreateAndUnpackBundle )
 	EXPECT_TRUE( std::filesystem::exists( unpackedGroupPath ) );
 }
 
+// Zip-slip: a manifest relative path escaping the destination (here "../") must be
+// rejected on unpack instead of writing the resource outside the destination base path.
+TEST_F( ResourcesLibraryTest, UnpackBundleRejectsZipSlipRelativePath )
+{
+	// Import a ResourceGroup whose single resource escapes the destination via "../".
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+
+	importParams.filename = GetTestFileAbsolutePath( "ZipSlip/ZipSlipResourceGroup.yaml" );
+
+	importParams.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+	// Bundle it, reading the resource data from the local CDN by location so the
+	// malicious relative path only takes effect when the bundle is unpacked.
+	CarbonResources::BundleCreateParams bundleCreateParams;
+
+	bundleCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
+
+	bundleCreateParams.resourceGroupBundleRelativePath = "BundleResourceGroup.yaml";
+
+	bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
+
+	bundleCreateParams.resourceSourceSettings.basePaths = { GetTestFileAbsolutePath( "resourcesLocal/" ) };
+
+	bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+
+	bundleCreateParams.chunkDestinationSettings.basePath = "ZipSlipBundleChunks";
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = "ZipSlipBundleOut";
+
+	bundleCreateParams.chunkSize = 1000;
+
+	bundleCreateParams.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+	// Load the generated bundle.
+	CarbonResources::BundleResourceGroup bundleResourceGroup;
+
+	CarbonResources::ResourceGroupImportFromFileParams bundleImportParams;
+
+	bundleImportParams.filename = bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath / bundleCreateParams.resourceGroupBundleRelativePath;
+
+	bundleImportParams.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( bundleResourceGroup.ImportFromFile( bundleImportParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+	// Clear any escaped file a previous (vulnerable) run may have written.
+	std::filesystem::path destinationBasePath = "ZipSlipUnpackOut";
+
+	std::filesystem::path escapedPath = ( destinationBasePath / "../zipSlipEscaped.txt" ).lexically_normal();
+
+	std::filesystem::remove( escapedPath );
+
+	// Unpack must refuse the escaping path rather than write outside the destination.
+	CarbonResources::BundleUnpackParams bundleUnpackParams;
+
+	bundleUnpackParams.chunkSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
+
+	bundleUnpackParams.chunkSourceSettings.basePaths = { bundleCreateParams.chunkDestinationSettings.basePath };
+
+	bundleUnpackParams.resourceDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	bundleUnpackParams.resourceDestinationSettings.basePath = destinationBasePath;
+
+	bundleUnpackParams.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( bundleResourceGroup.Unpack( bundleUnpackParams ).type, CarbonResources::ResultType::MALFORMED_RESOURCE_INPUT );
+
+	EXPECT_FALSE( std::filesystem::exists( escapedPath ) );
+}
+
 TEST_F( ResourcesLibraryTest, ApplyPatch )
 {
 	// Load the patch file

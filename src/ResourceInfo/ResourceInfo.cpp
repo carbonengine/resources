@@ -21,6 +21,47 @@
 namespace CarbonResources
 {
 
+namespace
+{
+
+bool IsPathWithinBase( const std::filesystem::path& base, const std::filesystem::path& candidate )
+{
+	std::error_code ec;
+
+	std::filesystem::path normalizedBase = std::filesystem::weakly_canonical( base, ec );
+	if( ec )
+	{
+		normalizedBase = base.lexically_normal();
+	}
+
+	ec.clear();
+
+	std::filesystem::path normalizedCandidate = std::filesystem::weakly_canonical( candidate, ec );
+	if( ec )
+	{
+		normalizedCandidate = candidate.lexically_normal();
+	}
+
+	std::filesystem::path relative = normalizedCandidate.lexically_relative( normalizedBase );
+
+	if( relative.empty() )
+	{
+		return false;
+	}
+
+	for( const auto& part : relative )
+	{
+		if( part == ".." )
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+}
+
 std::string Location::CalculateLocationFromChecksums( const std::string& relativePathChecksum, const std::string& dataChecksum ) const
 {
 	std::stringstream ss;
@@ -330,6 +371,11 @@ Result ResourceInfo::PutDataLocalRelative( ResourcePutDataParams& params ) const
 
 	std::filesystem::path path = params.resourceDestinationSettings.basePath / m_relativePath.GetValue();
 
+	if( !IsPathWithinBase( params.resourceDestinationSettings.basePath, path ) )
+	{
+		return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+	}
+
 	bool res = ResourceTools::SaveFile( path, data );
 
 	if( res )
@@ -348,6 +394,11 @@ Result ResourceInfo::PutDataRemoteCdn( ResourcePutDataParams& params ) const
 
 	// Construct path
 	std::filesystem::path dataPath = params.resourceDestinationSettings.basePath / m_location.GetValue().ToString();
+
+	if( !IsPathWithinBase( params.resourceDestinationSettings.basePath, dataPath ) )
+	{
+		return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+	}
 
 	std::string compressedData;
 
@@ -375,6 +426,11 @@ Result ResourceInfo::PutDataLocalCdn( ResourcePutDataParams& params ) const
 	// Construct path
 	std::filesystem::path dataPath = params.resourceDestinationSettings.basePath / m_location.GetValue().ToString();
 
+	if( !IsPathWithinBase( params.resourceDestinationSettings.basePath, dataPath ) )
+	{
+		return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+	}
+
 	bool res = ResourceTools::SaveFile( dataPath, data );
 
 	if( res )
@@ -390,6 +446,11 @@ Result ResourceInfo::PutDataLocalCdn( ResourcePutDataParams& params ) const
 Result ResourceInfo::PutDataStreamLocalRelative( ResourcePutDataStreamParams& params ) const
 {
 	std::filesystem::path path = params.resourceDestinationSettings.basePath / m_relativePath.GetValue();
+
+	if( !IsPathWithinBase( params.resourceDestinationSettings.basePath, path ) )
+	{
+		return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+	}
 
 	bool res = params.dataStream->StartWrite( path );
 
@@ -407,6 +468,11 @@ Result ResourceInfo::PutDataStreamLocalCdn( ResourcePutDataStreamParams& params 
 {
 	// Construct path
 	std::filesystem::path dataPath = params.resourceDestinationSettings.basePath / m_location.GetValue().ToString();
+
+	if( !IsPathWithinBase( params.resourceDestinationSettings.basePath, dataPath ) )
+	{
+		return Result{ ResultType::MALFORMED_RESOURCE_INPUT };
+	}
 
 	bool res = params.dataStream->StartWrite( dataPath );
 
