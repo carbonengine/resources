@@ -112,9 +112,10 @@ struct ResourceDestinationSettings
     *  @var BundleCreateParams::resourceGroupBundleRelativePath
     *  Relative path for use with the output BundleResourceGroup.
     *  @var BundleCreateParams::chunkSize
-    *  Size of chunks to break files into. Value representation is in bytes, default is 10000000
+    *  @see BundleCreateParams::fileReadChunkSize
+    *  Target size of chunks to break files into. Note that chunk size may not exactly match value, the exact size is linked to BundleCreateParams::fileReadChunkSize. Value representation is in bytes
     *  @var BundleCreateParams::fileReadChunkSize
-    *  Size of chunks to read files in. Default is 10000000.
+    *  Size of chunks to read files in.
     *  @var BundleCreateParams::resourceBundleResourceGroupDestinationSettings
     *  Where to save the resulting BundleResourceGroup
     *  @var BundleCreateParams::callbackSettings

@@ -49,9 +49,18 @@ endif ()
 set_target_properties(resources-cli PROPERTIES OUTPUT_NAME "resources")
 
 # Install rule to ensure that our runtime files are in the expected, platform-specific folder
-install(
-        TARGETS resources-cli
-        EXPORT resources-cliTarget
-        CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
-        RUNTIME DESTINATION bin/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
-)
+if(INSTALL_TO_MONOLITH)
+        install(
+                TARGETS resources-cli
+                EXPORT resources-cliTarget
+                CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
+                RUNTIME DESTINATION bin/${CCP_PLATFORM}/${CCP_ARCHITECTURE}/${CCP_TOOLSET}/
+        )
+else()
+        install(
+            TARGETS resources-cli
+            EXPORT resources-cliTarget
+            CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES}
+            RUNTIME DESTINATION bin/
+        )
+endif()

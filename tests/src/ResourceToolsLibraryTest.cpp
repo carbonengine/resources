@@ -277,13 +277,14 @@ TEST_F( ResourceToolsTest, CompressedFileDataStremOut )
 
 	EXPECT_TRUE( FilesMatch( outputPathUncompressed, GetTestFileAbsolutePath( "FileStream/FileDataStreamOut.txt" ) ) );
 }
-TEST_F( ResourceToolsTest, ResourceChunking )
+
+TEST_F( ResourceToolsTest, ResourceChunkingManyFilesIntoManyChunkWithUnCompressedSplitting )
 {
 	uintmax_t chunkSize = 1000;
 
 	std::filesystem::path testDir{ "ResourceChunking" };
 
-	ResourceTools::BundleStreamOut bundleStream( chunkSize, testDir );
+	ResourceTools::BundleStreamOut bundleStream( chunkSize, testDir, false );
 
 	// Add test resource1 data
 	std::string resource1Data;
@@ -296,7 +297,10 @@ TEST_F( ResourceToolsTest, ResourceChunking )
 
 	resource1StreamIn->StartRead( resource1Path );
 
-	EXPECT_TRUE( bundleStream << resource1StreamIn );
+    while( !resource1StreamIn->IsFinished() )
+	{
+		EXPECT_TRUE( bundleStream << resource1StreamIn );
+	}
 
 	std::string resource1Checksum;
 
@@ -313,7 +317,10 @@ TEST_F( ResourceToolsTest, ResourceChunking )
 
 	resource2StreamIn->StartRead( resource2Path );
 
-	EXPECT_TRUE( bundleStream << resource2StreamIn );
+    while( !resource2StreamIn->IsFinished() )
+	{
+		EXPECT_TRUE( bundleStream << resource2StreamIn );
+	}
 
 	std::string resource2Checksum;
 
@@ -330,11 +337,16 @@ TEST_F( ResourceToolsTest, ResourceChunking )
 
 	resource3StreamIn->StartRead( resource3Path );
 
-	EXPECT_TRUE( bundleStream << resource3StreamIn );
+    while( !resource3StreamIn->IsFinished() )
+	{
+		EXPECT_TRUE( bundleStream << resource3StreamIn );
+	}
 
 	std::string resource3Checksum;
 
 	EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( resource3Data, resource3Checksum ) );
+
+	bundleStream.Finish();
 
 	// Get chunks
 	int numberOfChunks = 0;
@@ -344,6 +356,13 @@ TEST_F( ResourceToolsTest, ResourceChunking )
 	chunk.clearCache = false;
 
 	bool bundleStreamReadOk{ true };
+
+	if( std::filesystem::exists( "Chunks" ) )
+	{
+		std::filesystem::remove_all( "Chunks" );
+	}
+
+	std::filesystem::create_directories( "Chunks" );
 
 	while( ( bundleStreamReadOk = ( bundleStream >> chunk ) ) && !chunk.outOfChunks )
 	{
@@ -364,38 +383,195 @@ TEST_F( ResourceToolsTest, ResourceChunking )
 	}
 	EXPECT_TRUE( bundleStreamReadOk );
 
-	// Clear cache for last chunk
-	chunk.clearCache = true;
+	// Reconsitute the files
+	ResourceTools::BundleStreamIn chunkStreamReconstitute( chunkSize );
 
-	EXPECT_TRUE( bundleStream >> chunk );
-
-	// Create Filename
-	std::stringstream ss;
-
-	ss << "Chunks/Chunk";
-
-	ss << numberOfChunks;
-
-	ss << ".chunk";
-
-	if( !std::filesystem::exists( "Chunks" ) )
+	for( int i = 0; i < numberOfChunks; i++ )
 	{
-		std::filesystem::create_directories( "Chunks" );
+		// Create Filename
+		std::stringstream ss;
+
+		ss << "Chunks/Chunk";
+
+		ss << i;
+
+		ss << ".chunk";
+
+		std::string chunkPath = ss.str();
+
+		// Get chunks
+		std::string chunkData;
+
+		EXPECT_TRUE( ResourceTools::GetLocalFileData( chunkPath, chunkData ) );
+
+		EXPECT_TRUE( chunkStreamReconstitute << chunkData );
 	}
 
-	std::string chunkPath = ss.str();
+	// Reconstitute the files and check they match original
 
-	if( std::filesystem::exists( chunkPath ) )
+	struct Resource
 	{
-		std::filesystem::remove( chunkPath );
+		std::filesystem::path reconsitutedPath;
+
+		size_t expectedFileSize;
+
+		std::string expectedChecksum;
+	};
+
+	std::vector<Resource> reconstitutedResources;
+
+	reconstitutedResources.push_back( Resource{ "Chunks/One.png", resource1Data.size(), resource1Checksum } );
+
+	reconstitutedResources.push_back( Resource{ "Chunks/Two.png", resource2Data.size(), resource2Checksum } );
+
+	reconstitutedResources.push_back( Resource{ "Chunks/Three.png", resource3Data.size(), resource3Checksum } );
+
+	for( auto reconsititedResource : reconstitutedResources )
+	{
+
+		ResourceTools::FileDataStreamOut resourceDataStreamOut;
+
+		EXPECT_TRUE( resourceDataStreamOut.StartWrite( reconsititedResource.reconsitutedPath ) );
+
+		ResourceTools::Md5ChecksumStream reconstitutedResource1ChecksumStream;
+
+		while( resourceDataStreamOut.GetFileSize() < reconsititedResource.expectedFileSize )
+		{
+			std::string reconstitutedResourceData;
+
+			ResourceTools::GetFile resourceFile;
+
+			resourceFile.data = &reconstitutedResourceData;
+
+			resourceFile.fileSize = reconsititedResource.expectedFileSize;
+
+			EXPECT_TRUE( chunkStreamReconstitute >> resourceFile );
+
+			EXPECT_TRUE( resourceDataStreamOut << reconstitutedResourceData );
+
+			EXPECT_TRUE( reconstitutedResource1ChecksumStream << reconstitutedResourceData );
+		}
+
+		// Finish streaming out
+		resourceDataStreamOut.Finish();
+
+		std::string reconstitutedChecksum;
+
+		EXPECT_TRUE( reconstitutedResource1ChecksumStream.Retrieve( reconstitutedChecksum ) );
+
+		EXPECT_EQ( reconsititedResource.expectedChecksum, reconstitutedChecksum );
+	}
+}
+
+TEST_F( ResourceToolsTest, ResourceChunkingManyFilesIntoSingleChunkWithCompressedSplitting )
+{
+	uintmax_t chunkSize = 1000;
+
+	std::filesystem::path testDir{ "ResourceChunking" };
+
+	ResourceTools::BundleStreamOut bundleStream( chunkSize, testDir, true );
+
+	// Add test resource1 data
+	std::string resource1Data;
+
+	std::filesystem::path resource1Path = GetTestFileAbsolutePath( "Bundle/TestResources/One.png" );
+
+	EXPECT_TRUE( ResourceTools::GetLocalFileData( resource1Path, resource1Data ) );
+
+	auto resource1StreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( chunkSize );
+
+	resource1StreamIn->StartRead( resource1Path );
+
+    while( !resource1StreamIn->IsFinished() )
+	{
+		EXPECT_TRUE( bundleStream << resource1StreamIn );
 	}
 
-	std::filesystem::copy_file( chunk.uncompressedChunkIn->GetPath(), chunkPath );
+	std::string resource1Checksum;
+
+	EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( resource1Data, resource1Checksum ) );
+
+	// Add test resource2 data
+	std::string resource2Data;
+
+	std::filesystem::path resource2Path = GetTestFileAbsolutePath( "Bundle/TestResources/Two.png" );
+
+	EXPECT_TRUE( ResourceTools::GetLocalFileData( resource2Path, resource2Data ) );
+
+	auto resource2StreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( chunkSize );
+
+	resource2StreamIn->StartRead( resource2Path );
+
+    while( !resource2StreamIn->IsFinished() )
+	{
+		EXPECT_TRUE( bundleStream << resource2StreamIn );
+	}
+
+	std::string resource2Checksum;
+
+	EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( resource2Data, resource2Checksum ) );
+
+	// Add test resource3 data
+	std::string resource3Data;
+
+	std::filesystem::path resource3Path = GetTestFileAbsolutePath( "Bundle/TestResources/Three.png" );
+
+	EXPECT_TRUE( ResourceTools::GetLocalFileData( resource3Path, resource3Data ) );
+
+	auto resource3StreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( chunkSize );
+
+	resource3StreamIn->StartRead( resource3Path );
+
+    while( !resource3StreamIn->IsFinished() )
+	{
+		EXPECT_TRUE( bundleStream << resource3StreamIn );
+	}
+
+	std::string resource3Checksum;
+
+	EXPECT_TRUE( ResourceTools::GenerateMd5Checksum( resource3Data, resource3Checksum ) );
+
+    bundleStream.Finish();
+
+	// Get chunks
+	int numberOfChunks = 0;
+
+	ResourceTools::GetChunk chunk;
+
+	chunk.clearCache = false;
+
+	bool bundleStreamReadOk{ true };
+
+    if( std::filesystem::exists( "Chunks" ) )
+	{
+		std::filesystem::remove_all( "Chunks" );
+	}
+
+    std::filesystem::create_directories( "Chunks" );
+
+	while( ( bundleStreamReadOk = ( bundleStream >> chunk ) ) && !chunk.outOfChunks )
+	{
+		// Create Filename
+		std::stringstream ss;
+
+		ss << "Chunks/Chunk";
+
+		ss << numberOfChunks;
+
+		ss << ".chunk";
+
+		std::string chunkPath = ss.str();
+
+		std::filesystem::copy_file( chunk.uncompressedChunkIn->GetPath(), chunkPath );
+
+		numberOfChunks++;
+	}
+	EXPECT_TRUE( bundleStreamReadOk );
 
 	// Reconsitute the files
 	ResourceTools::BundleStreamIn chunkStreamReconstitute( chunkSize );
 
-	for( int i = 0; i < numberOfChunks + 1; i++ )
+	for( int i = 0; i < numberOfChunks; i++ )
 	{
 		// Create Filename
 		std::stringstream ss;

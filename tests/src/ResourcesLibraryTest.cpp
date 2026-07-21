@@ -516,6 +516,52 @@ TEST_F( ResourcesLibraryTest, CreateBundleWithZeroChunkSize )
     EXPECT_TRUE( StatusIsValid() );
 }
 
+TEST_F( ResourcesLibraryTest, CreateBundleRemoteCDN )
+{
+	// Import ResourceGroup
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+
+	importParams.filename = GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" );
+
+	importParams.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+
+	// Create a bundle from the ResourceGroup
+	CarbonResources::BundleCreateParams bundleCreateParams;
+
+	bundleCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
+
+	bundleCreateParams.resourceGroupBundleRelativePath = "BundleResourceGroup.yaml";
+
+	bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	bundleCreateParams.resourceSourceSettings.basePaths = { GetTestFileAbsolutePath( "Bundle/Res/" ) };
+
+	bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::REMOTE_CDN;
+
+	bundleCreateParams.chunkDestinationSettings.basePath = "CreateBundleOutRemoteCDN";
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = "resPathRemoteCDN";
+
+	bundleCreateParams.chunkSize = 1000;
+
+	bundleCreateParams.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+	EXPECT_TRUE( FilesMatch( "resPathRemoteCDN/BundleResourceGroup.yaml", GetTestFileAbsolutePath( "CreateBundle/BundleResourceGroupRemoteCDN.yaml" ) ) );
+}
+
 TEST_F( ResourcesLibraryTest, CreateBundle )
 {
 	// Import ResourceGroup

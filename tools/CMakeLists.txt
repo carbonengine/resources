@@ -60,4 +60,8 @@ endif ()
 
 target_link_libraries(resources-tools PRIVATE cryptopp::cryptopp CURL::libcurl ZLIB::ZLIB static_bsdiff unofficial::inih::inireader)
 
-target_include_directories(resources-tools PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+target_include_directories(resources-tools
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+)

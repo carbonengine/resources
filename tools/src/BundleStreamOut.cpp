@@ -7,9 +7,10 @@
 
 namespace ResourceTools
 {
-BundleStreamOut::BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory ) :
+BundleStreamOut::BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory, bool splitOnCompressed ) :
 	m_chunkSize( chunkSize ),
-	m_outputDirectory( outputDirectory )
+	m_outputDirectory( outputDirectory ),
+	m_splitOnCompressed( splitOnCompressed )
 {
 }
 
@@ -58,6 +59,11 @@ bool BundleStreamOut::InitializeOutputStreams()
 	return true;
 }
 
+bool BundleStreamOut::Finish()
+{
+	return Flush();
+}
+
 bool BundleStreamOut::Flush()
 {
 	// Chunk size achieved after compression
@@ -78,6 +84,10 @@ bool BundleStreamOut::Flush()
 	++m_chunksCreated;
 
 	m_compressionStream.release();
+
+    m_compressedOut->Finish();
+
+    m_uncompressedOut->Finish();
 
 	return true;
 }
@@ -105,36 +115,37 @@ bool BundleStreamOut::operator<<( std::shared_ptr<FileDataStreamIn> streamIn )
 			}
 		}
 
-		while( !data.empty() )
-		{
-			std::string chunk = data.substr( 0, m_chunkSize );
+        // Output uncompressed data
+        *m_uncompressedOut << data;
 
-			if( !m_compressionStream->operator<<( &chunk ) )
+        // Compress the data
+		if( !m_compressionStream->operator<<( &data ) )
+		{
+			return false;
+		}
+
+        // If split on uncompressed size then there is much more chance of stable chunk sizes
+        // If splitting on compressed size then the chunk size will vary
+        // This is due to the fact that compression of the data is not predictable
+        size_t splitSize = m_uncompressedOut->GetFileSize();
+
+        if (m_splitOnCompressed)
+        {
+			splitSize = m_compressedData.size();
+        }
+
+        // See if the current output is greater than the chunk size indicator
+		if( splitSize >= m_chunkSize )
+		{
+			if( !Flush() )
 			{
 				return false;
 			}
 
-			*m_uncompressedOut << chunk;
-
-			*m_compressedOut << m_compressedData;
-
-			m_compressedData.clear();
-
-			data.erase( 0, m_chunkSize );
-
-			if( m_compressedData.size() >= m_chunkSize )
-			{
-				if( !Flush() )
-				{
-					return false;
-				}
-
-				if( !InitializeOutputStreams() )
-				{
-					return false;
-				}
-			}
+            // Finish
+			return true;
 		}
+		
 	}
 
 	return true;
@@ -172,22 +183,6 @@ bool BundleStreamOut::AddChunkFilesToGetChunk( GetChunk& data )
 
 bool BundleStreamOut::operator>>( GetChunk& data )
 {
-	if( data.clearCache )
-	{
-		// Clear the cache to destination
-		Flush();
-
-		data.outOfChunks = true;
-
-		m_uncompressedOut->Finish();
-
-		m_compressedOut->Finish();
-
-		AddChunkFilesToGetChunk( data );
-
-		return true;
-	}
-
 	if( m_chunksCreated == m_chunksExported )
 	{
 		// Not enough data to create chunk
@@ -195,7 +190,11 @@ bool BundleStreamOut::operator>>( GetChunk& data )
 	}
 	else
 	{
-		AddChunkFilesToGetChunk( data );
+        if (!AddChunkFilesToGetChunk(data))
+        {
+			return false;
+        }
+		m_chunksExported++;
 	}
 
 	return true;

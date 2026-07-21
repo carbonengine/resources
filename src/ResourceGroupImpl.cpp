@@ -1983,7 +1983,7 @@ Result ResourceGroup::ResourceGroupImpl::CreateBundle( const BundleCreateParams&
 		return setChunkSizeResult;
 	}
 
-	ResourceTools::BundleStreamOut bundleStream( params.chunkSize, params.chunkDestinationSettings.basePath );
+	ResourceTools::BundleStreamOut bundleStream( params.chunkSize, params.chunkDestinationSettings.basePath, params.chunkDestinationSettings.destinationType == ResourceDestinationType::REMOTE_CDN );
 
 
 	// Update status
@@ -2065,83 +2065,55 @@ Result ResourceGroup::ResourceGroupImpl::CreateBundle( const BundleCreateParams&
 
 			Result resourceGetDataResult = resource->GetDataStream( resourceGetDataParams );
 
-			bundleStream << resourceDataStream;
-
-			if( resourceGetDataResult.type != ResultType::SUCCESS )
+            while( !resourceDataStream->IsFinished() )
 			{
-				return resourceGetDataResult;
-			}
-
-
-			while( !resourceDataStream->IsFinished() )
-			{
-				std::string resourceDataChunk;
-
-				if( !( *resourceDataStream >> resourceDataChunk ) )
-				{
-					return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
-				}
-
-				// Loop through possible created chunks
-				ResourceTools::GetChunk chunkFile;
-
-				chunkFile.clearCache = false;
-
-				bool bundleReadOk{ true };
-
-				while( ( bundleReadOk = bundleStream >> chunkFile ) && !chunkFile.outOfChunks )
-				{
-					std::stringstream ss;
-					ss << chunkBaseName << numberOfChunks << ".chunk";
-					std::string chunkName = ss.str();
-
-					std::filesystem::path chunkPath = params.chunkDestinationSettings.basePath / ss.str();
-
-					Result processChunkResult = ProcessChunk( chunkFile, chunkPath, bundleResourceGroup, params.chunkDestinationSettings );
-
-					if( processChunkResult.type != ResultType::SUCCESS )
-					{
-						return processChunkResult;
-					}
-
-					numberOfChunks++;
-				}
-				if( !bundleReadOk )
-				{
+                if (!bundleStream.operator<<(resourceDataStream))
+                {
 					return Result( { ResultType::FAILED_TO_READ_FROM_STREAM } );
-				}
+                }
 			}
+
+		}
+
+        // Finish last chunk
+		if( !bundleStream.Finish() )
+		{
+			return Result( { ResultType::FAILED_TO_READ_FROM_STREAM } );
+		}
+
+		// Add to BundleResourceGroup
+
+		// Loop through possible created chunks
+		ResourceTools::GetChunk chunkFile;
+
+		chunkFile.clearCache = false;
+
+		bool bundleReadOk{ true };
+
+		while( ( bundleReadOk = bundleStream >> chunkFile ) && !chunkFile.outOfChunks )
+		{
+			std::stringstream ss;
+			ss << chunkBaseName << numberOfChunks << ".chunk";
+			std::string chunkName = ss.str();
+
+			std::filesystem::path chunkPath = params.chunkDestinationSettings.basePath / ss.str();
+
+			Result processChunkResult = ProcessChunk( chunkFile, chunkPath, bundleResourceGroup, params.chunkDestinationSettings );
+
+			if( processChunkResult.type != ResultType::SUCCESS )
+			{
+				return processChunkResult;
+			}
+
+			numberOfChunks++;
+		}
+		if( !bundleReadOk )
+		{
+			return Result( { ResultType::FAILED_TO_READ_FROM_STREAM } );
 		}
 	}
 
-
-	ResourceTools::GetChunk chunkFile;
-
-	chunkFile.clearCache = true;
-
-	bundleStream.Flush();
-
-	if( !( bundleStream >> chunkFile ) )
-	{
-		return Result( { ResultType::FAILED_TO_READ_FROM_STREAM } );
-	}
-
-	std::stringstream ss;
-	ss << chunkBaseName << numberOfChunks << ".chunk";
-	std::string chunkName = ss.str();
-
-	std::filesystem::path chunkPath = params.chunkDestinationSettings.basePath / ss.str();
-
-	Result processChunkResult = ProcessChunk( chunkFile, chunkPath, bundleResourceGroup, params.chunkDestinationSettings );
-
-	if( processChunkResult.type != ResultType::SUCCESS )
-	{
-		return processChunkResult;
-	}
-
 	// Export this resource list
-	//
-	// Update status
 	{
 		StatusSettings exportStatusSettings;
 		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 80, 10, "Exporting ResourceGroups", &exportStatusSettings );
@@ -2188,38 +2160,38 @@ Result ResourceGroup::ResourceGroupImpl::CreateBundle( const BundleCreateParams&
 	}
 
     {
-		std::string patchResourceGroupData;
+		std::string bundleResourceGroupData;
 
 		StatusSettings exportToDataStatusSettings;
 		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 90, 10, "Exporting ResourceGroups", &exportToDataStatusSettings );
 
-		Result exportBundleResourceGroupToDataResult = bundleResourceGroup.ExportToData( patchResourceGroupData, exportToDataStatusSettings );
+		Result exportBundleResourceGroupToDataResult = bundleResourceGroup.ExportToData( bundleResourceGroupData, exportToDataStatusSettings );
 
 		if( exportBundleResourceGroupToDataResult.type != ResultType::SUCCESS )
 		{
 			return exportBundleResourceGroupToDataResult;
 		}
 
-		BundleResourceGroupInfo patchResourceGroupInfo( { params.resourceGroupBundleRelativePath } );
+		BundleResourceGroupInfo bundleResourceGroupInfo( { params.resourceGroupBundleRelativePath } );
 
-		Result setPatchParametersFromDataResult = patchResourceGroupInfo.SetParametersFromData( patchResourceGroupData );
+		Result setBundleParametersFromDataResult = bundleResourceGroupInfo.SetParametersFromData( bundleResourceGroupData );
 
-		if( setPatchParametersFromDataResult.type != ResultType::SUCCESS )
+		if( setBundleParametersFromDataResult.type != ResultType::SUCCESS )
 		{
-			return setPatchParametersFromDataResult;
+			return setBundleParametersFromDataResult;
 		}
 
 		ResourcePutDataParams bundlePutDataParams;
 
 		bundlePutDataParams.resourceDestinationSettings = params.resourceBundleResourceGroupDestinationSettings;
 
-		bundlePutDataParams.data = &patchResourceGroupData;
+		bundlePutDataParams.data = &bundleResourceGroupData;
 
-		Result patchResourceGroupPutResult = patchResourceGroupInfo.PutData( bundlePutDataParams );
+		Result bundleResourceGroupPutResult = bundleResourceGroupInfo.PutData( bundlePutDataParams );
 
-		if( patchResourceGroupPutResult.type != ResultType::SUCCESS )
+		if( bundleResourceGroupPutResult.type != ResultType::SUCCESS )
 		{
-			return patchResourceGroupPutResult;
+			return bundleResourceGroupPutResult;
 		}
     }
 

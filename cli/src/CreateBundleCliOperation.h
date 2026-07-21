@@ -43,6 +43,8 @@ private:
 
 	std::string m_chunkSizeArgumentId;
 
+    std::string m_streamChunkSizeId;
+
     std::string m_networkRetryCountId;
 
 	std::string m_networkRetryBackoffMultiplierId;

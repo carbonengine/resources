@@ -9,21 +9,31 @@ include(GoogleTest)
 set(SRC_FILES
         src/ResourcesTestFixture.cpp
         src/ResourcesTestFixture.h
-        src/CliTestFixture.cpp
-        src/CliTestFixture.h
         src/ResourcesLibraryTest.cpp
-        src/ResourcesCliTest.cpp
         src/ResourceToolsLibraryTest.cpp
         src/ResourceToolsFilterTest.cpp
         src/ResourceToolsTest.h
 )
 
+if(BUILD_CLI)
+        list(APPEND SRC_FILES
+                src/CliTestFixture.cpp
+                src/CliTestFixture.h
+                src/ResourcesCliTest.cpp
+        )
+endif()
+
 add_executable(resources-test ${SRC_FILES})
 
 target_compile_definitions(resources-test
         PRIVATE
-        TEST_DATA_BASE_PATH="${CMAKE_SOURCE_DIR}/tests/testData"
+        TEST_DATA_BASE_PATH="${CMAKE_SOURCE_DIR}/tests/testData")
+
+if(BUILD_CLI)
+        target_compile_definitions(resources-test
+        PRIVATE
         CARBON_RESOURCES_CLI_EXE_NAME=\"$<TARGET_FILE_BASE_NAME:resources-cli>\")
+endif()
 
 target_include_directories(resources-test PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 
@@ -35,24 +45,36 @@ if (DEV_FEATURES)
     target_compile_definitions(resources-test PRIVATE DEV_FEATURES)
 endif ()
 
-if (WIN32)
+if(WIN32)
 
-    # Get CLI exe
-    add_custom_command(
-            TARGET resources-test POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:resources-cli> $<TARGET_FILE_DIR:resources-test>
+    add_custom_command(TARGET resources-test POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:resources-test> $<TARGET_FILE_DIR:resources-test>
             COMMAND_EXPAND_LISTS
+            VERBATIM
     )
 
-elseif (APPLE)
-    # Get CLI exe
-    add_custom_command(
-            TARGET resources-test POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:resources-cli> $<TARGET_FILE_DIR:resources-test>
-            COMMAND_EXPAND_LISTS
+endif()
 
-    )
-endif ()
+if(BUILD_CLI)
+        if (WIN32)
+
+        # Get CLI exe
+        add_custom_command(
+                TARGET resources-test POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:resources-cli> $<TARGET_FILE_DIR:resources-test>
+                COMMAND_EXPAND_LISTS
+        )
+
+        elseif (APPLE)
+        # Get CLI exe
+        add_custom_command(
+                TARGET resources-test POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:resources-cli> $<TARGET_FILE_DIR:resources-test>
+                COMMAND_EXPAND_LISTS
+
+        )
+        endif ()
+endif()
 
 cmake_path(SET TEST_DATA_PATH ${CMAKE_CURRENT_SOURCE_DIR}/testData)
 

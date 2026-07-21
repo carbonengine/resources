@@ -28,7 +28,7 @@ struct GetChunk
 class BundleStreamOut
 {
 public:
-	BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory );
+	BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory, bool splitOnCompressed);
 
 	~BundleStreamOut();
 
@@ -37,9 +37,11 @@ public:
 	// Outputs chunks
 	bool operator>>( GetChunk& data );
 
-	bool Flush();
+	bool Finish();
 
 private:
+    bool Flush();
+
 	bool AddChunkFilesToGetChunk( GetChunk& data );
 
 	bool InitializeOutputStreams();
@@ -65,6 +67,8 @@ private:
 	uint32_t m_chunksCreated{ 0 };
 
 	uint32_t m_chunksExported{ 0 };
+
+    bool m_splitOnCompressed;
 };
 
 }

@@ -22,6 +22,7 @@ CreateBundleCliOperation::CreateBundleCliOperation() :
 	m_bundleResourceGroupDestinationTypeArgumentId( "--bundle-resourcegroup-destination-type" ),
 	m_bundleResourceGroupDestinationBasePathArgumentId( "--bundle-resourcegroup-destination-path" ),
 	m_chunkSizeArgumentId( "--chunk-size" ),
+	m_streamChunkSizeId( "--stream-chunk-size" ),
 	m_networkRetryBackoffMultiplierId( "--download-retry-seconds" ),
 	m_networkRetryCountId( "--network-retry-count" )
 {
@@ -48,7 +49,9 @@ CreateBundleCliOperation::CreateBundleCliOperation() :
 
 	AddArgument( m_bundleResourceGroupDestinationBasePathArgumentId, "Represents the base path where the bundle ResourceGroup will be saved.", false, false, defaultParams.resourceBundleResourceGroupDestinationSettings.basePath.string() );
 
-	AddArgument( m_chunkSizeArgumentId, "Represents the maximum size of the produced chunks in bytes.", false, false, SizeToString( defaultParams.chunkSize ) );
+	AddArgument( m_chunkSizeArgumentId, "Represents the target size of the produced chunks in bytes. Note that produced chunks may not exactly match this value.", false, false, SizeToString( defaultParams.chunkSize ) );
+
+    AddArgument( m_streamChunkSizeId, "Chunks stream size in bytes for streaming data.", false, false, SizeToString( defaultParams.fileReadChunkSize ) );
 
     AddArgument( m_networkRetryCountId, "Number of retries to attempt when encountering a failed download.", false, false, SizeToString( defaultParams.downloadSettings.retryCount ) );
 
@@ -106,6 +109,9 @@ bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 	try
 	{
 		bundleCreateParams.chunkSize = std::stoull( m_argumentParser->get( m_chunkSizeArgumentId ) );
+
+        bundleCreateParams.fileReadChunkSize = std::stoull( m_argumentParser->get( m_streamChunkSizeId ) );
+		
 	}
 	catch( std::invalid_argument& )
 	{
@@ -186,7 +192,9 @@ void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::Resource
 
 	std::cout << "Bundle Resource Group Destination Base Path: " << bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath << std::endl;
 
-	std::cout << "Chunk Size: " << bundleCreateParams.chunkSize << " Bytes" << std::endl;
+	std::cout << "Target Chunk Size: " << bundleCreateParams.chunkSize << " Bytes" << std::endl;
+
+    std::cout << "File stream chunk Size: " << bundleCreateParams.fileReadChunkSize << " Bytes" << std::endl;
 
     std::cout << "Network retry count: " << bundleCreateParams.downloadSettings.retryCount << std::endl;
 
