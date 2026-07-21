@@ -5,8 +5,11 @@ This folder is where all the tests for the project should be stored, whether the
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 [See a C++ example here](https://github.com/carbonengine/resources/tree/main/tests/src)
 =======
+=======
+>>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
 =======
@@ -17,6 +20,9 @@ This folder is where all the tests for the project should be stored, whether the
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates

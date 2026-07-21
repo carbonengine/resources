@@ -4,7 +4,11 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "baseline": "bea476a80218a581bcb5318595849520217c825e",
+=======
+    "baseline": "242ac6932a9cd2607332969129e9572516f28d65",
+>>>>>>> template/carbonengine/resources-updates
 =======
     "baseline": "242ac6932a9cd2607332969129e9572516f28d65",
 >>>>>>> template/carbonengine/resources-updates
@@ -22,10 +26,13 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       "repository": "git@github.com:carbonengine/vcpkg-registry.git",
       "baseline": "b3b922c476b0dedfa8342a75e89975c74441fc75",
       "packages": ["carbon-*", "python3", "bsdiff-drake127"]
 =======
+=======
+>>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
 =======
@@ -41,6 +48,9 @@
       "packages": ["python3", "carbon-core", "carbon-scheduler", "tracy", "greenlet", "ccp-debug-info", "crashpad", "zlib"]
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
