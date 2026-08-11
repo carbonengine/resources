@@ -16,7 +16,10 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
+=======
+>>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/vendor/github.com/carbonengine/vcpkg-registry/triplets"
@@ -51,7 +54,11 @@
       "inherits": "windows",
       "cacheVariables": {
 <<<<<<< HEAD
+<<<<<<< HEAD
         "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/vendor/github.com/carbonengine/vcpkg-registry/toolchains/x64-windows-145-carbon.cmake"
+=======
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/vendor/github.com/carbonengine/vcpkg-registry/toolchains/x64-windows-carbon.cmake"
+>>>>>>> template/carbonengine/resources-updates
 =======
         "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/vendor/github.com/carbonengine/vcpkg-registry/toolchains/x64-windows-carbon.cmake"
 >>>>>>> template/carbonengine/resources-updates
@@ -77,7 +84,10 @@
       "hidden": true
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
     {
@@ -86,8 +96,13 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Internal",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "VCPKG_TARGET_TRIPLET": "x64-windows-145-internal",
         "VCPKG_HOST_TRIPLET": "x64-windows-145-internal"
+=======
+        "VCPKG_TARGET_TRIPLET": "x64-windows-internal",
+        "VCPKG_HOST_TRIPLET": "x64-windows-internal"
+>>>>>>> template/carbonengine/resources-updates
 =======
         "VCPKG_TARGET_TRIPLET": "x64-windows-internal",
         "VCPKG_HOST_TRIPLET": "x64-windows-internal"
@@ -100,8 +115,13 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "VCPKG_TARGET_TRIPLET": "x64-windows-145-release",
         "VCPKG_HOST_TRIPLET": "x64-windows-145-release"
+=======
+        "VCPKG_TARGET_TRIPLET": "x64-windows-release",
+        "VCPKG_HOST_TRIPLET": "x64-windows-release"
+>>>>>>> template/carbonengine/resources-updates
 =======
         "VCPKG_TARGET_TRIPLET": "x64-windows-release",
         "VCPKG_HOST_TRIPLET": "x64-windows-release"
@@ -114,8 +134,13 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "VCPKG_TARGET_TRIPLET": "x64-windows-145-debug",
         "VCPKG_HOST_TRIPLET": "x64-windows-145-debug"
+=======
+        "VCPKG_TARGET_TRIPLET": "x64-windows-debug",
+        "VCPKG_HOST_TRIPLET": "x64-windows-debug"
+>>>>>>> template/carbonengine/resources-updates
 =======
         "VCPKG_TARGET_TRIPLET": "x64-windows-debug",
         "VCPKG_HOST_TRIPLET": "x64-windows-debug"
@@ -127,6 +152,7 @@
       "inherits": "x64-windows",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "TrinityDev",
+<<<<<<< HEAD
 <<<<<<< HEAD
         "VCPKG_TARGET_TRIPLET": "x64-windows-145-trinitydev",
         "VCPKG_HOST_TRIPLET": "x64-windows-145-trinitydev"
@@ -150,11 +176,16 @@
 =======
 >>>>>>> template/carbonengine/resources-updates
 =======
+=======
+>>>>>>> template/carbonengine/resources-updates
         "VCPKG_TARGET_TRIPLET": "x64-windows-trinitydev",
         "VCPKG_HOST_TRIPLET": "x64-windows-trinitydev"
       }
     },
     {
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
       "name": "arm64-osx-internal",
       "inherits": "arm64-osx",

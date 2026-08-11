@@ -21,6 +21,7 @@ import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot
 import jetbrains.buildServer.configs.kotlin.buildFeatures.provideAwsCredentials
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 val BuildParameters = "-arch=x64 -vcvars_ver=14.51"
 val Debug = CarbonBuildWindows("Debug Windows", "Debug", "x64-windows-debug",BuildParameters)
 val Internal = CarbonBuildWindows("Internal Windows", "Internal", "x64-windows-internal",BuildParameters)
@@ -28,10 +29,15 @@ val TrinityDev = CarbonBuildWindows("TrinityDev Windows", "TrinityDev", "x64-win
 val Release = CarbonBuildWindows("Release Windows", "Release", "x64-windows-release",BuildParameters)
 val ReleaseDevFeatures = CarbonBuildWindows("Release Windows with Dev Features", "Release", "x64-windows-release-with-dev-features",BuildParameters)
 =======
+=======
+>>>>>>> template/carbonengine/resources-updates
 val Debug = CarbonBuildWindows("Debug Windows", "Debug", "x64-windows-debug")
 val Internal = CarbonBuildWindows("Internal Windows", "Internal", "x64-windows-internal")
 val TrinityDev = CarbonBuildWindows("TrinityDev Windows", "TrinityDev", "x64-windows-trinitydev")
 val Release = CarbonBuildWindows("Release Windows", "Release", "x64-windows-release")
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 
 object Project : Project({
@@ -42,6 +48,7 @@ object Project : Project({
     buildType(Internal)
     buildType(TrinityDev)
     buildType(Release)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -70,6 +77,8 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String, 
     artifactRules = "%env.CMAKE_INSTALL_PREFIX% => artifact.zip"
 >>>>>>> template/carbonengine/resources-updates
 =======
+=======
+>>>>>>> template/carbonengine/resources-updates
 })
 
 
@@ -78,6 +87,9 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
     this.name = buildName
 
     artifactRules = "%env.CMAKE_INSTALL_PREFIX% => artifact.zip"
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 
     params {
@@ -85,7 +97,12 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
         param("github_checkout_folder", "github")
         param("env.CTEST_JUNIT_OUTPUT_FILE", "ctest_results.xml")
 <<<<<<< HEAD
+<<<<<<< HEAD
         param("VS_DEV_BAT_SWITCHES", vsDevBatSwitches)
+=======
+        select("env.VISUAL_STUDIO_PLATFORM_TOOLSET", "v141", label = "Visual Studio Platform Toolset", description = "Specify the toolset for the build. e.g. v141 or v143.",
+                options = listOf("v141 (2017)" to "v141", "v143 (2022)" to "v143"))
+>>>>>>> template/carbonengine/resources-updates
 =======
         select("env.VISUAL_STUDIO_PLATFORM_TOOLSET", "v141", label = "Visual Studio Platform Toolset", description = "Specify the toolset for the build. e.g. v141 or v143.",
                 options = listOf("v141 (2017)" to "v141", "v143 (2022)" to "v143"))
@@ -107,7 +124,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         param("env.CTEST_PARALLEL_LEVEL", "1")
+=======
+        param("env.CTEST_PARALLEL_LEVEL", "8")
+>>>>>>> template/carbonengine/resources-updates
 =======
         param("env.CTEST_PARALLEL_LEVEL", "8")
 >>>>>>> template/carbonengine/resources-updates
@@ -148,7 +169,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
                 REM unfortunately ninja does not find the VS environment otherwise
                 REM NB: the exported PATH also contains the location where we installed sentry-cli, e.g. teamcity.agent.work.dir
 <<<<<<< HEAD
+<<<<<<< HEAD
                 call "%env.VSDEV_BAT_PATH%" %VS_DEV_BAT_SWITCHES%
+=======
+                call "%env.VSDEV_BAT_PATH%" -arch=x64
+>>>>>>> template/carbonengine/resources-updates
 =======
                 call "%env.VSDEV_BAT_PATH%" -arch=x64
 >>>>>>> template/carbonengine/resources-updates
@@ -162,7 +187,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
             name = "Configure"
             path = "cmake"
 <<<<<<< HEAD
+<<<<<<< HEAD
             arguments = "--preset %env.CMAKE_PRESET% -S %teamcity.build.checkoutDir%/%github_checkout_folder% -B %env.CMAKE_BUILD_FOLDER% -DINSTALL_TO_MONOLITH=ON -DBUILD_CLI=ON -DBUILD_TESTING=ON -DBUILD_DOCUMENTATION=ON -DCMAKE_INSTALL_PREFIX=%env.CMAKE_INSTALL_PREFIX% -DVCPKG_INSTALL_OPTIONS=--x-buildtrees-root=%teamcity.build.checkoutDir%/%github_checkout_folder%/buildtrees"
+=======
+            arguments = "--preset %env.CMAKE_PRESET% -S %teamcity.build.checkoutDir%/%github_checkout_folder% -B %env.CMAKE_BUILD_FOLDER% -DINSTALL_TO_MONOLITH=ON -DCMAKE_INSTALL_PREFIX=%env.CMAKE_INSTALL_PREFIX% -DVCPKG_INSTALL_OPTIONS=--x-buildtrees-root=%teamcity.build.checkoutDir%/%github_checkout_folder%/buildtrees"
+>>>>>>> template/carbonengine/resources-updates
 =======
             arguments = "--preset %env.CMAKE_PRESET% -S %teamcity.build.checkoutDir%/%github_checkout_folder% -B %env.CMAKE_BUILD_FOLDER% -DINSTALL_TO_MONOLITH=ON -DCMAKE_INSTALL_PREFIX=%env.CMAKE_INSTALL_PREFIX% -DVCPKG_INSTALL_OPTIONS=--x-buildtrees-root=%teamcity.build.checkoutDir%/%github_checkout_folder%/buildtrees"
 >>>>>>> template/carbonengine/resources-updates
@@ -274,7 +303,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
                 authType = token {
                     token = "%GITHUB_CARBON_PAT%"
                 }
+<<<<<<< HEAD
                 filterAuthorRole = PullRequests.GitHubRoleFilter.MEMBER
+=======
+                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
+>>>>>>> template/carbonengine/resources-updates
             }
         }
         commitStatusPublisher {
