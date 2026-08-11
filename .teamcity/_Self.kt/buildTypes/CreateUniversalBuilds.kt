@@ -12,7 +12,11 @@ class UniversalBuild() : BuildType({
 
     params{
 <<<<<<< HEAD
+<<<<<<< HEAD
         param("carbon-pipeline-tools-ref", "refs/heads/main")
+=======
+        param("carbon-pipeline-tools-ref", "refs/tags/v0.1.0")
+>>>>>>> template/carbonengine/resources-updates
 =======
         param("carbon-pipeline-tools-ref", "refs/tags/v0.1.0")
 >>>>>>> template/carbonengine/resources-updates
@@ -29,7 +33,11 @@ class UniversalBuild() : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             "-m 'resources:%system.teamcity.build.workingDir%/bin' -m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
 =======
             "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
 >>>>>>> template/carbonengine/resources-updates
@@ -57,7 +65,11 @@ class UniversalBuild() : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     artifactRules = "%universal-output-dir%"
+=======
+    artifactRules = "%universal-output-dir% => artifact.zip"
+>>>>>>> template/carbonengine/resources-updates
 =======
     artifactRules = "%universal-output-dir% => artifact.zip"
 >>>>>>> template/carbonengine/resources-updates
@@ -126,7 +138,11 @@ class UniversalBuild() : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%system.teamcity.build.workingDir%/arm64"
+=======
+                artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/arm64"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/arm64"
 >>>>>>> template/carbonengine/resources-updates
@@ -151,7 +167,11 @@ class UniversalBuild() : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%system.teamcity.build.workingDir%/x64"
+=======
+                artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/x64"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/x64"
 >>>>>>> template/carbonengine/resources-updates
@@ -177,7 +197,11 @@ class UniversalBuild() : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%system.teamcity.build.workingDir%/arm64"
+=======
+                artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/arm64"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/arm64"
 >>>>>>> template/carbonengine/resources-updates
@@ -202,7 +226,11 @@ class UniversalBuild() : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%system.teamcity.build.workingDir%/x64"
+=======
+                artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/x64"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/x64"
 >>>>>>> template/carbonengine/resources-updates
@@ -228,7 +256,11 @@ class UniversalBuild() : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%system.teamcity.build.workingDir%/arm64"
+=======
+                artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/arm64"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/arm64"
 >>>>>>> template/carbonengine/resources-updates
@@ -253,7 +285,11 @@ class UniversalBuild() : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%system.teamcity.build.workingDir%/x64"
+=======
+                artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/x64"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/x64"
 >>>>>>> template/carbonengine/resources-updates
@@ -279,7 +315,11 @@ class UniversalBuild() : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%system.teamcity.build.workingDir%/arm64"
+=======
+                artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/arm64"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/arm64"
 >>>>>>> template/carbonengine/resources-updates
@@ -304,7 +344,11 @@ class UniversalBuild() : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%system.teamcity.build.workingDir%/x64"
+=======
+                artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/x64"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%system.teamcity.build.workingDir%/x64"
 >>>>>>> template/carbonengine/resources-updates

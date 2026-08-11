@@ -79,7 +79,11 @@ PROJECT_ICON           =
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@/docs/
+=======
+OUTPUT_DIRECTORY       = @DOCUMENTATION_OUT_DIR@
+>>>>>>> template/carbonengine/resources-updates
 =======
 OUTPUT_DIRECTORY       = @DOCUMENTATION_OUT_DIR@
 >>>>>>> template/carbonengine/resources-updates
