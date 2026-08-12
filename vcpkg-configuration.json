@@ -7,9 +7,13 @@
   "registries": [
     {
       "kind": "git",
-      "repository": "git@github.com:carbonengine/vcpkg-registry.git",
+      "repository": "https://github.com/carbonengine/vcpkg-registry.git",
       "baseline": "b3b922c476b0dedfa8342a75e89975c74441fc75",
-      "packages": ["carbon-*", "python3", "bsdiff-drake127"]
+      "packages": [
+        "carbon-*",
+        "python3",
+        "bsdiff-drake127"
+      ]
     }
   ]
 }
