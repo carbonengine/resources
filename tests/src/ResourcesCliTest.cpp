@@ -319,7 +319,7 @@ TEST_F( ResourcesCliTest, CreateBundle )
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "-1" );
 
-	arguments.push_back( GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" ).string() );
+	arguments.push_back( GetTestFileAbsolutePath( "Bundle/resFileIndexShort.txt" ).string() );
 
 	arguments.push_back( "--resource-source-path" );
 	arguments.push_back( GetTestFileAbsolutePath( "Bundle/Res" ).string() );
@@ -645,11 +645,11 @@ TEST_F( ResourcesCliTest, CreatePatch )
 	arguments.push_back( "--verbosity-level" );
 	arguments.push_back( "-1" );
 
-	std::string previousResourceGroupPath = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_previous.txt" ).string();
+	std::string previousResourceGroupPath = GetTestFileAbsolutePath( "Patch/resFileIndexShort_build_previous.txt" ).string();
 
 	arguments.push_back( previousResourceGroupPath );
 
-	std::string nextResourceGroupPath = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_next.txt" ).string();
+	std::string nextResourceGroupPath = GetTestFileAbsolutePath( "Patch/resFileIndexShort_build_next.txt" ).string();
 
 	arguments.push_back( nextResourceGroupPath );
 
@@ -670,7 +670,7 @@ TEST_F( ResourcesCliTest, CreatePatch )
 	arguments.push_back( "PatchOut" );
 
 	arguments.push_back( "--patch-destination-base-path" );
-	arguments.push_back( "Patchout/Patches" );
+	arguments.push_back( "PatchOut/Patches" );
 
 	arguments.push_back( "--patch-destination-type" );
 	arguments.push_back( "LOCAL_CDN" );

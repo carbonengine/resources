@@ -39,7 +39,7 @@ TEST_F( ResourceToolsTest, FileMd5ChecksumGeneration )
 
 	std::filesystem::path testDataPath( testDataPathStr );
 
-	std::filesystem::path sourcePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path sourcePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
 
 	std::string output;
 
@@ -56,9 +56,9 @@ TEST_F( ResourceToolsTest, FileMd5ChecksumMatches )
 
 	std::filesystem::path testDataPath( testDataPathStr );
 
-	std::filesystem::path sourcePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path sourcePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
 
-	std::filesystem::path sourcePath2 = testDataPath / "resourcesOnBranch" / "videoCardCategories.yaml";
+	std::filesystem::path sourcePath2 = testDataPath / "ResourcesOnBranch" / "videoCardCategories.yaml";
 
 	std::string output;
 
@@ -99,7 +99,7 @@ TEST_F( ResourceToolsTest, DownloadFile )
 	ResourceTools::Downloader downloader;
 	std::filesystem::path testDataPath( testDataPathStr );
 
-	std::filesystem::path sourcePath = testDataPath / "resourcesLocal" / FOLDER_NAME / FILE_NAME;
+	std::filesystem::path sourcePath = testDataPath / "ResourcesLocal" / FOLDER_NAME / FILE_NAME;
 	std::string sourcePathString( sourcePath.string() );
 	std::string url = "file://" + sourcePathString;
 	std::filesystem::path outputPath = std::filesystem::temp_directory_path() / FOLDER_NAME / FILE_NAME;
@@ -147,7 +147,7 @@ TEST_F( ResourceToolsTest, DownloadHeader )
 	ResourceTools::Downloader downloader;
 	std::filesystem::path testDataPath( testDataPathStr );
 
-	std::filesystem::path sourcePath = testDataPath / "resourcesLocal" / FOLDER_NAME / FILE_NAME;
+	std::filesystem::path sourcePath = testDataPath / "ResourcesLocal" / FOLDER_NAME / FILE_NAME;
 	std::string sourcePathString( sourcePath.string() );
 	std::string url = "file://" + sourcePathString;
 
@@ -194,7 +194,7 @@ TEST_F( ResourceToolsTest, GZipCompressData )
 	const char* testDataPathStr = TEST_DATA_BASE_PATH;
 	ASSERT_TRUE( testDataPathStr );
 	std::filesystem::path testDataPath( testDataPathStr );
-	std::filesystem::path sourcePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path sourcePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
 
 	std::string fileData;
 	ASSERT_TRUE( ResourceTools::GetLocalFileData( sourcePath, fileData ) );
@@ -888,8 +888,8 @@ TEST_F( ResourceToolsTest, CountMatchingChunks )
 	const char* testDataPathStr = TEST_DATA_BASE_PATH;
 	ASSERT_TRUE( testDataPathStr );
 	std::filesystem::path testDataPath( testDataPathStr );
-	std::filesystem::path introMovieFilePath = testDataPath / "Patch" / "previousBuildResources" / "introMoviePrefixed.txt";
-	std::filesystem::path introMoviePatchedFilePath = testDataPath / "Patch" / "nextBuildResources" / "introMoviePrefixed.txt";
+	std::filesystem::path introMovieFilePath = testDataPath / "Patch" / "PreviousBuildResources" / "introMoviePrefixed.txt";
+	std::filesystem::path introMoviePatchedFilePath = testDataPath / "Patch" / "NextBuildResources" / "introMoviePrefixed.txt";
 
 	const size_t CHUNK_SIZE{ 500 };
 	const size_t PREFIX_SIZE{ 308 };
@@ -998,8 +998,8 @@ TEST_F( ResourceToolsTest, CalculateBinaryOperationMacOS )
 	// 33279: Binaries, not just executables (No extension, .so, .pyd)
 	// 33188: Basically everything else
 	std::filesystem::path testDataPath = TEST_DATA_BASE_PATH;
-	std::filesystem::path textFilePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
-	std::filesystem::path nonexistantFilePath = testDataPath / "resourcesOnBranch" / "thisFileDoesNotExist.txt";
+	std::filesystem::path textFilePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path nonexistantFilePath = testDataPath / "ResourcesOnBranch" / "thisFileDoesNotExist.txt";
 	ASSERT_EQ( 33188, ResourceTools::CalculateBinaryOperation( textFilePath ) );
 	ASSERT_EQ( 0, ResourceTools::CalculateBinaryOperation( nonexistantFilePath ) );
 }
@@ -1010,8 +1010,8 @@ TEST_F( ResourceToolsTest, CalculateBinaryOperationWindows )
 	// 33279: Executables (.exe, .bat, .cmd, .com) # See: update_st_mode_from_path Modules/posixmodule.c
 	// 33206: Basically everything else (.dll, .pyd, .yaml, .txt etc. )
 	std::filesystem::path testDataPath = TEST_DATA_BASE_PATH;
-	std::filesystem::path textFilePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
-	std::filesystem::path nonexistantFilePath = testDataPath / "resourcesOnBranch" / "thisFileDoesNotExist.txt";
+	std::filesystem::path textFilePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path nonexistantFilePath = testDataPath / "ResourcesOnBranch" / "thisFileDoesNotExist.txt";
 	std::filesystem::path binaryFilePath = std::filesystem::temp_directory_path() / "CarbonResources" / "binary.exe";
 	std::ofstream binaryFile( binaryFilePath );
 	binaryFile.close();
@@ -1028,7 +1028,7 @@ TEST_F( ResourceToolsTest, GzipStreams )
 	stream.Start();
 	ResourceTools::FileDataStreamIn fileStreamIn( 50 );
 	std::filesystem::path testDataPath = TEST_DATA_BASE_PATH;
-	std::filesystem::path testFile = testDataPath / "resourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path testFile = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
 	fileStreamIn.StartRead( testFile );
 	ResourceTools::Md5ChecksumStream originalMd5Stream;
 
