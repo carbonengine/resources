@@ -48,6 +48,12 @@ private:
     std::string m_networkRetryCountId;
 
 	std::string m_networkRetryBackoffMultiplierId;
+
+    std::string m_skipCompressionCalculation;
+
+    std::string m_splitOnUncompressedSize;
+
+    std::string m_numberOfThreadsId;
 };
 
 #endif // CreateBundleCliOperation_H

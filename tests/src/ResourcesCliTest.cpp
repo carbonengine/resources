@@ -342,6 +342,11 @@ TEST_F( ResourcesCliTest, CreateBundle )
 	arguments.push_back( "--chunk-size" );
 	arguments.push_back( "1000" );
 
+    arguments.push_back( "--split-on-uncompressed-size" );
+
+    arguments.push_back( "--number-of-threads" );
+	arguments.push_back( "0" );
+
 
 	int res = RunCli( arguments, output );
 
@@ -349,6 +354,157 @@ TEST_F( ResourcesCliTest, CreateBundle )
 
 	// Check expected outcome
 	std::filesystem::path goldFile = GetTestFileAbsolutePath( "CreateBundle/BundleResourceGroup.yaml" );
+	EXPECT_TRUE( FilesMatch( goldFile, "BundleOut/BundleResourceGroup.yaml" ) );
+
+	std::filesystem::path goldDirectory = GetTestFileAbsolutePath( "CreateBundle/CreateBundleOut" );
+	EXPECT_TRUE( DirectoryIsSubset( goldDirectory, "CreateBundleOut" ) );
+}
+
+TEST_F( ResourcesCliTest, CreateBundleWithThreads )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-bundle" );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "-1" );
+
+	arguments.push_back( GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" ).string() );
+
+	arguments.push_back( "--resource-source-path" );
+	arguments.push_back( GetTestFileAbsolutePath( "Bundle/Res" ).string() );
+
+	arguments.push_back( "--bundle-resourcegroup-relative-path" );
+	arguments.push_back( "BundleResourceGroup.yaml" );
+
+	arguments.push_back( "--bundle-resourcegroup-destination-path" );
+	arguments.push_back( "BundleOut/" );
+
+	arguments.push_back( "--bundle-resourcegroup-destination-type" );
+	arguments.push_back( "LOCAL_RELATIVE" );
+
+	arguments.push_back( "--chunk-destination-path" );
+	arguments.push_back( "CreateBundleOut" );
+
+	arguments.push_back( "--chunk-destination-type" );
+	arguments.push_back( "LOCAL_CDN" );
+
+	arguments.push_back( "--chunk-size" );
+	arguments.push_back( "1000" );
+
+	arguments.push_back( "--split-on-uncompressed-size" );
+
+	int res = RunCli( arguments, output );
+
+	EXPECT_EQ( res, 0 );
+
+	// Check expected outcome
+	std::filesystem::path goldFile = GetTestFileAbsolutePath( "CreateBundle/BundleResourceGroup.yaml" );
+	EXPECT_TRUE( FilesMatch( goldFile, "BundleOut/BundleResourceGroup.yaml" ) );
+
+	std::filesystem::path goldDirectory = GetTestFileAbsolutePath( "CreateBundle/CreateBundleOut" );
+	EXPECT_TRUE( DirectoryIsSubset( goldDirectory, "CreateBundleOut" ) );
+}
+
+TEST_F( ResourcesCliTest, CreateBundleSplitOnCompressed )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-bundle" );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "-1" );
+
+	arguments.push_back( GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" ).string() );
+
+	arguments.push_back( "--resource-source-path" );
+	arguments.push_back( GetTestFileAbsolutePath( "Bundle/Res" ).string() );
+
+	arguments.push_back( "--bundle-resourcegroup-relative-path" );
+	arguments.push_back( "BundleResourceGroup.yaml" );
+
+	arguments.push_back( "--bundle-resourcegroup-destination-path" );
+	arguments.push_back( "BundleOut/" );
+
+	arguments.push_back( "--bundle-resourcegroup-destination-type" );
+	arguments.push_back( "LOCAL_RELATIVE" );
+
+	arguments.push_back( "--chunk-destination-path" );
+	arguments.push_back( "CreateBundleOut" );
+
+	arguments.push_back( "--chunk-destination-type" );
+	arguments.push_back( "LOCAL_CDN" );
+
+	arguments.push_back( "--chunk-size" );
+	arguments.push_back( "1000" );
+
+	arguments.push_back( "--number-of-threads" );
+	arguments.push_back( "0" );
+
+
+	int res = RunCli( arguments, output );
+
+	EXPECT_EQ( res, 0 );
+
+	// Check expected outcome
+	std::filesystem::path goldFile = GetTestFileAbsolutePath( "CreateBundleSplitOnCompressed/BundleResourceGroup.yaml" );
+	EXPECT_TRUE( FilesMatch( goldFile, "BundleOut/BundleResourceGroup.yaml" ) );
+
+	std::filesystem::path goldDirectory = GetTestFileAbsolutePath( "CreateBundleSplitOnCompressed/CreateBundleOut" );
+	EXPECT_TRUE( DirectoryIsSubset( goldDirectory, "CreateBundleOut" ) );
+}
+
+TEST_F( ResourcesCliTest, CreateBundleSkipCompression )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-bundle" );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "-1" );
+
+	arguments.push_back( GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" ).string() );
+
+	arguments.push_back( "--resource-source-path" );
+	arguments.push_back( GetTestFileAbsolutePath( "Bundle/Res" ).string() );
+
+	arguments.push_back( "--bundle-resourcegroup-relative-path" );
+	arguments.push_back( "BundleResourceGroup.yaml" );
+
+	arguments.push_back( "--bundle-resourcegroup-destination-path" );
+	arguments.push_back( "BundleOut/" );
+
+	arguments.push_back( "--bundle-resourcegroup-destination-type" );
+	arguments.push_back( "LOCAL_RELATIVE" );
+
+	arguments.push_back( "--chunk-destination-path" );
+	arguments.push_back( "CreateBundleOut" );
+
+	arguments.push_back( "--chunk-destination-type" );
+	arguments.push_back( "LOCAL_CDN" );
+
+	arguments.push_back( "--chunk-size" );
+	arguments.push_back( "1000" );
+
+	arguments.push_back( "--split-on-uncompressed-size" );
+
+	arguments.push_back( "--number-of-threads" );
+	arguments.push_back( "0" );
+
+    arguments.push_back( "--skip-compression" );
+
+	int res = RunCli( arguments, output );
+
+	EXPECT_EQ( res, 0 );
+
+	// Check expected outcome
+	std::filesystem::path goldFile = GetTestFileAbsolutePath( "CreateBundle/BundleResourceGroupSkipCompression.yaml" );
 	EXPECT_TRUE( FilesMatch( goldFile, "BundleOut/BundleResourceGroup.yaml" ) );
 
 	std::filesystem::path goldDirectory = GetTestFileAbsolutePath( "CreateBundle/CreateBundleOut" );
@@ -669,6 +825,9 @@ TEST_F( ResourcesCliTest, CreatePatch )
 	arguments.push_back( "--patch-resourcegroup-destination-path" );
 	arguments.push_back( "PatchOut" );
 
+    arguments.push_back( "--new-files-resourcegroup-destination-base-path" );
+	arguments.push_back( "PatchOut" );
+
 	arguments.push_back( "--patch-destination-base-path" );
 	arguments.push_back( "Patchout/Patches" );
 
@@ -683,11 +842,69 @@ TEST_F( ResourcesCliTest, CreatePatch )
 	EXPECT_EQ( res, 0 );
 
 	// Check expected outcome
-	std::filesystem::path goldFile = GetTestFileAbsolutePath( "Patch/PatchResourceGroup.yaml" );
-	EXPECT_TRUE( FilesMatch( goldFile, "PatchOut/PatchResourceGroup.yaml" ) );
+	std::filesystem::path goldFileResourceGroup = GetTestFileAbsolutePath( "Patch/PatchResourceGroup.yaml" );
+	EXPECT_TRUE( FilesMatch( goldFileResourceGroup, "PatchOut/PatchResourceGroup.yaml" ) );
+
+    std::filesystem::path goldFileNewFilesGroup = GetTestFileAbsolutePath( "Patch/NewFilesResourceGroup.yaml" );
+	EXPECT_TRUE( FilesMatch( goldFileNewFilesGroup, "PatchOut/NewFilesResourceGroup.yaml" ) );
 
 	std::filesystem::path goldDirectory = GetTestFileAbsolutePath( "Patch/LocalCDNPatches" );
 	EXPECT_TRUE( DirectoryIsSubset( goldDirectory, "PatchOut/Patches" ) );
+}
+
+TEST_F( ResourcesCliTest, CreatePatchWithMaxSizeLimit )
+{
+	std::string output;
+
+	std::vector<std::string> arguments;
+
+	arguments.push_back( "create-patch" );
+
+	arguments.push_back( "--verbosity-level" );
+	arguments.push_back( "-1" );
+
+	std::string previousResourceGroupPath = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_previous.txt" ).string();
+
+	arguments.push_back( previousResourceGroupPath );
+
+	std::string nextResourceGroupPath = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_next.txt" ).string();
+
+	arguments.push_back( nextResourceGroupPath );
+
+	arguments.push_back( "--resource-source-type-previous" );
+	arguments.push_back( "LOCAL_RELATIVE" );
+
+	std::string nextResourcesLocation = GetTestFileAbsolutePath( "Patch/NextBuildResources" ).string();
+
+	arguments.push_back( "--resource-source-base-path-next" );
+	arguments.push_back( nextResourcesLocation );
+
+	std::string previousResourcesLocation = GetTestFileAbsolutePath( "Patch/PreviousBuildResources" ).string();
+
+	arguments.push_back( "--resource-source-base-path-previous" );
+	arguments.push_back( previousResourcesLocation );
+
+	arguments.push_back( "--patch-resourcegroup-destination-path" );
+	arguments.push_back( "PatchOut" );
+
+	arguments.push_back( "--new-files-resourcegroup-destination-base-path" );
+	arguments.push_back( "PatchOut" );
+
+	arguments.push_back( "--patch-destination-base-path" );
+	arguments.push_back( "Patchout/Patches" );
+
+	arguments.push_back( "--patch-destination-type" );
+	arguments.push_back( "LOCAL_CDN" );
+
+	arguments.push_back( "--chunk-size" );
+	arguments.push_back( "50000000" );
+
+    arguments.push_back( "--max-overall-patch-size" );
+	arguments.push_back( "1" );
+
+	int res = RunCli( arguments, output );
+
+	EXPECT_EQ( res, 1 );
 }
 
 TEST_F( ResourcesCliTest, CreateGroup )

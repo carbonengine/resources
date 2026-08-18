@@ -7,3 +7,4 @@ Quick start showing real world practical scenarios.
    :maxdepth: 1
    
    QuickStart/ExamplePatchCreationProcedure
+   QuickStart/ExampleDeliveryPipeline

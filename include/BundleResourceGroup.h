@@ -23,6 +23,8 @@ namespace CarbonResources
     *  Settings relating to status callback messaging
 	*  @var BundleUnpackParams::DownloadSettings
     *  Settings relating to downloads
+    *  @var BundleUnpackParams::chunkReadCacheSize
+    *  Cache size available for use during the unpacking operation
     */
 struct BundleUnpackParams final
 {
@@ -33,6 +35,8 @@ struct BundleUnpackParams final
 	CallbackSettings callbackSettings;
 
     DownloadSettings downloadSettings;
+
+    uintmax_t chunkReadCacheSize = 1024 * 1024 * 1024; // 1GB
 };
 
 /** @class BundleResourceGroup

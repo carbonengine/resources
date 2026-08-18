@@ -32,6 +32,8 @@ private:
 
 	std::string m_patchResourceGroupRelativePathArgumentId;
 
+    std::string m_newFilesResourceGroupRelativePathArgumentId;
+
 	std::string m_resourceSourceTypePreviousArgumentId;
 
 	std::string m_resourceSourceBasePathPreviousArgumentId;
@@ -59,6 +61,12 @@ private:
 	std::string m_indexFolderArgumentId;
 
     std::string m_skipCompressionCalculation;
+
+    std::string m_newFilesResourceGroupDestinationTypeArgumentId;
+
+    std::string m_newFilesResourceGroupDestinationPathArgumentId;
+
+    std::string m_maxOverallPatchArgumentId;
 };
 
 #endif // CreatePatchCliOperation_H

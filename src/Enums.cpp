@@ -160,6 +160,14 @@ bool ResultTypeToString( ResultType resultType, std::string& output )
     case ResultType::FAILED_TO_INITIALIZE_RESOURCE_FILTER:
 		output = "Failed to initialize ResourceFilter";
 		return true;
+
+    case ResultType::INVALID_INPUT_PARAMETER:
+		output = "An input parameter was set with an invalid value";
+		return true;
+
+    case ResultType::PATCH_SIZE_EXCEEDED:
+		output = "The patch exceeded the size specified as the maximum overall patch size";
+		return true;
 	}
 
 	output = "Error code unrecognised. This is an internal library error which shouldn't be encountered. If you encounter this error contact API addministrators.";

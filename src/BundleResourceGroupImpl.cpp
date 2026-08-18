@@ -56,8 +56,24 @@ Result BundleResourceGroup::BundleResourceGroupImpl::Unpack( const BundleUnpackP
 {
 	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 20, "Rebuilding resources." );
 
-	ResourceGroupInfo* resourceGroupResource = m_resourceGroupParameter.GetValue();
+    
+    // Ensure the cache size if enough to hold the largest chunk
+	uintmax_t largestChunkSize;
 
+	Result getLargestChunkResult = GetLargestResourceSize( largestChunkSize );
+
+    if (getLargestChunkResult.type != ResultType::SUCCESS)
+    {
+		return getLargestChunkResult;
+    }
+    
+    if (largestChunkSize > params.chunkReadCacheSize)
+    {
+        // The cache size must be at least able to hold a single chunk
+		return Result{ ResultType::INVALID_INPUT_PARAMETER, "The cache size must at least be as large as the largest chunk" };
+    }
+
+	ResourceGroupInfo* resourceGroupResource = m_resourceGroupParameter.GetValue();
 
 	// Load the resourceGroup from the resourceGroupResource
 	std::string resourceGroupData;
@@ -129,6 +145,57 @@ Result BundleResourceGroup::BundleResourceGroupImpl::Unpack( const BundleUnpackP
     {
 		StatusSettings innerStatusUpdate;
 		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 40, 40, "Rebuilding resources.", &innerStatusUpdate );
+
+        // Read in chunks up to cache limit
+        while (bundleStream.GetCacheSize() < params.chunkReadCacheSize)
+        {
+			if( chunkIterator != m_resourcesParameter.end() )
+			{
+				ResourceInfo* chunk = ( *chunkIterator );
+
+				// Get chunk data
+				std::string chunkData;
+
+				ResourceGetDataParams resourceGetDataParams;
+
+				resourceGetDataParams.resourceSourceSettings = params.chunkSourceSettings;
+
+				resourceGetDataParams.data = &chunkData;
+
+				Result getChunkChecksumResult = chunk->GetChecksum( resourceGetDataParams.expectedChecksum );
+
+				if( getChunkChecksumResult.type != ResultType::SUCCESS )
+				{
+					return getChunkChecksumResult;
+				}
+
+				Result getChunkDataResult = chunk->GetData( resourceGetDataParams );
+
+				if( getChunkDataResult.type != ResultType::SUCCESS )
+				{
+					return getChunkDataResult;
+				}
+
+				// Add to chunk stream
+				if( !( bundleStream << chunkData ) )
+				{
+					return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
+				}
+			}
+			else
+			{
+				break;
+			}
+
+            if( chunkIterator != m_resourcesParameter.end() )
+			{
+				chunkIterator++;
+			}
+            else
+            {
+				return Result{ ResultType::UNEXPECTED_END_OF_CHUNKS };
+            }
+        }
 
 		for( ResourceInfo* resource : toBundle )
 		{
@@ -209,48 +276,6 @@ Result BundleResourceGroup::BundleResourceGroupImpl::Unpack( const BundleUnpackP
 
             while (resourceDataStreamOut.GetFileSize() < resourceFileUncompressedSize)
             {
-                if (chunkIterator != m_resourcesParameter.end())
-                {
-                    ResourceInfo* chunk = (*chunkIterator);
-
-                    // Get chunk data
-                    std::string chunkData;
-
-                    ResourceGetDataParams resourceGetDataParams;
-
-                    resourceGetDataParams.resourceSourceSettings = params.chunkSourceSettings;
-
-                    resourceGetDataParams.data = &chunkData;
-
-                    Result getChunkChecksumResult = chunk->GetChecksum(resourceGetDataParams.expectedChecksum);
-
-                    if (getChunkChecksumResult.type != ResultType::SUCCESS)
-                    {
-                        return getChunkChecksumResult;
-                    }
-
-                    Result getChunkDataResult = chunk->GetData(resourceGetDataParams);
-
-                    if (getChunkDataResult.type != ResultType::SUCCESS)
-                    {
-                        return getChunkDataResult;
-                    }
-
-                    // Add to chunk stream
-                    if (!(bundleStream << chunkData))
-                    {
-                        return Result{ ResultType::FAIL };
-                    }
-                }
-                else
-                {
-                    if (bundleStream.GetCacheSize() == 0)
-                    {
-                        return Result{ ResultType::UNEXPECTED_END_OF_CHUNKS };
-                    }
-                }
-
-
                 std::string resourceChunkData;
 
                 file.data = &resourceChunkData;
@@ -273,9 +298,61 @@ Result BundleResourceGroup::BundleResourceGroupImpl::Unpack( const BundleUnpackP
                     return Result{ ResultType::FAILED_TO_SAVE_TO_STREAM };
                 }
 
-                if (chunkIterator != m_resourcesParameter.end())
+                //Check if to get more chunks
+				if ((chunkIterator != m_resourcesParameter.end()) && (bundleStream.GetCacheSize() < m_chunkSize.GetValue()))
                 {
-                    chunkIterator++;
+                    //Clear cache
+					bundleStream.clearCache();
+
+					while( bundleStream.GetCacheSize() < params.chunkReadCacheSize )
+					{
+						if( chunkIterator != m_resourcesParameter.end() )
+						{
+							ResourceInfo* chunk = ( *chunkIterator );
+
+							// Get chunk data
+							std::string chunkData;
+
+							ResourceGetDataParams resourceGetDataParams;
+
+							resourceGetDataParams.resourceSourceSettings = params.chunkSourceSettings;
+
+							resourceGetDataParams.data = &chunkData;
+
+							Result getChunkChecksumResult = chunk->GetChecksum( resourceGetDataParams.expectedChecksum );
+
+							if( getChunkChecksumResult.type != ResultType::SUCCESS )
+							{
+								return getChunkChecksumResult;
+							}
+
+							Result getChunkDataResult = chunk->GetData( resourceGetDataParams );
+
+							if( getChunkDataResult.type != ResultType::SUCCESS )
+							{
+								return getChunkDataResult;
+							}
+
+							// Add to chunk stream
+							if( !( bundleStream << chunkData ) )
+							{
+								return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
+							}
+						}
+						else
+						{
+							break;
+						}
+
+						if( chunkIterator != m_resourcesParameter.end() )
+						{
+							chunkIterator++;
+						}
+                        else
+                        {
+							return Result{ ResultType::UNEXPECTED_END_OF_CHUNKS };
+                        }
+					}
                 }
             }
 

@@ -11,7 +11,8 @@ UnpackBundleCliOperation::UnpackBundleCliOperation() :
 	m_chunkSourceBasePathsArgumentId( "--chunk-source-base-path" ),
 	m_chunkSourceTypeArgumentId( "--chunk-source-type" ),
 	m_resourceDestinationBasePathArgumentId( "--resource-destination-base-path" ),
-	m_resourceDestinationTypeArgumentId( "--resource-destination-type" )
+	m_resourceDestinationTypeArgumentId( "--resource-destination-type" ),
+	m_chunkReadCacheSize( "--chunk-read-cache-size" )
 {
 	AddRequiredPositionalArgument( m_bundleResourceGroupPathArgumentId, "The path to the BundleResourceGroup.yaml file" );
 
@@ -24,6 +25,8 @@ UnpackBundleCliOperation::UnpackBundleCliOperation() :
 	AddArgument( m_resourceDestinationBasePathArgumentId, "The path to the directory in which to place the unbundled files.", false, false, "UnpackBundleOut" );
 
 	AddArgument( m_resourceDestinationTypeArgumentId, "The type of repository in which to place the bundle files.", false, false, DestinationTypeToString( defaultParams.resourceDestinationSettings.destinationType ), ResourceDestinationTypeChoicesAsString() );
+
+    AddArgument( m_chunkReadCacheSize, "Size of in memory cache to use while reading chunk files. (Higher will give faster performance but use more RAM)", false, false, SizeToString( defaultParams.chunkReadCacheSize ) );
 }
 
 bool UnpackBundleCliOperation::Execute( std::string& returnErrorMessage ) const
@@ -76,6 +79,28 @@ bool UnpackBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 
 	unpackParams.resourceDestinationSettings.basePath = m_argumentParser->get( m_resourceDestinationBasePathArgumentId );
 
+    try
+	{
+		unsigned long in = std::stoul( m_argumentParser->get( m_chunkReadCacheSize ) );
+		if( in > std::numeric_limits<uint32_t>::max() )
+		{
+			returnErrorMessage = "Invalid chunk read cache size";
+			return false;
+		}
+		unpackParams.chunkReadCacheSize = static_cast<uint32_t>( in );
+	}
+	catch( std::invalid_argument& )
+	{
+		returnErrorMessage = "Invalid chunk read cache size";
+		return false;
+	}
+	catch( std::out_of_range& )
+	{
+		returnErrorMessage = "Invalid chunk read cache size";
+		return false;
+	}
+
+
     if (ShowCliStatusUpdates())
     {
 		PrintStartBanner( importParams, unpackParams );
@@ -95,6 +120,7 @@ void UnpackBundleCliOperation::PrintStartBanner( const CarbonResources::Resource
 	std::cout << "Chunk Source Type: " << SourceTypeToString( unpackParams.chunkSourceSettings.sourceType ) << std::endl;
 	std::cout << "Resource Destination Base Path: " << unpackParams.resourceDestinationSettings.basePath << std::endl;
 	std::cout << "Resource Destination Type: " << DestinationTypeToString( unpackParams.resourceDestinationSettings.destinationType ) << std::endl;
+	std::cout << "Chunk read cache size: " << unpackParams.chunkReadCacheSize << std::endl;
 
 	std::cout << "----------------------------\n"
 			  << std::endl;

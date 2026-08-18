@@ -33,6 +33,10 @@ public:
 
 	bool operator>>( GetFile& fileData );
 
+    void clearCache();
+
+private:
+	
 
 private:
 	uintmax_t m_chunkSize;
@@ -40,6 +44,10 @@ private:
 	std::string m_cache;
 
 	uintmax_t m_dataReadOfCurrentFile;
+
+	uintmax_t m_cacheOffset;
+
+    uintmax_t m_cacheSize;
 };
 
 

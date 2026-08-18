@@ -443,6 +443,7 @@ TEST_F( ResourcesLibraryTest, UnpackRemoteBundleAsLocal )
 	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = "UnpackRemoteBundleAsLocal";
 	bundleCreateParams.chunkSize = 1000000000;
 	bundleCreateParams.callbackSettings.statusCallback = StatusUpdate;
+	bundleCreateParams.asyncSettings.numberOfThreads = 0;
 
 	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::SUCCESS );
 
@@ -555,6 +556,8 @@ TEST_F( ResourcesLibraryTest, CreateBundleRemoteCDN )
 
 	bundleCreateParams.callbackSettings.statusCallback = StatusUpdate;
 
+    bundleCreateParams.asyncSettings.numberOfThreads = 0;
+
 	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::SUCCESS );
 
 	EXPECT_TRUE( StatusIsValid() );
@@ -601,11 +604,167 @@ TEST_F( ResourcesLibraryTest, CreateBundle )
 
     bundleCreateParams.callbackSettings.statusCallback = StatusUpdate;
 
+    bundleCreateParams.splitOnCompressedSize = false;
+
+    bundleCreateParams.asyncSettings.numberOfThreads = 0;
+
 	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::SUCCESS );
 
     EXPECT_TRUE( StatusIsValid() );
 
 	EXPECT_TRUE( FilesMatch( "resPath/BundleResourceGroup.yaml", GetTestFileAbsolutePath( "CreateBundle/BundleResourceGroup.yaml" ) ) );
+	EXPECT_TRUE( DirectoryIsSubset( "CreateBundleOut", GetTestFileAbsolutePath( "CreateBundle/CreateBundleOut" ) ) );
+}
+
+TEST_F( ResourcesLibraryTest, CreateBundleSpitOnCompressed )
+{
+	// Import ResourceGroup
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+
+	importParams.filename = GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" );
+
+	importParams.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+
+	// Create a bundle from the ResourceGroup
+	CarbonResources::BundleCreateParams bundleCreateParams;
+
+	bundleCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
+
+	bundleCreateParams.resourceGroupBundleRelativePath = "BundleResourceGroup.yaml";
+
+	bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	bundleCreateParams.resourceSourceSettings.basePaths = { GetTestFileAbsolutePath( "Bundle/Res/" ) };
+
+	bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+
+	bundleCreateParams.chunkDestinationSettings.basePath = "CreateBundleOut";
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = "resPath";
+
+	bundleCreateParams.chunkSize = 1000;
+
+	bundleCreateParams.callbackSettings.statusCallback = StatusUpdate;
+
+	bundleCreateParams.splitOnCompressedSize = true;
+
+	bundleCreateParams.asyncSettings.numberOfThreads = 0;
+
+	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+	EXPECT_TRUE( FilesMatch( "resPath/BundleResourceGroup.yaml", GetTestFileAbsolutePath( "CreateBundleSplitOnCompressed/BundleResourceGroup.yaml" ) ) );
+	EXPECT_TRUE( DirectoryIsSubset( "CreateBundleOut", GetTestFileAbsolutePath( "CreateBundleSplitOnCompressed/CreateBundleOut" ) ) );
+}
+TEST_F( ResourcesLibraryTest, CreateBundleWithThreading )
+{
+	// Import ResourceGroup
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+
+	importParams.filename = GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" );
+
+	importParams.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+
+	// Create a bundle from the ResourceGroup
+	CarbonResources::BundleCreateParams bundleCreateParams;
+
+	bundleCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
+
+	bundleCreateParams.resourceGroupBundleRelativePath = "BundleResourceGroup.yaml";
+
+	bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	bundleCreateParams.resourceSourceSettings.basePaths = { GetTestFileAbsolutePath( "Bundle/Res/" ) };
+
+	bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+
+	bundleCreateParams.chunkDestinationSettings.basePath = "CreateBundleOut";
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = "resPath";
+
+	bundleCreateParams.chunkSize = 1000;
+
+	bundleCreateParams.callbackSettings.statusCallback = StatusUpdate;
+
+	bundleCreateParams.splitOnCompressedSize = false;
+
+	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+	EXPECT_TRUE( FilesMatch( "resPath/BundleResourceGroup.yaml", GetTestFileAbsolutePath( "CreateBundle/BundleResourceGroup.yaml" ) ) );
+	EXPECT_TRUE( DirectoryIsSubset( "CreateBundleOut", GetTestFileAbsolutePath( "CreateBundle/CreateBundleOut" ) ) );
+}
+
+TEST_F( ResourcesLibraryTest, CreateBundleSkipCompression )
+{
+	// Import ResourceGroup
+	CarbonResources::ResourceGroup resourceGroup;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParams;
+
+	importParams.filename = GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" );
+
+	importParams.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( resourceGroup.ImportFromFile( importParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+
+	// Create a bundle from the ResourceGroup
+	CarbonResources::BundleCreateParams bundleCreateParams;
+
+	bundleCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
+
+	bundleCreateParams.resourceGroupBundleRelativePath = "BundleResourceGroupSkipCompression.yaml";
+
+	bundleCreateParams.resourceSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	bundleCreateParams.resourceSourceSettings.basePaths = { GetTestFileAbsolutePath( "Bundle/Res/" ) };
+
+	bundleCreateParams.chunkDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+
+	bundleCreateParams.chunkDestinationSettings.basePath = "CreateBundleOut";
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	bundleCreateParams.resourceBundleResourceGroupDestinationSettings.basePath = "resPath";
+
+	bundleCreateParams.chunkSize = 1000;
+
+	bundleCreateParams.callbackSettings.statusCallback = StatusUpdate;
+
+	bundleCreateParams.splitOnCompressedSize = false;
+
+	bundleCreateParams.asyncSettings.numberOfThreads = 0;
+
+    bundleCreateParams.calculateCompressions = false;
+
+	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+	EXPECT_TRUE( FilesMatch( "resPath/BundleResourceGroupSkipCompression.yaml", GetTestFileAbsolutePath( "CreateBundle/BundleResourceGroupSkipCompression.yaml" ) ) );
 	EXPECT_TRUE( DirectoryIsSubset( "CreateBundleOut", GetTestFileAbsolutePath( "CreateBundle/CreateBundleOut" ) ) );
 }
 
@@ -647,6 +806,8 @@ TEST_F( ResourcesLibraryTest, CreateAndUnpackBundle )
 	bundleCreateParams.chunkSize = 1000;
 
     bundleCreateParams.callbackSettings.statusCallback = StatusUpdate;
+
+    bundleCreateParams.asyncSettings.numberOfThreads = 0;
 
 	EXPECT_EQ( resourceGroup.CreateBundle( bundleCreateParams ).type, CarbonResources::ResultType::SUCCESS );
 
@@ -737,6 +898,10 @@ TEST_F( ResourcesLibraryTest, ApplyPatch )
 	std::filesystem::copy( patchApplyParams.resourcesToPatchSourceSettings.basePaths[0], patchApplyParams.resourcesToPatchDestinationSettings.basePath );
 
 	EXPECT_EQ( patchResourceGroup.Apply( patchApplyParams ).type, CarbonResources::ResultType::SUCCESS );
+
+    EXPECT_EQ( patchApplyParams.resourcesToRemove.size(), 1 );
+
+    EXPECT_EQ( patchApplyParams.resourcesToRemove.at( 0 ), "testresource.txt" );
 
     EXPECT_TRUE( StatusIsValid() );
 
@@ -846,6 +1011,87 @@ TEST_F( ResourcesLibraryTest, CreatePatch )
 
 	patchCreateParams.resourceGroupPatchRelativePath = "PatchResourceGroup.yaml";
 
+    patchCreateParams.resourceGroupNewFilesRelativePath = "NewFilesResourceGroup.yaml";
+
+	patchCreateParams.resourceSourceSettingsPrevious.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	patchCreateParams.resourceSourceSettingsPrevious.basePaths = { GetTestFileAbsolutePath( "Patch/PreviousBuildResources" ) };
+
+	patchCreateParams.resourceSourceSettingsNext.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	patchCreateParams.resourceSourceSettingsNext.basePaths = { GetTestFileAbsolutePath( "Patch/NextBuildResources" ) };
+
+	patchCreateParams.resourcePatchBinaryDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_CDN;
+
+	patchCreateParams.resourcePatchBinaryDestinationSettings.basePath = "SharedCache";
+
+	patchCreateParams.resourcePatchResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath = "resPath";
+
+    patchCreateParams.resourceNewFilesResourceGroupDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	patchCreateParams.resourceNewFilesResourceGroupDestinationSettings.basePath = "resPath";
+
+	patchCreateParams.patchFileRelativePathPrefix = "Patches/Patch";
+
+	patchCreateParams.previousResourceGroup = &resourceGroupPrevious;
+
+	patchCreateParams.maxInputFileChunkSize = 50000000;
+
+    patchCreateParams.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( resourceGroupLatest.CreatePatch( patchCreateParams ).type, CarbonResources::ResultType::SUCCESS );
+
+    EXPECT_TRUE( StatusIsValid() );
+
+	// Check expected outcome
+	std::filesystem::path goldFileResourceGroup = GetTestFileAbsolutePath( "Patch/PatchResourceGroup.yaml" );
+	EXPECT_TRUE( FilesMatch( goldFileResourceGroup, patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath / patchCreateParams.resourceGroupPatchRelativePath ) );
+
+    std::filesystem::path goldFileNewFilesGroup = GetTestFileAbsolutePath( "Patch/NewFilesResourceGroup.yaml" );
+	EXPECT_TRUE( FilesMatch( goldFileNewFilesGroup, patchCreateParams.resourceNewFilesResourceGroupDestinationSettings.basePath / patchCreateParams.resourceGroupNewFilesRelativePath ) );
+
+	std::filesystem::path goldDirectory = GetTestFileAbsolutePath( "Patch/LocalCDNPatches" );
+	EXPECT_TRUE( DirectoryIsSubset( goldDirectory, patchCreateParams.resourcePatchBinaryDestinationSettings.basePath ) );
+}
+
+TEST_F( ResourcesLibraryTest, CreatePatchWithMaxSizeLimit )
+{
+	// Previous ResourceGroup
+	CarbonResources::ResourceGroup resourceGroupPrevious;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
+
+	importParamsPrevious.filename = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_previous.txt" );
+
+	importParamsPrevious.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( resourceGroupPrevious.ImportFromFile( importParamsPrevious ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+
+	// Latest ResourceGroup
+	CarbonResources::ResourceGroup resourceGroupLatest;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParamsLatest;
+
+	importParamsLatest.filename = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_next.txt" );
+
+	importParamsLatest.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( resourceGroupLatest.ImportFromFile( importParamsLatest ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+	// Create a patch from the subtraction index
+	CarbonResources::PatchCreateParams patchCreateParams;
+
+	patchCreateParams.resourceGroupRelativePath = "ResourceGroup.yaml";
+
+	patchCreateParams.resourceGroupPatchRelativePath = "PatchResourceGroup.yaml";
+
 	patchCreateParams.resourceSourceSettingsPrevious.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
 
 	patchCreateParams.resourceSourceSettingsPrevious.basePaths = { GetTestFileAbsolutePath( "Patch/PreviousBuildResources" ) };
@@ -868,18 +1114,13 @@ TEST_F( ResourcesLibraryTest, CreatePatch )
 
 	patchCreateParams.maxInputFileChunkSize = 50000000;
 
-    patchCreateParams.callbackSettings.statusCallback = StatusUpdate;
+    patchCreateParams.maxTotalPatchSize = 1;
 
-	EXPECT_EQ( resourceGroupLatest.CreatePatch( patchCreateParams ).type, CarbonResources::ResultType::SUCCESS );
+	patchCreateParams.callbackSettings.statusCallback = StatusUpdate;
 
-    EXPECT_TRUE( StatusIsValid() );
+	EXPECT_EQ( resourceGroupLatest.CreatePatch( patchCreateParams ).type, CarbonResources::ResultType::PATCH_SIZE_EXCEEDED );
 
-	// Check expected outcome
-	std::filesystem::path goldFile = GetTestFileAbsolutePath( "Patch/PatchResourceGroup.yaml" );
-	EXPECT_TRUE( FilesMatch( goldFile, patchCreateParams.resourcePatchResourceGroupDestinationSettings.basePath / "PatchResourceGroup.yaml" ) );
-
-	std::filesystem::path goldDirectory = GetTestFileAbsolutePath( "Patch/LocalCDNPatches" );
-	EXPECT_TRUE( DirectoryIsSubset( goldDirectory, patchCreateParams.resourcePatchBinaryDestinationSettings.basePath ) );
+	EXPECT_TRUE( StatusIsValid() );
 }
 
 TEST_F( ResourcesLibraryTest, CreatePatchZeroInputChunkSize )

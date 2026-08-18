@@ -101,6 +101,16 @@ struct ResourceDestinationSettings
 	std::filesystem::path basePath = "";
 };
 
+/** @struct AsyncSettings
+    *  @brief Settings related to async processing
+    *  @var AsyncSettings::numberOfThreads
+    *  Number of threads to use for async processes, passing 0 will run all on main thread
+    */
+struct AsyncSettings
+{
+	uint32_t numberOfThreads = std::thread::hardware_concurrency();
+};
+
 /** @struct BundleCreateParams
     *  @brief Function Parameters required for CarbonResources::ResourceGroup::CreatePatch
     *  @var BundleCreateParams::resourceSourceSettings
@@ -124,6 +134,10 @@ struct ResourceDestinationSettings
     *  Settings related to downloads
     *  @var BundleCreateParams::calculateCompressions
     *  Specifies if compression will be calculated for the generated bundle chunks
+    *  @var BundleCreateParams::splitOnCompressedSize
+    *  Chunks are split based on the compressed size rather than uncompressed, this gives the best chunk compression.
+    *  @var BundleCreateParams::asyncSettings
+    *  Settings related to async setup
     */
 struct BundleCreateParams
 {
@@ -146,6 +160,10 @@ struct BundleCreateParams
 	DownloadSettings downloadSettings;
 
     bool calculateCompressions = true;
+
+    bool splitOnCompressedSize = true;
+
+    AsyncSettings asyncSettings;
 };
 
 /** @struct PatchCreateParams
@@ -158,6 +176,8 @@ struct BundleCreateParams
     *  Relative path for output resourceGroup which will contain the diff between PatchCreateParams::previousResourceGroup and this ResourceGroup.
     *  @var PatchCreateParams::resourceGroupPatchRelativePath
     *  Relative path for output PatchResourceGroup which will contain all the patches produced.
+    *  @var PatchCreateParams::resourceGroupNewFilesRelativePath
+    *  Relative path for output NewFilesResourceGroup which will contain all the new files produced.
     *  @var PatchCreateParams::patchFileRelativePathPrefix
     *  Relative path prefix for produced patch binaries. Default is "Patches/Patch" which will produce patches such as Patches/Patch.1 ...
     *  @var PatchCreateParams::resourceSourceSettingsPrevious
@@ -168,6 +188,8 @@ struct BundleCreateParams
     *  Where the produced binary patches will be saved.
     *  @var PatchCreateParams::resourcePatchResourceGroupDestinationSettings
     *  Where the produced PatchResourceGroup will be saved.
+    *  @var PatchCreateParams::resourceNewFilesResourceGroupDestinationSettings
+    *  Where the produced NewFilesResourceGroup will be saved.
     *  @var PatchCreateParams::callbackSettings
     *  Settings relating to status callback messaging
     *  @var PatchCreateParams::downloadSettings
@@ -176,6 +198,8 @@ struct BundleCreateParams
     *  Directory to store index calculation files during patch creation.
     *  @var PatchCreateParams::calculateCompressions
     *  Specifies if compression will be calculated for the generated bundle chunks
+    *  @var PatchCreateParams::maxTotalPatchSize
+    *  The maximum size of total patch data, if exceeded the process will fail, a value of zero will be treated as unlimited.
     */
 struct PatchCreateParams
 {
@@ -187,6 +211,8 @@ struct PatchCreateParams
 
 	std::filesystem::path resourceGroupPatchRelativePath = "PatchResourceGroup.yaml";
 
+    std::filesystem::path resourceGroupNewFilesRelativePath = "NewFilesResourceGroup.yaml";
+
 	std::filesystem::path patchFileRelativePathPrefix = "Patches/Patch";
 
 	ResourceSourceSettings resourceSourceSettingsPrevious = { CarbonResources::ResourceSourceType::LOCAL_RELATIVE };
@@ -197,6 +223,8 @@ struct PatchCreateParams
 	
 	ResourceDestinationSettings resourcePatchResourceGroupDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_RELATIVE, "PatchOut/" };
 
+    ResourceDestinationSettings resourceNewFilesResourceGroupDestinationSettings = { CarbonResources::ResourceDestinationType::LOCAL_RELATIVE, "PatchOut/" };
+
 	CallbackSettings callbackSettings;
 
 	DownloadSettings downloadSettings;
@@ -204,6 +232,8 @@ struct PatchCreateParams
 	std::filesystem::path indexFolder = std::filesystem::temp_directory_path() / "carbonResources" / "chunkIndexes";
 
     bool calculateCompressions = true;
+
+    uint32_t maxTotalPatchSize = 0;
 };
 
 /** @struct ResourceGroupImportFromFileParams
@@ -326,16 +356,6 @@ struct ExportResourceSettings
 		CarbonResources::ResourceDestinationType::LOCAL_CDN,
 		"ExportedResources"
 	};
-};
-
-/** @struct AsyncSettings
-    *  @brief Settings related to async processing
-    *  @var AsyncSettings::numberOfThreads
-    *  Number of threads to use for async processes, passing 0 will run all on main thread
-    */
-struct AsyncSettings
-{
-	uint32_t numberOfThreads = std::thread::hardware_concurrency();
 };
 
 /** @struct CompressionCalculationSettings
