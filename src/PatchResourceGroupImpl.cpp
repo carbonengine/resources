@@ -373,6 +373,8 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
 
 					patchGetDataParams.data = &patchData;
 
+                    patchGetDataParams.downloadSettings = params.downloadSettings;
+
 					std::string location;
 					Result patchGetLocationResult = patch->GetLocation( location );
 					if( patchGetLocationResult.type != ResultType::SUCCESS )
@@ -721,7 +723,7 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
             {
 				float step = static_cast<float>( 100.0 / m_removedResources.GetSize() );
 				float percentage = static_cast<float>( step * i );
-				removingFilesStatusSettings.Update( StatusProgressType::PERCENTAGE, percentage, step, toRemove.string() );
+				removingFilesStatusSettings.Update( StatusProgressType::PERCENTAGE, percentage, step, toRemove.u8string() );
             }
 
             params.resourcesToRemove.push_back( path );
@@ -732,7 +734,7 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
 				bool removed = std::filesystem::remove( toRemove, ec );
 				if( !removed )
 				{
-					statusSettings.Update( StatusProgressType::WARNING, 0, 0, "Failed to remove file " + toRemove.string() );
+					statusSettings.Update( StatusProgressType::WARNING, 0, 0, "Failed to remove file " + toRemove.u8string() );
 				}
 			}
 
@@ -743,7 +745,7 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
 				bool removed = std::filesystem::remove( toRemove, ec );
 				if( !removed )
 				{
-					statusSettings.Update( StatusProgressType::WARNING, 0, 0, "Failed to remove empty directory " + toRemove.string() );
+					statusSettings.Update( StatusProgressType::WARNING, 0, 0, "Failed to remove empty directory " + toRemove.u8string() );
 				}
 			}
 		}

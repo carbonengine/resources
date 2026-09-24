@@ -83,7 +83,7 @@ TEST_F( ResourceToolsTest, FowlerNollVoChecksumGeneration )
 	EXPECT_EQ( output, "a9d1721dd5cc6d54" );
 }
 
-void DownloadCallback(size_t totalSizeBytes, size_t currentDownloadedBytes, double bytesPerSecond, void* context)
+void DownloadCallback(const std::string& url, const std::filesystem::path& relativePath, size_t totalSizeBytes, size_t currentDownloadedBytes, double bytesPerSecond, void* context)
 {
 	size_t* contextInt = static_cast<size_t*>( context );
 	*contextInt = currentDownloadedBytes;
@@ -118,7 +118,7 @@ TEST_F( ResourceToolsTest, DownloadFile )
 
     size_t contextCheck = 0;
 
-	EXPECT_TRUE( downloader.DownloadFile( url, outputPathString, retrySeconds, retries, sourceFilesize, DownloadCallback, &contextCheck ) );
+	EXPECT_TRUE( downloader.DownloadFile( url, sourcePath, outputPathString, retrySeconds, retries, sourceFilesize, DownloadCallback, &contextCheck ) );
 	EXPECT_EQ( contextCheck, sourceFilesize );
 	EXPECT_TRUE( std::filesystem::exists( outputPath ) );
 

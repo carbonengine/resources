@@ -82,7 +82,7 @@ bool ResultTypeToString( ResultType resultType, std::string& output )
 		return true;
 
 	case ResultType::FAILED_TO_APPLY_PATCH:
-		output = "An error occurred during application of a binary patch.";
+		output = "An error occurred during application of valid patch data to valid source data.";
 		return true;
 
 	case ResultType::UNEXPECTED_PATCH_CHECKSUM_RESULT:

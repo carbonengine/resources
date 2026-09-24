@@ -48,12 +48,32 @@ struct CallbackSettings
 	int verbosityLevel = -1;
 };
 
-/** Download Callback function signature.
-    * @param totalSizeBytes Total size in bytes of file being downloaded.
-    * @param currentlyDownloadedBytes Current size of data downloaded in bytes.
-    * @param bytesPerSecond Current transfer rate in bytes per second.
+/** @struct DownloadCallbackParams
+    *  @brief Parameters relating to download callback.
+    *  @var DownloadCallbackParams::totalSizeBytes
+    *  Total size in bytes of file being downloaded.
+    *  @var DownloadCallbackParams::currentlyDownloadedBytes
+    *  CurrentlyDownloadedBytes Current size of data downloaded in bytes.
+    *  @var DownloadCallbackParams::bytesPerSecond
+    *  BytesPerSecond Current transfer rate in bytes per second.
+    *  @var DownloadCallbackParams::url
+    *  BytesPerSecond Current transfer rate in bytes per second.
+    *  @var DownloadCallbackParams::relativePath
+    *  Relative path of resource.
     */
-using DownloadCallback = std::function<void( uintmax_t totalSizeBytes, uintmax_t currentlyDownloadedBytes, double bytesPerSecond )>;
+struct DownloadCallbackParams
+{
+	uintmax_t totalSizeBytes = 0;
+	uintmax_t currentlyDownloadedBytes = 0;
+	double bytesPerSecond = 0;
+	std::string url = "";
+	std::filesystem::path relativePath = "";
+};
+
+/** Download Callback function signature.
+    * @param params data relating to callback.
+    */
+using DownloadCallback = std::function<void( const DownloadCallbackParams& params )>;
 
 /** @struct DownloadSettings
     *  @brief Parameters relating downloading
@@ -61,6 +81,8 @@ using DownloadCallback = std::function<void( uintmax_t totalSizeBytes, uintmax_t
     *  Delay before a failed download is retried (seconds)
     *  @var DownloadSettings::retryCount
     *  Number of times times a download is retried before failure. Note: a backoff is also applied before retry.
+    *  @var DownloadSettings::cacheBasePath
+    *  Base path where temporary downloads are placed.
     *  @var DownloadSettings::downloadInfoCallback
     *  Optional callback to receive download information.
     */
@@ -69,6 +91,8 @@ struct DownloadSettings
 	std::chrono::seconds retrySeconds{ 1 };
 
 	uintmax_t retryCount = 3;
+
+    std::filesystem::path cacheBasePath = std::filesystem::temp_directory_path();
 
     DownloadCallback downloadInfoCallback = nullptr;
 };

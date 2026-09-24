@@ -53,7 +53,7 @@ ResourceGroup::ResourceGroupImpl::~ResourceGroupImpl()
 Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResourceGroupFromDirectoryParams& params, StatusSettings& statusSettings )
 {
 	// Update status
-	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 10, "Creating resource group from directory: " + params.directory.string() );
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 10, "Creating resource group from directory: " + params.directory.u8string() );
 
 	if( !std::filesystem::exists( params.directory ) )
 	{
@@ -80,7 +80,7 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromDirectory( const CreateResour
 			if( entry.is_regular_file() )
 			{
 				// Update status
-				fileProcessingInnerStatusSettings.Update( CarbonResources::StatusProgressType::UNBOUNDED, 0, 0, "Processing File: " + entry.path().string() );
+				fileProcessingInnerStatusSettings.Update( CarbonResources::StatusProgressType::UNBOUNDED, 0, 0, "Processing File: " + entry.path().u8string() );
 
 				// Create resource
 				auto fileSize = entry.file_size();
@@ -1009,7 +1009,7 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromFilter( const CreateResourceG
 
 			if( !ResourceTools::GetLocalFileData( filterPath, filterData ) )
 			{
-				std::string errorMsg = "Failed to open filter file: " + filterPath.string();
+				std::string errorMsg = "Failed to open filter file: " + filterPath.u8string();
 				return Result{ ResultType::FAILED_TO_OPEN_FILE, errorMsg };
 			}
 
@@ -1099,7 +1099,7 @@ Result ResourceGroup::ResourceGroupImpl::CreateFromFilter( const CreateResourceG
 				}
 				else
 				{
-					return Result{ ResultType::INPUT_DIRECTORY_DOESNT_EXIST, inputDirectory.string() };
+					return Result{ ResultType::INPUT_DIRECTORY_DOESNT_EXIST, inputDirectory.u8string() };
 				}
 			}
 
@@ -1266,7 +1266,7 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromFile( const ResourceGroupImpo
 Result ResourceGroup::ResourceGroupImpl::ExportToFile( const ResourceGroupExportToFileParams& params, StatusSettings& statusSettings ) const
 {
 	// Update status
-	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 10, "Exporting Resource Group to file: " + params.filename.string() );
+	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 10, "Exporting Resource Group to file: " + params.filename.u8string() );
 
 	std::string data = "";
 
@@ -1274,7 +1274,7 @@ Result ResourceGroup::ResourceGroupImpl::ExportToFile( const ResourceGroupExport
 	{
 		{
 			StatusSettings exportCsvstatusSettings;
-			statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 10, 90, "Exporting Resource Group to file: " + params.filename.string(), &exportCsvstatusSettings );
+			statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 10, 90, "Exporting Resource Group to file: " + params.filename.u8string(), &exportCsvstatusSettings );
 
 
 			Result exportCsvResult = ExportCsv( params.outputDocumentVersion, data, exportCsvstatusSettings );
@@ -1288,7 +1288,7 @@ Result ResourceGroup::ResourceGroupImpl::ExportToFile( const ResourceGroupExport
 	{
 		{
 			StatusSettings exportYamlstatusSettings;
-			statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 10, 90, "Exporting Resource Group to file: " + params.filename.string(), &exportYamlstatusSettings );
+			statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 10, 90, "Exporting Resource Group to file: " + params.filename.u8string(), &exportYamlstatusSettings );
 
 			Result exportYamlResult = ExportYaml( params.outputDocumentVersion, data, exportYamlstatusSettings );
 
@@ -1455,7 +1455,7 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromCSV( const std::string& data,
 				return addResourceResult;
 			}
 
-			detailStatusSettings.Update( CarbonResources::StatusProgressType::UNBOUNDED, 0, 0, "Imported resource: " + resourceParams.relativePath.string() );
+			detailStatusSettings.Update( CarbonResources::StatusProgressType::UNBOUNDED, 0, 0, "Imported resource: " + resourceParams.relativePath.u8string() );
 		}
 	}
 
@@ -1665,7 +1665,7 @@ Result ResourceGroup::ResourceGroupImpl::ImportFromYaml( YAML::Node& resourceGro
 					return getResourcePathResult;
                 }
 
-				resourcesStatusSettings.Update( StatusProgressType::PERCENTAGE, progress, step, "Adding resource: " + resourcePath.string() );
+				resourcesStatusSettings.Update( StatusProgressType::PERCENTAGE, progress, step, "Adding resource: " + resourcePath.u8string() );
             }
 
 			Result addResourceResult = AddResource( resource );
@@ -1788,7 +1788,7 @@ Result ResourceGroup::ResourceGroupImpl::ExportYaml( const VersionInternal& outp
 				float step = static_cast<float>( 100.0 / m_resourcesParameter.GetSize() );
 				float percentage = static_cast<float>( step * i );
 
-				std::string message = "Exporting: " + relativePath.string();
+				std::string message = "Exporting: " + relativePath.u8string();
 
 				detailExportingStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentage, step, message );
 
@@ -2139,11 +2139,11 @@ Result ResourceGroup::ResourceGroupImpl::CreateBundle( const BundleCreateParams&
 
 				if( location.empty() )
 				{
-					message = "No file to process: " + relativePath.string();
+					message = "No file to process: " + relativePath.u8string();
 				}
 				else
 				{
-					message = "Processing: " + relativePath.string();
+					message = "Processing: " + relativePath.u8string();
 				}
 
 				float step = static_cast<float>( 100.0 / toBundle.size() );
@@ -2490,7 +2490,7 @@ Result ResourceGroup::ResourceGroupImpl::CreatePatch( const PatchCreateParams& p
 					return getRelativePathResult;
 				}
 
-				std::string message = "Creating patch for: " + relativePath.string();
+				std::string message = "Creating patch for: " + relativePath.u8string();
 
 				resourceStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentageComplete, step, message );
 			}
@@ -2576,7 +2576,7 @@ Result ResourceGroup::ResourceGroupImpl::CreatePatch( const PatchCreateParams& p
 
 				if( !index.Generate() )
 				{
-					std::string message = "Index generation failed for " + relativePath.string();
+					std::string message = "Index generation failed for " + relativePath.u8string();
 					resourceStatusSettings.Update( StatusProgressType::WARNING, 0, 0, message );
 				}
 
@@ -2966,7 +2966,7 @@ Result ResourceGroup::ResourceGroupImpl::RemoveResources( const ResourceGroupRem
             {
 				float step = static_cast<float>( 100.0 / params.resourcesToRemove->size() );
 				float percentComplete = static_cast<float>( step * i );
-                nestedStatusSettings.Update( StatusProgressType::PERCENTAGE, percentComplete, step, "Removing resource: " + relativePath.string() );
+                nestedStatusSettings.Update( StatusProgressType::PERCENTAGE, percentComplete, step, "Removing resource: " + relativePath.u8string() );
 				i++;
             }
 
@@ -3184,7 +3184,7 @@ Result ResourceGroup::ResourceGroupImpl::DiffChangesAsLists( const ResourceGroup
             {
 				float step = static_cast<float>( 100.0 / subtractionParams.removedResources.size() );
 				float percentage = static_cast<float>( i * step );
-				subtractionsStatusSettings.Update( StatusProgressType::PERCENTAGE, percentage, step, removedResource.string() );
+				subtractionsStatusSettings.Update( StatusProgressType::PERCENTAGE, percentage, step, removedResource.u8string() );
 				i++;
             }
 			
@@ -3208,7 +3208,7 @@ Result ResourceGroup::ResourceGroupImpl::DiffChangesAsLists( const ResourceGroup
 			{
 				float step = static_cast<float>( 100.0 / result1.m_impl->m_resourcesParameter.GetSize() );
 				float percentage = static_cast<float>( i * step );
-				additionsStatusSettings.Update( StatusProgressType::PERCENTAGE, percentage, step, relativePath.string() );
+				additionsStatusSettings.Update( StatusProgressType::PERCENTAGE, percentage, step, relativePath.u8string() );
 				i++;
 			}
 
@@ -3277,7 +3277,7 @@ Result ResourceGroup::ResourceGroupImpl::Diff( ResourceGroupSubtractionParams& p
 					return getRelativePathResult;
 				}
 
-				std::string message = "Processing: " + relativePath.string();
+				std::string message = "Processing: " + relativePath.u8string();
 
 				float step = static_cast<float>( 100.0 / m_resourcesParameter.GetSize() );
 				float percentComplete = static_cast<float>( step * i );
@@ -3356,7 +3356,7 @@ Result ResourceGroup::ResourceGroupImpl::Diff( ResourceGroupSubtractionParams& p
 				{
 					return getRelativePathResult;
 				}
-				std::string message = "Processing new resource: " + relativePath.string();
+				std::string message = "Processing new resource: " + relativePath.u8string();
 				float step = static_cast<float>( 100.0 / m_resourcesParameter.GetSize() );
 				float percentComplete = static_cast<float>( step * i );
 				addResourceStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, step, message );
@@ -3409,7 +3409,7 @@ Result ResourceGroup::ResourceGroupImpl::Diff( ResourceGroupSubtractionParams& p
 				{
 					return getRelativePathResult;
 				}
-				std::string message = "Processing removed resource: " + relativePath.string();
+				std::string message = "Processing removed resource: " + relativePath.u8string();
 				float step = static_cast<float>( 100.0 / m_resourcesParameter.GetSize() );
 				float percentComplete = static_cast<float>( step * i );
 				removeResourceStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentComplete, step, message );

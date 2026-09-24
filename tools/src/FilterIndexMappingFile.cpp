@@ -10,7 +10,7 @@ bool FilterIndexMappingFile::LoadFromFile( const std::filesystem::path& path )
 	YAML::Node file;
 	try
 	{
-		file = YAML::LoadFile( path.string() );
+		file = YAML::LoadFile( path.u8string() );
 	}
 	catch( YAML::ParserException& )
 	{
