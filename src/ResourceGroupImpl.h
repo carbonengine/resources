@@ -115,6 +115,8 @@ public:
 protected:
 	virtual Result CreateResourceFromYaml( YAML::Node& resource, ResourceInfo*& resourceOut );
 
+    Result GetLargestResourceSize( uintmax_t& largestResourceSizeOut );
+
 private:
 	virtual Result CreateResourceFromResource( const ResourceInfo& resourceIn, ResourceInfo*& resourceOut ) const;
 
@@ -128,8 +130,6 @@ private:
 	Result ExportYaml( const VersionInternal& outputDocumentVersion, std::string& data, StatusSettings& statusCallback ) const;
 
 	Result ExportCsv( const VersionInternal& outputDocumentVersion, std::string& data, StatusSettings& statusCallback ) const;
-
-	Result ProcessChunk( ResourceTools::GetChunk& chunkData, const std::filesystem::path& chunkRelativePath, BundleResourceGroup::BundleResourceGroupImpl& bundleResourceGroup, const ResourceDestinationSettings& chunkDestinationSettings ) const;
 
 	Result RemoveResource( ResourceInfo& relativePath );
 

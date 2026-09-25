@@ -26,7 +26,7 @@ public:
 
 	Result SetMaxInputChunkSize( uintmax_t maxInputChunkSize );
 
-	Result Apply( const PatchApplyParams& params, StatusSettings& statusSettings );
+	Result Apply( PatchApplyParams& params, StatusSettings& statusSettings );
 
 	virtual std::string GetType() const override;
 

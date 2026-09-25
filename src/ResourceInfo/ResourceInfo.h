@@ -250,8 +250,6 @@ struct ResourceGetDataParams
 
 	std::string* data = nullptr;
 
-	std::filesystem::path cacheBasePath = std::filesystem::temp_directory_path();
-
 	std::string expectedChecksum = "";
 
 	DownloadSettings downloadSettings;

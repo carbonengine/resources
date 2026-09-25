@@ -19,6 +19,7 @@ GzipCompressionStream ::~GzipCompressionStream()
 
 bool GzipCompressionStream::Start()
 {
+	m_buffer_position = 0;
 
 	m_stream.zalloc = Z_NULL;
 
@@ -42,18 +43,23 @@ bool GzipCompressionStream::Start()
 
 bool GzipCompressionStream::ProcessBuffer( bool finish )
 {
+	const char* buffer_ptr = m_buffer.c_str();
+
 	constexpr size_t CHUNK = 16384; // 16kb
 	int ret = Z_OK;
 	unsigned char outbuffer[CHUNK];
 	int flush{ Z_NO_FLUSH };
-	while( ret == Z_OK && ( finish || !m_buffer.empty() ) )
+	while( ret == Z_OK && ( finish || m_buffer_position != m_buffer.size() ) )
 	{
-		size_t available = m_buffer.size();
-		m_stream.next_in = reinterpret_cast<Bytef*>( const_cast<char*>( m_buffer.c_str() ) );
+		size_t available = m_buffer.size() - m_buffer_position;
+		m_stream.next_in = reinterpret_cast<Bytef*>( const_cast<char*>( buffer_ptr + m_buffer_position ) );
 		m_stream.avail_in = static_cast<uInt>( available );
 		m_stream.next_out = outbuffer;
 		m_stream.avail_out = CHUNK;
-		if( finish && m_buffer.size() <= CHUNK )
+
+        auto remaining = m_buffer.size() - m_buffer_position;
+
+		if( finish && remaining <= CHUNK )
 		{
 			flush = Z_FINISH;
 		}
@@ -63,11 +69,12 @@ bool GzipCompressionStream::ProcessBuffer( bool finish )
 		uLong outBytes = m_stream.total_out - alreadyOut;
 		uLong inBytes = m_stream.total_in - alreadyIn;
 		m_out->append( std::string( reinterpret_cast<const char*>( outbuffer ), outBytes ) );
-		m_buffer = m_buffer.substr( inBytes );
+		m_buffer_position += inBytes;
 	}
 
 	if( ret != Z_OK && ret != Z_STREAM_END )
 	{
+		m_buffer.clear();
 		deflateEnd( &m_stream );
 		return false;
 	}

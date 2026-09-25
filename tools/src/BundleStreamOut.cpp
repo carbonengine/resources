@@ -7,56 +7,64 @@
 
 namespace ResourceTools
 {
-BundleStreamOut::BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory, bool splitOnCompressed ) :
+
+// outputCompressed will only create compressed output from this job
+// if split on compressed is on
+// If it isn't then this work is deferred until the processing step
+// This allows the work to be done asynchronously
+BundleStreamOut::BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory, bool outputCompressed, bool splitOnCompressedSize, bool calculateCompressions ) :
 	m_chunkSize( chunkSize ),
 	m_outputDirectory( outputDirectory ),
-	m_splitOnCompressed( splitOnCompressed )
+	m_outputCompressed( outputCompressed ),
+	m_splitOnCompressedSize( splitOnCompressedSize ),
+	m_calculateCompressions( calculateCompressions ),
+	m_checksumStream( std::make_unique<ResourceTools::Md5ChecksumStream>() )
 {
+   
 }
 
 BundleStreamOut::~BundleStreamOut()
 {
 }
 
-std::filesystem::path RawFilename( std::filesystem::path outputDirectory, uint32_t chunkNumber )
+std::filesystem::path RawFilename( std::filesystem::path outputDirectory, size_t chunkNumber )
 {
-	std::string filename = "chunk" + std::to_string( chunkNumber ) + ".raw";
+	std::string filename = "chunk" + std::to_string( chunkNumber ) + ".tmp";
 
 	return outputDirectory / filename;
 }
 
-std::filesystem::path CompressedFilename( std::filesystem::path outputDirectory, uint32_t chunkNumber )
+
+bool BundleStreamOut::InitializeOutputStream()
 {
-	std::string filename = "chunk" + std::to_string( chunkNumber ) + ".compressed";
+	std::filesystem::path rawPath = RawFilename( m_outputDirectory, m_chunkInfos.size() );
 
-	return outputDirectory / filename;
-}
+	m_chunkOut = std::make_unique<ResourceTools::FileDataStreamOut>();
 
-bool BundleStreamOut::InitializeOutputStreams()
-{
-	std::filesystem::path compressedPath = CompressedFilename( m_outputDirectory, m_chunksCreated );
-
-	std::filesystem::path rawPath = RawFilename( m_outputDirectory, m_chunksCreated );
-
-	m_uncompressedOut = std::make_unique<ResourceTools::FileDataStreamOut>();
-
-	if( !m_uncompressedOut->StartWrite( rawPath ) )
+	if( !m_chunkOut->StartWrite( rawPath ) )
 	{
 		return false;
 	}
 
-	m_compressedOut = std::make_unique<ResourceTools::FileDataStreamOut>();
+    m_currentChunk.path = rawPath;
+	m_currentChunk.checksum = "";
+	m_currentChunk.compressedSize = 0;
+	m_currentChunk.uncompressedSize = 0;
 
-	if( !m_compressedOut->StartWrite( compressedPath ) )
-	{
-		return false;
-	}
+    // Setup compression stream
+	if( m_splitOnCompressedSize )
+    {
+		m_compressionStream = std::make_unique<GzipCompressionStream>( &m_compressedData );
 
-	m_chunkFiles.push_back( std::make_shared<ScopedFile>( rawPath ) );
+		m_compressedData.clear();
 
-	m_chunkFiles.push_back( std::make_shared<ScopedFile>( compressedPath ) );
-
-	return true;
+		if( !m_compressionStream->Start() )
+		{
+			return false;
+		}
+    }
+    
+    return true;
 }
 
 bool BundleStreamOut::Finish()
@@ -66,30 +74,60 @@ bool BundleStreamOut::Finish()
 
 bool BundleStreamOut::Flush()
 {
+	
 	// Chunk size achieved after compression
-	if( !m_compressionStream )
-	{
-		return true;
-	}
+	if( m_splitOnCompressedSize )
+    {
+		if( !m_compressionStream )
+		{
+			return true;
+		}
 
-	if( !m_compressionStream->Finish() )
-	{
+		if( !m_compressionStream->Finish() )
+		{
+			return false;
+		}
+
+		if( m_outputCompressed )
+		{
+			*m_chunkOut << m_compressedData;
+		}
+
+        if (m_calculateCompressions)
+        {
+			m_currentChunk.compressedSize = m_compressedData.size();
+        }
+
+        m_compressedData.clear();
+
+		m_compressionStream.reset();
+    }
+	
+
+	m_chunkOut->Finish();
+
+    m_chunkOut.reset();
+
+    // Retrieve checksum and store
+    std::string chunkChecksum;
+
+    if (!m_checksumStream->Retrieve(chunkChecksum))
+    {
 		return false;
-	}
+    }
 
-	*m_compressedOut << m_compressedData;
+    m_currentChunk.checksum = chunkChecksum;
 
-	m_compressedData.clear();
+    m_checksumStream = std::make_unique<ResourceTools::Md5ChecksumStream>();
 
-	++m_chunksCreated;
-
-	m_compressionStream.release();
-
-    m_compressedOut->Finish();
-
-    m_uncompressedOut->Finish();
+    m_chunkInfos.push_back( m_currentChunk );
 
 	return true;
+}
+
+size_t BundleStreamOut::GetNumberOfChunksCreated()
+{
+	return m_chunkInfos.size();
 }
 
 bool BundleStreamOut::operator<<( std::shared_ptr<FileDataStreamIn> streamIn )
@@ -98,41 +136,52 @@ bool BundleStreamOut::operator<<( std::shared_ptr<FileDataStreamIn> streamIn )
 
 	while( *streamIn >> data )
 	{
-		if( !m_compressionStream )
+		if( !m_chunkOut )
 		{
-			m_compressionStream = std::make_unique<GzipCompressionStream>( &m_compressedData );
-
-			m_compressedData.clear();
-
-			if( !m_compressionStream->Start() )
-			{
-				return false;
-			}
-
-			if( !InitializeOutputStreams() )
+			if( !InitializeOutputStream() )
 			{
 				return false;
 			}
 		}
+
+        m_currentChunk.uncompressedSize += data.size();
+
+        if( m_splitOnCompressedSize )
+        {
+			if(!m_compressionStream->operator<<( &data ))
+			{
+				return false;
+			}
+        }
 
         // Output uncompressed data
-        *m_uncompressedOut << data;
+		bool outputUncompressed = !m_outputCompressed;
 
-        // Compress the data
-		if( !m_compressionStream->operator<<( &data ) )
-		{
-			return false;
-		}
-
-        // If split on uncompressed size then there is much more chance of stable chunk sizes
-        // If splitting on compressed size then the chunk size will vary
-        // This is due to the fact that compression of the data is not predictable
-        size_t splitSize = m_uncompressedOut->GetFileSize();
-
-        if (m_splitOnCompressed)
+        if (m_outputCompressed && !m_splitOnCompressedSize)
         {
-			splitSize = m_compressedData.size();
+            // Destination should be compressed but as this doesn't
+            // split on compressed then the compression will be defferred
+			outputUncompressed = true;
         }
+
+        if( outputUncompressed )
+        {
+			if( !( *m_chunkOut << data ) )
+			{
+				return false;
+			}
+        }
+        
+        // Checksum calculation
+		if(!(m_checksumStream->operator<<(data)))
+        {
+			return false;
+        }
+
+        // Can either be split based on the current compressed or uncompressed total size
+        // If using uncompressed then it is expected that the output chunks will be less efficient
+        // But the split will be more accurate and it can be faster if also not processing compression
+        size_t splitSize = m_splitOnCompressedSize ? m_compressedData.size() : m_currentChunk.uncompressedSize;
 
         // See if the current output is greater than the chunk size indicator
 		if( splitSize >= m_chunkSize )
@@ -151,52 +200,17 @@ bool BundleStreamOut::operator<<( std::shared_ptr<FileDataStreamIn> streamIn )
 	return true;
 }
 
-bool BundleStreamOut::AddChunkFilesToGetChunk( GetChunk& data )
+bool BundleStreamOut::GetChunkInfo( int index, ChunkInfo& chunkInfo )
 {
-	// Needs to be called after all changes have been made to the file,
-	// since FileDataStreamIn assumes filesize does not change once created.
-	auto rawDir = RawFilename( m_outputDirectory, m_chunksExported );
-
-	auto compressedDir = CompressedFilename( m_outputDirectory, m_chunksExported );
-
-	if( !exists( rawDir ) || !exists( compressedDir ) )
-	{
+	if( index >= m_chunkInfos.size() )
+    {
 		return false;
-	}
-
-	data.uncompressedChunkIn = std::make_shared<FileDataStreamIn>();
-
-	if( !data.uncompressedChunkIn->StartRead( rawDir ) )
-	{
-		return false;
-	}
-
-	data.compressedChunkIn = std::make_shared<FileDataStreamIn>();
-
-	if( !data.compressedChunkIn->StartRead( compressedDir ) )
-	{
-		return false;
-	}
-
-	return true;
+    }
+    else
+    {
+		chunkInfo = m_chunkInfos.at( index );
+		return true;
+    }
 }
 
-bool BundleStreamOut::operator>>( GetChunk& data )
-{
-	if( m_chunksCreated == m_chunksExported )
-	{
-		// Not enough data to create chunk
-		data.outOfChunks = true;
-	}
-	else
-	{
-        if (!AddChunkFilesToGetChunk(data))
-        {
-			return false;
-        }
-		m_chunksExported++;
-	}
-
-	return true;
-}
 }

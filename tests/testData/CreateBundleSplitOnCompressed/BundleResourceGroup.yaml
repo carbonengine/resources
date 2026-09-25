@@ -1,0 +1,20 @@
+Version: 0.1.0
+Type: BundleGroup
+NumberOfResources: 1
+TotalResourcesSizeCompressed: 8389
+TotalResourcesSizeUnCompressed: 41961
+ResourceGroupResource:
+  RelativePath: ResourceGroup.yaml
+  Type: ResourceGroup
+  Location: cc/cc00d34500ea7a31_f32613169b3491afb5d029828d269ff3
+  Checksum: f32613169b3491afb5d029828d269ff3
+  UncompressedSize: 851
+  CompressedSize: 363
+ChunkSize: 1000
+Resources:
+  - RelativePath: CreateBundleOut/ResourceGroup0.chunk
+    Type: BinaryChunk
+    Location: 24/2445432734181d30_c6ffd7f72188cbf71e665c3714b5b148
+    Checksum: c6ffd7f72188cbf71e665c3714b5b148
+    UncompressedSize: 41961
+    CompressedSize: 8389

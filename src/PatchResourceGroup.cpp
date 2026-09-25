@@ -16,7 +16,7 @@ PatchResourceGroup::~PatchResourceGroup()
 {
 }
 
-Result PatchResourceGroup::Apply( const PatchApplyParams& params )
+Result PatchResourceGroup::Apply( PatchApplyParams& params )
 {
 	StatusSettings statusSettings;
 	statusSettings.SetCallbackSettings( params.callbackSettings );

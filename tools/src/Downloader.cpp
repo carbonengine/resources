@@ -37,6 +37,10 @@ void ShutDownCurl()
 
 struct WriteToFileStreamCallWrapper
 {
+	std::string url;
+
+    std::filesystem::path relativePath;
+
 	std::ofstream out;
 
     ResourceTools::DownloadFileCallback callback = nullptr;
@@ -78,7 +82,7 @@ size_t WriteToFileStreamCallback( void* contents, size_t size, size_t nmemb, voi
 			bytesPerSecond = (double)wrapper->downloadedSizeBytes / durationSecondsSinceSeconds;
         }
 
-		wrapper->callback( wrapper->totalSizeBytes, wrapper->downloadedSizeBytes, bytesPerSecond, wrapper->context );
+		wrapper->callback( wrapper->url, wrapper->relativePath, wrapper->totalSizeBytes, wrapper->downloadedSizeBytes, bytesPerSecond, wrapper->context );
     }
 
 	return realSize;
@@ -147,7 +151,7 @@ Response Downloader::GetHeader( const std::string& url, std::string& response )
 	
 }
 
-bool Downloader::DownloadFile( const std::string& url, const std::filesystem::path& outputPath, const std::chrono::seconds& retrySeconds, uintmax_t retryCount, size_t expectedTotalSize /* = 0*/, DownloadFileCallback callback /* = nullptr */, void* callbackContext /* = nullptr */ )
+bool Downloader::DownloadFile( const std::string& url, const std::filesystem::path& relativePath, const std::filesystem::path& outputPath, const std::chrono::seconds& retrySeconds, uintmax_t retryCount, size_t expectedTotalSize /* = 0*/, DownloadFileCallback callback /* = nullptr */, void* callbackContext /* = nullptr */ )
 {
 	if( std::filesystem::exists( outputPath ) )
 	{
@@ -166,6 +170,8 @@ bool Downloader::DownloadFile( const std::string& url, const std::filesystem::pa
 	callWrapper.callback = callback;
 	callWrapper.totalSizeBytes = expectedTotalSize;
 	callWrapper.context = callbackContext;
+	callWrapper.url = url;
+	callWrapper.relativePath = relativePath;
 
 	curl_easy_setopt( m_curlHandle, CURLOPT_URL, url.c_str() );
 	curl_easy_setopt( m_curlHandle, CURLOPT_FAILONERROR, 1 );

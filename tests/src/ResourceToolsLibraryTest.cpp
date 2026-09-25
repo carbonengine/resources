@@ -83,7 +83,7 @@ TEST_F( ResourceToolsTest, FowlerNollVoChecksumGeneration )
 	EXPECT_EQ( output, "a9d1721dd5cc6d54" );
 }
 
-void DownloadCallback(size_t totalSizeBytes, size_t currentDownloadedBytes, double bytesPerSecond, void* context)
+void DownloadCallback(const std::string& url, const std::filesystem::path& relativePath, size_t totalSizeBytes, size_t currentDownloadedBytes, double bytesPerSecond, void* context)
 {
 	size_t* contextInt = static_cast<size_t*>( context );
 	*contextInt = currentDownloadedBytes;
@@ -118,7 +118,7 @@ TEST_F( ResourceToolsTest, DownloadFile )
 
     size_t contextCheck = 0;
 
-	EXPECT_TRUE( downloader.DownloadFile( url, outputPathString, retrySeconds, retries, sourceFilesize, DownloadCallback, &contextCheck ) );
+	EXPECT_TRUE( downloader.DownloadFile( url, sourcePath, outputPathString, retrySeconds, retries, sourceFilesize, DownloadCallback, &contextCheck ) );
 	EXPECT_EQ( contextCheck, sourceFilesize );
 	EXPECT_TRUE( std::filesystem::exists( outputPath ) );
 
@@ -284,7 +284,7 @@ TEST_F( ResourceToolsTest, ResourceChunkingManyFilesIntoManyChunkWithUnCompresse
 
 	std::filesystem::path testDir{ "ResourceChunking" };
 
-	ResourceTools::BundleStreamOut bundleStream( chunkSize, testDir, false );
+	ResourceTools::BundleStreamOut bundleStream( chunkSize, testDir, false, false, true );
 
 	// Add test resource1 data
 	std::string resource1Data;
@@ -351,9 +351,7 @@ TEST_F( ResourceToolsTest, ResourceChunkingManyFilesIntoManyChunkWithUnCompresse
 	// Get chunks
 	int numberOfChunks = 0;
 
-	ResourceTools::GetChunk chunk;
-
-	chunk.clearCache = false;
+    ResourceTools::ChunkInfo chunkInfo;
 
 	bool bundleStreamReadOk{ true };
 
@@ -364,9 +362,14 @@ TEST_F( ResourceToolsTest, ResourceChunkingManyFilesIntoManyChunkWithUnCompresse
 
 	std::filesystem::create_directories( "Chunks" );
 
-	while( ( bundleStreamReadOk = ( bundleStream >> chunk ) ) && !chunk.outOfChunks )
-	{
-		// Create Filename
+    for (int i = 0; i < bundleStream.GetNumberOfChunksCreated(); i++)
+    {
+        if (!bundleStream.GetChunkInfo(i, chunkInfo))
+        {
+			FAIL();
+        }
+
+        // Create Filename
 		std::stringstream ss;
 
 		ss << "Chunks/Chunk";
@@ -377,11 +380,11 @@ TEST_F( ResourceToolsTest, ResourceChunkingManyFilesIntoManyChunkWithUnCompresse
 
 		std::string chunkPath = ss.str();
 
-		std::filesystem::copy_file( chunk.uncompressedChunkIn->GetPath(), chunkPath );
+		std::filesystem::copy_file( chunkInfo.path, chunkPath );
 
 		numberOfChunks++;
-	}
-	EXPECT_TRUE( bundleStreamReadOk );
+
+    }
 
 	// Reconsitute the files
 	ResourceTools::BundleStreamIn chunkStreamReconstitute( chunkSize );
@@ -469,7 +472,7 @@ TEST_F( ResourceToolsTest, ResourceChunkingManyFilesIntoSingleChunkWithCompresse
 
 	std::filesystem::path testDir{ "ResourceChunking" };
 
-	ResourceTools::BundleStreamOut bundleStream( chunkSize, testDir, true );
+	ResourceTools::BundleStreamOut bundleStream( chunkSize, testDir, false, true, true );
 
 	// Add test resource1 data
 	std::string resource1Data;
@@ -536,9 +539,8 @@ TEST_F( ResourceToolsTest, ResourceChunkingManyFilesIntoSingleChunkWithCompresse
 	// Get chunks
 	int numberOfChunks = 0;
 
-	ResourceTools::GetChunk chunk;
 
-	chunk.clearCache = false;
+    ResourceTools::ChunkInfo chunkInfo;
 
 	bool bundleStreamReadOk{ true };
 
@@ -549,9 +551,14 @@ TEST_F( ResourceToolsTest, ResourceChunkingManyFilesIntoSingleChunkWithCompresse
 
     std::filesystem::create_directories( "Chunks" );
 
-	while( ( bundleStreamReadOk = ( bundleStream >> chunk ) ) && !chunk.outOfChunks )
-	{
-		// Create Filename
+    for (int i = 0; i < bundleStream.GetNumberOfChunksCreated(); i++)
+    {
+        if (!bundleStream.GetChunkInfo(i, chunkInfo))
+        {
+			FAIL();
+        }
+
+        // Create Filename
 		std::stringstream ss;
 
 		ss << "Chunks/Chunk";
@@ -562,11 +569,11 @@ TEST_F( ResourceToolsTest, ResourceChunkingManyFilesIntoSingleChunkWithCompresse
 
 		std::string chunkPath = ss.str();
 
-		std::filesystem::copy_file( chunk.uncompressedChunkIn->GetPath(), chunkPath );
+		std::filesystem::copy_file( chunkInfo.path, chunkPath );
 
 		numberOfChunks++;
-	}
-	EXPECT_TRUE( bundleStreamReadOk );
+
+    }
 
 	// Reconsitute the files
 	ResourceTools::BundleStreamIn chunkStreamReconstitute( chunkSize );

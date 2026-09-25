@@ -18,7 +18,7 @@ enum class Response
 	DOWNLOAD_ERROR,
 };
 
-using DownloadFileCallback =  std::function<void( size_t totalSizeBytes, size_t dataSizeBytes, double bytesPerSecond, void* )>;
+using DownloadFileCallback =  std::function<void( const std::string& url, const std::filesystem::path& relativePath, size_t totalSizeBytes, size_t dataSizeBytes, double bytesPerSecond, void* )>;
 
 
 // Utility class for downloading files.
@@ -30,7 +30,7 @@ public:
 
 	~Downloader();
 
-	bool DownloadFile( const std::string& url, const std::filesystem::path& outputPath, const std::chrono::seconds& retrySeconds, uintmax_t retryCount, size_t expectedTotalSize = 0, DownloadFileCallback callback = nullptr, void* callbackContext = nullptr );
+	bool DownloadFile( const std::string& url, const std::filesystem::path& relativePath, const std::filesystem::path& outputPath, const std::chrono::seconds& retrySeconds, uintmax_t retryCount, size_t expectedTotalSize = 0, DownloadFileCallback callback = nullptr, void* callbackContext = nullptr );
 
     Response GetHeader( const std::string& url, std::string& response );
 

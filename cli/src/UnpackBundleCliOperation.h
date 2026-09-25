@@ -22,4 +22,5 @@ private:
 	std::string m_chunkSourceTypeArgumentId;
 	std::string m_resourceDestinationBasePathArgumentId;
 	std::string m_resourceDestinationTypeArgumentId;
+	std::string m_chunkReadCacheSize;
 };

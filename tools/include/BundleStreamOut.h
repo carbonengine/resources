@@ -7,46 +7,44 @@
 #include <FileDataStreamIn.h>
 #include <FileDataStreamOut.h>
 #include <ScopedFile.h>
-
+#include <Md5ChecksumStream.h>
 #include <string>
+
 #include "GzipCompressionStream.h"
 
 namespace ResourceTools
 {
 
-struct GetChunk
+struct ChunkInfo
 {
-	std::shared_ptr<ResourceTools::FileDataStreamIn> uncompressedChunkIn;
+	std::string checksum = "";
 
-	std::shared_ptr<ResourceTools::FileDataStreamIn> compressedChunkIn;
+    uintmax_t uncompressedSize = 0;
 
-	bool clearCache{ false };
+	uintmax_t compressedSize = 0;
 
-	bool outOfChunks{ false };
+    std::filesystem::path path = "";
 };
 
 class BundleStreamOut
 {
 public:
-	BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory, bool splitOnCompressed);
+	BundleStreamOut( uintmax_t chunkSize, std::filesystem::path outputDirectory, bool outputCompressed, bool splitOnCompressed, bool calculateCompressions );
 
 	~BundleStreamOut();
 
 	bool operator<<( std::shared_ptr<ResourceTools::FileDataStreamIn> streamIn );
 
-	// Outputs chunks
-	bool operator>>( GetChunk& data );
+	bool GetChunkInfo( int index, ChunkInfo& chunkInfo );
 
 	bool Finish();
+
+    size_t GetNumberOfChunksCreated();
 
 private:
     bool Flush();
 
-	bool AddChunkFilesToGetChunk( GetChunk& data );
-
-	bool InitializeOutputStreams();
-
-	std::vector<std::shared_ptr<ResourceTools::ScopedFile>> m_chunkFiles;
+    bool InitializeOutputStream();
 
 	uintmax_t m_chunkSize;
 
@@ -58,17 +56,22 @@ private:
 
 	std::unique_ptr<GzipCompressionStream> m_compressionStream;
 
-	std::unique_ptr<ResourceTools::FileDataStreamOut> m_compressedOut;
-
-	std::unique_ptr<ResourceTools::FileDataStreamOut> m_uncompressedOut;
+	std::unique_ptr<ResourceTools::FileDataStreamOut> m_chunkOut;
 
 	std::filesystem::path m_outputDirectory;
 
-	uint32_t m_chunksCreated{ 0 };
+    std::unique_ptr<ResourceTools::Md5ChecksumStream> m_checksumStream;
 
-	uint32_t m_chunksExported{ 0 };
+    bool m_outputCompressed;
 
-    bool m_splitOnCompressed;
+    std::vector<ChunkInfo> m_chunkInfos;
+
+    ChunkInfo m_currentChunk;
+
+    bool m_splitOnCompressedSize;
+
+    bool m_calculateCompressions;
+
 };
 
 }

@@ -24,12 +24,16 @@ namespace CarbonResources
     *  Location where the resources to be patched can be sourced.
     *  @var PatchApplyParams::resourcesToPatchDestinationSettings
     *  Location where to place patched resources. This can match PatchApplyParams::resourcesToPatchSourceSettings to overwrite. Allows creation of staging area in case of failure.
+    *  @var PatchApplyParams::resourcesToRemove
+    *  This will be populated with relative paths of the files that have been removed between previous and next supplied.
     *  @var PatchApplyParams::temporaryFilePath
     *  Name of a temporary filename to use when patching large files. This file will be cleaned up on process completion. 
     *  @var PatchApplyParams::callbackSettings
     *  Settings relating to status callback messaging
     *  @var PatchApplyParams::downloadSettings
     *  Settings relating to downloads
+    *  @var PatchApplyParams::skipNewFiles
+    *  If set then any new files will be skipped rather than retrieved from nextBuildResourcesSource
     */
 struct PatchApplyParams final
 {
@@ -41,11 +45,15 @@ struct PatchApplyParams final
 
 	ResourceDestinationSettings resourcesToPatchDestinationSettings{ ResourceDestinationType::LOCAL_RELATIVE };
 
+    std::vector<std::filesystem::path> resourcesToRemove;
+
 	std::filesystem::path temporaryFilePath = "tempFile.resource";
 
 	CallbackSettings callbackSettings;
 
     DownloadSettings downloadSettings;
+
+    bool skipNewFiles = false;
 };
 
 /** @class PatchResourceGroup
@@ -67,7 +75,7 @@ public:
 	/// @param params input parameters, See PatchApplyParams for more details.
 	/// @see ResourceGroup::CreatePatch for information regarding patch creation.
 	/// @return Result see CarbonResources::Result for more details.
-	Result Apply( const PatchApplyParams& params );
+	Result Apply( PatchApplyParams& params );
 
 private:
 	PatchResourceGroupImpl* m_impl;

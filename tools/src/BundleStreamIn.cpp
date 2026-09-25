@@ -8,7 +8,9 @@ namespace ResourceTools
 
 BundleStreamIn::BundleStreamIn( uintmax_t chunkSize ) :
 	m_chunkSize( chunkSize ),
-	m_dataReadOfCurrentFile( 0 )
+	m_dataReadOfCurrentFile( 0 ),
+	m_cacheOffset(0),
+	m_cacheSize(0)
 {
 }
 
@@ -18,26 +20,36 @@ BundleStreamIn ::~BundleStreamIn()
 
 uintmax_t BundleStreamIn::GetCacheSize()
 {
-	return m_cache.size();
+	return m_cacheSize;
 }
 
 bool BundleStreamIn::operator<<( const std::string& dataData )
 {
 	m_cache.append( dataData );
 
+    auto test = dataData.size();
+
+    m_cacheSize += dataData.size();
+
 	return true;
+}
+
+void BundleStreamIn::clearCache()
+{
+    // If value is over the total cache size in ram then remove used data
+    // This adjusts the buffer size less often to speed up processing
+	m_cache.erase( 0, m_cacheOffset );
+	m_cacheOffset = 0; 
+	
 }
 
 bool BundleStreamIn::operator>>( GetFile& fileData )
 {
-	size_t cacheSize = m_cache.size();
-
-	if( cacheSize == 0 )
+	if( m_cacheSize == 0 )
 	{
 		// No data in cache
 		return false;
 	}
-
 
 	std::string& dataRef = *fileData.data;
 
@@ -45,17 +57,19 @@ bool BundleStreamIn::operator>>( GetFile& fileData )
 	{
 		uintmax_t remainingDataSize = fileData.fileSize - m_dataReadOfCurrentFile;
 
-		dataRef = m_cache.substr( 0, remainingDataSize );
+		dataRef = m_cache.substr( m_cacheOffset, remainingDataSize );
 
-		m_cache.erase( 0, remainingDataSize );
+        m_cacheOffset += remainingDataSize;
+		m_cacheSize -= remainingDataSize;
 
 		m_dataReadOfCurrentFile = 0;
 	}
 	else
 	{
-		dataRef = m_cache.substr( 0, m_chunkSize );
+		dataRef = m_cache.substr( m_cacheOffset, m_chunkSize );
 
-		m_cache.erase( 0, m_chunkSize );
+        m_cacheOffset += m_chunkSize;
+		m_cacheSize -= m_chunkSize;
 
 		m_dataReadOfCurrentFile += m_chunkSize;
 	}
@@ -70,14 +84,16 @@ uintmax_t BundleStreamIn::GetChunkSize() const
 
 bool BundleStreamIn::ReadBytes( size_t n, std::string& out )
 {
-	if( m_cache.size() < n )
+	if( m_cacheSize < n )
 	{
 		return false;
 	}
 
-	out = m_cache.substr( 0, n );
+	out = m_cache.substr( m_cacheOffset, n );
 
-	m_cache.erase( 0, n );
+    m_cacheOffset += n;
+
+    clearCache();
 
 	return true;
 }

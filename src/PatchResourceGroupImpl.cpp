@@ -244,7 +244,7 @@ Result PatchResourceGroup::PatchResourceGroupImpl::GetTargetResourcePatches( con
 	return Result{ ResultType::SUCCESS };
 }
 
-Result PatchResourceGroup::PatchResourceGroupImpl::Apply( const PatchApplyParams& params, StatusSettings& statusSettings )
+Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& params, StatusSettings& statusSettings )
 {
 	statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 0, 10, "Applying Patch." );
 
@@ -332,6 +332,9 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( const PatchApplyParams
 				return Result{ ResultType::FAILED_TO_OPEN_FILE };
 			}
 
+            // This can be skipped if the file is new and new files are skipped in params
+            bool skipChecksumCheck = false;
+
 			// Incrementally calculate checksum for temporary patch file
 			ResourceTools::Md5ChecksumStream patchedFileChecksumStream;
 
@@ -369,6 +372,8 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( const PatchApplyParams
 					patchGetDataParams.resourceSourceSettings = params.patchBinarySourceSettings;
 
 					patchGetDataParams.data = &patchData;
+
+                    patchGetDataParams.downloadSettings = params.downloadSettings;
 
 					std::string location;
 					Result patchGetLocationResult = patch->GetLocation( location );
@@ -583,115 +588,125 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( const PatchApplyParams
 			else
 			{
 				// No Patch found, indicates this is just a new file
-				// Just replace file directly
-				auto resourceStreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( m_maxInputChunkSize.GetValue() );
-
-				ResourceGetDataStreamParams resourceGetDataParams;
-
-				resourceGetDataParams.resourceSourceSettings = params.nextBuildResourcesSourceSettings;
-
-				resourceGetDataParams.dataStream = resourceStreamIn;
-
-                resourceGetDataParams.downloadSettings = params.downloadSettings;
-
-				Result resourceGetDataResult = resource->GetDataStream( resourceGetDataParams );
-
-                if (resourceGetDataResult.type != ResultType::SUCCESS)
+                if (!params.skipNewFiles)
                 {
-                    return resourceGetDataResult;
+					// Just replace file directly
+					auto resourceStreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( m_maxInputChunkSize.GetValue() );
+
+					ResourceGetDataStreamParams resourceGetDataParams;
+
+					resourceGetDataParams.resourceSourceSettings = params.nextBuildResourcesSourceSettings;
+
+					resourceGetDataParams.dataStream = resourceStreamIn;
+
+					resourceGetDataParams.downloadSettings = params.downloadSettings;
+
+					Result resourceGetDataResult = resource->GetDataStream( resourceGetDataParams );
+
+					if( resourceGetDataResult.type != ResultType::SUCCESS )
+					{
+						return resourceGetDataResult;
+					}
+
+					while( !resourceStreamIn->IsFinished() )
+					{
+						std::string resourceData;
+
+						if( !( *resourceStreamIn >> resourceData ) )
+						{
+							return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+						}
+
+						if( !( temporaryResourceDataStreamOut << resourceData ) )
+						{
+							return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
+						}
+
+						// Add to incremental checksum calculation
+						if( !( patchedFileChecksumStream << resourceData ) )
+						{
+							return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+						}
+					}
+
+					temporaryResourceDataStreamOut.Finish();
+   
                 }
-
-                while (!resourceStreamIn->IsFinished())
+                else
                 {
-                    std::string resourceData;
-
-                    if (!(*resourceStreamIn >> resourceData))
-                    {
-                        return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
-                    }
-
-                    if (!(temporaryResourceDataStreamOut << resourceData))
-                    {
-                        return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
-                    }
-
-                    // Add to incremental checksum calculation
-                    if (!(patchedFileChecksumStream << resourceData))
-                    {
-                        return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
-                    }
-                }
-
-                temporaryResourceDataStreamOut.Finish();
-            }
-
-
-            // Test checksum against expected
-            std::string destinationExpectedChecksum;
-
-            Result getChecksumResult = resource->GetChecksum(destinationExpectedChecksum);
-
-            if (getChecksumResult.type != ResultType::SUCCESS)
-            {
-                return getChecksumResult;
-            }
-
-            std::string patchedFileChecksum;
-
-            if (!patchedFileChecksumStream.Retrieve(patchedFileChecksum))
-            {
-                return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
-            }
-
-            if (patchedFileChecksum != destinationExpectedChecksum)
-            {
-                return Result{ ResultType::UNEXPECTED_PATCH_CHECKSUM_RESULT };
-            }
-
-
-            // Copy temp file to replace the old resource file
-
-            // Open output stream
-            ResourceTools::FileDataStreamOut resourceStreamOut;
-
-            ResourcePutDataStreamParams patchedResourceResourcePutDataStreamParams;
-
-            patchedResourceResourcePutDataStreamParams.resourceDestinationSettings = params.resourcesToPatchDestinationSettings;
-
-            patchedResourceResourcePutDataStreamParams.dataStream = &resourceStreamOut;
-
-            Result putResourceDataStreamResult = resource->PutDataStream(patchedResourceResourcePutDataStreamParams);
-
-            if (putResourceDataStreamResult.type != ResultType::SUCCESS)
-            {
-                return putResourceDataStreamResult;
-            }
-
-
-            // Open input stream
-            ResourceTools::FileDataStreamIn tempPatchedResourceIn(m_maxInputChunkSize.GetValue());
-
-            if (!tempPatchedResourceIn.StartRead(params.temporaryFilePath))
-            {
-                return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
-            }
-
-            while (!tempPatchedResourceIn.IsFinished())
-            {
-                std::string data;
-
-                if (!(tempPatchedResourceIn >> data))
-                {
-                    return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
-                }
-
-                if (!(resourceStreamOut << data))
-                {
-                    return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
+					skipChecksumCheck = true;
                 }
             }
 
-            resourceStreamOut.Finish();
+            if (!skipChecksumCheck)
+            {
+				// Test checksum against expected
+				std::string destinationExpectedChecksum;
+
+				Result getChecksumResult = resource->GetChecksum( destinationExpectedChecksum );
+
+				if( getChecksumResult.type != ResultType::SUCCESS )
+				{
+					return getChecksumResult;
+				}
+
+                std::string patchedFileChecksum;
+
+				if( !patchedFileChecksumStream.Retrieve( patchedFileChecksum ) )
+				{
+					return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+				}
+
+				if( patchedFileChecksum != destinationExpectedChecksum )
+				{
+					return Result{ ResultType::UNEXPECTED_PATCH_CHECKSUM_RESULT };
+				}
+
+                // Copy temp file to replace the old resource file
+
+				// Open output stream
+				ResourceTools::FileDataStreamOut resourceStreamOut;
+
+				ResourcePutDataStreamParams patchedResourceResourcePutDataStreamParams;
+
+				patchedResourceResourcePutDataStreamParams.resourceDestinationSettings = params.resourcesToPatchDestinationSettings;
+
+				patchedResourceResourcePutDataStreamParams.dataStream = &resourceStreamOut;
+
+				Result putResourceDataStreamResult = resource->PutDataStream( patchedResourceResourcePutDataStreamParams );
+
+				if( putResourceDataStreamResult.type != ResultType::SUCCESS )
+				{
+					return putResourceDataStreamResult;
+				}
+
+
+				// Open input stream
+				ResourceTools::FileDataStreamIn tempPatchedResourceIn( m_maxInputChunkSize.GetValue() );
+
+				if( !tempPatchedResourceIn.StartRead( params.temporaryFilePath ) )
+				{
+					return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+				}
+
+				while( !tempPatchedResourceIn.IsFinished() )
+				{
+					std::string data;
+
+					if( !( tempPatchedResourceIn >> data ) )
+					{
+						return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+					}
+
+					if( !( resourceStreamOut << data ) )
+					{
+						return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
+					}
+				}
+
+				resourceStreamOut.Finish();
+            }
+
         }
     }
 
@@ -708,8 +723,10 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( const PatchApplyParams
             {
 				float step = static_cast<float>( 100.0 / m_removedResources.GetSize() );
 				float percentage = static_cast<float>( step * i );
-				removingFilesStatusSettings.Update( StatusProgressType::PERCENTAGE, percentage, step, toRemove.string() );
+				removingFilesStatusSettings.Update( StatusProgressType::PERCENTAGE, percentage, step, toRemove.u8string() );
             }
+
+            params.resourcesToRemove.push_back( path );
 
 			std::error_code ec;
 			if( std::filesystem::exists( toRemove ) )
@@ -717,7 +734,7 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( const PatchApplyParams
 				bool removed = std::filesystem::remove( toRemove, ec );
 				if( !removed )
 				{
-					statusSettings.Update( StatusProgressType::WARNING, 0, 0, "Failed to remove file " + toRemove.string() );
+					statusSettings.Update( StatusProgressType::WARNING, 0, 0, "Failed to remove file " + toRemove.u8string() );
 				}
 			}
 
@@ -728,7 +745,7 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( const PatchApplyParams
 				bool removed = std::filesystem::remove( toRemove, ec );
 				if( !removed )
 				{
-					statusSettings.Update( StatusProgressType::WARNING, 0, 0, "Failed to remove empty directory " + toRemove.string() );
+					statusSettings.Update( StatusProgressType::WARNING, 0, 0, "Failed to remove empty directory " + toRemove.u8string() );
 				}
 			}
 		}

@@ -23,7 +23,7 @@ if (BUILD_TESTING)
     list(APPEND VCPKG_MANIFEST_FEATURES "tests")
 endif()
 
-project(resources VERSION 4.3.2)
+project(resources VERSION 6.0.0)
 
 include(cmake/CcpTargetConfigurations.cmake)
 include(cmake/CcpDocsGenerator.cmake)

@@ -61,7 +61,7 @@ This will create a patch in the folder ``PatchOut`` which contains:
 Creating a Bundle from the Patch
 --------------------------------
 
-Patch creation can create many files. This is due many factors such as chunked input.
+Patch creation can create many files. This is due to many factors such as chunked input.
 
 Furthermore, once the patch binaries are compressed their size may reduce dramatically.
 

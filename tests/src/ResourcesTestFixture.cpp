@@ -14,11 +14,28 @@
 
 void ResourcesTestFixture::SetUp()
 {
-
 }
 
 void ResourcesTestFixture::TearDown()
 {
+    // Cleanup test folders
+    // This method isn't the best as it doesn't work with threaded test runs
+    // Future cleanup needed to encapsulate the test files better
+	std::stack<std::filesystem::path> directoriesToRemove;
+	for( auto entry : std::filesystem::directory_iterator( std::filesystem::current_path() ) )
+	{
+		if( entry.is_directory() )
+		{
+			directoriesToRemove.push( entry.path() );
+		}
+	}
+
+    while (directoriesToRemove.size() > 0)
+	{
+		std::filesystem::remove_all( directoriesToRemove.top() );
+		directoriesToRemove.pop();
+    }
+
 }
 
 bool ResourcesTestFixture::FileExists( const std::filesystem::path& filePath )

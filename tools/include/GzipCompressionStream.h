@@ -22,14 +22,15 @@ public:
 
 	bool Finish();
 
+private:
+    bool ProcessBuffer( bool finish );
 
 private:
 	bool m_compressionInProgress;
 	z_stream m_stream;
 	std::string m_buffer;
 	std::string* m_out;
-
-	bool ProcessBuffer( bool finish );
+	uintmax_t m_buffer_position;
 };
 
 

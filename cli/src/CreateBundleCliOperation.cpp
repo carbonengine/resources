@@ -24,7 +24,10 @@ CreateBundleCliOperation::CreateBundleCliOperation() :
 	m_chunkSizeArgumentId( "--chunk-size" ),
 	m_streamChunkSizeId( "--stream-chunk-size" ),
 	m_networkRetryBackoffMultiplierId( "--download-retry-seconds" ),
-	m_networkRetryCountId( "--network-retry-count" )
+	m_networkRetryCountId( "--network-retry-count" ),
+	m_skipCompressionCalculation( "--skip-compression" ),
+	m_splitOnUncompressedSize( "--split-on-uncompressed-size" ),
+	m_numberOfThreadsId( "--number-of-threads" )
 {
 	AddRequiredPositionalArgument( m_inputResourceGroupPathArgumentId, "Path to ResourceGroup to bundle." );
 
@@ -56,6 +59,12 @@ CreateBundleCliOperation::CreateBundleCliOperation() :
     AddArgument( m_networkRetryCountId, "Number of retries to attempt when encountering a failed download.", false, false, SizeToString( defaultParams.downloadSettings.retryCount ) );
 
 	AddArgument( m_networkRetryBackoffMultiplierId, "Multiplier in seconds to wait for when retrying, value will multiply on each retry to backoff.", false, false, SecondsToString( defaultParams.downloadSettings.retrySeconds ) );
+
+    AddArgumentFlag( m_skipCompressionCalculation, "Set skip compression calculations on bundles." );
+
+    AddArgumentFlag( m_splitOnUncompressedSize, "Set to split on uncompressed size rather than the default compressed size. This will likely lead to more inefficient chunking but may run faster." );
+
+    AddArgument( m_numberOfThreadsId, "Number of threads to use for async processes.", false, false, SizeToString( defaultParams.asyncSettings.numberOfThreads ) );
 }
 
 bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
@@ -157,6 +166,49 @@ bool CreateBundleCliOperation::Execute( std::string& returnErrorMessage ) const
 		return false;
 	}
 
+
+    bool skipCompressionCalculation = m_argumentParser->get<bool>( m_skipCompressionCalculation );
+
+    bool splitOnUncompressed = m_argumentParser->get<bool>( m_splitOnUncompressedSize );
+
+	if( skipCompressionCalculation && bundleCreateParams.chunkDestinationSettings.destinationType == CarbonResources::ResourceDestinationType::REMOTE_CDN )
+	{
+		returnErrorMessage = "Cannot skip compression when bundle desination type is REMOTE_CDN, see --chunk-destination-type.";
+
+		return false;
+	}
+
+    if( skipCompressionCalculation && splitOnUncompressed == false )
+	{
+		returnErrorMessage = "Cannot skip compression when chunks are being split on compressed data, see --split-on-uncompressed-size.";
+
+		return false;
+	}
+
+    bundleCreateParams.calculateCompressions = !skipCompressionCalculation;
+
+    bundleCreateParams.splitOnCompressedSize = !splitOnUncompressed;
+
+    try
+	{
+		unsigned long long numberOfThreadsUnsignedLongLong = std::stoull( m_argumentParser->get( m_numberOfThreadsId ) );
+
+		if( numberOfThreadsUnsignedLongLong > std::numeric_limits<uint32_t>::max() )
+		{
+			return false;
+		}
+
+		bundleCreateParams.asyncSettings.numberOfThreads = static_cast<uint32_t>( numberOfThreadsUnsignedLongLong );
+	}
+	catch( std::invalid_argument& )
+	{
+		return false;
+	}
+	catch( std::out_of_range& )
+	{
+		return false;
+	}
+
 	if( ShowCliStatusUpdates() )
 	{
 		PrintStartBanner( resourceGroupParams, bundleCreateParams );
@@ -199,6 +251,26 @@ void CreateBundleCliOperation::PrintStartBanner( const CarbonResources::Resource
     std::cout << "Network retry count: " << bundleCreateParams.downloadSettings.retryCount << std::endl;
 
 	std::cout << "Network retry backoff multiplier ( Seconds ): " << bundleCreateParams.downloadSettings.retrySeconds.count() << std::endl;
+
+    if( bundleCreateParams.calculateCompressions )
+	{
+		std::cout << "Calculate Compression: On" << std::endl;
+	}
+	else
+	{
+		std::cout << "Calculate Compression: Off" << std::endl;
+	}
+
+    if( bundleCreateParams.splitOnCompressedSize )
+	{
+		std::cout << "Data splitting on: Uncompressed data (Warning, inefficient chunks may be produced)" << std::endl;
+	}
+	else
+	{
+		std::cout << "Data splitting on: Compressed data" << std::endl;
+	}
+
+    std::cout << "Number of threads for async operations: " << bundleCreateParams.asyncSettings.numberOfThreads << std::endl;
 
 	std::cout << "----------------------------\n"
 			  << std::endl;

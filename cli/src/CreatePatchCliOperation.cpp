@@ -12,6 +12,7 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
 	m_nextResourceGroupPathArgumentId( "next-resourcegroup-path" ),
 	m_resourceGroupRelativePathArgumentId( "--resourcegroup-relative-path" ),
 	m_patchResourceGroupRelativePathArgumentId( "--patchResourcegroup-relative-path" ),
+	m_newFilesResourceGroupRelativePathArgumentId( "--new-files-resourcegroup-relative-path" ),
 	m_resourceSourceTypePreviousArgumentId( "--resource-source-type-previous" ),
 	m_resourceSourceBasePathPreviousArgumentId( "--resource-source-base-path-previous" ),
 	m_resourceSourceTypeNextArgumentId( "--resource-source-type-next" ),
@@ -25,7 +26,10 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
 	m_networkRetryBackoffMultiplierId( "--download-retry" ),
 	m_networkRetryCountId( "--network-retry-count" ),
 	m_indexFolderArgumentId( "--index-folder" ),
-	m_skipCompressionCalculation( "--skip-compression" )
+	m_skipCompressionCalculation( "--skip-compression" ),
+	m_newFilesResourceGroupDestinationTypeArgumentId( "--new-files-resourcegroup-destination-type" ),
+	m_newFilesResourceGroupDestinationPathArgumentId( "--new-files-resourcegroup-destination-base-path" ),
+	m_maxOverallPatchArgumentId( "--max-overall-patch-size" )
 {
 
 	AddRequiredPositionalArgument( m_previousResourceGroupPathArgumentId, "Filename to previous resourceGroup." );
@@ -49,6 +53,8 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
 
 	AddArgument( m_patchResourceGroupRelativePathArgumentId, "Relative path for output PatchResourceGroup which will contain all the patches produced.", false, false, defaultParams.resourceGroupPatchRelativePath.string() );
 
+    AddArgument( m_newFilesResourceGroupRelativePathArgumentId, "Relative path for output new files ResourceGroup which will contain all the new files added between supplied builds.", false, false, defaultParams.resourceGroupNewFilesRelativePath.string() );
+
 	AddArgument( m_resourceSourceTypePreviousArgumentId, "Represents the type of repository to source resources for previous.", false, false, SourceTypeToString( defaultParams.resourceSourceSettingsPrevious.sourceType ), ResourceSourceTypeChoicesAsString() );
 
 	AddArgument( m_patchBinaryDestinationBasePathArgumentId, "Represents the base path where binary patches will be saved.", false, false, defaultParams.resourcePatchBinaryDestinationSettings.basePath.string() );
@@ -68,6 +74,12 @@ CreatePatchCliOperation::CreatePatchCliOperation() :
 	AddArgument( m_indexFolderArgumentId, "The folder in which to place indexes generated for patch files.", false, false, defaultParams.indexFolder.string() );
 
     AddArgumentFlag( m_skipCompressionCalculation, "Set skip compression calculations on patches." );
+
+    AddArgument( m_newFilesResourceGroupDestinationTypeArgumentId, "Represents the type of repository where the new files ResourceGroup will be saved.", false, false, DestinationTypeToString( defaultParams.resourceNewFilesResourceGroupDestinationSettings.destinationType ), ResourceDestinationTypeChoicesAsString() );
+
+	AddArgument( m_newFilesResourceGroupDestinationPathArgumentId, "Represents the base path where the new files ResourceGroup will be saved.", false, false, defaultParams.resourceNewFilesResourceGroupDestinationSettings.basePath.string() );
+
+    AddArgument( m_maxOverallPatchArgumentId, "The maximum overall patch size. If patch generation goes over this value the process will stop with failure. This value represents the uncompressed size. A value of 0 will be treated as unlimited", false, false, SizeToString( defaultParams.maxTotalPatchSize ) );
 }
 
 bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
@@ -85,6 +97,8 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 	createPatchParams.resourceGroupRelativePath = m_argumentParser->get<std::string>( m_resourceGroupRelativePathArgumentId );
 
 	createPatchParams.resourceGroupPatchRelativePath = m_argumentParser->get<std::string>( m_patchResourceGroupRelativePathArgumentId );
+
+    createPatchParams.resourceGroupNewFilesRelativePath = m_argumentParser->get<std::string>( m_newFilesResourceGroupRelativePathArgumentId );
 
 	std::string resourceSourceTypePrevious = m_argumentParser->get<std::string>( m_resourceSourceTypePreviousArgumentId );
 
@@ -212,6 +226,38 @@ bool CreatePatchCliOperation::Execute( std::string& returnErrorMessage ) const
 
     createPatchParams.calculateCompressions = !skipCompressionCalculation;
 
+    createPatchParams.resourceNewFilesResourceGroupDestinationSettings.basePath = m_argumentParser->get<std::string>( m_newFilesResourceGroupDestinationPathArgumentId );
+
+	std::string newFilesResourceGroupDestinationType = m_argumentParser->get<std::string>( m_newFilesResourceGroupDestinationTypeArgumentId );
+
+	if( !StringToResourceDestinationType( newFilesResourceGroupDestinationType, createPatchParams.resourceNewFilesResourceGroupDestinationSettings.destinationType ) )
+	{
+		returnErrorMessage = "Invalid new file destination type";
+
+		return false;
+	}
+
+    try
+	{
+		unsigned long in = std::stoul( m_argumentParser->get( m_maxOverallPatchArgumentId ) );
+		if( in > std::numeric_limits<uint32_t>::max() )
+		{
+			returnErrorMessage = "Invalid overall patch size";
+			return false;
+		}
+		createPatchParams.maxTotalPatchSize = static_cast<uint32_t>( in );
+	}
+	catch( std::invalid_argument& )
+	{
+		returnErrorMessage = "Invalid overall patch size";
+		return false;
+	}
+	catch( std::out_of_range& )
+	{
+		returnErrorMessage = "Invalid overall patch size";
+		return false;
+	}
+
 	if( ShowCliStatusUpdates() )
 	{
 		PrintStartBanner( previousResourceGroupParams, nextResourceGroupParams, createPatchParams );
@@ -235,6 +281,8 @@ void CreatePatchCliOperation::PrintStartBanner( const CarbonResources::ResourceG
 	std::cout << "Resource Group Relative Path: " << createPatchParams.resourceGroupRelativePath << std::endl;
 
 	std::cout << "Resource Group Patch Relative Path: " << createPatchParams.resourceGroupPatchRelativePath << std::endl;
+
+    std::cout << "Resource Group New Files Relative Path: " << createPatchParams.resourceGroupNewFilesRelativePath << std::endl;
 
 	std::cout << "Patch File Relative Path Prefix: " << createPatchParams.patchFileRelativePathPrefix << std::endl;
 
@@ -274,6 +322,12 @@ void CreatePatchCliOperation::PrintStartBanner( const CarbonResources::ResourceG
 	{
 		std::cout << "Calculate Compression: On" << std::endl;
 	}
+
+    std::cout << "New File Resource Group Destination Settings Base Path: " << createPatchParams.resourceNewFilesResourceGroupDestinationSettings.basePath << std::endl;
+
+	std::cout << "New File Resource Group Destination Settings Destination Type: " << DestinationTypeToString( createPatchParams.resourceNewFilesResourceGroupDestinationSettings.destinationType ) << std::endl;
+
+    std::cout << "Max overall patch size: " << createPatchParams.maxTotalPatchSize << std::endl;
 
 	std::cout << "----------------------------\n"
 			  << std::endl;

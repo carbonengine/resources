@@ -82,7 +82,7 @@ bool ResultTypeToString( ResultType resultType, std::string& output )
 		return true;
 
 	case ResultType::FAILED_TO_APPLY_PATCH:
-		output = "An error occurred during application of a binary patch.";
+		output = "An error occurred during application of valid patch data to valid source data.";
 		return true;
 
 	case ResultType::UNEXPECTED_PATCH_CHECKSUM_RESULT:
@@ -159,6 +159,14 @@ bool ResultTypeToString( ResultType resultType, std::string& output )
 
     case ResultType::FAILED_TO_INITIALIZE_RESOURCE_FILTER:
 		output = "Failed to initialize ResourceFilter";
+		return true;
+
+    case ResultType::INVALID_INPUT_PARAMETER:
+		output = "An input parameter was set with an invalid value";
+		return true;
+
+    case ResultType::PATCH_SIZE_EXCEEDED:
+		output = "The patch exceeded the size specified as the maximum overall patch size";
 		return true;
 	}
 
