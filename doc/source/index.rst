@@ -6,6 +6,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 resources Documentation
 ==============================
 
@@ -65,6 +66,8 @@ Contents
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
 project_name Documentation
 ==========================
 
@@ -99,6 +102,10 @@ project_name Documentation
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+.. _MyST with Sphinx: https://myst-parser.readthedocs.io/en/v0.17.1/sphinx/index.html
+>>>>>>> template/carbonengine/resources-updates
+=======
 .. _MyST with Sphinx: https://myst-parser.readthedocs.io/en/v0.17.1/sphinx/index.html
 >>>>>>> template/carbonengine/resources-updates
 =======

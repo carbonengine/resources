@@ -2,6 +2,10 @@ package _Self.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.*
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+import jetbrains.buildServer.configs.kotlin.buildFeatures.pullRequests
+>>>>>>> template/carbonengine/resources-updates
 =======
 import jetbrains.buildServer.configs.kotlin.buildFeatures.pullRequests
 >>>>>>> template/carbonengine/resources-updates
@@ -39,6 +43,7 @@ class Publish(perforce_publish_path: String) : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         param("env.TC_BUILD_NUMBER", "Carbon Resources #%build.number%")
 =======
         param("env.TC_BUILD_NUMBER", "Carbon Template #%build.number%")
@@ -63,6 +68,8 @@ class Publish(perforce_publish_path: String) : BuildType({
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
         param("env.TC_BUILD_NUMBER", "Carbon Template #%build.number%")
         param("env.P4PORT", "p4is.ccp.ad.local:1666")
         param("env.TC_EVE_BRANCH_SHORTNAME", "%eve_branch_shortname%")
@@ -71,6 +78,9 @@ class Publish(perforce_publish_path: String) : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
@@ -93,6 +103,10 @@ class Publish(perforce_publish_path: String) : BuildType({
     vcs {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+        root(DslContext.settingsRootId, "-:.")
+>>>>>>> template/carbonengine/resources-updates
 =======
         root(DslContext.settingsRootId, "-:.")
 >>>>>>> template/carbonengine/resources-updates
@@ -269,7 +283,11 @@ class Publish(perforce_publish_path: String) : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%perforce_path_to_publish_into%/${MacOS.arm64_Release.depParamRefs["env.GIT_TAG_HASH"]}"
+=======
+                artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${MacOS.arm64_Release.depParamRefs["env.GIT_TAG_HASH"]}"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${MacOS.arm64_Release.depParamRefs["env.GIT_TAG_HASH"]}"
 >>>>>>> template/carbonengine/resources-updates
@@ -306,7 +324,11 @@ class Publish(perforce_publish_path: String) : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%perforce_path_to_publish_into%/${Windows.Debug.depParamRefs["env.GIT_TAG_HASH"]}"
+=======
+                artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.Debug.depParamRefs["env.GIT_TAG_HASH"]}"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.Debug.depParamRefs["env.GIT_TAG_HASH"]}"
 >>>>>>> template/carbonengine/resources-updates
@@ -343,7 +365,11 @@ class Publish(perforce_publish_path: String) : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%perforce_path_to_publish_into%/${Windows.Internal.depParamRefs["env.GIT_TAG_HASH"]}"
+=======
+                artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.Internal.depParamRefs["env.GIT_TAG_HASH"]}"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.Internal.depParamRefs["env.GIT_TAG_HASH"]}"
 >>>>>>> template/carbonengine/resources-updates
@@ -380,7 +406,11 @@ class Publish(perforce_publish_path: String) : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%perforce_path_to_publish_into%/${Windows.Release.depParamRefs["env.GIT_TAG_HASH"]}"
+=======
+                artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.Release.depParamRefs["env.GIT_TAG_HASH"]}"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.Release.depParamRefs["env.GIT_TAG_HASH"]}"
 >>>>>>> template/carbonengine/resources-updates
@@ -417,7 +447,11 @@ class Publish(perforce_publish_path: String) : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 artifactRules = "**/*=>%perforce_path_to_publish_into%/${Windows.TrinityDev.depParamRefs["env.GIT_TAG_HASH"]}"
+=======
+                artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.TrinityDev.depParamRefs["env.GIT_TAG_HASH"]}"
+>>>>>>> template/carbonengine/resources-updates
 =======
                 artifactRules = "artifact.zip!**=>%perforce_path_to_publish_into%/${Windows.TrinityDev.depParamRefs["env.GIT_TAG_HASH"]}"
 >>>>>>> template/carbonengine/resources-updates
@@ -449,7 +483,10 @@ class Publish(perforce_publish_path: String) : BuildType({
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
     features {
@@ -459,12 +496,19 @@ class Publish(perforce_publish_path: String) : BuildType({
                 authType = token {
                     token = "%GITHUB_CARBON_PAT%"
                 }
+<<<<<<< HEAD
                 filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
+=======
+                filterAuthorRole = GitHubRoleFilter.EVERYBODY
+>>>>>>> template/carbonengine/resources-updates
             }
         }
     }
     
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
@@ -482,7 +526,11 @@ class Publish(perforce_publish_path: String) : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 val PublishToPerforce = Publish("vendor/github.com/carbonengine/resources")
+=======
+val PublishToPerforce = Publish("vendor/github.com/ccpgames/carbon-template")
+>>>>>>> template/carbonengine/resources-updates
 =======
 val PublishToPerforce = Publish("vendor/github.com/ccpgames/carbon-template")
 >>>>>>> template/carbonengine/resources-updates
