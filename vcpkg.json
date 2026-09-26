@@ -8,6 +8,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       "name": "bsdiff-drake127",
       "version>=": "4.3.3#2"
     },
@@ -81,6 +82,8 @@
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
       "name": "python3",
       "version>=": "3.12.9#1",
       "host": true
@@ -88,6 +91,7 @@
   ],
   "overrides": [
     {
+<<<<<<< HEAD
       "name": "protobuf",
       "version": "3.6.0.1"
     }
@@ -110,5 +114,11 @@
 =======
 >>>>>>> template/carbonengine/resources-updates
 =======
+>>>>>>> template/carbonengine/resources-updates
+=======
+      "name": "openssl",
+      "version": "1.1.1k#8"
+    }
+  ]
 >>>>>>> template/carbonengine/resources-updates
 }

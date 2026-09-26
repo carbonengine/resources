@@ -5,7 +5,10 @@ import jetbrains.buildServer.configs.kotlin.Project
 import jetbrains.buildServer.configs.kotlin.*
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import jetbrains.buildServer.configs.kotlin.buildFeatures.PullRequests
+=======
+>>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
 =======
@@ -16,6 +19,10 @@ import jetbrains.buildServer.configs.kotlin.buildFeatures.freeDiskSpace
 import jetbrains.buildServer.configs.kotlin.buildFeatures.nuGetFeedCredentials
 import jetbrains.buildServer.configs.kotlin.buildFeatures.perfmon
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+import jetbrains.buildServer.configs.kotlin.buildFeatures.PullRequests
+>>>>>>> template/carbonengine/resources-updates
 =======
 import jetbrains.buildServer.configs.kotlin.buildFeatures.PullRequests
 >>>>>>> template/carbonengine/resources-updates
@@ -30,6 +37,7 @@ import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot
 import jetbrains.buildServer.configs.kotlin.buildFeatures.provideAwsCredentials
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -56,6 +64,8 @@ val ReleaseDevFeatures = CarbonBuildWindows("Release Windows with Dev Features",
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
 val Debug = CarbonBuildWindows("Debug Windows", "Debug", "x64-windows-debug")
 val Internal = CarbonBuildWindows("Internal Windows", "Internal", "x64-windows-internal")
 val TrinityDev = CarbonBuildWindows("TrinityDev Windows", "TrinityDev", "x64-windows-trinitydev")
@@ -66,6 +76,9 @@ val Release = CarbonBuildWindows("Release Windows", "Release", "x64-windows-rele
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
@@ -88,6 +101,7 @@ object Project : Project({
     buildType(Internal)
     buildType(TrinityDev)
     buildType(Release)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -138,6 +152,12 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String, 
 
 
 class CarbonBuildWindows(buildName: String, configType: String, preset: String) : BuildType({
+=======
+})
+
+
+class CarbonBuildWindows(buildName: String, configType: String, preset: String, vsDevBatSwitches: String = "-arch=x64 -vcvars_ver=14.51") : BuildType({
+>>>>>>> template/carbonengine/resources-updates
     id(buildName.toId())
     this.name = buildName
 
@@ -148,6 +168,9 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
@@ -166,6 +189,7 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
         param("env.GIT_TAG_HASH_OVERRIDE", "")
         param("github_checkout_folder", "github")
         param("env.CTEST_JUNIT_OUTPUT_FILE", "ctest_results.xml")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -207,6 +231,9 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
                 options = listOf("v141 (2017)" to "v141", "v143 (2022)" to "v143"))
         param("VS_DEV_BAT_SWITCHES", "-arch=x64")
 >>>>>>> template/carbonengine/resources-updates
+=======
+        param("VS_DEV_BAT_SWITCHES", vsDevBatSwitches)
+>>>>>>> template/carbonengine/resources-updates
         param("env.CMAKE_BUILD_TARGETS", "all")
         param("env.CMAKE_INSTALL_PREFIX", ".build-artifact")
         param("env.CMAKE_CONFIG_TYPE", configType)
@@ -230,7 +257,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         param("env.CTEST_PARALLEL_LEVEL", "1")
+=======
+        param("env.CTEST_PARALLEL_LEVEL", "8")
+>>>>>>> template/carbonengine/resources-updates
 =======
         param("env.CTEST_PARALLEL_LEVEL", "8")
 >>>>>>> template/carbonengine/resources-updates
@@ -295,12 +326,16 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 call "%env.VSDEV_BAT_PATH%" %VS_DEV_BAT_SWITCHES%
 =======
                 call "%env.VSDEV_BAT_PATH%" -arch=x64
 >>>>>>> template/carbonengine/resources-updates
 =======
                 call "%env.VSDEV_BAT_PATH%" -arch=x64
+>>>>>>> template/carbonengine/resources-updates
+=======
+                call "%env.VSDEV_BAT_PATH%" %VS_DEV_BAT_SWITCHES%
 >>>>>>> template/carbonengine/resources-updates
 =======
                 call "%env.VSDEV_BAT_PATH%" %VS_DEV_BAT_SWITCHES%
@@ -333,7 +368,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             arguments = "--preset %env.CMAKE_PRESET% -S %teamcity.build.checkoutDir%/%github_checkout_folder% -B %env.CMAKE_BUILD_FOLDER% -DINSTALL_TO_MONOLITH=ON -DBUILD_CLI=ON -DBUILD_TESTING=ON -DBUILD_DOCUMENTATION=ON -DCMAKE_INSTALL_PREFIX=%env.CMAKE_INSTALL_PREFIX% -DVCPKG_INSTALL_OPTIONS=--x-buildtrees-root=%teamcity.build.checkoutDir%/%github_checkout_folder%/buildtrees"
+=======
+            arguments = "--preset %env.CMAKE_PRESET% -S %teamcity.build.checkoutDir%/%github_checkout_folder% -B %env.CMAKE_BUILD_FOLDER% -DINSTALL_TO_MONOLITH=ON -DCMAKE_INSTALL_PREFIX=%env.CMAKE_INSTALL_PREFIX% -DVCPKG_INSTALL_OPTIONS=--x-buildtrees-root=%teamcity.build.checkoutDir%/%github_checkout_folder%/buildtrees"
+>>>>>>> template/carbonengine/resources-updates
 =======
             arguments = "--preset %env.CMAKE_PRESET% -S %teamcity.build.checkoutDir%/%github_checkout_folder% -B %env.CMAKE_BUILD_FOLDER% -DINSTALL_TO_MONOLITH=ON -DCMAKE_INSTALL_PREFIX=%env.CMAKE_INSTALL_PREFIX% -DVCPKG_INSTALL_OPTIONS=--x-buildtrees-root=%teamcity.build.checkoutDir%/%github_checkout_folder%/buildtrees"
 >>>>>>> template/carbonengine/resources-updates
@@ -398,7 +437,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 echo ${'$'}symstoreFlags = ^@^("add","/compress","/t", "CCP Games", "/c", "TeamCity %build.number%", "/s", "${'$'}Env:TC_SYMBOL_STORE_PATH", "/o", "/r",  "/f", "%env.CMAKE_BUILD_FOLDER%"^) 
+=======
+                echo ${'$'}symstoreFlags = ^@^("add","/compress","/t", "CCP Games", "/c", "TeamCity %build.number%", "/s", "${'$'}Env:TC_SYMBOL_STORE_PATH", "/o", "/r",  "/f", "%env.CMAKE_BUILD_FOLDER%"^)
+>>>>>>> template/carbonengine/resources-updates
 =======
                 echo ${'$'}symstoreFlags = ^@^("add","/compress","/t", "CCP Games", "/c", "TeamCity %build.number%", "/s", "${'$'}Env:TC_SYMBOL_STORE_PATH", "/o", "/r",  "/f", "%env.CMAKE_BUILD_FOLDER%"^)
 >>>>>>> template/carbonengine/resources-updates
@@ -444,7 +487,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                     
+=======
+
+>>>>>>> template/carbonengine/resources-updates
 =======
 
 >>>>>>> template/carbonengine/resources-updates
@@ -475,6 +522,7 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                     
                     ${'$'}stored = get-content symstore.txt | Select-String "^SYMSTORE: Number of files stored = (.*)${'$'}"
                     ${'$'}stored = ${'$'}stored.Matches.Groups[1].Value
@@ -494,6 +542,8 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
 
                     ${'$'}stored = get-content symstore.txt | Select-String "^SYMSTORE: Number of files stored = (.*)${'$'}"
                     ${'$'}stored = ${'$'}stored.Matches.Groups[1].Value
@@ -508,6 +558,9 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
@@ -546,6 +599,7 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 filterAuthorRole = PullRequests.GitHubRoleFilter.MEMBER
 =======
                 filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
@@ -561,6 +615,9 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 >>>>>>> template/carbonengine/resources-updates
 =======
                 filterAuthorRole = GitHubRoleFilter.EVERYBODY
+>>>>>>> template/carbonengine/resources-updates
+=======
+                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
 >>>>>>> template/carbonengine/resources-updates
 =======
                 filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
@@ -591,7 +648,11 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             teamcitySshKey = "ccpgames-evetech GitHub"
+=======
+            teamcitySshKey = "ccpgames-carbon"
+>>>>>>> template/carbonengine/resources-updates
 =======
             teamcitySshKey = "ccpgames-carbon"
 >>>>>>> template/carbonengine/resources-updates
