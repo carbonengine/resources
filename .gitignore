@@ -24,6 +24,10 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
 =======
 binaryCache/
 >>>>>>> template/carbonengine/resources-updates
@@ -84,6 +88,7 @@ CMakeUserPresets.json
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 ### IDE ###
 # User generated local IDE configuration
@@ -92,6 +97,10 @@ CMakeUserPresets.json
 ### VCPKG ###
 # Temporary measure which fixes build agent issue
 vcpkg_registry_cache/
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
 =======
 .cmake-build*
 cmake-build*

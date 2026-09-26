@@ -19,7 +19,11 @@ object Project : Project({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     description = "Build / Publish pipeline for https://github.com/carbonengine/resources"
+=======
+    description = "Build / Publish pipeline for https://github.com/ccpgames/carbon-template"
+>>>>>>> template/carbonengine/resources-updates
 =======
     description = "Build / Publish pipeline for https://github.com/ccpgames/carbon-template"
 >>>>>>> template/carbonengine/resources-updates
@@ -64,7 +68,11 @@ object Project : Project({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         param("carbon-pipeline-tools-ref", "refs/heads/main")
+=======
+        param("carbon-pipeline-tools-ref", "refs/tags/v0.1.0")
+>>>>>>> template/carbonengine/resources-updates
 =======
         param("carbon-pipeline-tools-ref", "refs/tags/v0.1.0")
 >>>>>>> template/carbonengine/resources-updates
@@ -97,6 +105,10 @@ object Project : Project({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    buildType(SyncToMirror)
+>>>>>>> template/carbonengine/resources-updates
 =======
     buildType(SyncToMirror)
 >>>>>>> template/carbonengine/resources-updates

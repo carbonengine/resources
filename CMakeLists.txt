@@ -9,6 +9,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Copyright © 2025 CCP ehf.
 
 cmake_minimum_required(VERSION 3.31.1)
@@ -129,6 +130,8 @@ get_target_property(_SOURCES resources SOURCES)
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
 cmake_minimum_required(VERSION 3.16)
 project(CarbonTemplateProject VERSION 1.0.0)
 
@@ -148,6 +151,9 @@ get_target_property(_SOURCES target_name SOURCES)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
@@ -174,6 +180,7 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"
         FILES ${_SOURCES}
 )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -225,6 +232,8 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
 set_target_properties(target_name PROPERTIES OUTPUT_NAME "_target_name")
 
 target_include_directories(target_name
@@ -247,6 +256,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
@@ -286,6 +298,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
@@ -319,6 +334,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
                 INSTALL_DESTINATION documentation
         )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -404,6 +420,8 @@ endif ()
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
         add_dependencies(Sphinx target_name)
     endif()
 
@@ -465,6 +483,10 @@ endif ()
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+endif()
+>>>>>>> template/carbonengine/resources-updates
+=======
 endif()
 >>>>>>> template/carbonengine/resources-updates
 =======

@@ -11,7 +11,11 @@ charset = utf-8
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 end_of_line = crlf
+=======
+end_of_line = lf
+>>>>>>> template/carbonengine/resources-updates
 =======
 end_of_line = lf
 >>>>>>> template/carbonengine/resources-updates
@@ -50,6 +54,7 @@ indent_style = space
 insert_final_newline = false
 max_line_length = 120
 tab_width = 4
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1022,6 +1027,8 @@ ij_toml_keep_indents_on_empty_lines = false
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
 trim_trailing_whitespace = true
 
 [{*.yaml,*.yml,.clang-format,.clang-tidy,_clang-format}]
@@ -1052,6 +1059,9 @@ trim_trailing_whitespace = false
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
 >>>>>>> template/carbonengine/resources-updates
 =======
 >>>>>>> template/carbonengine/resources-updates

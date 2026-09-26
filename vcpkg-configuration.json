@@ -12,7 +12,11 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "baseline": "bea476a80218a581bcb5318595849520217c825e",
+=======
+    "baseline": "242ac6932a9cd2607332969129e9572516f28d65",
+>>>>>>> template/carbonengine/resources-updates
 =======
     "baseline": "242ac6932a9cd2607332969129e9572516f28d65",
 >>>>>>> template/carbonengine/resources-updates
@@ -51,6 +55,7 @@
   "registries": [
     {
       "kind": "git",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -125,6 +130,8 @@
   ]
 }
 =======
+=======
+>>>>>>> template/carbonengine/resources-updates
       "repository": "https://github.com/carbonengine/vcpkg-registry.git",
       "baseline": "bdd31d51ec7bb6e744b7c7c8871e84c2fd2296ec",
       "packages": [
@@ -138,5 +145,9 @@
       ]
     }
   ]
+<<<<<<< HEAD
+}
+>>>>>>> template/carbonengine/resources-updates
+=======
 }
 >>>>>>> template/carbonengine/resources-updates
