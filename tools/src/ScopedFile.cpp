@@ -16,7 +16,8 @@ ScopedFile::~ScopedFile()
 	if( std::filesystem::exists( m_location ) )
 	{
 		// Attempt to delete the temporary file
-		std::filesystem::remove( m_location );
+		std::error_code ec;
+		std::filesystem::remove( m_location, ec );
 	}
 }
 
