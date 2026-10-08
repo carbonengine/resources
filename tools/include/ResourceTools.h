@@ -57,6 +57,9 @@ bool GZipUncompressData( const std::string& dataToUncompress, std::string& uncom
 bool SaveFile( const std::filesystem::path& path, const std::string& data );
 
 unsigned int CalculateBinaryOperation( const std::filesystem::path& path );
+
+bool MoveFilePlatformNormalised( const std::filesystem::path& from, const std::filesystem::path& to );
+
 }
 
 #endif // ResourceTools_H

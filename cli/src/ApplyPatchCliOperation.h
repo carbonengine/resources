@@ -27,4 +27,5 @@ private:
 	std::string m_resourcesToPatchDestinationPathArgumentId;
 	std::string m_resourcesToPatchDestinationTypeArgumentId;
 	std::string m_skipNewFilesArgumentId;
+	std::string m_forceCopyPatchedFilesId;
 };

@@ -34,6 +34,8 @@ namespace CarbonResources
     *  Settings relating to downloads
     *  @var PatchApplyParams::skipNewFiles
     *  If set then any new files will be skipped rather than retrieved from nextBuildResourcesSource
+    *  @var PatchApplyParams::forceCopyPatchedFiles
+    *  If set then all the final patched resources will be copied rather than moved to their final destination. Useful for testing.
     */
 struct PatchApplyParams final
 {
@@ -47,13 +49,15 @@ struct PatchApplyParams final
 
     std::vector<std::filesystem::path> resourcesToRemove;
 
-	std::filesystem::path temporaryFilePath = "tempFile.resource";
+	std::filesystem::path temporaryFilePath = std::filesystem::temp_directory_path() / "carbonResources" / "patchedFiles";
 
 	CallbackSettings callbackSettings;
 
     DownloadSettings downloadSettings;
 
     bool skipNewFiles = false;
+
+    bool forceCopyPatchedFiles = false;
 };
 
 /** @class PatchResourceGroup

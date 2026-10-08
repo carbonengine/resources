@@ -154,7 +154,7 @@ void ResourcesTestFixture::StatusUpdate( CarbonResources::StatusProgressType typ
     {
         // Ensure that overall progress never decreases
         // It can remain the same
-		if( overallProgress < s_statusInformation.overallProgress )
+		if( overallProgress < s_statusInformation.overallProgress && !FloatsAreEqual( overallProgress, s_statusInformation.overallProgress ) )
         {
 			// Overall progress should never decrease
 			s_statusInformation.statusStateIsValid = false;

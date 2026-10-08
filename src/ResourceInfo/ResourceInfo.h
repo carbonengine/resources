@@ -331,6 +331,8 @@ public:
 
     Result GetDestinationPath( const ResourceDestinationSettings& destinationSettings, std::filesystem::path& path ) const;
 
+    Result GetDestinationPathRelative( const ResourceDestinationSettings& destinationSettings, std::filesystem::path& path ) const;
+
 private:
 	Result GetDataLocalRelative( ResourceGetDataParams& params, const int basePathId ) const;
 

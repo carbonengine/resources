@@ -18,7 +18,8 @@ ApplyPatchCliOperation::ApplyPatchCliOperation() :
 	m_nextResourcesSourceTypeArgumentId( "--next-resources-source-type" ),
 	m_resourcesToPatchDestinationPathArgumentId( "--output-base-path" ),
 	m_resourcesToPatchDestinationTypeArgumentId( "--output-destination-type" ),
-	m_skipNewFilesArgumentId( "--skip-new-files" )
+	m_skipNewFilesArgumentId( "--skip-new-files" ),
+	m_forceCopyPatchedFilesId( "--force-copy-patched-files" )
 {
 	AddRequiredPositionalArgument( m_patchResourceGroupPathArgumentId, "The path to the PatchResourceGroup.yaml file." );
 
@@ -41,6 +42,8 @@ ApplyPatchCliOperation::ApplyPatchCliOperation() :
 	AddArgument( m_resourcesToPatchDestinationTypeArgumentId, "The type of repository in which to place the patched version of the files.", false, false, DestinationTypeToString( defaultParams.resourcesToPatchDestinationSettings.destinationType ), ResourceDestinationTypeChoicesAsString() );
 
     AddArgumentFlag( m_skipNewFilesArgumentId, "Skip new files. New files will need to be sourced another way." );
+
+    AddArgumentFlag( m_forceCopyPatchedFilesId, "Force copy patched files, If set then all the final patched resources will be copied rather than moved to their final destination. Useful for testing." );
 }
 
 bool ApplyPatchCliOperation::Execute( std::string& returnErrorMessage ) const
@@ -131,8 +134,7 @@ bool ApplyPatchCliOperation::Execute( std::string& returnErrorMessage ) const
 		return false;
 	}
 
-	patchApplyParams.temporaryFilePath = "tempFile.resource";
-
+    patchApplyParams.forceCopyPatchedFiles = m_argumentParser->get<bool>( m_forceCopyPatchedFilesId );
 
     if( ShowCliStatusUpdates() )
 	{
@@ -167,6 +169,15 @@ void ApplyPatchCliOperation::PrintStartBanner( const CarbonResources::ResourceGr
 	else
 	{
 		std::cout << "Skip New Files: Off" << std::endl;
+	}
+
+    if( patchApplyParams.forceCopyPatchedFiles )
+	{
+		std::cout << "Force copy patched files: On" << std::endl;
+	}
+	else
+	{
+		std::cout << "Force copy patched file: Off" << std::endl;
 	}
 
 	std::cout << "----------------------------\n"

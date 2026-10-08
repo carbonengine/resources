@@ -499,4 +499,34 @@ unsigned int CalculateBinaryOperation( const std::filesystem::path& path )
 }
 #endif
 
+bool MoveFilePlatformNormalised( const std::filesystem::path& from, const std::filesystem::path& to )
+{
+	// Windows treats std::filesystem::rename differently as it copies if move is not possible
+	// This is not desired behaviour
+    if (!std::filesystem::exists(to.parent_path()))
+    {
+		std::filesystem::create_directories( to.parent_path() );
+    }
+
+#if WIN32
+	if( !MoveFileExW( from.c_str(), to.c_str(), MOVEFILE_REPLACE_EXISTING ) )
+	{
+		return false;
+	}
+#else
+	try
+	{
+		std::filesystem::rename( from, to );
+	}
+	catch( const fs::filesystem_error& )
+	{
+		return false;
+	}
+#endif
+
+	return true;
 }
+
+}
+
+

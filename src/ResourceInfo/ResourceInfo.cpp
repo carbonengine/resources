@@ -240,20 +240,20 @@ Result ResourceInfo::GetCompressedSize( uintmax_t& compressedSize ) const
 	}
 }
 
-Result ResourceInfo::GetDestinationPath( const ResourceDestinationSettings& destinationSettings, std::filesystem::path& path ) const
+Result ResourceInfo::GetDestinationPathRelative( const ResourceDestinationSettings& destinationSettings, std::filesystem::path& path ) const
 {
 	switch( destinationSettings.destinationType )
 	{
 	case ResourceDestinationType::LOCAL_RELATIVE:
 
-		path = destinationSettings.basePath / m_relativePath.GetValue();
+		path = m_relativePath.GetValue();
 
 		break;
 
 	case ResourceDestinationType::LOCAL_CDN:
 	case ResourceDestinationType::REMOTE_CDN:
 
-		path = destinationSettings.basePath / m_location.GetValue().ToString();
+		path =  m_location.GetValue().ToString();
 
 		break;
 
@@ -262,6 +262,16 @@ Result ResourceInfo::GetDestinationPath( const ResourceDestinationSettings& dest
 	}
 
 	return Result{ ResultType::SUCCESS };
+}
+
+Result ResourceInfo::GetDestinationPath( const ResourceDestinationSettings& destinationSettings, std::filesystem::path& path ) const
+{
+        
+    Result getDestinationPathRelative = GetDestinationPathRelative( destinationSettings, path );
+
+    path = destinationSettings.basePath / path;
+
+	return getDestinationPathRelative;
 }
 
 Result ResourceInfo::PutDataStream( ResourcePutDataStreamParams& params ) const

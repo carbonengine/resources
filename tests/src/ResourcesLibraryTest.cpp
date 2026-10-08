@@ -886,7 +886,7 @@ TEST_F( ResourcesLibraryTest, ApplyPatch )
 
 	patchApplyParams.resourcesToPatchDestinationSettings.basePath = "ApplyPatchOut";
 
-	patchApplyParams.temporaryFilePath = "tempFile.resource";
+	patchApplyParams.temporaryFilePath = "tempApplyPatchFiles";
 
     patchApplyParams.callbackSettings.statusCallback = StatusUpdate;
 
@@ -904,6 +904,67 @@ TEST_F( ResourcesLibraryTest, ApplyPatch )
     EXPECT_EQ( patchApplyParams.resourcesToRemove.at( 0 ), "testresource.txt" );
 
     EXPECT_TRUE( StatusIsValid() );
+
+	// Check Expected Outcome
+	std::filesystem::path goldDirectory = GetTestFileAbsolutePath( "Patch/NextBuildResources" );
+	EXPECT_TRUE( DirectoryIsSubset( patchApplyParams.resourcesToPatchDestinationSettings.basePath, goldDirectory ) );
+}
+
+TEST_F( ResourcesLibraryTest, ApplyPatchForcingCopy )
+{
+	// Load the patch file
+	CarbonResources::PatchResourceGroup patchResourceGroup;
+
+	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
+
+	importParamsPrevious.filename = GetTestFileAbsolutePath( "Patch/PatchResourceGroup.yaml" );
+
+	importParamsPrevious.callbackSettings.statusCallback = StatusUpdate;
+
+	EXPECT_EQ( patchResourceGroup.ImportFromFile( importParamsPrevious ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_TRUE( StatusIsValid() );
+
+
+	// Apply the patch
+	CarbonResources::PatchApplyParams patchApplyParams;
+
+	patchApplyParams.nextBuildResourcesSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	patchApplyParams.nextBuildResourcesSourceSettings.basePaths = { GetTestFileAbsolutePath( "Patch/NextBuildResources/" ) };
+
+	patchApplyParams.patchBinarySourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_CDN;
+
+	patchApplyParams.patchBinarySourceSettings.basePaths = { GetTestFileAbsolutePath( "Patch/LocalCDNPatches/" ) };
+
+	patchApplyParams.resourcesToPatchSourceSettings.sourceType = CarbonResources::ResourceSourceType::LOCAL_RELATIVE;
+
+	patchApplyParams.resourcesToPatchSourceSettings.basePaths = { GetTestFileAbsolutePath( "Patch/PreviousBuildResources/" ) };
+
+	patchApplyParams.resourcesToPatchDestinationSettings.destinationType = CarbonResources::ResourceDestinationType::LOCAL_RELATIVE;
+
+	patchApplyParams.resourcesToPatchDestinationSettings.basePath = "ApplyPatchOut";
+
+	patchApplyParams.temporaryFilePath = "tempApplyPatchFiles";
+
+    patchApplyParams.forceCopyPatchedFiles = true;
+
+	patchApplyParams.callbackSettings.statusCallback = StatusUpdate;
+
+	if( std::filesystem::exists( patchApplyParams.resourcesToPatchDestinationSettings.basePath ) )
+	{
+		std::filesystem::remove_all( patchApplyParams.resourcesToPatchDestinationSettings.basePath );
+	}
+
+	std::filesystem::copy( patchApplyParams.resourcesToPatchSourceSettings.basePaths[0], patchApplyParams.resourcesToPatchDestinationSettings.basePath );
+
+	EXPECT_EQ( patchResourceGroup.Apply( patchApplyParams ).type, CarbonResources::ResultType::SUCCESS );
+
+	EXPECT_EQ( patchApplyParams.resourcesToRemove.size(), 1 );
+
+	EXPECT_EQ( patchApplyParams.resourcesToRemove.at( 0 ), "testresource.txt" );
+
+	EXPECT_TRUE( StatusIsValid() );
 
 	// Check Expected Outcome
 	std::filesystem::path goldDirectory = GetTestFileAbsolutePath( "Patch/NextBuildResources" );
@@ -1223,7 +1284,7 @@ TEST_F( ResourcesLibraryTest, ApplyPatchWithChunking )
 
 	patchApplyParams.resourcesToPatchDestinationSettings.basePath = "ApplyPatchWithChunkingOut";
 
-	patchApplyParams.temporaryFilePath = "tempFile.resource";
+	patchApplyParams.temporaryFilePath = "tempApplyPatchFiles";
 
     patchApplyParams.callbackSettings.statusCallback = StatusUpdate;
 

@@ -285,9 +285,12 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
 			return resourceGroupImportFromDataResult;
 		}
 	}
+
+    std::vector<ResourceInfo*> resourcesToCopy;
+
     {
 		StatusSettings patchingStatusSettings;
-		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 20, 70, "Applying Patch.", &patchingStatusSettings );
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 20, 65, "Applying Patch.", &patchingStatusSettings );
 
 		size_t numPatchesProcessed = 0;
 
@@ -326,14 +329,25 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
 
 			    numPatchesProcessed += patchesForResource.size();
 
-
 			    // Open a stream to write a temp file of the patched resource
+				std::filesystem::path resourceRelativeDestinationPath;
+				Result getDestinationPathResult = resource->GetDestinationPathRelative( params.resourcesToPatchDestinationSettings, resourceRelativeDestinationPath );
+
+                if (getDestinationPathResult.type != ResultType::SUCCESS)
+                {
+				    return getDestinationPathResult;
+                }
+
+                std::filesystem::path tempResourceDestinationPath = params.temporaryFilePath / resourceRelativeDestinationPath;
+
 			    ResourceTools::FileDataStreamOut temporaryResourceDataStreamOut;
 
-			    if( !temporaryResourceDataStreamOut.StartWrite( params.temporaryFilePath ) )
+			    if( !temporaryResourceDataStreamOut.StartWrite( tempResourceDestinationPath ) )
 			    {
 				    return Result{ ResultType::FAILED_TO_OPEN_FILE };
 			    }
+
+                resourcesToCopy.push_back( resource );
 
 			    // This can be skipped if the file is new and new files are skipped in params
 			    bool skipChecksumCheck = false;
@@ -685,27 +699,86 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
 			    } 
 		    }
 
-            // Move temp file to destination
-            // Note: On some platforms this may result in a copy rather than a move if moving across different drives
-			std::filesystem::path destinationPath;
-            
-            Result getDestinationPathResult = resource->GetDestinationPath(params.resourcesToPatchDestinationSettings,destinationPath);
+        }
+    }
 
-            if (getDestinationPathResult.type != ResultType::SUCCESS)
+    // Move or copy all the patched files to the correct location
+	{
+		StatusSettings moveStatusSettings;
+		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 85, 5, "Moving patched files to destination.", &moveStatusSettings );
+
+        uintmax_t totalBytesToMove = 0;
+        uintmax_t bytesMoved = 0;
+
+        for( ResourceInfo* resource : resourcesToCopy )
+		{
+			uintmax_t uncompressedSize;
+			Result getUncompressedSizeResult = resource->GetUncompressedSize( uncompressedSize );
+
+            if (getUncompressedSizeResult.type != ResultType::SUCCESS)
             {
-				return getDestinationPathResult;
+				return getUncompressedSizeResult;
             }
 
-            try
-			{
-                std::filesystem::rename( params.temporaryFilePath, destinationPath );
-			}
-			catch( const fs::filesystem_error& )
-			{
-                // Attempt to copy as a backup
-                // 
-				// Copy temp file to replace the old resource file
+            totalBytesToMove += uncompressedSize;
+		}
 
+		for( ResourceInfo* resource : resourcesToCopy )
+		{
+			StatusSettings copyStatusSettings;
+
+            std::filesystem::path relativePath;
+
+			if( resource->GetRelativePath( relativePath ).type != ResultType::SUCCESS )
+			{
+				return Result{ ResultType::FAIL };
+			}
+
+			uintmax_t uncompressedSize;
+			Result getUncompressedSizeResult = resource->GetUncompressedSize( uncompressedSize );
+
+			if( getUncompressedSizeResult.type != ResultType::SUCCESS )
+			{
+				return getUncompressedSizeResult;
+			}
+
+			if( moveStatusSettings.RequiresStatusUpdates() )
+			{
+                float ratio = static_cast<float>( 100.0 / totalBytesToMove );
+				float step = static_cast<float>( ratio * uncompressedSize );
+				float percentage = static_cast<float>( ratio * bytesMoved );
+
+				std::string message = "Moving: " + relativePath.string();
+
+				moveStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentage, step, message, &copyStatusSettings );
+
+				bytesMoved += uncompressedSize;
+			}
+
+			std::filesystem::path resourceRelativePath;
+
+			Result getDestinationPathRelativeResult = resource->GetDestinationPathRelative( params.resourcesToPatchDestinationSettings, resourceRelativePath );
+
+			if( getDestinationPathRelativeResult.type != ResultType::SUCCESS )
+			{
+				return getDestinationPathRelativeResult;
+			}
+
+			std::filesystem::path tempResourcePath = params.temporaryFilePath / resourceRelativePath;
+
+			if( !std::filesystem::exists( tempResourcePath ) )
+			{
+				return Result{ ResultType::FILE_NOT_FOUND, "Failed to find finished patched resource" };
+			}
+
+			std::filesystem::path destinationPath = params.resourcesToPatchDestinationSettings.basePath / resourceRelativePath;
+
+            // If a move is not possible we don't want copy behaviour to be called which is standard on Windows
+            // MoveFilePlatformNormalised gets all platforms to act the same way so that we can control copy
+            // and provide more logging
+			if( params.forceCopyPatchedFiles || !ResourceTools::MoveFilePlatformNormalised( tempResourcePath, destinationPath ) )
+            {
+                // Perform a copy instead
 				// Open output stream
 				ResourceTools::FileDataStreamOut resourceStreamOut;
 
@@ -726,7 +799,7 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
 				// Open input stream
 				ResourceTools::FileDataStreamIn tempPatchedResourceIn( m_maxInputChunkSize.GetValue() );
 
-				if( !tempPatchedResourceIn.StartRead( params.temporaryFilePath ) )
+				if( !tempPatchedResourceIn.StartRead( tempResourcePath ) )
 				{
 					return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
 				}
@@ -734,6 +807,16 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
 				while( !tempPatchedResourceIn.IsFinished() )
 				{
 					std::string data;
+
+                    if (copyStatusSettings.RequiresStatusUpdates())
+                    {
+						float step = static_cast<float>( 100.0 / uncompressedSize );
+						float percentage = static_cast<float>( step * resourceStreamOut.GetFileSize() );
+
+						std::string message = "Copying: " + relativePath.string();
+
+						copyStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentage, step, message );
+                    }
 
 					if( !( tempPatchedResourceIn >> data ) )
 					{
@@ -747,10 +830,12 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
 				}
 
 				resourceStreamOut.Finish();
-			}
+            }
+			
 
-        }
-    }
+		}
+	}
+	
 
     {
 		StatusSettings removingFilesStatusSettings;
