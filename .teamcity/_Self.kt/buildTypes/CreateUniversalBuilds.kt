@@ -34,7 +34,11 @@ class UniversalBuild() : BuildType({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             "-m 'resources:%system.teamcity.build.workingDir%/bin' -m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
 =======
             "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
 >>>>>>> template/carbonengine/resources-updates
@@ -219,6 +223,7 @@ class UniversalBuild() : BuildType({
             }
         }
     }
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -280,6 +285,9 @@ class UniversalBuild() : BuildType({
 =======
 >>>>>>> template/carbonengine/resources-updates
 =======
+>>>>>>> template/carbonengine/resources-updates
+=======
+    
 >>>>>>> template/carbonengine/resources-updates
     requirements {
         startsWith("teamcity.agent.jvm.os.name", "Mac OS X")

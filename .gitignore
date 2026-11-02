@@ -25,6 +25,10 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
 =======
 binaryCache/
 >>>>>>> template/carbonengine/resources-updates
@@ -76,6 +80,7 @@ __pycache__/
 ### CMake ###
 # User generated local cmake configuration
 CMakeUserPresets.json
+<<<<<<< HEAD
 # Intermediate cmake build flavor folders #
 cmake-build-*/
 .cmake-*
@@ -132,6 +137,11 @@ cmake-build*
 cmake-build*
 >>>>>>> template/carbonengine/resources-updates
 =======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+
 .cmake-build*
 cmake-build*
 >>>>>>> template/carbonengine/resources-updates
