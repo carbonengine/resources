@@ -16,7 +16,7 @@ object SyncToMirror : BuildType({
     maxRunningBuilds = 1
 
     params {
-        param("github_mirror_repository", "ccpgames/carbon-*-mirror TYPE IN NAME HERE")
+        param("github_mirror_repository", "ccpgames/carbon-resources-mirror")
         param("teamcity.vcsTrigger.runBuildInNewEmptyBranch", "true")
     }
 

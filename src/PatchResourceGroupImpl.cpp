@@ -289,380 +289,422 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
 		StatusSettings patchingStatusSettings;
 		statusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, 20, 70, "Applying Patch.", &patchingStatusSettings );
 
-		auto numResources = resourceGroup.GetSize();
-		int numProcessed = 0;
+		size_t numPatchesProcessed = 0;
 
 		for( ResourceInfo* resource : resourceGroup )
 		{
-			if( patchingStatusSettings.RequiresStatusUpdates() )
 			{
-				std::filesystem::path relativePath;
+			    // See if there is a patch available for resource
+			    std::vector<const PatchResourceInfo*> patchesForResource;
 
-				if( resource->GetRelativePath( relativePath ).type != ResultType::SUCCESS )
+			    Result getTargetResourcePatchesResult = GetTargetResourcePatches( resource, patchesForResource );
+
+			    if( getTargetResourcePatchesResult.type != ResultType::SUCCESS )
+			    {
+				    return getTargetResourcePatchesResult;
+			    }
+
+                StatusSettings chunkStatusSettings;
+
+				if( patchingStatusSettings.RequiresStatusUpdates() && patchesForResource.size() > 0 )
 				{
-					return Result{ ResultType::FAIL };
+					std::filesystem::path relativePath;
+
+					if( resource->GetRelativePath( relativePath ).type != ResultType::SUCCESS )
+					{
+						return Result{ ResultType::FAIL };
+					}
+
+					float totalPatches = static_cast<float>( m_resourcesParameter.GetSize() );
+                    float percentage = ( 100.0f / totalPatches ) * static_cast<float>( numPatchesProcessed );
+					float step = ( 100.0f / totalPatches ) * static_cast<float>( patchesForResource.size() );
+
+					std::string message = "Patching: " + relativePath.string();
+
+					patchingStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentage, step, message, &chunkStatusSettings );
 				}
 
-				float step = static_cast<float>( 100.0 / numResources );
-				float percentage = static_cast<float>( step * numProcessed );
+			    numPatchesProcessed += patchesForResource.size();
 
-				std::string message = "Patching: " + relativePath.string();
 
-				patchingStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentage, step, message );
+			    // Open a stream to write a temp file of the patched resource
+			    ResourceTools::FileDataStreamOut temporaryResourceDataStreamOut;
 
-				numProcessed++;
-			}
+			    if( !temporaryResourceDataStreamOut.StartWrite( params.temporaryFilePath ) )
+			    {
+				    return Result{ ResultType::FAILED_TO_OPEN_FILE };
+			    }
 
-			// See if there is a patch available for resource
-			std::vector<const PatchResourceInfo*> patchesForResource;
+			    // This can be skipped if the file is new and new files are skipped in params
+			    bool skipChecksumCheck = false;
 
-			Result getTargetResourcePatchesResult = GetTargetResourcePatches( resource, patchesForResource );
+			    // Incrementally calculate checksum for temporary patch file
+			    ResourceTools::Md5ChecksumStream patchedFileChecksumStream;
 
-			if( getTargetResourcePatchesResult.type != ResultType::SUCCESS )
-			{
-				return getTargetResourcePatchesResult;
-			}
+			    if( patchesForResource.size() > 0 )
+			    {
+				    // Open stream for resource
+				    auto resourceDataStreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( m_maxInputChunkSize.GetValue() );
 
+				    ResourceGetDataStreamParams resourceDataStreamParams;
 
-			// Open a stream to write a temp file of the patched resource
-			ResourceTools::FileDataStreamOut temporaryResourceDataStreamOut;
+				    resourceDataStreamParams.resourceSourceSettings = params.resourcesToPatchSourceSettings;
 
-			if( !temporaryResourceDataStreamOut.StartWrite( params.temporaryFilePath ) )
-			{
-				return Result{ ResultType::FAILED_TO_OPEN_FILE };
-			}
+				    resourceDataStreamParams.dataStream = resourceDataStreamIn;
 
-            // This can be skipped if the file is new and new files are skipped in params
-            bool skipChecksumCheck = false;
+				    resourceDataStreamParams.downloadSettings = params.downloadSettings;
 
-			// Incrementally calculate checksum for temporary patch file
-			ResourceTools::Md5ChecksumStream patchedFileChecksumStream;
+				    Result getResourceDataStream = resource->GetDataStream( resourceDataStreamParams );
 
-			if( patchesForResource.size() > 0 )
-			{
-				// Open stream for resource
-				auto resourceDataStreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( m_maxInputChunkSize.GetValue() );
+				    if( getResourceDataStream.type != ResultType::SUCCESS )
+				    {
+					    return getResourceDataStream;
+				    }
 
-				ResourceGetDataStreamParams resourceDataStreamParams;
+				    size_t patchesForResourceProcessed = 0;
 
-				resourceDataStreamParams.resourceSourceSettings = params.resourcesToPatchSourceSettings;
+				    for( auto patchIter = patchesForResource.begin(); patchIter != patchesForResource.end(); patchIter++ )
+				    {
+					    const PatchResourceInfo* patch = ( *patchIter );
 
-				resourceDataStreamParams.dataStream = resourceDataStreamIn;
+					    if( chunkStatusSettings.RequiresStatusUpdates() )
+					    {
+						    std::filesystem::path relativePath;
 
-                resourceDataStreamParams.downloadSettings = params.downloadSettings;
+						    if( patch->GetRelativePath( relativePath ).type != ResultType::SUCCESS )
+						    {
+							    return Result{ ResultType::FAIL };
+						    }
 
-				Result getResourceDataStream = resource->GetDataStream( resourceDataStreamParams );
+						    float step = static_cast<float>( 100.0 / patchesForResource.size() );
+						    float percentage = static_cast<float>( step * patchesForResourceProcessed );
+
+						    std::string message = "Applying patch: " + relativePath.string();
+
+						    chunkStatusSettings.Update( CarbonResources::StatusProgressType::PERCENTAGE, percentage, step, message );
 
-				if( getResourceDataStream.type != ResultType::SUCCESS )
-				{
-					return getResourceDataStream;
-				}
+						    patchesForResourceProcessed++;
+					    }
 
+					    // Patch found, Retreive and apply
+					    std::string patchData;
 
-				for( auto patchIter = patchesForResource.begin(); patchIter != patchesForResource.end(); patchIter++ )
-				{
-
-					const PatchResourceInfo* patch = ( *patchIter );
-
-					// Patch found, Retreive and apply
-					std::string patchData;
-
-					ResourceGetDataParams patchGetDataParams;
-
-					patchGetDataParams.resourceSourceSettings = params.patchBinarySourceSettings;
-
-					patchGetDataParams.data = &patchData;
-
-                    patchGetDataParams.downloadSettings = params.downloadSettings;
-
-					std::string location;
-					Result patchGetLocationResult = patch->GetLocation( location );
-					if( patchGetLocationResult.type != ResultType::SUCCESS )
-					{
-						return patchGetLocationResult;
-					}
-					bool hasPatchFile{ !location.empty() };
-
-					if( hasPatchFile )
-					{
-						Result getPatchDataResult = patch->GetData( patchGetDataParams );
-
-						if( getPatchDataResult.type != ResultType::SUCCESS )
-						{
-							return getPatchDataResult;
-						}
-					}
-
-					// Get previous data
-					uintmax_t dataOffset;
-					uintmax_t sourceOffset;
-					Result getPatchDataOffset = patch->GetDataOffset( dataOffset );
-
-					if( getPatchDataOffset.type != ResultType::SUCCESS )
-					{
-						return getPatchDataOffset;
-					}
-
-					Result getPatchSourceOffset = patch->GetSourceOffset( sourceOffset );
-					if( getPatchSourceOffset.type != ResultType::SUCCESS )
-					{
-						return getPatchSourceOffset;
-					}
-
-					std::string previousResourceData;
-
-					// Get previous size of resource
-					uintmax_t previousUncompressedSize;
-
-					Result getPreviousUncompressedSize = resource->GetUncompressedSize( previousUncompressedSize );
-
-					if( getPreviousUncompressedSize.type != ResultType::SUCCESS )
-					{
-						return getPreviousUncompressedSize;
-					}
-
-					if( dataOffset < previousUncompressedSize )
-					{
-						int64_t previousSourcePosition = resourceDataStreamIn->GetCurrentPosition();
-						// Get to location of patch
-						while( temporaryResourceDataStreamOut.GetFileSize() < dataOffset )
-						{
-							std::string dataChunk;
-							uint64_t remaining = dataOffset - temporaryResourceDataStreamOut.GetFileSize();
-							if( remaining < m_maxInputChunkSize.GetValue() )
-							{
-								if( !resourceDataStreamIn->ReadBytes( remaining, dataChunk ) )
-								{
-									return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
-								}
-							}
-							else if( !( *resourceDataStreamIn >> dataChunk ) )
-							{
-								return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
-							}
-
-							if( !( temporaryResourceDataStreamOut << dataChunk ) )
-							{
-								return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
-							}
-
-							// Add to incremental checksum calculation
-							if( !( patchedFileChecksumStream << dataChunk ) )
-							{
-								return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
-							}
-							previousSourcePosition += dataChunk.size();
-						}
-						if( resourceDataStreamIn->IsFinished() )
-						{
-							resourceDataStreamIn->StartRead( resourceDataStreamIn->GetPath() );
-						}
-						resourceDataStreamIn->Seek( previousSourcePosition );
-
-
-						// Apply the patch to the previous data
-						std::string patchedResourceData;
-
-						if( hasPatchFile )
-						{
-							// Apply patch to data
-							resourceDataStreamIn->Seek( sourceOffset );
-							if( !( *resourceDataStreamIn >> previousResourceData ) )
-							{
-								return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
-							}
-							if( !ResourceTools::ApplyPatch( previousResourceData, patchData, patchedResourceData ) )
-							{
-								return Result{ ResultType::FAILED_TO_APPLY_PATCH };
-							}
-							// Write the patch result to file
-							if( !( temporaryResourceDataStreamOut << patchedResourceData ) )
-							{
-								return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
-							}
-
-							// Add to incremental checksum calculation
-							if( !( patchedFileChecksumStream << patchedResourceData ) )
-							{
-								return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
-							}
-						}
-						else
-						{
-
-							auto sourceDataStreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( m_maxInputChunkSize.GetValue() );
-
-							ResourceGetDataStreamParams getDataStreamParams;
-
-							getDataStreamParams.dataStream = sourceDataStreamIn;
-
-							getDataStreamParams.resourceSourceSettings = params.resourcesToPatchSourceSettings;
-
-                            getDataStreamParams.downloadSettings = params.downloadSettings;
-
-							Result getDataStreamResult = resource->GetDataStream( getDataStreamParams );
-
-							if( getDataStreamResult.type != ResultType::SUCCESS )
-							{
-								return getDataStreamResult;
-							}
-
-							uintmax_t sourceOffset{ 0 };
-							Result getSourceOffsetResult = patch->GetSourceOffset( sourceOffset );
-							if( getSourceOffsetResult.type != ResultType::SUCCESS )
-							{
-								return getSourceOffsetResult;
-							}
-							uintmax_t unCompressedSize{ 0 };
-							Result getUncompressedSizeResult = patch->GetUncompressedSize( unCompressedSize );
-							if( getUncompressedSizeResult.type != ResultType::SUCCESS )
-							{
-								return getUncompressedSizeResult;
-							}
-							sourceDataStreamIn->Seek( sourceOffset );
-							while( unCompressedSize )
-							{
-								std::string sourceData;
-								if( unCompressedSize >= m_maxInputChunkSize.GetValue() )
-								{
-									*sourceDataStreamIn >> sourceData;
-								}
-								else
-								{
-									sourceDataStreamIn->ReadBytes( unCompressedSize, sourceData );
-								}
-
-								if( sourceData.empty() )
-								{
-									return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
-								}
-								*resourceDataStreamIn >> previousResourceData;
-								if( sourceData.size() > unCompressedSize )
-								{
-									sourceData = sourceData.substr( unCompressedSize );
-								}
-								unCompressedSize -= std::min( sourceData.size(), unCompressedSize );
-
-								// Write the data from the source file
-								if( !( temporaryResourceDataStreamOut << sourceData ) )
-								{
-									return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
-								}
-
-								// Add to incremental checksum calculation
-								if( !( patchedFileChecksumStream << sourceData ) )
-								{
-									return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
-								}
-							}
-						}
-					}
-					else
-					{
-						// New data, append on to end
-						if( !( temporaryResourceDataStreamOut << previousResourceData ) )
-						{
-							return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
-						}
-
-						// Add to incremental checksum calculation
-						if( !( patchedFileChecksumStream << previousResourceData ) )
-						{
-							return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
-						}
-					}
-				}
-
-				// Stream out the remaining expected data
-				uintmax_t expectedResourceSize = 0;
-
-				Result getResourceUncompressedSizeResult = resource->GetUncompressedSize( expectedResourceSize );
-
-				if( getResourceUncompressedSizeResult.type != ResultType::SUCCESS )
-				{
-					return getResourceUncompressedSizeResult;
-				}
-
-				temporaryResourceDataStreamOut.Finish();
-			}
-			else
-			{
-				// No Patch found, indicates this is just a new file
-                if (!params.skipNewFiles)
-                {
-					// Just replace file directly
-					auto resourceStreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( m_maxInputChunkSize.GetValue() );
-
-					ResourceGetDataStreamParams resourceGetDataParams;
-
-					resourceGetDataParams.resourceSourceSettings = params.nextBuildResourcesSourceSettings;
-
-					resourceGetDataParams.dataStream = resourceStreamIn;
-
-					resourceGetDataParams.downloadSettings = params.downloadSettings;
-
-					Result resourceGetDataResult = resource->GetDataStream( resourceGetDataParams );
-
-					if( resourceGetDataResult.type != ResultType::SUCCESS )
-					{
-						return resourceGetDataResult;
-					}
-
-					while( !resourceStreamIn->IsFinished() )
-					{
-						std::string resourceData;
-
-						if( !( *resourceStreamIn >> resourceData ) )
-						{
-							return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
-						}
-
-						if( !( temporaryResourceDataStreamOut << resourceData ) )
-						{
-							return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
-						}
-
-						// Add to incremental checksum calculation
-						if( !( patchedFileChecksumStream << resourceData ) )
-						{
-							return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
-						}
-					}
-
-					temporaryResourceDataStreamOut.Finish();
-   
-                }
-                else
-                {
-					skipChecksumCheck = true;
-                }
+					    ResourceGetDataParams patchGetDataParams;
+
+					    patchGetDataParams.resourceSourceSettings = params.patchBinarySourceSettings;
+
+					    patchGetDataParams.data = &patchData;
+
+					    patchGetDataParams.downloadSettings = params.downloadSettings;
+
+					    std::string location;
+					    Result patchGetLocationResult = patch->GetLocation( location );
+					    if( patchGetLocationResult.type != ResultType::SUCCESS )
+					    {
+						    return patchGetLocationResult;
+					    }
+					    bool hasPatchFile{ !location.empty() };
+
+					    if( hasPatchFile )
+					    {
+						    Result getPatchDataResult = patch->GetData( patchGetDataParams );
+
+						    if( getPatchDataResult.type != ResultType::SUCCESS )
+						    {
+							    return getPatchDataResult;
+						    }
+					    }
+
+					    // Get previous data
+					    uintmax_t dataOffset;
+					    uintmax_t sourceOffset;
+					    Result getPatchDataOffset = patch->GetDataOffset( dataOffset );
+
+					    if( getPatchDataOffset.type != ResultType::SUCCESS )
+					    {
+						    return getPatchDataOffset;
+					    }
+
+					    Result getPatchSourceOffset = patch->GetSourceOffset( sourceOffset );
+					    if( getPatchSourceOffset.type != ResultType::SUCCESS )
+					    {
+						    return getPatchSourceOffset;
+					    }
+
+					    std::string previousResourceData;
+
+					    // Get previous size of resource
+					    uintmax_t previousUncompressedSize;
+
+					    Result getPreviousUncompressedSize = resource->GetUncompressedSize( previousUncompressedSize );
+
+					    if( getPreviousUncompressedSize.type != ResultType::SUCCESS )
+					    {
+						    return getPreviousUncompressedSize;
+					    }
+
+					    if( dataOffset < previousUncompressedSize )
+					    {
+						    int64_t previousSourcePosition = resourceDataStreamIn->GetCurrentPosition();
+						    // Get to location of patch
+						    while( temporaryResourceDataStreamOut.GetFileSize() < dataOffset )
+						    {
+							    std::string dataChunk;
+							    uint64_t remaining = dataOffset - temporaryResourceDataStreamOut.GetFileSize();
+							    if( remaining < m_maxInputChunkSize.GetValue() )
+							    {
+								    if( !resourceDataStreamIn->ReadBytes( remaining, dataChunk ) )
+								    {
+									    return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+								    }
+							    }
+							    else if( !( *resourceDataStreamIn >> dataChunk ) )
+							    {
+								    return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+							    }
+
+							    if( !( temporaryResourceDataStreamOut << dataChunk ) )
+							    {
+								    return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
+							    }
+
+							    // Add to incremental checksum calculation
+							    if( !( patchedFileChecksumStream << dataChunk ) )
+							    {
+								    return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+							    }
+							    previousSourcePosition += dataChunk.size();
+						    }
+						    if( resourceDataStreamIn->IsFinished() )
+						    {
+							    resourceDataStreamIn->StartRead( resourceDataStreamIn->GetPath() );
+						    }
+						    resourceDataStreamIn->Seek( previousSourcePosition );
+
+
+						    // Apply the patch to the previous data
+						    std::string patchedResourceData;
+
+						    if( hasPatchFile )
+						    {
+							    // Apply patch to data
+							    resourceDataStreamIn->Seek( sourceOffset );
+							    if( !( *resourceDataStreamIn >> previousResourceData ) )
+							    {
+								    return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+							    }
+							    if( !ResourceTools::ApplyPatch( previousResourceData, patchData, patchedResourceData ) )
+							    {
+								    return Result{ ResultType::FAILED_TO_APPLY_PATCH };
+							    }
+							    // Write the patch result to file
+							    if( !( temporaryResourceDataStreamOut << patchedResourceData ) )
+							    {
+								    return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
+							    }
+
+							    // Add to incremental checksum calculation
+							    if( !( patchedFileChecksumStream << patchedResourceData ) )
+							    {
+								    return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+							    }
+						    }
+						    else
+						    {
+
+							    auto sourceDataStreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( m_maxInputChunkSize.GetValue() );
+
+							    ResourceGetDataStreamParams getDataStreamParams;
+
+							    getDataStreamParams.dataStream = sourceDataStreamIn;
+
+							    getDataStreamParams.resourceSourceSettings = params.resourcesToPatchSourceSettings;
+
+							    getDataStreamParams.downloadSettings = params.downloadSettings;
+
+							    Result getDataStreamResult = resource->GetDataStream( getDataStreamParams );
+
+							    if( getDataStreamResult.type != ResultType::SUCCESS )
+							    {
+								    return getDataStreamResult;
+							    }
+
+							    uintmax_t sourceOffset{ 0 };
+							    Result getSourceOffsetResult = patch->GetSourceOffset( sourceOffset );
+							    if( getSourceOffsetResult.type != ResultType::SUCCESS )
+							    {
+								    return getSourceOffsetResult;
+							    }
+							    uintmax_t unCompressedSize{ 0 };
+							    Result getUncompressedSizeResult = patch->GetUncompressedSize( unCompressedSize );
+							    if( getUncompressedSizeResult.type != ResultType::SUCCESS )
+							    {
+								    return getUncompressedSizeResult;
+							    }
+							    sourceDataStreamIn->Seek( sourceOffset );
+							    while( unCompressedSize )
+							    {
+								    std::string sourceData;
+								    if( unCompressedSize >= m_maxInputChunkSize.GetValue() )
+								    {
+									    *sourceDataStreamIn >> sourceData;
+								    }
+								    else
+								    {
+									    sourceDataStreamIn->ReadBytes( unCompressedSize, sourceData );
+								    }
+
+								    if( sourceData.empty() )
+								    {
+									    return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+								    }
+								    *resourceDataStreamIn >> previousResourceData;
+								    if( sourceData.size() > unCompressedSize )
+								    {
+									    sourceData = sourceData.substr( unCompressedSize );
+								    }
+								    unCompressedSize -= std::min( sourceData.size(), unCompressedSize );
+
+								    // Write the data from the source file
+								    if( !( temporaryResourceDataStreamOut << sourceData ) )
+								    {
+									    return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
+								    }
+
+								    // Add to incremental checksum calculation
+								    if( !( patchedFileChecksumStream << sourceData ) )
+								    {
+									    return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+								    }
+							    }
+						    }
+					    }
+					    else
+					    {
+						    // New data, append on to end
+						    if( !( temporaryResourceDataStreamOut << previousResourceData ) )
+						    {
+							    return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
+						    }
+
+						    // Add to incremental checksum calculation
+						    if( !( patchedFileChecksumStream << previousResourceData ) )
+						    {
+							    return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+						    }
+					    }
+				    }
+
+				    // Stream out the remaining expected data
+				    uintmax_t expectedResourceSize = 0;
+
+				    Result getResourceUncompressedSizeResult = resource->GetUncompressedSize( expectedResourceSize );
+
+				    if( getResourceUncompressedSizeResult.type != ResultType::SUCCESS )
+				    {
+					    return getResourceUncompressedSizeResult;
+				    }
+
+				    temporaryResourceDataStreamOut.Finish();
+			    }
+			    else
+			    {
+				    // No Patch found, indicates this is just a new file
+				    if( !params.skipNewFiles )
+				    {
+					    // Just replace file directly
+					    auto resourceStreamIn = std::make_shared<ResourceTools::FileDataStreamIn>( m_maxInputChunkSize.GetValue() );
+
+					    ResourceGetDataStreamParams resourceGetDataParams;
+
+					    resourceGetDataParams.resourceSourceSettings = params.nextBuildResourcesSourceSettings;
+
+					    resourceGetDataParams.dataStream = resourceStreamIn;
+
+					    resourceGetDataParams.downloadSettings = params.downloadSettings;
+
+					    Result resourceGetDataResult = resource->GetDataStream( resourceGetDataParams );
+
+					    if( resourceGetDataResult.type != ResultType::SUCCESS )
+					    {
+						    return resourceGetDataResult;
+					    }
+
+					    while( !resourceStreamIn->IsFinished() )
+					    {
+						    std::string resourceData;
+
+						    if( !( *resourceStreamIn >> resourceData ) )
+						    {
+							    return Result{ ResultType::FAILED_TO_READ_FROM_STREAM };
+						    }
+
+						    if( !( temporaryResourceDataStreamOut << resourceData ) )
+						    {
+							    return Result{ ResultType::FAILED_TO_WRITE_TO_STREAM };
+						    }
+
+						    // Add to incremental checksum calculation
+						    if( !( patchedFileChecksumStream << resourceData ) )
+						    {
+							    return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+						    }
+					    }
+
+					    temporaryResourceDataStreamOut.Finish();
+				    }
+				    else
+				    {
+					    skipChecksumCheck = true;
+				    }
+			    }
+
+			    if( !skipChecksumCheck )
+			    {
+				    // Test checksum against expected
+				    std::string destinationExpectedChecksum;
+
+				    Result getChecksumResult = resource->GetChecksum( destinationExpectedChecksum );
+
+				    if( getChecksumResult.type != ResultType::SUCCESS )
+				    {
+					    return getChecksumResult;
+				    }
+
+				    std::string patchedFileChecksum;
+
+				    if( !patchedFileChecksumStream.Retrieve( patchedFileChecksum ) )
+				    {
+					    return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
+				    }
+
+				    if( patchedFileChecksum != destinationExpectedChecksum )
+				    {
+					    return Result{ ResultType::UNEXPECTED_PATCH_CHECKSUM_RESULT };
+				    }
+			    } 
+		    }
+
+            // Move temp file to destination
+            // Note: On some platforms this may result in a copy rather than a move if moving across different drives
+			std::filesystem::path destinationPath;
+            
+            Result getDestinationPathResult = resource->GetDestinationPath(params.resourcesToPatchDestinationSettings,destinationPath);
+
+            if (getDestinationPathResult.type != ResultType::SUCCESS)
+            {
+				return getDestinationPathResult;
             }
 
-            if (!skipChecksumCheck)
-            {
-				// Test checksum against expected
-				std::string destinationExpectedChecksum;
-
-				Result getChecksumResult = resource->GetChecksum( destinationExpectedChecksum );
-
-				if( getChecksumResult.type != ResultType::SUCCESS )
-				{
-					return getChecksumResult;
-				}
-
-                std::string patchedFileChecksum;
-
-				if( !patchedFileChecksumStream.Retrieve( patchedFileChecksum ) )
-				{
-					return Result{ ResultType::FAILED_TO_GENERATE_CHECKSUM };
-				}
-
-				if( patchedFileChecksum != destinationExpectedChecksum )
-				{
-					return Result{ ResultType::UNEXPECTED_PATCH_CHECKSUM_RESULT };
-				}
-
-                // Copy temp file to replace the old resource file
+            try
+			{
+                std::filesystem::rename( params.temporaryFilePath, destinationPath );
+			}
+			catch( const fs::filesystem_error& )
+			{
+                // Attempt to copy as a backup
+                // 
+				// Copy temp file to replace the old resource file
 
 				// Open output stream
 				ResourceTools::FileDataStreamOut resourceStreamOut;
@@ -705,7 +747,7 @@ Result PatchResourceGroup::PatchResourceGroupImpl::Apply( PatchApplyParams& para
 				}
 
 				resourceStreamOut.Finish();
-            }
+			}
 
         }
     }

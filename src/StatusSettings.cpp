@@ -25,6 +25,11 @@ void StatusSettings::SetCallbackSettings( const CallbackSettings& callbackSettin
 	m_callbackSettings = callbackSettings;
 }
 
+void StatusSettings::Update( const std::string& info )
+{
+	Update( StatusProgressType::PERCENTAGE, m_lastUpdate.progress, m_lastUpdate.percentageSizeOfJob, info );
+}
+
 void StatusSettings::Update( StatusProgressType statusProgressType, float progress, float percentageSizeOfJob, const std::string& info, StatusSettings* nestedStatusSettingsOut /*= nullptr*/ )
 {
 	if( !m_callbackSettings.statusCallback )

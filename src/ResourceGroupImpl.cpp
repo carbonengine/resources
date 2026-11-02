@@ -2570,8 +2570,8 @@ Result ResourceGroup::ResourceGroupImpl::CreatePatch( const PatchCreateParams& p
 					return getRelativePathResult;
 				}
 
+                resourceStatusSettings.Update( "Generating index" );
 				ResourceTools::ChunkIndex index( previousFileDataStream->GetPath(), params.maxInputFileChunkSize, params.indexFolder );
-
 				index.GenerateChecksumFilter( nextFileDataStream->GetPath() );
 
 				if( !index.Generate() )
@@ -2580,9 +2580,31 @@ Result ResourceGroup::ResourceGroupImpl::CreatePatch( const PatchCreateParams& p
 					resourceStatusSettings.Update( StatusProgressType::WARNING, 0, 0, message );
 				}
 
+                resourceStatusSettings.Update( "Processing data" );
+				
+                uint64_t updateCount = 0;
+				uint64_t matches = 0;
+				uint64_t totalChunksProcessed = 0;
 				// Process one chunk at a time
 				for( uintmax_t dataOffset = 0; dataOffset < nextUncompressedSize; dataOffset += params.maxInputFileChunkSize )
 				{
+
+                    if ((updateCount % 10) == 0)
+                    {
+						int percent = int((100.0 / nextUncompressedSize) *dataOffset);
+                        unsigned int matchPercent = 0;
+                        if (totalChunksProcessed > 0)
+                        {
+							matchPercent = static_cast<unsigned int>( ( 100.0 / totalChunksProcessed ) * matches );
+                        }
+						std::stringstream ss;
+                        ss << "Progress : " << percent << "% Match Count: " << matches << "/" << totalChunksProcessed << " Match Ratio: " << matchPercent << "%";
+						std::string info = ss.str();
+						resourceStatusSettings.Update( info );
+                    }
+					updateCount++;
+					totalChunksProcessed++;
+
                     // Check the current limit for overall patch size has not been exceeded
 					if( ( params.maxTotalPatchSize > 0 ) && ( totalSizeOfPatch > params.maxTotalPatchSize ) )
                     {
@@ -2643,17 +2665,32 @@ Result ResourceGroup::ResourceGroupImpl::CreatePatch( const PatchCreateParams& p
 						// in the chunk from the source file that we last used.
 						// These should keep our patches pretty minimal, even if lots of data gets added early in the file causing offsets.
 						// It should also handle small changes in moved parts of the file pretty well.
-						chunkMatchFound = index.FindMatchingChunk( nextFileData, patchSourceOffset );
+						std::vector<size_t> matchOffsets;
+						chunkMatchFound = index.FindMatchingChunks( nextFileData, matchOffsets );
 
 						if( chunkMatchFound )
 						{
-							matchCount = 1;
-							matchCount += ResourceTools::CountMatchingChunks(
-								nextFileDataStream->GetPath(),
-								nextFileDataStream->GetCurrentPosition(),
-								previousFileDataStream->GetPath(),
-								patchSourceOffset + params.maxInputFileChunkSize,
-								params.maxInputFileChunkSize );
+                            // All matching chunks are considered to find the best one where
+                            // the best one is the one with the longest run of matching consecutive chunks
+                            patchSourceOffset = matchOffsets.front();
+							matchCount = 0;
+							for( size_t offset : matchOffsets )
+							{
+								size_t count = 1;
+								count += ResourceTools::CountMatchingChunks(
+									nextFileDataStream->GetPath(),
+									nextFileDataStream->GetCurrentPosition(),
+									previousFileDataStream->GetPath(),
+									offset + params.maxInputFileChunkSize,
+									params.maxInputFileChunkSize );
+								if( count > matchCount )
+								{
+									matchCount = count;
+									patchSourceOffset = offset;
+								}
+							}
+							matches += matchCount;
+							totalChunksProcessed += matchCount - 1;
 
 							size_t matchSize = std::min( params.maxInputFileChunkSize * matchCount, previousFileDataStream->Size() - patchSourceOffset );
 

@@ -140,72 +140,7 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String, 
     id(buildName.toId())
     this.name = buildName
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    artifactRules = "%env.CMAKE_INSTALL_PREFIX%"
-=======
     artifactRules = "%env.CMAKE_INSTALL_PREFIX% => artifact.zip"
->>>>>>> template/carbonengine/resources-updates
-=======
-    artifactRules = "%env.CMAKE_INSTALL_PREFIX% => artifact.zip"
->>>>>>> template/carbonengine/resources-updates
-=======
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-})
-
-
-class CarbonBuildWindows(buildName: String, configType: String, preset: String) : BuildType({
-=======
-=======
->>>>>>> template/carbonengine/resources-updates
-})
-
-
-class CarbonBuildWindows(buildName: String, configType: String, preset: String, vsDevBatSwitches: String = "-arch=x64 -vcvars_ver=14.51") : BuildType({
-<<<<<<< HEAD
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-    id(buildName.toId())
-    this.name = buildName
-
-    artifactRules = "%env.CMAKE_INSTALL_PREFIX% => artifact.zip"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
-=======
->>>>>>> template/carbonengine/resources-updates
 
     params {
         param("env.GIT_TAG_HASH_OVERRIDE", "")
@@ -645,39 +580,7 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String, 
                 authType = token {
                     token = "%GITHUB_CARBON_PAT%"
                 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                filterAuthorRole = PullRequests.GitHubRoleFilter.MEMBER
-=======
                 filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
->>>>>>> template/carbonengine/resources-updates
-=======
-                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
->>>>>>> template/carbonengine/resources-updates
-=======
-                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
->>>>>>> template/carbonengine/resources-updates
-=======
-                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
->>>>>>> template/carbonengine/resources-updates
-=======
-                filterAuthorRole = GitHubRoleFilter.EVERYBODY
->>>>>>> template/carbonengine/resources-updates
-=======
-                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
->>>>>>> template/carbonengine/resources-updates
-=======
-                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
->>>>>>> template/carbonengine/resources-updates
-=======
-                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
->>>>>>> template/carbonengine/resources-updates
             }
         }
         commitStatusPublisher {
@@ -700,31 +603,7 @@ class CarbonBuildWindows(buildName: String, configType: String, preset: String, 
             failBuild = true
         }
         sshAgent {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-            teamcitySshKey = "ccpgames-evetech GitHub"
-=======
             teamcitySshKey = "ccpgames-carbon"
->>>>>>> template/carbonengine/resources-updates
-=======
-            teamcitySshKey = "ccpgames-carbon"
->>>>>>> template/carbonengine/resources-updates
-=======
-            teamcitySshKey = "ccpgames-carbon"
->>>>>>> template/carbonengine/resources-updates
-=======
-            teamcitySshKey = "ccpgames-carbon"
->>>>>>> template/carbonengine/resources-updates
-=======
-            teamcitySshKey = "ccpgames-carbon"
->>>>>>> template/carbonengine/resources-updates
-=======
-            teamcitySshKey = "ccpgames-carbon"
->>>>>>> template/carbonengine/resources-updates
         }
         provideAwsCredentials {
             awsConnectionId = "Carbon_AwsVcpkgBinaryCacheServiceAccount"

@@ -43,6 +43,8 @@ public:
 
 	void SetCallbackSettings( const CallbackSettings& callbackSettings );
 
+    void Update( const std::string& info );
+
 	void Update( StatusProgressType statusProgressType, float progress, float percentageSizeOfJob, const std::string& info, StatusSettings* nestedStatusSettingsOut = nullptr );
 
 private:

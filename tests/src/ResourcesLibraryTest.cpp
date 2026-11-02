@@ -423,7 +423,7 @@ TEST_F( ResourcesLibraryTest, UnpackRemoteBundleAsLocal )
 	// Import ResourceGroup
 	CarbonResources::ResourceGroup resourceGroup;
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
-	importParams.filename = GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" );
+	importParams.filename = GetTestFileAbsolutePath( "Bundle/resFileIndexShort.txt" );
 
     importParams.callbackSettings.statusCallback = StatusUpdate;
 
@@ -480,7 +480,7 @@ TEST_F( ResourcesLibraryTest, CreateBundleWithZeroChunkSize )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-	importParams.filename = GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" );
+	importParams.filename = GetTestFileAbsolutePath( "Bundle/resFileIndexShort.txt" );
 
     importParams.callbackSettings.statusCallback = StatusUpdate;
 
@@ -524,7 +524,7 @@ TEST_F( ResourcesLibraryTest, CreateBundleRemoteCDN )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-	importParams.filename = GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" );
+	importParams.filename = GetTestFileAbsolutePath( "Bundle/resFileIndexShort.txt" );
 
 	importParams.callbackSettings.statusCallback = StatusUpdate;
 
@@ -572,7 +572,7 @@ TEST_F( ResourcesLibraryTest, CreateBundle )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-	importParams.filename = GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" );
+	importParams.filename = GetTestFileAbsolutePath( "Bundle/resFileIndexShort.txt" );
 
     importParams.callbackSettings.statusCallback = StatusUpdate;
 
@@ -775,7 +775,7 @@ TEST_F( ResourcesLibraryTest, CreateAndUnpackBundle )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParams;
 
-	importParams.filename = GetTestFileAbsolutePath( "Bundle/resfileindexShort.txt" );
+	importParams.filename = GetTestFileAbsolutePath( "Bundle/resFileIndexShort.txt" );
 
     importParams.callbackSettings.statusCallback = StatusUpdate;
 
@@ -916,7 +916,7 @@ TEST_F( ResourcesLibraryTest, CreatePatchWhereBuildsHaveNoChanges )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
-	importParamsPrevious.filename = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_previous.txt" );
+	importParamsPrevious.filename = GetTestFileAbsolutePath( "Patch/resFileIndexShort_build_previous.txt" );
 
     importParamsPrevious.callbackSettings.statusCallback = StatusUpdate;
 
@@ -929,7 +929,7 @@ TEST_F( ResourcesLibraryTest, CreatePatchWhereBuildsHaveNoChanges )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsLatest;
 
-	importParamsLatest.filename = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_previous.txt" );
+	importParamsLatest.filename = GetTestFileAbsolutePath( "Patch/resFileIndexShort_build_previous.txt" );
 
     importParamsLatest.callbackSettings.statusCallback = StatusUpdate;
 
@@ -982,7 +982,7 @@ TEST_F( ResourcesLibraryTest, CreatePatch )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
-	importParamsPrevious.filename = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_previous.txt" );
+	importParamsPrevious.filename = GetTestFileAbsolutePath( "Patch/resFileIndexShort_build_previous.txt" );
 
     importParamsPrevious.callbackSettings.statusCallback = StatusUpdate;
 
@@ -996,7 +996,7 @@ TEST_F( ResourcesLibraryTest, CreatePatch )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsLatest;
 
-	importParamsLatest.filename = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_next.txt" );
+	importParamsLatest.filename = GetTestFileAbsolutePath( "Patch/resFileIndexShort_build_next.txt" );
 
     importParamsLatest.callbackSettings.statusCallback = StatusUpdate;
 
@@ -1130,7 +1130,7 @@ TEST_F( ResourcesLibraryTest, CreatePatchZeroInputChunkSize )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
-	importParamsPrevious.filename = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_previous.txt" );
+	importParamsPrevious.filename = GetTestFileAbsolutePath( "Patch/resFileIndexShort_build_previous.txt" );
 
     importParamsPrevious.callbackSettings.statusCallback = StatusUpdate;
 
@@ -1144,7 +1144,7 @@ TEST_F( ResourcesLibraryTest, CreatePatchZeroInputChunkSize )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsLatest;
 
-	importParamsLatest.filename = GetTestFileAbsolutePath( "Patch/resfileindexShort_build_next.txt" );
+	importParamsLatest.filename = GetTestFileAbsolutePath( "Patch/resFileIndexShort_build_next.txt" );
 
     importParamsLatest.callbackSettings.statusCallback = StatusUpdate;
 
@@ -1232,10 +1232,10 @@ TEST_F( ResourcesLibraryTest, ApplyPatchWithChunking )
     EXPECT_TRUE( StatusIsValid() );
 
 	std::filesystem::path nextIntroMovie = GetTestFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/introMovie.txt" );
-	EXPECT_TRUE( FilesMatch( nextIntroMovie, patchApplyParams.resourcesToPatchDestinationSettings.basePath / "introMovie.txt" ) );
+	EXPECT_TRUE( FilesMatch( nextIntroMovie, patchApplyParams.resourcesToPatchDestinationSettings.basePath / "intromovie.txt" ) );
 	std::filesystem::path nextIntroMoviePrefixed = GetTestFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/introMoviePrefixed.txt" );
 	EXPECT_TRUE( FilesMatch( nextIntroMoviePrefixed, patchApplyParams.resourcesToPatchDestinationSettings.basePath / "introMoviePrefixed.txt" ) );
-	std::filesystem::path nextTestResource = GetTestFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/testresource2.txt" );
+	std::filesystem::path nextTestResource = GetTestFileAbsolutePath( "PatchWithInputChunk/NextBuildResources/testResource2.txt" );
 	EXPECT_TRUE( FilesMatch( nextTestResource, patchApplyParams.resourcesToPatchDestinationSettings.basePath / "testresource2.txt" ) );
 }
 
@@ -1246,7 +1246,7 @@ TEST_F( ResourcesLibraryTest, CreatePatchWithChunking )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsPrevious;
 
-	importParamsPrevious.filename = GetTestFileAbsolutePath( "PatchWithInputChunk/resfileindexShort_build_previous.txt" );
+	importParamsPrevious.filename = GetTestFileAbsolutePath( "PatchWithInputChunk/resFileIndexShort_build_previous.txt" );
 
     importParamsPrevious.callbackSettings.statusCallback = StatusUpdate;
 
@@ -1259,7 +1259,7 @@ TEST_F( ResourcesLibraryTest, CreatePatchWithChunking )
 
 	CarbonResources::ResourceGroupImportFromFileParams importParamsLatest;
 
-	importParamsLatest.filename = GetTestFileAbsolutePath( "PatchWithInputChunk/resfileindexShort_build_next.txt" );
+	importParamsLatest.filename = GetTestFileAbsolutePath( "PatchWithInputChunk/resFileIndexShort_build_next.txt" );
 
     importParamsLatest.callbackSettings.statusCallback = StatusUpdate;
 

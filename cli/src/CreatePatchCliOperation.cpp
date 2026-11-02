@@ -316,11 +316,11 @@ void CreatePatchCliOperation::PrintStartBanner( const CarbonResources::ResourceG
 
     if( createPatchParams.calculateCompressions )
 	{
-		std::cout << "Calculate Compression: Off" << std::endl;
+		std::cout << "Calculate Compression: On" << std::endl;
 	}
 	else
 	{
-		std::cout << "Calculate Compression: On" << std::endl;
+		std::cout << "Calculate Compression: Off" << std::endl;
 	}
 
     std::cout << "New File Resource Group Destination Settings Base Path: " << createPatchParams.resourceNewFilesResourceGroupDestinationSettings.basePath << std::endl;

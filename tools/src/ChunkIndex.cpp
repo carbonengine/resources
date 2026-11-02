@@ -13,7 +13,7 @@
 
 // Block contains checksum ( uint32_t ) and offset ( uint32_t )
 // Index files will take up 8x the size of the original file.
-constexpr size_t CHUNK_BLOCK_SIZE = sizeof( uint32_t ) + sizeof( uint32_t );
+constexpr size_t CHUNK_BLOCK_SIZE = sizeof( std::pair<uint32_t, uint64_t> );
 constexpr size_t TARGET_FILE_SIZE = 1024 * 1024 * 512; // 512 MB index files, each covering 64 MB of the source file.
 constexpr size_t BLOCKS_PER_FILE = TARGET_FILE_SIZE / CHUNK_BLOCK_SIZE;
 
@@ -39,7 +39,7 @@ ChunkIndex::~ChunkIndex()
 	}
 }
 
-bool ChunkIndex::Flush( std::vector<std::pair<uint32_t, uint32_t>>& index )
+bool ChunkIndex::Flush( std::vector<std::pair<uint32_t, uint64_t>>& index )
 {
 	if( index.empty() )
 	{
@@ -78,7 +78,7 @@ bool ChunkIndex::Flush( std::vector<std::pair<uint32_t, uint32_t>>& index )
 	m_indexFiles.push_back( out );
 
 	std::sort( index.begin(), index.end() );
-	streamOut.write( reinterpret_cast<char*>( &index[0] ), sizeof( std::pair<uint32_t, uint32_t> ) * index.size() );
+	streamOut.write( reinterpret_cast<char*>( &index[0] ), sizeof( std::pair<uint32_t, uint64_t> ) * index.size() );
 	index.clear();
 	return true;
 }
@@ -149,7 +149,7 @@ bool ChunkIndex::Generate()
 	uint64_t fileOffset{ 0 };
 	RollingChecksum checksum;
 
-	std::vector<std::pair<uint32_t, uint32_t>> chunkToOffsets;
+	std::vector<std::pair<uint32_t, uint64_t>> chunkToOffsets;
 	chunkToOffsets.reserve( BLOCKS_PER_FILE );
 	size_t cachedChunks{ 0 };
 
@@ -174,8 +174,8 @@ bool ChunkIndex::Generate()
 				++backlogOffset;
 				continue;
 			}
-			auto offset = static_cast<uint32_t>( backlogOffset + fileOffset - m_currentIndexFile * BLOCKS_PER_FILE );
-			chunkToOffsets.emplace_back( std::pair<uint32_t, uint32_t>( checksum.checksum, offset ) );
+			uint64_t offset = static_cast<uint64_t>( backlogOffset + fileOffset - m_currentIndexFile * BLOCKS_PER_FILE );
+			chunkToOffsets.emplace_back( std::pair<uint32_t, uint64_t>( checksum.checksum, offset ) );
 			++cachedChunks;
 			++backlogOffset;
 			if( cachedChunks >= BLOCKS_PER_FILE )
@@ -217,7 +217,9 @@ bool FindMatchingChunksInFile( uint32_t chunk, const std::filesystem::path& path
 	{
 		size_t pos = ( beginning + end ) / 2;
 		chunkFile.seekg( CHUNK_BLOCK_SIZE * pos );
-		chunkFile.read( reinterpret_cast<char*>( &current ), sizeof( current ) );
+		std::pair<uint32_t, uint64_t> record;
+		chunkFile.read( reinterpret_cast<char*>( &record ), sizeof( record ) );
+		current = record.first;
 		if( current > chunk )
 		{
 			if( beginning == end )
@@ -244,9 +246,7 @@ bool FindMatchingChunksInFile( uint32_t chunk, const std::filesystem::path& path
 		else
 		{
 			// It's a match!
-			uint32_t relative{ 0 };
-			chunkFile.read( reinterpret_cast<char*>( &relative ), sizeof( relative ) );
-			offsets.push_back( baseOffset + relative );
+			offsets.push_back( baseOffset + record.second );
 
 			if( pos )
 			{
@@ -254,12 +254,11 @@ bool FindMatchingChunksInFile( uint32_t chunk, const std::filesystem::path& path
 				while( true )
 				{
 					chunkFile.seekg( CHUNK_BLOCK_SIZE * previous );
-					chunkFile.read( reinterpret_cast<char*>( &current ), sizeof( current ) );
+					chunkFile.read( reinterpret_cast<char*>( &record ), sizeof( record ) );
+					current = record.first;
 					if( current == chunk )
 					{
-						uint32_t relative{ 0 };
-						chunkFile.read( reinterpret_cast<char*>( &relative ), sizeof( relative ) );
-						offsets.push_back( baseOffset + relative );
+						offsets.push_back( baseOffset + record.second );
 					}
 					else
 					{
@@ -277,12 +276,11 @@ bool FindMatchingChunksInFile( uint32_t chunk, const std::filesystem::path& path
 			while( next <= chunkCount )
 			{
 				chunkFile.seekg( CHUNK_BLOCK_SIZE * next );
-				chunkFile.read( reinterpret_cast<char*>( &current ), sizeof( current ) );
+				chunkFile.read( reinterpret_cast<char*>( &record ), sizeof( record ) );
+				current = record.first;
 				if( current == chunk )
 				{
-					uint32_t relative;
-					chunkFile.read( reinterpret_cast<char*>( &relative ), sizeof( relative ) );
-					offsets.push_back( baseOffset + relative );
+					offsets.push_back( baseOffset + record.second );
 				}
 				else
 				{
@@ -311,62 +309,53 @@ bool ChunkIndex::FindChunkOffsets( uint32_t chunk, std::vector<size_t>& offsets 
 	return true;
 }
 
-bool ChunkIndex::FindMatchingChunk( const std::string& chunk, size_t& chunkOffset )
+bool ChunkIndex::FindMatchingChunks( const std::string& chunk, std::vector<size_t>& chunkOffsets )
 {
-	std::string sourceMD5;
-	bool sourceChecksumGenerated{ false };
+	chunkOffsets.clear();
 
-	size_t baseOffset{ 0 };
-	std::vector<size_t> offsets;
+    std::string matchingChunkMD5;
+	if( !ResourceTools::GenerateMd5Checksum( chunk, matchingChunkMD5 ) )
+	{
+		return false;
+	}
 
 	auto end = static_cast<uint32_t>( chunk.size() );
 	RollingChecksum rollingChecksum = ResourceTools::GenerateRollingAdlerChecksum( chunk, 0, end );
 
-	for( auto path : m_indexFiles )
+	std::vector<size_t> offsets;
+	if( !FindChunkOffsets( rollingChecksum.checksum, offsets ) )
 	{
-		if( !FindMatchingChunksInFile( rollingChecksum.checksum, path, baseOffset, offsets ) )
+		return false;
+	}
+	if( offsets.empty() )
+	{
+		return false;
+	}
+	std::ifstream chunkFile( m_fileToIndex, std::ifstream::binary );
+	if( !chunkFile )
+	{
+		return false;
+	}
+
+    for( size_t offset : offsets )
+	{
+		std::string fileData;
+		fileData.resize( chunk.size() );
+		chunkFile.seekg( static_cast<std::streamoff>( offset ) );
+		chunkFile.read( fileData.data(), fileData.size() );
+		std::string sourceMD5;
+		if( !ResourceTools::GenerateMd5Checksum( fileData, sourceMD5 ) )
 		{
 			return false;
 		}
-		if( !offsets.empty() )
+		if( sourceMD5 == matchingChunkMD5 )
 		{
-			std::ifstream chunkFile;
-			chunkFile.open( m_fileToIndex, std::ifstream::binary );
-			if( !chunkFile )
-			{
-				return false;
-			}
-
-			for( size_t offset : offsets )
-			{
-				std::string fileData;
-				fileData.resize( chunk.size() );
-				chunkFile.seekg( static_cast<std::streamoff>( offset ) );
-				chunkFile.read( fileData.data(), fileData.size() );
-				if( !sourceChecksumGenerated )
-				{
-					if( !ResourceTools::GenerateMd5Checksum( fileData, sourceMD5 ) )
-					{
-						return false;
-					}
-					sourceChecksumGenerated = true;
-				}
-
-				std::string matchingChunkMD5;
-				if( !ResourceTools::GenerateMd5Checksum( chunk, matchingChunkMD5 ) )
-				{
-					return false;
-				}
-				if( sourceMD5 == matchingChunkMD5 )
-				{
-					// It's legit!
-					chunkOffset = offset;
-					return true;
-				}
-			}
+			// It's legit!
+			chunkOffsets.push_back( offset );
 		}
 	}
-	return false;
+
+    return !chunkOffsets.empty();
 }
 
 }

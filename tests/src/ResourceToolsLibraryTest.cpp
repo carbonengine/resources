@@ -39,7 +39,7 @@ TEST_F( ResourceToolsTest, FileMd5ChecksumGeneration )
 
 	std::filesystem::path testDataPath( testDataPathStr );
 
-	std::filesystem::path sourcePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path sourcePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
 
 	std::string output;
 
@@ -56,9 +56,9 @@ TEST_F( ResourceToolsTest, FileMd5ChecksumMatches )
 
 	std::filesystem::path testDataPath( testDataPathStr );
 
-	std::filesystem::path sourcePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path sourcePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
 
-	std::filesystem::path sourcePath2 = testDataPath / "resourcesOnBranch" / "videoCardCategories.yaml";
+	std::filesystem::path sourcePath2 = testDataPath / "ResourcesOnBranch" / "videoCardCategories.yaml";
 
 	std::string output;
 
@@ -99,7 +99,7 @@ TEST_F( ResourceToolsTest, DownloadFile )
 	ResourceTools::Downloader downloader;
 	std::filesystem::path testDataPath( testDataPathStr );
 
-	std::filesystem::path sourcePath = testDataPath / "resourcesLocal" / FOLDER_NAME / FILE_NAME;
+	std::filesystem::path sourcePath = testDataPath / "ResourcesLocal" / FOLDER_NAME / FILE_NAME;
 	std::string sourcePathString( sourcePath.string() );
 	std::string url = "file://" + sourcePathString;
 	std::filesystem::path outputPath = std::filesystem::temp_directory_path() / FOLDER_NAME / FILE_NAME;
@@ -147,7 +147,7 @@ TEST_F( ResourceToolsTest, DownloadHeader )
 	ResourceTools::Downloader downloader;
 	std::filesystem::path testDataPath( testDataPathStr );
 
-	std::filesystem::path sourcePath = testDataPath / "resourcesLocal" / FOLDER_NAME / FILE_NAME;
+	std::filesystem::path sourcePath = testDataPath / "ResourcesLocal" / FOLDER_NAME / FILE_NAME;
 	std::string sourcePathString( sourcePath.string() );
 	std::string url = "file://" + sourcePathString;
 
@@ -194,7 +194,7 @@ TEST_F( ResourceToolsTest, GZipCompressData )
 	const char* testDataPathStr = TEST_DATA_BASE_PATH;
 	ASSERT_TRUE( testDataPathStr );
 	std::filesystem::path testDataPath( testDataPathStr );
-	std::filesystem::path sourcePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path sourcePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
 
 	std::string fileData;
 	ASSERT_TRUE( ResourceTools::GetLocalFileData( sourcePath, fileData ) );
@@ -895,8 +895,8 @@ TEST_F( ResourceToolsTest, CountMatchingChunks )
 	const char* testDataPathStr = TEST_DATA_BASE_PATH;
 	ASSERT_TRUE( testDataPathStr );
 	std::filesystem::path testDataPath( testDataPathStr );
-	std::filesystem::path introMovieFilePath = testDataPath / "Patch" / "previousBuildResources" / "introMoviePrefixed.txt";
-	std::filesystem::path introMoviePatchedFilePath = testDataPath / "Patch" / "nextBuildResources" / "introMoviePrefixed.txt";
+	std::filesystem::path introMovieFilePath = testDataPath / "Patch" / "PreviousBuildResources" / "introMoviePrefixed.txt";
+	std::filesystem::path introMoviePatchedFilePath = testDataPath / "Patch" / "NextBuildResources" / "introMoviePrefixed.txt";
 
 	const size_t CHUNK_SIZE{ 500 };
 	const size_t PREFIX_SIZE{ 308 };
@@ -920,33 +920,36 @@ TEST_F( ResourceToolsTest, GenerateChunkIndex )
 		std::filesystem::remove( outputPath );
 	}
 
-	size_t offset;
+	std::vector<size_t> offsets;
 
 	std::filesystem::path indexFolder = "./GenerateChunkIndex/Indexes";
 
 	std::string notInFile = "Once upon a time, in a galaxy far, far away...";
 	ResourceTools::ChunkIndex notInFileIndex( introMovieFilePath, static_cast<uint32_t>( notInFile.size() ), indexFolder );
 	notInFileIndex.Generate();
-	ASSERT_FALSE( notInFileIndex.FindMatchingChunk( notInFile, offset ) );
+	ASSERT_FALSE( notInFileIndex.FindMatchingChunks( notInFile, offsets ) );
 
 	std::string startOfFile = "TIME";
 	ResourceTools::ChunkIndex startOfFileIndex( introMovieFilePath, static_cast<uint32_t>( startOfFile.size() ), indexFolder );
 	startOfFileIndex.Generate();
-	ASSERT_TRUE( startOfFileIndex.FindMatchingChunk( startOfFile, offset ) );
-	ASSERT_EQ( offset, 0 );
+	offsets.clear();
+	ASSERT_TRUE( startOfFileIndex.FindMatchingChunks( startOfFile, offsets ) );
+	ASSERT_EQ( offsets.at(0), 0 );
 
 	std::string early = "introseq.blue";
 	ResourceTools::ChunkIndex earlyIndex( introMovieFilePath, static_cast<uint32_t>( early.size() ), indexFolder );
 	earlyIndex.Generate();
-	ASSERT_TRUE( earlyIndex.FindMatchingChunk( early, offset ) );
-	ASSERT_EQ( offset, data.find( early ) );
+	offsets.clear();
+	ASSERT_TRUE( earlyIndex.FindMatchingChunks( early, offsets ) );
+	ASSERT_EQ( offsets.at(0), data.find( early ) );
 
 	// Find the last 20 bytes of the file.
 	std::string final = data.substr( data.size() - 20 );
 	ResourceTools::ChunkIndex finalIndex( introMovieFilePath, static_cast<uint32_t>( final.size() ), indexFolder );
 	finalIndex.Generate();
-	ASSERT_TRUE( finalIndex.FindMatchingChunk( final, offset ) );
-	ASSERT_EQ( offset, data.size() - 20 );
+	offsets.clear();
+	ASSERT_TRUE( finalIndex.FindMatchingChunks( final, offsets ) );
+	ASSERT_EQ( offsets.at(0), data.size() - 20 );
 }
 
 TEST_F( ResourceToolsTest, GenerateChunkIndexWithFilter )
@@ -964,21 +967,22 @@ TEST_F( ResourceToolsTest, GenerateChunkIndexWithFilter )
 		std::filesystem::remove( outputPath );
 	}
 
-	size_t offset;
+	std::vector<size_t> offsets;
 	std::filesystem::path indexFolder = "./GenerateChunkIndex/Indexes";
 
 	std::string notInFile = "Once upon a time, in a galaxy far, far away...";
 	ResourceTools::ChunkIndex notInFileIndex( introMovieFilePath, static_cast<uint32_t>( notInFile.size() ), indexFolder );
 	notInFileIndex.GenerateChecksumFilter( introMovieFilePath );
 	notInFileIndex.Generate();
-	ASSERT_FALSE( notInFileIndex.FindMatchingChunk( notInFile, offset ) );
+	ASSERT_FALSE( notInFileIndex.FindMatchingChunks( notInFile, offsets ) );
 
 	std::string startOfFile = "TIME";
 	ResourceTools::ChunkIndex startOfFileIndex( introMovieFilePath, static_cast<uint32_t>( startOfFile.size() ), indexFolder );
 	startOfFileIndex.GenerateChecksumFilter( introMovieFilePath );
 	startOfFileIndex.Generate();
-	ASSERT_TRUE( startOfFileIndex.FindMatchingChunk( startOfFile, offset ) );
-	ASSERT_EQ( offset, 0 );
+	offsets.clear();
+	ASSERT_TRUE( startOfFileIndex.FindMatchingChunks( startOfFile, offsets ) );
+	ASSERT_EQ( offsets.at(0), 0 );
 
 	// Find a chunk early on in the file, that should be
 	// included in the index.
@@ -986,16 +990,18 @@ TEST_F( ResourceToolsTest, GenerateChunkIndexWithFilter )
 	ResourceTools::ChunkIndex earlyIndex( introMovieFilePath, static_cast<uint32_t>( early.size() ), indexFolder );
 	earlyIndex.GenerateChecksumFilter( introMovieFilePath );
 	earlyIndex.Generate();
-	ASSERT_TRUE( earlyIndex.FindMatchingChunk( early, offset ) );
-	ASSERT_EQ( data.substr( offset, 10 ), early );
+	offsets.clear();
+	ASSERT_TRUE( earlyIndex.FindMatchingChunks( early, offsets ) );
+	ASSERT_EQ( data.substr( offsets.at(0), 10 ), early );
 
 	// Find the last whole chunk in the file.
 	std::string final = data.substr( data.size() - 31, 20 );
 	ResourceTools::ChunkIndex finalIndex( introMovieFilePath, 20, indexFolder );
 	finalIndex.GenerateChecksumFilter( introMovieFilePath );
 	finalIndex.Generate();
-	ASSERT_TRUE( finalIndex.FindMatchingChunk( final, offset ) );
-	ASSERT_EQ( offset, data.size() - 31 );
+	offsets.clear();
+	ASSERT_TRUE( finalIndex.FindMatchingChunks( final, offsets ) );
+	ASSERT_EQ( offsets.at(0), data.size() - 31 );
 }
 
 #if __APPLE__
@@ -1005,8 +1011,8 @@ TEST_F( ResourceToolsTest, CalculateBinaryOperationMacOS )
 	// 33279: Binaries, not just executables (No extension, .so, .pyd)
 	// 33188: Basically everything else
 	std::filesystem::path testDataPath = TEST_DATA_BASE_PATH;
-	std::filesystem::path textFilePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
-	std::filesystem::path nonexistantFilePath = testDataPath / "resourcesOnBranch" / "thisFileDoesNotExist.txt";
+	std::filesystem::path textFilePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path nonexistantFilePath = testDataPath / "ResourcesOnBranch" / "thisFileDoesNotExist.txt";
 	ASSERT_EQ( 33188, ResourceTools::CalculateBinaryOperation( textFilePath ) );
 	ASSERT_EQ( 0, ResourceTools::CalculateBinaryOperation( nonexistantFilePath ) );
 }
@@ -1017,8 +1023,8 @@ TEST_F( ResourceToolsTest, CalculateBinaryOperationWindows )
 	// 33279: Executables (.exe, .bat, .cmd, .com) # See: update_st_mode_from_path Modules/posixmodule.c
 	// 33206: Basically everything else (.dll, .pyd, .yaml, .txt etc. )
 	std::filesystem::path testDataPath = TEST_DATA_BASE_PATH;
-	std::filesystem::path textFilePath = testDataPath / "resourcesOnBranch" / "introMovie.txt";
-	std::filesystem::path nonexistantFilePath = testDataPath / "resourcesOnBranch" / "thisFileDoesNotExist.txt";
+	std::filesystem::path textFilePath = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path nonexistantFilePath = testDataPath / "ResourcesOnBranch" / "thisFileDoesNotExist.txt";
 	std::filesystem::path binaryFilePath = std::filesystem::temp_directory_path() / "CarbonResources" / "binary.exe";
 	std::ofstream binaryFile( binaryFilePath );
 	binaryFile.close();
@@ -1035,7 +1041,7 @@ TEST_F( ResourceToolsTest, GzipStreams )
 	stream.Start();
 	ResourceTools::FileDataStreamIn fileStreamIn( 50 );
 	std::filesystem::path testDataPath = TEST_DATA_BASE_PATH;
-	std::filesystem::path testFile = testDataPath / "resourcesOnBranch" / "introMovie.txt";
+	std::filesystem::path testFile = testDataPath / "ResourcesOnBranch" / "introMovie.txt";
 	fileStreamIn.StartRead( testFile );
 	ResourceTools::Md5ChecksumStream originalMd5Stream;
 

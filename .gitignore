@@ -76,19 +76,9 @@ __pycache__/
 ### CMake ###
 # User generated local cmake configuration
 CMakeUserPresets.json
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+# Intermediate cmake build flavor folders #
+cmake-build-*/
+.cmake-*
 
 ### IDE ###
 # User generated local IDE configuration
