@@ -22,7 +22,59 @@ class UniversalBuild() : BuildType({
         param("x64-bin-path", "bin/macOS/x64")
         param("arm64-bin-path", "bin/macOS/arm64")
         text("file-matchers",
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
             "-m 'resources:%system.teamcity.build.workingDir%/bin' -m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
+=======
+            "-m '*.so:%system.teamcity.build.workingDir%/lib' -m '*.dylib:%system.teamcity.build.workingDir%/lib' -m '*.a:%system.teamcity.build.workingDir%/lib'",
+>>>>>>> template/carbonengine/resources-updates
             label = "lipo-build matchers",
             description = """
             -m '*.so:lib' to tell the tool to lipo together .so files and output the fat binaries to lib/.
@@ -171,7 +223,72 @@ class UniversalBuild() : BuildType({
             }
         }
     }
+<<<<<<< HEAD
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
+    features {
+        pullRequests {
+            vcsRootExtId = "${DslContext.settingsRootId.id}"
+            provider = github {
+                authType = token {
+                    token = "%GITHUB_CARBON_PAT%"
+                }
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
+=======
+                filterAuthorRole = GitHubRoleFilter.EVERYBODY
+>>>>>>> template/carbonengine/resources-updates
+=======
+                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
+>>>>>>> template/carbonengine/resources-updates
+=======
+                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
+>>>>>>> template/carbonengine/resources-updates
+=======
+                filterAuthorRole = PullRequests.GitHubRoleFilter.EVERYBODY
+>>>>>>> template/carbonengine/resources-updates
+            }
+        }
+    }
+    
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
+=======
+>>>>>>> template/carbonengine/resources-updates
+=======
+    
+>>>>>>> template/carbonengine/resources-updates
     requirements {
         startsWith("teamcity.agent.jvm.os.name", "Mac OS X")
     }

@@ -13,6 +13,58 @@
 *.pch
 
 # Compiled Dynamic libraries
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
+=======
+binaryCache/
+>>>>>>> template/carbonengine/resources-updates
 *.so
 *.dylib
 *.dll
@@ -28,6 +80,7 @@ __pycache__/
 ### CMake ###
 # User generated local cmake configuration
 CMakeUserPresets.json
+<<<<<<< HEAD
 # Intermediate cmake build flavor folders #
 cmake-build-*/
 .cmake-*
@@ -39,3 +92,56 @@ cmake-build-*/
 ### VCPKG ###
 # Temporary measure which fixes build agent issue
 vcpkg_registry_cache/
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
+=======
+
+.cmake-build*
+cmake-build*
+>>>>>>> template/carbonengine/resources-updates
